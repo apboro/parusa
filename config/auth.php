@@ -15,7 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 'users',
+        'passwords' => 'agents',
     ],
 
     /*
@@ -38,13 +38,13 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'agents',
         ],
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | User Providers
+    | Agent Providers
     |--------------------------------------------------------------------------
     |
     | All authentication drivers have a user provider. This defines how the
@@ -60,9 +60,9 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'agents' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => App\Models\Agent::class,
         ],
 
         // 'users' => [
@@ -87,8 +87,8 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'agents' => [
+            'provider' => 'agents',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
