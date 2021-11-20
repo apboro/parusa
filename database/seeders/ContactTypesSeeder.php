@@ -6,6 +6,12 @@ use App\Models\Dictionaries\ContactType;
 
 class ContactTypesSeeder extends GenericSeeder
 {
+    /**
+     * @var array|\array[][]
+     *
+     * Defaults:
+     * 'enabled' => true
+     */
     protected array $data = [
         ContactType::class => [
             ContactType::email => [
@@ -13,7 +19,6 @@ class ContactTypesSeeder extends GenericSeeder
                 'type' => ContactType::type_email,
                 'has_additional' => false,
                 'link_pattern' => 'mailto:%s',
-                'enabled' => true,
                 'lock' => true,
             ],
 
@@ -22,7 +27,6 @@ class ContactTypesSeeder extends GenericSeeder
                 'type' => ContactType::type_phone,
                 'has_additional' => true,
                 'link_pattern' => 'tel:%s',
-                'enabled' => true,
                 'lock' => true,
             ],
 
@@ -31,7 +35,6 @@ class ContactTypesSeeder extends GenericSeeder
                 'type' => ContactType::type_phone,
                 'has_additional' => false,
                 'link_pattern' => 'tel:%s',
-                'enabled' => true,
                 'lock' => true,
             ],
 
@@ -40,7 +43,6 @@ class ContactTypesSeeder extends GenericSeeder
                 'type' => ContactType::type_string,
                 'has_additional' => false,
                 'link_pattern' => null,
-                'enabled' => true,
                 'lock' => true,
             ],
 
@@ -49,7 +51,6 @@ class ContactTypesSeeder extends GenericSeeder
                 'type' => ContactType::type_string,
                 'has_additional' => false,
                 'link_pattern' => null,
-                'enabled' => true,
                 'lock' => true,
             ],
 
@@ -58,16 +59,14 @@ class ContactTypesSeeder extends GenericSeeder
                 'type' => ContactType::type_string,
                 'has_additional' => false,
                 'link_pattern' => null,
-                'enabled' => true,
                 'lock' => true,
             ],
 
             ContactType::whatsapp => [
-                'name' => 'Whatsapp',
+                'name' => 'WhatsApp',
                 'type' => ContactType::type_string,
                 'has_additional' => false,
                 'link_pattern' => null,
-                'enabled' => true,
                 'lock' => true,
             ],
 
@@ -76,7 +75,6 @@ class ContactTypesSeeder extends GenericSeeder
                 'type' => ContactType::type_string,
                 'has_additional' => false,
                 'link_pattern' => 'skype:%s?call',
-                'enabled' => true,
                 'lock' => true,
             ],
         ],
