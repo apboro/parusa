@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
- * @property int id
- * @property string title
- * @property string value
- * @property string|null additional
- * @property string|null comments
- * @property ContactType type
- * @property-read string|null link
+ * @property int $id
+ * @property string $title
+ * @property string $value
+ * @property string|null $additional
+ * @property string|null $comments
+ * @property ContactType $type
+ * @property-read string|null $formatted
  */
 class UserContact extends Model
 {
@@ -21,7 +21,7 @@ class UserContact extends Model
     protected $with = ['type'];
 
     /** @var array The accessors to append to the model's array. */
-    protected $appends = ['link'];
+    protected $appends = ['formatted'];
 
     /**
      * Related contact class.
@@ -38,7 +38,7 @@ class UserContact extends Model
      *
      * @return  string|null
      */
-    public function getLinkAttribute(): ?string
+    public function getFormattedAttribute(): ?string
     {
         if (empty($this->type->link_pattern)) {
             return $this->value;
