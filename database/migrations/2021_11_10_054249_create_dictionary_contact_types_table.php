@@ -19,6 +19,7 @@ class CreateDictionaryContactTypesTable extends Migration
 
             $table->boolean('enabled')->nullable()->default(true);
             $table->boolean('lock')->nullable()->default(false);
+            $table->string('type')->nullable();
 
             $table->string('name');
             $table->boolean('has_additional')->nullable()->default(false);

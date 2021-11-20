@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null link_pattern
  * @property \Carbon\Carbon created_at
  * @property \Carbon\Carbon updated_at
+ * @property string type
  */
 class ContactType extends Model
 {
@@ -39,6 +40,15 @@ class ContactType extends Model
 
     /** @var int The id of Skype contact type */
     public const skype = 8;
+
+    /** @var int The identifier of phone type for internal use */
+    public const type_phone = 'phone';
+
+    /** @var int The identifier of email type for internal use */
+    public const type_email = 'email';
+
+    /** @var int The identifier of string type for internal use */
+    public const type_string = 'string';
 
     /** @var string Referenced table name */
     protected $table = 'dictionary_contact_types';
