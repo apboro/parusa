@@ -5,7 +5,7 @@ namespace App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property int id
+ * @property int $id
  */
 class UserRole extends Model
 {
@@ -13,7 +13,7 @@ class UserRole extends Model
     public const admin = 1;
 
     /**
-     * Check this role against given role.
+     * Match this role against given.
      *
      * @param int $roleId
      *
@@ -25,7 +25,7 @@ class UserRole extends Model
     }
 
     /**
-     * Get role name.
+     * Get role display name.
      *
      * @return  string
      */
@@ -35,7 +35,7 @@ class UserRole extends Model
     }
 
     /**
-     * Get role instance by name.
+     * Get role instance by id.
      *
      * @param int $roleId
      *
