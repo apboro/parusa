@@ -6,7 +6,24 @@ use Illuminate\Database\Seeder;
 
 abstract class GenericSeeder extends Seeder
 {
+    /**
+     * @var array Data to fill in dictionary
+     *
+     * $data = [
+     *     Model::class => [
+     *         id => [
+     *             'attribute key' => 'attribute value',
+     *             'attribute key' => 'attribute value',
+     *         ],
+     *         id => [
+     *             'attribute key' => 'attribute value',
+     *             'attribute key' => 'attribute value',
+     *         ],
+     *     ],
+     * ];
+     */
     protected array $data = [];
+
     /**
      * Run the database seeds.
      *
@@ -18,11 +35,16 @@ abstract class GenericSeeder extends Seeder
             return;
         }
 
-        foreach ($this->data as $class => $sets) {
+        foreach ($this->data as $class => $items) {
             /** @var \Illuminate\Database\Eloquent\Model $class */
-            foreach ($sets as $id => $attributes) {
+
+            foreach ($items as $id => $attributes) {
                 $model = $class->query()->firstOrNew(['id' => $id]);
-                $model->setRawAttributes($attributes);
+
+                foreach ($attributes as $key => $attribute) {
+                    $model->setAttribute($key, $attribute);
+                }
+
                 $model->save();
             }
         }
