@@ -35,7 +35,7 @@ class ContactTypesSeeder extends GenericSeeder
             ContactType::vk => [
                 'name' => 'VK',
                 'has_additional' => false,
-                'link_pattern' => 'https://vk.com/%s',
+                'link_pattern' => null,
                 'enabled' => true,
                 'lock' => true
             ],
@@ -43,7 +43,7 @@ class ContactTypesSeeder extends GenericSeeder
             ContactType::fb => [
                 'name' => 'Facebook',
                 'has_additional' => false,
-                'link_pattern' => 'mailto:%s',
+                'link_pattern' => null,
                 'enabled' => true,
                 'lock' => true
             ],
@@ -51,7 +51,7 @@ class ContactTypesSeeder extends GenericSeeder
             ContactType::telegram => [
                 'name' => 'Telegram',
                 'has_additional' => false,
-                'link_pattern' => 'mailto:%s',
+                'link_pattern' => null,
                 'enabled' => true,
                 'lock' => true
             ],
@@ -59,7 +59,7 @@ class ContactTypesSeeder extends GenericSeeder
             ContactType::whatsapp => [
                 'name' => 'Whatsapp',
                 'has_additional' => false,
-                'link_pattern' => 'mailto:%s',
+                'link_pattern' => null,
                 'enabled' => true,
                 'lock' => true
             ],
