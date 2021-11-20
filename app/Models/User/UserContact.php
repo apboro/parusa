@@ -30,7 +30,7 @@ class UserContact extends Model
      */
     public function type(): HasOne
     {
-        return $this->hasOne(ContactType::class);
+        return $this->hasOne(ContactType::class, 'type_id', 'id');
     }
 
     /**
