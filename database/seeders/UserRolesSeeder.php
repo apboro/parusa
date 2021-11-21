@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User\UserRole;
+use App\Models\Dictionaries\UserRole;
 
 class UserRolesSeeder extends GenericSeeder
 {

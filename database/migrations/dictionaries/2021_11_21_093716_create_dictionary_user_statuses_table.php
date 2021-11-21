@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePartnerTypeCollectionsTable extends Migration
+class CreateDictionaryUserStatusesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreatePartnerTypeCollectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('partner_type_collections', function (Blueprint $table) {
-            $table->id();
-            $table->string('type');
+        Schema::create('dictionary_user_statuses', function (Blueprint $table) {
+            $table->increments('id')->primary();
+            $table->string('name');
         });
     }
 
@@ -26,6 +26,6 @@ class CreatePartnerTypeCollectionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('partner_type_collections');
+        Schema::dropIfExists('dictionary_user_statuses');
     }
 }

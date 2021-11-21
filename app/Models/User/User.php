@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Models\Dictionaries\UserRole;
 use App\Models\Partner\Partner;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -85,29 +86,6 @@ class User extends Authenticatable
     }
 
     /**
-     * All active agents of this partner.
-     *
-     * @return  \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function partners(): BelongsToMany
-    {
-        return $this->belongsToMany(Partner::class, 'user_belongs_to_partner', 'user_id', 'partner_id')
-            ->withPivot(['position', 'blocked_at'])
-            ->wherePivotNull('blocked_at', true);
-    }
-
-    /**
-     * All agents of this partner.
-     *
-     * @return  \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function allPartners(): BelongsToMany
-    {
-        return $this->belongsToMany(Partner::class, 'user_belongs_to_partner', 'user_id', 'partner_id')
-            ->withPivot(['position', 'blocked_at']);
-    }
-
-    /**
      * User related contacts.
      *
      * @return  \Illuminate\Database\Eloquent\Relations\HasMany
@@ -116,4 +94,27 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserContact::class);
     }
+
+    /**
+     * All active agents of this partner.
+     *
+     * @return  \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+//    public function partners(): BelongsToMany
+//    {
+//        return $this->belongsToMany(Partner::class, 'user_belongs_to_partner', 'user_id', 'partner_id')
+//            ->withPivot(['position', 'blocked_at'])
+//            ->wherePivotNull('blocked_at', true);
+//    }
+
+    /**
+     * All agents of this partner.
+     *
+     * @return  \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+//    public function allPartners(): BelongsToMany
+//    {
+//        return $this->belongsToMany(Partner::class, 'user_belongs_to_partner', 'user_id', 'partner_id')
+//            ->withPivot(['position', 'blocked_at']);
+//    }
 }

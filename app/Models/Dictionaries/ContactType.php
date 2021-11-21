@@ -2,8 +2,6 @@
 
 namespace App\Models\Dictionaries;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * @property int id
  * @property bool enabled
@@ -15,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon updated_at
  * @property string type
  */
-class ContactType extends Model
+class ContactType extends AbstractDictionaryItem
 {
     /** @var int The id of email contact type */
     public const email = 1;
