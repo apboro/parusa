@@ -42,7 +42,7 @@ class ContactTypesSeeder extends GenericSeeder
                 'name' => 'VK',
                 'type' => ContactType::type_string,
                 'has_additional' => false,
-                'link_pattern' => null,
+                'link_pattern' => '%s',
                 'lock' => true,
             ],
 
@@ -50,7 +50,7 @@ class ContactTypesSeeder extends GenericSeeder
                 'name' => 'Facebook',
                 'type' => ContactType::type_string,
                 'has_additional' => false,
-                'link_pattern' => null,
+                'link_pattern' => '%s',
                 'lock' => true,
             ],
 
@@ -58,7 +58,7 @@ class ContactTypesSeeder extends GenericSeeder
                 'name' => 'Telegram',
                 'type' => ContactType::type_string,
                 'has_additional' => false,
-                'link_pattern' => null,
+                'link_pattern' => '%s',
                 'lock' => true,
             ],
 
@@ -66,7 +66,7 @@ class ContactTypesSeeder extends GenericSeeder
                 'name' => 'WhatsApp',
                 'type' => ContactType::type_string,
                 'has_additional' => false,
-                'link_pattern' => null,
+                'link_pattern' => '%s',
                 'lock' => true,
             ],
 
