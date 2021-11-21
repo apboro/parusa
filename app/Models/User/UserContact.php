@@ -40,14 +40,13 @@ class UserContact extends Model
      */
     public function getFormattedAttribute(): ?string
     {
-        if (empty($this->type->link_pattern)) {
-            return $this->value;
+        $pattern = $this->type->link_pattern;
+        $value = $this->value;
+
+        if (empty($pattern) || empty($value)) {
+            return null;
         }
 
-        if ($this->type->has_additional) {
-            return sprintf($this->type->link_pattern, $this->value, $this->additional);
-        }
-
-        return sprintf($this->type->link_pattern, $this->value);
+        return sprintf($pattern, $value, $this->additional);
     }
 }
