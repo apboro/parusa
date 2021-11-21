@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Dictionaries\UserStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,9 +23,11 @@ class CreateUsersTable extends Migration
 
             $table->rememberToken();
 
-            $table->timestamp('blocked_at')->nullable();
+            $table->integer('status_id')->default(UserStatus::active);
 
             $table->timestamps();
+
+            $table->foreign('status_id')->references('id')->on('dictionary_user_statuses')->restrictOnDelete()->restrictOnUpdate();
         });
     }
 

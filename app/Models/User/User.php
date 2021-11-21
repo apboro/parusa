@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use App\Models\Dictionaries\UserRole;
+use App\Models\Dictionaries\UserStatus;
 use App\Models\Partner\Partner;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -52,6 +53,16 @@ class User extends Authenticatable
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(UserRole::class, 'user_has_role');
+    }
+
+    /**
+     * User's status.
+     *
+     * @return  HasOne
+     */
+    public function status(): HasOne
+    {
+        return $this->hasOne(UserStatus::class);
     }
 
     /**
