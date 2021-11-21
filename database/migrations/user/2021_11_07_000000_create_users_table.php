@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
 
             $table->rememberToken();
 
-            $table->integer('status_id')->default(UserStatus::active);
+            $table->integer('status_id')->default(UserStatus::default);
 
             $table->timestamps();
 

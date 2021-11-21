@@ -16,33 +16,26 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var string[]
-     */
+    /** @var string[] The attributes that are mass assignable. */
     protected $fillable = [
         'login',
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array
-     */
+    /** @var array The attributes that should be hidden for serialization. */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
+    /** @var array The attributes that should be cast. */
     protected $casts = [
         'created_at' => 'datetime',
+    ];
+
+    /** @var array Default attributes. */
+    protected $attributes = [
+        'status_id' => UserStatus::default,
     ];
 
     /**
@@ -72,7 +65,7 @@ class User extends Authenticatable
      *
      * @return  bool
      */
-    public function in(int $roleId): bool
+    public function hasRole(int $roleId): bool
     {
         $this->loadMissing('roles');
 

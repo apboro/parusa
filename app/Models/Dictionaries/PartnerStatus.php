@@ -10,6 +10,9 @@ class PartnerStatus extends AbstractDictionaryItem
     /** @var int The id of active status */
     public const active = 2;
 
+    /** @var int Default status */
+    public const default = self::active;
+
     /** @var string Referenced table name. */
     protected $table = 'dictionary_partner_statuses';
 
