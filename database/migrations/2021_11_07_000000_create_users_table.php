@@ -20,9 +20,9 @@ class CreateUsersTable extends Migration
             $table->string('login');
             $table->string('password');
 
-            $table->timestamp('blocked_at')->nullable();
-
             $table->rememberToken();
+
+            $table->timestamp('blocked_at')->nullable();
 
             $table->timestamps();
         });
