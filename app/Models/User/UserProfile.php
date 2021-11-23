@@ -2,8 +2,7 @@
 
 namespace App\Models\User;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -15,8 +14,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class UserProfile extends Model
 {
-    use HasFactory;
-
     /** @var string The primary key associated with the table. */
     protected $primaryKey = 'user_id';
 

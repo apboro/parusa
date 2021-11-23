@@ -14,12 +14,15 @@ class CreatePartnerDocumentsTable extends Migration
     public function up()
     {
         Schema::create('partner_documents', function (Blueprint $table) {
+
             $table->id();
 
-            $table->uuid('partner_id')->index();
+            $table->unsignedBigInteger('partner_id')->index();
 
             $table->string('original_filename');
             $table->string('local_filename');
+            $table->string('mime');
+            $table->string('document_hash');
 
             $table->timestamps();
 

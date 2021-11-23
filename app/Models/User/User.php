@@ -2,9 +2,11 @@
 
 namespace App\Models\User;
 
+use App\Exceptions\User\WrongUserStatusException;
 use App\Models\Dictionaries\UserRole;
 use App\Models\Dictionaries\UserStatus;
 use App\Models\Partner\Partner;
+use App\Models\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,9 +14,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property int $status_id
+ */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory;
+    use HasApiTokens, HasFactory, HasStatus;
 
     /** @var string[] The attributes that are mass assignable. */
     protected $fillable = [
@@ -26,11 +31,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-    ];
-
-    /** @var array The attributes that should be cast. */
-    protected $casts = [
-        'created_at' => 'datetime',
     ];
 
     /** @var array Default attributes. */
@@ -56,6 +56,21 @@ class User extends Authenticatable
     public function status(): HasOne
     {
         return $this->hasOne(UserStatus::class);
+    }
+
+    /**
+     * Check and set new status for user.
+     *
+     * @param int $statusId
+     * @param bool $save
+     *
+     * @return  void
+     *
+     * @throws WrongUserStatusException
+     */
+    public function setStatus(int $statusId, bool $save = true): void
+    {
+        $this->checkAndSetStatus(UserStatus::class, $statusId, WrongUserStatusException::class, $save);
     }
 
     /**

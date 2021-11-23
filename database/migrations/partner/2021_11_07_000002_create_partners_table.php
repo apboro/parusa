@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Dictionaries\PartnerStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,13 +16,17 @@ class CreatePartnersTable extends Migration
     {
         Schema::create('partners', function (Blueprint $table) {
 
-            $table->uuid('id')->unique()->primary();
+            $table->id();
 
             $table->string('name');
 
-            $table->boolean('active')->nullable()->default('true');
+            $table->integer('type_id');
+
+            $table->integer('status_id')->default(PartnerStatus::default);
 
             $table->timestamps();
+
+            $table->foreign('status_id')->references('id')->on('dictionary_partner_statuses')->restrictOnDelete()->restrictOnUpdate();
         });
     }
 

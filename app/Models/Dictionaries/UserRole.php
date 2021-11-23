@@ -2,6 +2,10 @@
 
 namespace App\Models\Dictionaries;
 
+/**
+ * @property int $id
+ * @property string $name
+ */
 class UserRole extends AbstractDictionaryItem
 {
     /** @var int The id of admin role. */

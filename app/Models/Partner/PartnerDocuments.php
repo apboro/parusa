@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Partner;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PartnerDocuments extends Model
 {
-    use HasFactory;
-
     /**
      * Partner owned this document.
      *

@@ -2,6 +2,10 @@
 
 namespace App\Models\Dictionaries;
 
+/**
+ * @property int $id
+ * @property string $name
+ */
 class UserStatus extends AbstractDictionaryItem
 {
     /** @var int The id of blocked status */

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Dictionaries\ContactType;
+use App\Models\Dictionaries\UserContactType;
 
 class ContactTypesSeeder extends GenericSeeder
 {
@@ -13,66 +13,66 @@ class ContactTypesSeeder extends GenericSeeder
      * 'enabled' => true
      */
     protected array $data = [
-        ContactType::class => [
-            ContactType::email => [
+        UserContactType::class => [
+            UserContactType::email => [
                 'name' => 'Email',
-                'type' => ContactType::type_email,
+                'type' => UserContactType::type_email,
                 'has_additional' => false,
                 'link_pattern' => 'mailto:%s',
                 'lock' => true,
             ],
 
-            ContactType::phone => [
+            UserContactType::phone => [
                 'name' => 'Телефон',
-                'type' => ContactType::type_phone,
+                'type' => UserContactType::type_phone,
                 'has_additional' => true,
                 'link_pattern' => 'tel:%s',
                 'lock' => true,
             ],
 
-            ContactType::mobile => [
+            UserContactType::mobile => [
                 'name' => 'Мобильный',
-                'type' => ContactType::type_phone,
+                'type' => UserContactType::type_phone,
                 'has_additional' => false,
                 'link_pattern' => 'tel:%s',
                 'lock' => true,
             ],
 
-            ContactType::vk => [
+            UserContactType::vk => [
                 'name' => 'VK',
-                'type' => ContactType::type_string,
+                'type' => UserContactType::type_string,
                 'has_additional' => false,
                 'link_pattern' => '%s',
                 'lock' => true,
             ],
 
-            ContactType::fb => [
+            UserContactType::fb => [
                 'name' => 'Facebook',
-                'type' => ContactType::type_string,
+                'type' => UserContactType::type_string,
                 'has_additional' => false,
                 'link_pattern' => '%s',
                 'lock' => true,
             ],
 
-            ContactType::telegram => [
+            UserContactType::telegram => [
                 'name' => 'Telegram',
-                'type' => ContactType::type_string,
+                'type' => UserContactType::type_string,
                 'has_additional' => false,
                 'link_pattern' => '%s',
                 'lock' => true,
             ],
 
-            ContactType::whatsapp => [
+            UserContactType::whatsapp => [
                 'name' => 'WhatsApp',
-                'type' => ContactType::type_string,
+                'type' => UserContactType::type_string,
                 'has_additional' => false,
                 'link_pattern' => '%s',
                 'lock' => true,
             ],
 
-            ContactType::skype => [
+            UserContactType::skype => [
                 'name' => 'Skype',
-                'type' => ContactType::type_string,
+                'type' => UserContactType::type_string,
                 'has_additional' => false,
                 'link_pattern' => 'skype:%s?call',
                 'lock' => true,

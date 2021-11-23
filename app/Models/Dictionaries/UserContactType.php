@@ -13,7 +13,7 @@ namespace App\Models\Dictionaries;
  * @property \Carbon\Carbon updated_at
  * @property string type
  */
-class ContactType extends AbstractDictionaryItem
+class UserContactType extends AbstractDictionaryItem
 {
     /** @var int The id of email contact type */
     public const email = 1;

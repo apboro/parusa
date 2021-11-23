@@ -15,11 +15,7 @@ class CreatePartnerProfilesTable extends Migration
     {
         Schema::create('partner_profiles', function (Blueprint $table) {
 
-            $table->uuid('partner_id')->unique()->primary();
-
-            $table->unsignedBigInteger('display_id', true);
-
-            $table->integer('type');
+            $table->unsignedBigInteger('partner_id')->unique()->primary();
 
             $table->unsignedInteger('tickets_for_guides');
 
@@ -28,7 +24,6 @@ class CreatePartnerProfilesTable extends Migration
             $table->text('notes')->nullable();
 
             $table->foreign('partner_id')->references('id')->on('partners')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreign('type')->references('id')->on('partner_type_collections')->restrictOnDelete()->restrictOnUpdate();
         });
     }
 
