@@ -20,9 +20,9 @@ class CreatePartnersTable extends Migration
 
             $table->string('name');
 
-            $table->integer('type_id');
+            $table->unsignedInteger('type_id');
 
-            $table->integer('status_id')->default(PartnerStatus::default);
+            $table->unsignedInteger('status_id')->default(PartnerStatus::default);
 
             $table->timestamps();
 

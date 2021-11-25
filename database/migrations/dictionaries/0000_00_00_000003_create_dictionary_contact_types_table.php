@@ -15,7 +15,7 @@ class CreateDictionaryContactTypesTable extends Migration
     {
         Schema::create('dictionary_contact_types', function (Blueprint $table) {
 
-            $table->increments('id')->from(1000)->primary();
+            $table->increments('id')->from(1000);
 
             $table->boolean('enabled')->nullable()->default(true);
             $table->boolean('lock')->nullable()->default(false);

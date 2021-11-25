@@ -23,7 +23,7 @@ class CreatePartnerUserPositionsTable extends Migration
 
             $table->string('position_title')->nullable();
 
-            $table->integer('status_id')->default(PositionStatus::default);
+            $table->unsignedInteger('status_id')->default(PositionStatus::default);
 
             $table->timestamps();
 

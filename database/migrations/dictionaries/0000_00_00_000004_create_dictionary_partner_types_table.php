@@ -15,7 +15,7 @@ class CreateDictionaryPartnerTypesTable extends Migration
     {
         Schema::create('dictionary_partner_types', function (Blueprint $table) {
 
-            $table->increments('id')->from(1000)->primary();
+            $table->increments('id')->from(1000);
 
             $table->string('name');
 

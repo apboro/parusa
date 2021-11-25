@@ -4,17 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDictionaryUserRolesTable extends Migration
+class CreateDictionaryPositionStatusesTable extends Migration
 {
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('dictionary_user_roles', function (Blueprint $table) {
-            $table->increments('id')->primary();
+        Schema::create('dictionary_position_statuses', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('name');
         });
     }
@@ -24,8 +24,8 @@ class CreateDictionaryUserRolesTable extends Migration
      *
      * @return void
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('dictionary_user_roles');
+        Schema::dropIfExists('dictionary_position_statuses');
     }
 }

@@ -19,7 +19,7 @@ class CreateUserContactsTable extends Migration
 
             $table->string('title');
 
-            $table->integer('type_id');
+            $table->unsignedInteger('type_id');
 
             $table->string('value');
             $table->string('additional')->nullable();
@@ -29,7 +29,7 @@ class CreateUserContactsTable extends Migration
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnUpdate();
-            $table->foreign('type_id')->references('id')->on('collection_of_contact_types')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('type_id')->references('id')->on('dictionary_contact_types')->restrictOnDelete()->restrictOnUpdate();
         });
     }
 

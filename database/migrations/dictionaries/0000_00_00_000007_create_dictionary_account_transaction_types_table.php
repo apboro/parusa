@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOrdersTable extends Migration
+class CreateDictionaryAccountTransactionTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('dictionary_account_transaction_types', function (Blueprint $table) {
 
-            $table->uuid('id')->unique()->primary();
+            $table->increments('id');
 
-            $table->unsignedBigInteger('number', true);
+            $table->string('name');
 
-            $table->timestamps();
+            $table->smallInteger('sign');
         });
     }
 
@@ -30,6 +30,6 @@ class CreateOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('dictionary_account_transaction_types');
     }
 }

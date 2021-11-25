@@ -18,7 +18,7 @@ class CreateUserHasRoleTable extends Migration
             $table->unsignedInteger('user_role_id')->index();
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreign('user_role_id')->references('id')->on('user_roles')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('user_role_id')->references('id')->on('dictionary_user_roles')->restrictOnDelete()->restrictOnUpdate();
         });
     }
 

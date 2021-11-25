@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDictionaryPartnerStatusesTable extends Migration
+class CreateDictionaryUserStatusesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class CreateDictionaryPartnerStatusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('dictionary_partner_statuses', function (Blueprint $table) {
-            $table->increments('id')->primary();
+        Schema::create('dictionary_user_statuses', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('name');
         });
     }
@@ -26,6 +26,6 @@ class CreateDictionaryPartnerStatusesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dictionary_partner_statuses');
+        Schema::dropIfExists('dictionary_user_statuses');
     }
 }
