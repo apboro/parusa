@@ -16,7 +16,7 @@ class PartnerProfile extends Model
     /**
      * Partner this profile belongs to.
      *
-     * @return  \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return  BelongsTo
      */
     public function partner(): BelongsTo
     {

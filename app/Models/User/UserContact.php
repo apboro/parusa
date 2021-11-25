@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $value
  * @property string|null $additional
  * @property string|null $comments
+ *
  * @property UserContactType $type
  * @property-read string|null $formatted
  */
@@ -30,7 +31,7 @@ class UserContact extends Model
     /**
      * Related contact class.
      *
-     * @return  \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return  HasOne
      */
     public function type(): HasOne
     {

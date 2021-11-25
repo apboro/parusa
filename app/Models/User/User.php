@@ -7,6 +7,7 @@ use App\Models\Dictionaries\UserRole;
 use App\Models\Dictionaries\UserStatus;
 use App\Models\Partner\Partner;
 use App\Models\Traits\HasStatus;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,6 +17,11 @@ use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property int $status_id
+ *
+ * @property UserStatus $status
+ * @property UserProfile $profile
+ * @property Collection $roles
+ * @property Collection $contacts
  */
 class User extends Authenticatable
 {
@@ -97,7 +103,7 @@ class User extends Authenticatable
     /**
      * User's profile.
      *
-     * @return  \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return  HasOne
      */
     public function profile(): HasOne
     {
@@ -107,7 +113,7 @@ class User extends Authenticatable
     /**
      * User related contacts.
      *
-     * @return  \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return  HasMany
      */
     public function contacts(): HasMany
     {
@@ -117,7 +123,7 @@ class User extends Authenticatable
     /**
      * All active agents of this partner.
      *
-     * @return  \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return  BelongsToMany
      */
 //    public function partners(): BelongsToMany
 //    {
@@ -129,7 +135,7 @@ class User extends Authenticatable
     /**
      * All agents of this partner.
      *
-     * @return  \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return  BelongsToMany
      */
 //    public function allPartners(): BelongsToMany
 //    {

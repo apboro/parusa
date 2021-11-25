@@ -2,6 +2,8 @@
 
 namespace App\Models\Traits;
 
+use App\Models\Dictionaries\AbstractDictionaryItem;
+
 trait HasType
 {
     /**
@@ -17,7 +19,7 @@ trait HasType
      */
     protected function checkAndSetType(string $type, int $id, string $exception, bool $save = true): void
     {
-        /** @var \App\Models\Dictionaries\AbstractDictionaryItem $type */
+        /** @var AbstractDictionaryItem $type */
         $type = $type::get($id);
 
         if ($type === null) {

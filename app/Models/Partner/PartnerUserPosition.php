@@ -68,7 +68,7 @@ class PartnerUserPosition extends Model
     /**
      * User related contacts.
      *
-     * @return  \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return  BelongsToMany
      */
     public function contacts(): BelongsToMany
     {

@@ -2,16 +2,18 @@
 
 namespace App\Models\Dictionaries;
 
+use Carbon\Carbon;
+
 /**
- * @property int id
- * @property bool enabled
- * @property bool lock
- * @property string name
- * @property bool has_additional
- * @property string|null link_pattern
- * @property \Carbon\Carbon created_at
- * @property \Carbon\Carbon updated_at
- * @property string type
+ * @property int $id
+ * @property bool $enabled
+ * @property bool $lock
+ * @property string $name
+ * @property bool $has_additional
+ * @property string|null $link_pattern
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property string $type
  */
 class UserContactType extends AbstractDictionaryItem
 {

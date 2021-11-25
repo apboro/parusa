@@ -2,6 +2,8 @@
 
 namespace App\Models\Traits;
 
+use App\Models\Dictionaries\AbstractDictionaryItem;
+
 trait HasStatus
 {
     /**
@@ -17,7 +19,7 @@ trait HasStatus
      */
     protected function checkAndSetStatus(string $status, int $id, string $exception, bool $save = true): void
     {
-        /** @var \App\Models\Dictionaries\AbstractDictionaryItem $status */
+        /** @var AbstractDictionaryItem $status */
         $status = $status::get($id);
 
         if ($status === null) {

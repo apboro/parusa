@@ -10,7 +10,7 @@ class PartnerDocuments extends Model
     /**
      * Partner owned this document.
      *
-     * @return  \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return  BelongsTo
      */
     public function partner(): BelongsTo
     {

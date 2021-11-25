@@ -12,10 +12,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Sanctum\HasApiTokens;
 
 class Partner extends Model
 {
-    use HasStatus, HasType;
+    use HasApiTokens, HasStatus, HasType;
 
     /** @var array Default attributes. */
     protected $attributes = [

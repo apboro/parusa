@@ -14,7 +14,7 @@ abstract class AbstractDictionaryItem extends Model
      *
      * @param int $id
      *
-     * @return  \App\Models\Model|null
+     * @return  Model|null
      */
     public static function get(int $id): ?Model
     {
