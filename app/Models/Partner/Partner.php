@@ -5,6 +5,7 @@ namespace App\Models\Partner;
 use App\Exceptions\Partner\WrongPartnerStatusException;
 use App\Exceptions\Partner\WrongPartnerTypeException;
 use App\Interfaces\Statusable;
+use App\Interfaces\Typeable;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Traits\HasStatus;
@@ -19,7 +20,7 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * @property int $id
  */
-class Partner extends Model implements Statusable
+class Partner extends Model implements Statusable, Typeable
 {
     use HasApiTokens, HasStatus, HasType, HasFactory;
 
@@ -60,22 +61,22 @@ class Partner extends Model implements Statusable
      */
     public function type(): HasOne
     {
-        return $this->hasOne(PartnerType::class);
+        return $this->hasOne(PartnerType::class, 'id', 'type_id');
     }
 
     /**
      * Check and set type of partner.
      *
-     * @param int $typeId
+     * @param int|PartnerType|null $type
      * @param bool $save
      *
      * @return  void
      *
      * @throws WrongPartnerTypeException
      */
-    public function setType(int $typeId, bool $save = true): void
+    public function setType($type, bool $save = true): void
     {
-        $this->checkAndSetType(PartnerType::class, $typeId, WrongPartnerTypeException::class, $save);
+        $this->checkAndSetType(PartnerType::class, $type, WrongPartnerTypeException::class, $save);
     }
 
     /**
