@@ -6,7 +6,7 @@ namespace App\Models\Dictionaries;
  * @property int $id
  * @property string $name
  */
-class UserRole extends AbstractDictionaryItem
+class UserRole extends AbstractDictionary
 {
     /** @var int The id of admin role. */
     public const admin = 1;

@@ -6,7 +6,7 @@ namespace App\Models\Dictionaries;
  * @property int $id
  * @property string $name
  */
-class PositionStatus extends AbstractDictionaryItem
+class PositionStatus extends AbstractDictionary
 {
     /** @var int The id of blocked status */
     public const blocked = 1;

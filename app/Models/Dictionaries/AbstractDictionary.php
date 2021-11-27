@@ -7,7 +7,7 @@ use App\Models\Model;
 /**
  * @property int $id
  */
-abstract class AbstractDictionaryItem extends Model
+abstract class AbstractDictionary extends Model
 {
     /**
      * Get dictionary item instance by id.

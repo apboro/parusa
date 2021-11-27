@@ -15,7 +15,7 @@ use Carbon\Carbon;
  * @property Carbon $updated_at
  * @property string $type
  */
-class UserContactType extends AbstractDictionaryItem
+class UserContactType extends AbstractDictionary
 {
     /** @var int The id of email contact type */
     public const email = 1;
