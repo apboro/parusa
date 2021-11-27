@@ -1,13 +1,14 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Dictionaries;
 
 use App\Models\Dictionaries\PartnerType;
+use Database\Seeders\GenericSeeder;
 
 class PartnerTypesSeeder extends GenericSeeder
 {
     /**
-     * @var array|\string[][][]
+     * @var array|string[][][]
      *
      * Defaults:
      * 'enabled' => true

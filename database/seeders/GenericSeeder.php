@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use Illuminate\Database\Eloquent\Model;
 
-abstract class GenericSeeder extends Seeder
+abstract class GenericSeeder
 {
     /**
      * @var array Data to fill in dictionary
@@ -36,10 +36,10 @@ abstract class GenericSeeder extends Seeder
         }
 
         foreach ($this->data as $class => $items) {
-            /** @var \Illuminate\Database\Eloquent\Model $class */
+            /** @var Model $class */
 
             foreach ($items as $id => $attributes) {
-                $model = $class->query()->firstOrNew(['id' => $id]);
+                $model = $class::query()->firstOrNew(['id' => $id]);
 
                 foreach ($attributes as $key => $attribute) {
                     $model->setAttribute($key, $attribute);

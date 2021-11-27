@@ -1,8 +1,9 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Dictionaries;
 
 use App\Models\Dictionaries\UserContactType;
+use Database\Seeders\GenericSeeder;
 
 class ContactTypesSeeder extends GenericSeeder
 {
