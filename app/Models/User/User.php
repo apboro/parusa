@@ -50,15 +50,8 @@ class User extends Authenticatable implements Statusable
         'status_id' => UserStatus::default,
     ];
 
-    /**
-     * User's roles.
-     *
-     * @return  BelongsToMany
-     */
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(UserRole::class, 'user_has_role');
-    }
+    /** @var string[] Relations eager loading. */
+    protected $with = ['roles'];
 
     /**
      * User's status.
@@ -86,14 +79,29 @@ class User extends Authenticatable implements Statusable
     }
 
     /**
+     * User's roles.
+     *
+     * @return  BelongsToMany
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(UserRole::class, 'user_has_role', 'user_id', 'user_role_id');
+    }
+
+    /**
      * Check if user has role.
      *
      * @param int $roleId
+     * @param bool $fresh
      *
      * @return  bool
      */
-    public function hasRole(int $roleId): bool
+    public function hasRole(int $roleId, bool $fresh = false): bool
     {
+        if ($fresh && $this->relationLoaded('roles')) {
+            $this->unsetRelation('roles');
+        }
+
         $this->loadMissing('roles');
 
         foreach ($this->getRelation('roles') as $usersRole) {
