@@ -6,7 +6,7 @@ use App\Exceptions\User\WrongUserStatusException;
 use App\Models\Dictionaries\UserRole;
 use App\Models\Dictionaries\UserStatus;
 use App\Models\Partner\Partner;
-use App\Models\Traits\HasStatus;
+use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models\Traits;
+namespace App\Traits;
 
-use App\Models\Dictionaries\AbstractDictionaryItem;
+use App\Models\Dictionaries\AbstractDictionary;
 
 trait HasType
 {
@@ -19,10 +19,10 @@ trait HasType
      */
     protected function checkAndSetType(string $type, int $id, string $exception, bool $save = true): void
     {
-        /** @var AbstractDictionaryItem $type */
+        /** @var AbstractDictionary $type */
         $type = $type::get($id);
 
-        if ($type === null) {
+        if ($type === null || !$type->exists) {
             throw new $exception;
         }
 

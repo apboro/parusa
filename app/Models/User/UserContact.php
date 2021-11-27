@@ -5,7 +5,7 @@ namespace App\Models\User;
 use App\Exceptions\User\WrongUserContactTypeException;
 use App\Models\Dictionaries\UserContactType;
 use App\Models\Model;
-use App\Models\Traits\HasType;
+use App\Traits\HasType;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**

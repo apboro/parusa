@@ -5,7 +5,7 @@ namespace App\Models\Partner;
 use App\Exceptions\Partner\WrongPositionStatusException;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Model;
-use App\Models\Traits\HasStatus;
+use App\Traits\HasStatus;
 use App\Models\User\User;
 use App\Models\User\UserContact;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
