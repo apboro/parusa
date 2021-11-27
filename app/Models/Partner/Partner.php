@@ -4,6 +4,7 @@ namespace App\Models\Partner;
 
 use App\Exceptions\Partner\WrongPartnerStatusException;
 use App\Exceptions\Partner\WrongPartnerTypeException;
+use App\Interfaces\Statusable;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Traits\HasStatus;
@@ -15,9 +16,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Sanctum\HasApiTokens;
 
-class Partner extends Model
+/**
+ * @property int $id
+ */
+class Partner extends Model implements Statusable
 {
-    use HasApiTokens, HasStatus, HasType;
+    use HasApiTokens, HasStatus, HasType, HasFactory;
 
     /** @var array Default attributes. */
     protected $attributes = [
@@ -31,22 +35,22 @@ class Partner extends Model
      */
     public function status(): HasOne
     {
-        return $this->hasOne(PartnerStatus::class);
+        return $this->hasOne(PartnerStatus::class, 'id', 'status_id');
     }
 
     /**
      * Check and set new status for partner.
      *
-     * @param int $statusId
+     * @param int|PartnerStatus $status
      * @param bool $save
      *
      * @return  void
      *
      * @throws WrongPartnerStatusException
      */
-    public function setStatus(int $statusId, bool $save = true): void
+    public function setStatus($status, bool $save = true): void
     {
-        $this->checkAndSetStatus(PartnerStatus::class, $statusId, WrongPartnerStatusException::class, $save);
+        $this->checkAndSetStatus(PartnerStatus::class, $status, WrongPartnerStatusException::class, $save);
     }
 
     /**

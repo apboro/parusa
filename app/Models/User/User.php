@@ -3,6 +3,8 @@
 namespace App\Models\User;
 
 use App\Exceptions\User\WrongUserStatusException;
+use App\Interfaces\Statusable;
+use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Dictionaries\UserRole;
 use App\Models\Dictionaries\UserStatus;
 use App\Models\Partner\Partner;
@@ -16,6 +18,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
+ * @property int $id
  * @property int $status_id
  *
  * @property UserStatus $status
@@ -23,9 +26,12 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Collection $roles
  * @property Collection $contacts
  */
-class User extends Authenticatable
+class User extends Authenticatable implements Statusable
 {
     use HasApiTokens, HasFactory, HasStatus;
+
+    /** @var string Referenced table. */
+    protected $table = 'users';
 
     /** @var string[] The attributes that are mass assignable. */
     protected $fillable = [
@@ -61,22 +67,22 @@ class User extends Authenticatable
      */
     public function status(): HasOne
     {
-        return $this->hasOne(UserStatus::class);
+        return $this->hasOne(UserStatus::class, 'id', 'status_id');
     }
 
     /**
      * Check and set new status for user.
      *
-     * @param int $statusId
+     * @param int|AbstractDictionary $status
      * @param bool $save
      *
      * @return  void
      *
      * @throws WrongUserStatusException
      */
-    public function setStatus(int $statusId, bool $save = true): void
+    public function setStatus($status, bool $save = true): void
     {
-        $this->checkAndSetStatus(UserStatus::class, $statusId, WrongUserStatusException::class, $save);
+        $this->checkAndSetStatus(UserStatus::class, $status, WrongUserStatusException::class, $save);
     }
 
     /**
@@ -142,4 +148,5 @@ class User extends Authenticatable
 //        return $this->belongsToMany(Partner::class, 'user_belongs_to_partner', 'user_id', 'partner_id')
 //            ->withPivot(['position', 'blocked_at']);
 //    }
+
 }

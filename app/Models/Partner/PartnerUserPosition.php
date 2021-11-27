@@ -3,17 +3,25 @@
 namespace App\Models\Partner;
 
 use App\Exceptions\Partner\WrongPositionStatusException;
+use App\Interfaces\Statusable;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Model;
 use App\Traits\HasStatus;
 use App\Models\User\User;
 use App\Models\User\UserContact;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class PartnerUserPosition extends Model
+/**
+ * @property int $id
+ *
+ * @property User $user
+ * @property Partner $partner
+ */
+class PartnerUserPosition extends Model implements Statusable
 {
-    use HasStatus;
+    use HasStatus, HasFactory;
 
     /** @var array Default attributes. */
     protected $attributes = [
@@ -27,22 +35,22 @@ class PartnerUserPosition extends Model
      */
     public function status(): HasOne
     {
-        return $this->hasOne(PositionStatus::class);
+        return $this->hasOne(PositionStatus::class, 'id', 'status_id');
     }
 
     /**
      * Check and set new status for position.
      *
-     * @param int $statusId
+     * @param int|PositionStatus $status
      * @param bool $save
      *
      * @return  void
      *
      * @throws WrongPositionStatusException
      */
-    public function setStatus(int $statusId, bool $save = true): void
+    public function setStatus($status, bool $save = true): void
     {
-        $this->checkAndSetStatus(PositionStatus::class, $statusId, WrongPositionStatusException::class, $save);
+        $this->checkAndSetStatus(PositionStatus::class, $status, WrongPositionStatusException::class, $save);
     }
 
     /**
@@ -52,7 +60,7 @@ class PartnerUserPosition extends Model
      */
     public function partner(): HasOne
     {
-        return $this->hasOne(Partner::class);
+        return $this->hasOne(Partner::class, 'id', 'partner_id');
     }
 
     /**
@@ -62,7 +70,7 @@ class PartnerUserPosition extends Model
      */
     public function user(): HasOne
     {
-        return $this->hasOne(User::class);
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 
     /**
