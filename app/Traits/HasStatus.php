@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Exceptions\Base\WrongStatusException;
 use App\Models\Dictionaries\AbstractDictionary;
 
 trait HasStatus
@@ -16,12 +17,14 @@ trait HasStatus
      *
      * @return  void
      *
+     * @throws WrongStatusException
      */
     protected function checkAndSetStatus(string $class, $status, string $exception, bool $save = true): void
     {
-        if (is_int($status))
-            /** @var AbstractDictionary $class */
+        /** @var AbstractDictionary $class */
+        if (is_int($status)) {
             $status = $class::get($status);
+        }
 
         if ($status === null || !$status->exists) {
             throw new $exception;

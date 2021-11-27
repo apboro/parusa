@@ -25,7 +25,7 @@ interface Statusable
      *
      * @throws WrongStatusException
      */
-    public function setStatus(int $status, bool $save = true): void;
+    public function setStatus($status, bool $save = true): void;
 
     /**
      * Check if the model has the status.
@@ -33,8 +33,6 @@ interface Statusable
      * @param int|AbstractDictionary $status
      *
      * @return  void
-     *
-     * @throws WrongStatusException
      */
     public function hasStatus($status): bool;
 }
