@@ -2,22 +2,15 @@
 
 namespace Tests\Relations;
 
-use App\Exceptions\Base\WrongStatusException;
 use App\Interfaces\Statusable;
 use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Model;
 use Exception;
+use Tests\HelperTraits\GetsFreshModel;
 
 trait StatusTestTrait
 {
-    private function freshModel(string $modelClass, $factory = null): Statusable
-    {
-        if ($factory !== null) {
-            return call_user_func($factory);
-        }
-
-        return new $modelClass;
-    }
+    use GetsFreshModel;
 
     protected function runStatusTests(string $modelClass, string $statusClass, string $exceptionClass, int $statusDefault, $factory = null): void
     {
@@ -26,10 +19,6 @@ trait StatusTestTrait
 
         // default status
         self::assertEquals(true, $model->hasStatus($statusDefault), "Wrong default status for new [$modelClass]");
-
-        // saved with default status
-        $model->save();
-        self::assertEquals(true, $model->hasStatus($statusDefault), "Error saving status for [$modelClass]");
 
         // test for all statuses
         /** @var AbstractDictionary $statusClass */
@@ -51,7 +40,7 @@ trait StatusTestTrait
         $exception = null;
         try {
             $model->setStatus(0);
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $exception = $e;
         }
         self::assertEquals($exceptionClass, get_class($exception), "Wrong status for [$modelClass] must throw exception for [$exceptionClass]");
@@ -60,10 +49,18 @@ trait StatusTestTrait
         $exception = null;
         try {
             $model->setStatus(new $statusClass);
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $exception = $e;
         }
         self::assertEquals($exceptionClass, get_class($exception), "Wrong status for [$modelClass] must throw exception for [$exceptionClass]");
 
+        // test null status
+        $exception = null;
+        try {
+            $model->setStatus(null);
+        } catch (Exception $e) {
+            $exception = $e;
+        }
+        self::assertEquals($exceptionClass, get_class($exception), "Null status for [$modelClass] must throw exception for [$exceptionClass]");
     }
 }
