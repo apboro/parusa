@@ -14,9 +14,7 @@ class CreateDictionaryPartnerTypesTable extends Migration
     public function up()
     {
         Schema::create('dictionary_partner_types', function (Blueprint $table) {
-
             $table->increments('id')->from(1000);
-
             $table->string('name');
 
             $table->boolean('enabled')->nullable()->default(true);

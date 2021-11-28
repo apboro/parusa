@@ -14,14 +14,13 @@ class CreateDictionaryContactTypesTable extends Migration
     public function up()
     {
         Schema::create('dictionary_contact_types', function (Blueprint $table) {
-
             $table->increments('id')->from(1000);
+            $table->string('name');
 
             $table->boolean('enabled')->nullable()->default(true);
             $table->boolean('lock')->nullable()->default(false);
             $table->string('type')->nullable();
 
-            $table->string('name');
             $table->boolean('has_additional')->nullable()->default(false);
             $table->string('link_pattern')->nullable()->default(null);
 
