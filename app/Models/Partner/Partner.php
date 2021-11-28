@@ -6,6 +6,7 @@ use App\Exceptions\Partner\WrongPartnerStatusException;
 use App\Exceptions\Partner\WrongPartnerTypeException;
 use App\Interfaces\Statusable;
 use App\Interfaces\Typeable;
+use App\Models\Account\Account;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Traits\HasStatus;
@@ -19,6 +20,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property int $id
+ *
+ * @property PartnerStatus $status
+ * @property PartnerType $type
+ * @property Account $account
  */
 class Partner extends Model implements Statusable, Typeable
 {
