@@ -80,6 +80,16 @@ class Partner extends Model implements Statusable, Typeable
     }
 
     /**
+     * Partners account.
+     *
+     * @return  HasOne
+     */
+    public function account(): HasOne
+    {
+        return $this->hasOne(Account::class, 'partner_id', 'id');
+    }
+
+    /**
      * Partner`s profile.
      *
      * @return  HasOne

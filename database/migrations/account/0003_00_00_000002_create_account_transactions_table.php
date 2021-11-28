@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Dictionaries\AccountTransactionStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,11 +21,14 @@ class CreateAccountTransactionsTable extends Migration
             $table->unsignedBigInteger('account_id')->index();
 
             $table->unsignedInteger('type_id');
-            $table->unsignedInteger('status_id');
+            $table->unsignedInteger('status_id')->default(AccountTransactionStatus::default);
 
             $table->unsignedBigInteger('amount');
 
-            $table->unsignedBigInteger('committed_by');
+            $table->string('reason')->nullable();
+            $table->timestamp('reason_date')->nullable();
+
+            $table->unsignedBigInteger('committer_id')->nullable();
 
             $table->text('comments')->nullable();
 
@@ -33,7 +37,7 @@ class CreateAccountTransactionsTable extends Migration
             $table->foreign('account_id')->references('id')->on('accounts')->restrictOnDelete()->cascadeOnUpdate();
             $table->foreign('type_id')->references('id')->on('dictionary_account_transaction_types')->restrictOnDelete()->cascadeOnUpdate();
             $table->foreign('status_id')->references('id')->on('dictionary_account_transaction_statuses')->restrictOnDelete()->cascadeOnUpdate();
-            $table->foreign('committed_by')->references('id')->on('users')->restrictOnDelete()->cascadeOnUpdate();
+            $table->foreign('committer_id')->references('id')->on('users')->restrictOnDelete()->cascadeOnUpdate();
         });
     }
 

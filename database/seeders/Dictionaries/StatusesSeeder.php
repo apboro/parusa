@@ -2,6 +2,7 @@
 
 namespace Database\Seeders\Dictionaries;
 
+use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\UserStatus;
@@ -21,6 +22,9 @@ class StatusesSeeder extends GenericSeeder
         PositionStatus::class => [
             PositionStatus::blocked => ['name' => 'Заблокирован'],
             PositionStatus::active => ['name' => 'Активен'],
+        ],
+        AccountTransactionStatus::class => [
+            AccountTransactionStatus::accepted => ['name' => 'Принято'],
         ]
     ];
 }

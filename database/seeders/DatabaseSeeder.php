@@ -2,8 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User\User;
-use Database\Factories\User\UserFactory;
+use Database\Seeders\Dictionaries\AccountTransactionTypesSeeder;
 use Database\Seeders\Dictionaries\ContactTypesSeeder;
 use Database\Seeders\Dictionaries\PartnerTypesSeeder;
 use Database\Seeders\Dictionaries\StatusesSeeder;
@@ -18,6 +17,7 @@ class DatabaseSeeder extends Seeder
         StatusesSeeder::class,
         ContactTypesSeeder::class,
         PartnerTypesSeeder::class,
+        AccountTransactionTypesSeeder::class,
     ];
 
     /**
