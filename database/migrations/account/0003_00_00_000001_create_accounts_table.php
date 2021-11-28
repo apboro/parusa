@@ -19,8 +19,8 @@ class CreateAccountsTable extends Migration
 
             $table->unsignedBigInteger('partner_id')->index();
 
-            $table->unsignedBigInteger('amount');
-            $table->unsignedBigInteger('credit_limit');
+            $table->bigInteger('amount')->default(0);
+            $table->bigInteger('limit')->default(0);
 
             $table->timestamps();
 
