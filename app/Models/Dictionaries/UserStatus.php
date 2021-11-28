@@ -19,7 +19,4 @@ class UserStatus extends AbstractDictionary
 
     /** @var string Referenced table name. */
     protected $table = 'dictionary_user_statuses';
-
-    /** @var bool Disable timestamps. */
-    public $timestamps = false;
 }

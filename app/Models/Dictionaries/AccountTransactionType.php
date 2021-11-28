@@ -11,7 +11,4 @@ class AccountTransactionType extends Model
 {
     /** @var string Referenced table name. */
     protected $table = 'dictionary_account_transaction_types';
-
-    /** @var bool Disable timestamps. */
-    public $timestamps = false;
 }

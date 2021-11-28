@@ -19,7 +19,4 @@ class PositionStatus extends AbstractDictionary
 
     /** @var string Referenced table name. */
     protected $table = 'dictionary_position_statuses';
-
-    /** @var bool Disable timestamps. */
-    public $timestamps = false;
 }

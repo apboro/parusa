@@ -16,6 +16,8 @@ class CreateDictionaryAccountTransactionStatusesTable extends Migration
         Schema::create('dictionary_account_transaction_statuses', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+
+            $table->timestamps();
         });
     }
 

@@ -19,7 +19,4 @@ class PartnerStatus extends AbstractDictionary
 
     /** @var string Referenced table name. */
     protected $table = 'dictionary_partner_statuses';
-
-    /** @var bool Disable timestamps. */
-    public $timestamps = false;
 }

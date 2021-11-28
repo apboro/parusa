@@ -14,9 +14,6 @@ class UserRole extends AbstractDictionary
     /** @var string Referenced table name. */
     protected $table = 'dictionary_user_roles';
 
-    /** @var bool Disable timestamps. */
-    public $timestamps = false;
-
     /**
      * Match this role against given.
      *

@@ -16,6 +16,8 @@ class CreateDictionaryUserStatusesTable extends Migration
         Schema::create('dictionary_user_statuses', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+
+            $table->timestamps();
         });
     }
 
