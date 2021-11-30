@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\Dictionaries\UserStatus;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -44,6 +45,7 @@ class LoginRequest extends FormRequest
         return [
             'login' => $this->input('login'),
             'password' => $this->input('password'),
+            'status_id' => UserStatus::active,
         ];
     }
 
@@ -72,6 +74,7 @@ class LoginRequest extends FormRequest
 
             RateLimiter::hit($this->throttleKey());
 
+            // TODO refactor to throw proper error
             throw ValidationException::withMessages([
                 'login' => __('auth.failed'),
             ]);
