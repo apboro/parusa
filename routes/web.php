@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Front\FrontendController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/login', [AuthController::class, 'form'])->middleware('guest')->name('login');
+Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
+Route::any('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::get('/login/token', [AuthController::class, 'token'])->name('login.token.refresh');
+
+Route::name('frontend')
+    ->get('/{query?}', [FrontendController::class, 'frontend'])
+    ->where('query', '[\/\w\.-]*')
+    ->middleware(['web', 'auth']);
