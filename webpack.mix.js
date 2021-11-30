@@ -1,17 +1,23 @@
 const mix = require('laravel-mix');
 
+mix.setPublicPath('./public/');
+
 /*
  |--------------------------------------------------------------------------
- | Mix Asset Management
+ | Login form assets
  |--------------------------------------------------------------------------
- |
- | Mix provides a clean, fluent API for defining some Webpack build steps
- | for your Laravel applications. By default, we are compiling the CSS
- | file for the application as well as bundling up all the JS files.
- |
  */
+mix.js('resources/js/login.js', 'js')
+    .vue()
+    .sass('resources/css/login.scss', 'css')
 
-mix.js('resources/js/app.js', 'public_html/js')
-    .postCss('resources/css/app.css', 'public_html/css', [
-        //
-    ]);
+    .sass('resources/css/app.scss', 'css')
+
+    .js('resources/js/admin.js', 'js')
+    .vue()
+
+    .webpackConfig(require('./webpack.config'));
+
+if (mix.inProduction()) {
+    mix.version();
+}
