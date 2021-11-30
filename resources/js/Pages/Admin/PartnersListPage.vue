@@ -30,6 +30,7 @@ export default {
     methods: {
         setPagination(page, perPage) {
             console.log(page, perPage);
+            this.pagination.per_page = perPage;
             this.pagination.current_page = page;
             this.pagination.from = (page - 1) * 10 + 1;
             this.pagination.to = (page - 1) * 10 + 1 + 10;

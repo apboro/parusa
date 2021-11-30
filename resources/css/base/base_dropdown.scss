@@ -1,0 +1,97 @@
+@import "../variables";
+@import "../colors";
+@import "../shadows";
+
+.base-dropdown {
+    position: relative;
+    width: 100%;
+    height: $base_base_unit;
+    border: 1px solid $base_border_color;
+    border-radius: 2px;
+    box-sizing: border-box;
+
+    &__display {
+        padding: 0 0 0 $base_base_unit / 4;
+        display: flex;
+        height: 100%;
+        line-height: $base_base_unit;
+        cursor: pointer;
+        background-color: $base_background_color;
+        transition: background-color $animation $animation_time;
+
+        &-differs {
+            background-color: $base_background_changed_color;
+        }
+
+        &-value {
+            color: $base_color;
+            font-family: $project_font;
+            font-size: 14px;
+
+            &-placeholder {
+            }
+        }
+
+        &-icon {
+            width: $base_base_unit * 0.75;
+            height: $base_base_unit;
+            box-sizing: border-box;
+            padding: $base_base_unit / 4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            & > svg {
+                transition: transform $animation $animation_time;
+            }
+
+            &-dropped {
+                & > svg {
+                    transform: rotate(-180deg);
+                }
+            }
+        }
+    }
+
+    &__list {
+        position: absolute;
+        top: $base_base_unit;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        padding: 10px 0;
+        min-width: 100%;
+        background-color: $base_background_color;
+        box-shadow: $shadow_1;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity $animation $animation_time, visibility $animation $animation_time;
+
+        &-shown {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        &-item {
+            box-sizing: border-box;
+            padding: 0 10px;
+            color: $base_color;
+            font-family: $project_font;
+            font-size: 14px;
+            transition: color $animation $animation_time;
+            cursor: pointer;
+            height: $base_base_unit * 0.75;
+            line-height: $base_base_unit * 0.75;
+
+            &-current {
+                color: $base_active_color;
+            }
+
+            &:hover {
+                color: $base_hover_color;
+            }
+        }
+    }
+}

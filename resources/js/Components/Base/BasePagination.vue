@@ -4,8 +4,14 @@
                 pagination.total
             }}</span>
         <div class="pagination__per-page">
-            <div>10</div>
-            <span class="pagination__per-page">на страницу</span>
+            <div class="pagination__per-page-select">
+                <base-drop-down
+                    :options="[10,20,30,40,50]"
+                    v-model="perPage"
+                    :initial="10"
+                />
+            </div>
+            <span class="pagination__per-page-text">на страницу</span>
         </div>
         <div class="pagination__links">
             <span class="pagination__links-button pagination__links-button-icon"
@@ -14,13 +20,13 @@
             <span class="pagination__links-button pagination__links-button-icon"
                   :class="{'pagination__links-button-link' : pagination.current_page !== 1}"
                   @click="setPage(pagination.current_page - 1, pagination.per_page)"><icon-backward/></span>
-            <span class="pagination__links-spacer"><span v-if="hasBefore()">...</span></span>
-            <span class="pagination__links-button pagination__links-button-link" v-for="page in pages()"
+            <span class="pagination__links-spacer"><span v-if="hasBefore">...</span></span>
+            <span class="pagination__links-button pagination__links-button-link" v-for="page in pages"
                   :class="{'pagination__links-button-link-active': page === pagination.current_page}"
                   :key="page"
                   @click="setPage(page, pagination.per_page)"
             >{{ page }}</span>
-            <span class="pagination__links-spacer"><span v-if="hasAfter()">...</span></span>
+            <span class="pagination__links-spacer"><span v-if="hasAfter">...</span></span>
             <span class="pagination__links-button pagination__links-button-icon"
                   :class="{'pagination__links-button-link' : pagination.current_page !== pagination.last_page}"
                   @click="setPage(pagination.current_page + 1, pagination.per_page)"><icon-forward/></span>
@@ -33,6 +39,7 @@
 </template>
 
 <script>
+import BaseDropDown from "./BaseDropDown";
 import IconBackward from "../Icons/IconBackward";
 import IconBackwardFast from "../Icons/IconBackwardFast";
 import IconForward from "../Icons/IconForward";
@@ -60,13 +67,14 @@ export default {
         IconBackwardFast,
         IconForward,
         IconForwardFast,
+        BaseDropDown,
     },
 
     data: () => ({
         max_links: 7,
     }),
 
-    methods: {
+    computed: {
         pages() {
             let pages = [];
             if (this.pagination.last_page <= this.max_links) {
@@ -96,8 +104,21 @@ export default {
             return (this.pagination.last_page > this.max_links) && (this.pagination.current_page - Math.floor(this.max_links / 2) + this.max_links - 1 < this.pagination.last_page);
         },
 
+        perPage: {
+            get() {
+                return this.pagination.per_page;
+            },
+            set(value) {
+                if (this.pagination.per_page !== value) {
+                    this.setPage(1, value);
+                }
+            }
+        },
+    },
+
+    methods: {
         setPage(page, perPage) {
-            if (page < 1 || page > this.pagination.last_page || page === this.pagination.current_page) {
+            if (page < 1 || page > this.pagination.last_page || (page === this.pagination.current_page && perPage === this.pagination.per_page)) {
                 return;
             }
 
