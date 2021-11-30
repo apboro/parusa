@@ -7,8 +7,8 @@ axios.interceptors.response.use(
     },
     (error) => {
         if (error.response.status === 419 && error.response.config && !error.response.config.__isRetryRequest) {
-            return new Promise((resolve, reject) => {
-                axios.get('/api/token')
+            return new Promise((resolve) => {
+                axios.get('/login/token')
                     .then((resp) => {
                         const token = resp.data.token;
                         document.head.querySelector('meta[name="csrf-token"]').content = token;
@@ -33,4 +33,4 @@ import App from './Apps/LoginApp.vue';
 
 const app = createApp(App);
 
-const vm = app.mount('#app');
+app.mount('#app');
