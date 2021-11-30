@@ -1,7 +1,15 @@
 <template>
-    <div>Page not found</div>
+    <page>
+        <p class="page__error">Страница не найдена.</p>
+    </page>
 </template>
 
 <script>
-export default {}
+import Page from "../Layouts/Page";
+
+export default {
+    components: {
+        Page,
+    }
+}
 </script>

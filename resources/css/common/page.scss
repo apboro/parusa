@@ -1,0 +1,39 @@
+@import "../colors";
+@import "../variables";
+@import "../shadows";
+
+.page {
+    max-width: $max_width;
+    width: calc(100% - 20px);
+    margin: 0 auto;
+    background-color: $page_background_color;
+    box-shadow: $shadow_2;
+    border-radius: 3px;
+    box-sizing: border-box;
+    padding: $page_padding;
+
+    &__header {
+        box-sizing: border-box;
+        padding-bottom: 10px;
+        border-bottom: 1px solid $page_header_divider_color;
+        font-family: $project_font;
+        font-size: 16px;
+    }
+
+    &__footer {
+        box-sizing: border-box;
+        padding-top: 10px;
+        border-top: 1px solid $page_header_divider_color;
+        font-family: $project_font;
+        font-size: 16px;
+    }
+
+    &__error {
+        font-family: $project_font;
+        color: $page_error_color;
+        font-size: 24px;
+        width: 100%;
+        text-align: center;
+        padding: 50px 20px;
+    }
+}

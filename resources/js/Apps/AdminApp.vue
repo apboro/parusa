@@ -8,7 +8,7 @@
                 <div>User</div>
             </template>
         </layout-header>
-        <router-view :class="'page'"/>
+        <router-view/>
     </div>
 </template>
 

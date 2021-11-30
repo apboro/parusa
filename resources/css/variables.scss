@@ -1,3 +1,10 @@
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-$header_height: 50px;
+
+$header_height: 80px;
 $max_width: 1200px;
+
+$animation_time: 200ms;
+$animation: cubic-bezier(0.24, 0.19, 0.28, 1.29);
+$animation_bounce: cubic-bezier(0.24, 0.19, 0.63, 2.26);
+
+$page_padding: 40px;
