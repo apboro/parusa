@@ -1,5 +1,11 @@
 window._ = require('lodash');
 
+import Promise from "promise-polyfill";
+window.Promise = Promise;
+
+import ObjectAssign from "es6-object-assign";
+ObjectAssign.polyfill();
+
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the
