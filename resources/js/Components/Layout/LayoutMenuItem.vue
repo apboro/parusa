@@ -8,7 +8,7 @@
                      :to="{name:route}"
         ><span @click="$emit('hide')">{{ title }}</span>
         </router-link>
-        <span v-else class="application__menu-item-link" @click="$emit('hide')">{{ title }}</span>
+        <span v-else class="application__menu-item-link"><span @click="$emit('hide')">{{ title }}</span></span>
         <div v-if="children" class="application__menu-submenu" :class="'application__menu-submenu-'+level">
             <layout-menu-item v-for="(item, key) in children"
                               :key="key"
@@ -52,7 +52,7 @@ export default {
             }
         },
         hide() {
-                this.hovered = false;
+            this.hovered = false;
         },
     },
 }
