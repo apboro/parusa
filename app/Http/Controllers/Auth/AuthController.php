@@ -41,9 +41,7 @@ class AuthController extends Controller
 
         $intended = $request->session()->pull('url.intended', RouteServiceProvider::HOME);
 
-        return Response::response([
-            'redirect' => $intended,
-        ]);
+        return Response::redirectResponse($intended);
     }
 
     /**
@@ -62,5 +60,15 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return Response::response('OK');
+    }
+
+    /**
+     * Get fresh token.
+     *
+     * @return  JsonResponse
+     */
+    public function token(): JsonResponse
+    {
+        return response()->json(['token' => csrf_token()]);
     }
 }

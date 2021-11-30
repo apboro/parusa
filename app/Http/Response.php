@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Providers\RouteServiceProvider;
 use Illuminate\Http\JsonResponse;
 
 class Response
@@ -16,6 +17,18 @@ class Response
     public static function response($data): JsonResponse
     {
         return response()->json(['status' => 'OK', 'data' => $data], 200);
+    }
+
+    /**
+     * Make redirect response.
+     *
+     * @param string|null $url
+     *
+     * @return  JsonResponse
+     */
+    public static function redirectResponse(?string $url): JsonResponse
+    {
+        return response()->json(['redirect' => $url ?? RouteServiceProvider::HOME], 200);
     }
 
     /**
