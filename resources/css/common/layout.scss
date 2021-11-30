@@ -1,5 +1,7 @@
+@import "../colors";
+
 html, body {
     width: 100%;
     min-height: 100%;
-    background-color: #f7f8fb;
+    background-color: $body_background_color;
 }

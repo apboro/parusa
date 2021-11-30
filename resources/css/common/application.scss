@@ -1,6 +1,7 @@
 @import "../variables";
 @import "../colors";
 @import "../shadows";
+@import "../mixins/no-selection";
 
 .application {
     &__header {
@@ -34,6 +35,7 @@
         flex-direction: row;
         justify-content: center;
         height: $header_height;
+        @include noSelection();
 
         &-item {
             flex-grow: 0;
@@ -51,8 +53,11 @@
 
             &-0 > &-link {
                 display: block;
-                padding: 0 10px;
                 height: 100%;
+
+                & > span {
+                    padding: 0 10px;
+                }
             }
 
             &-1 {
@@ -60,14 +65,21 @@
 
             &-1 > &-link {
                 display: block;
-                padding: 10px;
                 white-space: nowrap;
                 line-height: initial;
+
+                & > span {
+                    padding: 10px;
+                }
             }
 
             &-link {
                 text-decoration: none;
                 color: $app_menu_text_color;
+
+                & > span {
+                    display: block;
+                }
             }
 
             &-link:hover {
@@ -87,7 +99,7 @@
                 position: absolute;
                 left: 50%;
                 transform: translateX(-50%);
-                top: $header_height;
+                top: calc(#{$header_height} - 10px);
                 background-color: $app_menu_submenu_background_color;
                 box-sizing: border-box;
                 padding: 15px;

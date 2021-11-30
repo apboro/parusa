@@ -1,4 +1,5 @@
 //$color_text: #1b2d49;
+$body_background_color: #f7f8fb;
 
 $app_menu_text_color: #1b2d49;
 $app_menu_active_text_color: #1e87f0;
@@ -9,3 +10,16 @@ $page_background_color: #ffffff;
 $page_header_divider_color: #e5e5e5;
 $page_footer_divider_color: #e5e5e5;
 $page_error_color: #e71c1c;
+
+$pagination_default_color: #858585;
+$pagination_default_border: transparent;
+$pagination_default_background: transparent;
+$pagination_link_color: #484848;
+$pagination_link_border: #d3d3d3;
+$pagination_link_background: #f7f8fb;
+$pagination_link_hover_color: #484848;
+$pagination_link_hover_border: #858585;
+$pagination_link_hover_background: #f7f8fb;
+$pagination_link_active_color: #fff;
+$pagination_link_active_border: #1e87f0;
+$pagination_link_active_background: #1e87f0;
