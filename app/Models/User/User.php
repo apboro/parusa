@@ -20,6 +20,7 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * @property int $id
  * @property int $status_id
+ * @property bool $is_staff
  *
  * @property UserStatus $status
  * @property UserProfile $profile

@@ -21,6 +21,8 @@ class CreateUsersTable extends Migration
             $table->string('login')->unique();
             $table->string('password');
 
+            $table->boolean('is_staff')->nullable()->default(false);
+
             $table->rememberToken();
 
             $table->unsignedInteger('status_id')->default(UserStatus::default);
