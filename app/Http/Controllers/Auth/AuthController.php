@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Response;
+use App\Models\User\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -36,6 +37,13 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $request->authenticate();
+
+        /** @var User $user */
+        $user = $request->user();
+
+        if ($user->tokens()->count() === 0) {
+            $user->createToken('base_token');
+        }
 
         $request->session()->regenerate();
 
