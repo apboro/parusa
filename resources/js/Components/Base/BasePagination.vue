@@ -1,5 +1,5 @@
 <template>
-    <div class="pagination">
+    <div class="pagination" v-if="pagination">
         <span class="pagination__shown">Показано {{ pagination.from }}-{{ pagination.to }} из {{
                 pagination.total
             }}</span>
@@ -8,7 +8,8 @@
                 <base-drop-down
                     :options="[10,20,30,40,50]"
                     v-model="perPage"
-                    :initial="10"
+                    :original="10"
+                    :to-top="true"
                 />
             </div>
             <span class="pagination__per-page-text">на страницу</span>
@@ -21,8 +22,11 @@
                   :class="{'pagination__links-button-link' : pagination.current_page !== 1}"
                   @click="setPage(pagination.current_page - 1, pagination.per_page)"><icon-backward/></span>
             <span class="pagination__links-spacer"><span v-if="hasBefore">...</span></span>
-            <span class="pagination__links-button pagination__links-button-link" v-for="page in pages"
-                  :class="{'pagination__links-button-link-active': page === pagination.current_page}"
+            <span class="pagination__links-button" v-for="page in pages"
+                  :class="{
+                    'pagination__links-button-link-active': page === pagination.current_page && pagination.last_page > 1,
+                    'pagination__links-button-link': pagination.last_page > 1,
+                  }"
                   :key="page"
                   @click="setPage(page, pagination.per_page)"
             >{{ page }}</span>
