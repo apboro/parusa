@@ -14,7 +14,7 @@
 
         <template v-slot:search>
             <page-bar-item :title="'Поиск'">
-                <dictionary-drop-down :dictionary="'partner_types'" :placeholder="'Все'" :has-null="true"/>
+                <base-icon-input v-model="search"><icon-search/></base-icon-input>
             </page-bar-item>
         </template>
 
@@ -38,6 +38,8 @@ import ListPage from "../../Layouts/ListPage";
 import PageBarItem from "../../Layouts/Parts/PageBarItem";
 import BasePagination from "../../Components/Base/BasePagination";
 import DictionaryDropDown from "../../Components/Dictionary/DictionaryDropDown";
+import BaseIconInput from "../../Components/Base/BaseIconInput";
+import IconSearch from "../../Components/Icons/IconSearch";
 import BaseTable from "../../Components/Table/BaseTable";
 import BaseTableHead from "../../Components/Table/BaseTableHead";
 import BaseTableRow from "../../Components/Table/BaseTableRow";
@@ -49,6 +51,8 @@ export default {
         PageBarItem,
         BasePagination,
         DictionaryDropDown,
+        BaseIconInput,
+        IconSearch,
         BaseTable,
         BaseTableHead,
         BaseTableRow,
@@ -64,7 +68,17 @@ export default {
         this.list.load();
     },
 
-    computed: {},
+    computed: {
+        search: {
+            get() {
+                return this.list.search;
+            },
+            set(value) {
+                this.list.search = value;
+                this.list.load();
+            }
+        }
+    },
 
     methods: {
         setPagination(page, perPage) {
