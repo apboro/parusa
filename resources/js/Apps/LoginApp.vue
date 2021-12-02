@@ -3,7 +3,7 @@
         <div class="login__logo"></div>
         <div class="login__divider"></div>
         <div class="login__form">
-            <base-input v-model="credentials.login"
+            <field-string v-model="credentials.login"
                         :title="'Логин'"
                         :name="'login'"
                         :required="true"
@@ -14,7 +14,7 @@
                         @keyup.enter="enter"
                         ref="login"
             />
-            <base-input v-model="credentials.password"
+            <field-string v-model="credentials.password"
                         :title="'Пароль'"
                         :name="'password'"
                         :type="'password'"
@@ -36,7 +36,7 @@
 
 <script>
 import BaseButton from "../Components/Base/BaseButton";
-import BaseInput from "../Components/Base/BaseInput";
+import FieldString from "../Components/Fields/FieldString";
 import empty from "../Helpers/Lib/empty";
 import validation from "../Helpers/validation";
 
@@ -47,7 +47,7 @@ export default {
 
     components: {
         BaseButton,
-        BaseInput,
+        FieldString,
     },
 
     mixins: [validation],
