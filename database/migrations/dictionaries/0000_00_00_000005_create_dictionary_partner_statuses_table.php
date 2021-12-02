@@ -16,6 +16,8 @@ class CreateDictionaryPartnerStatusesTable extends Migration
         Schema::create('dictionary_partner_statuses', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->boolean('enabled')->nullable()->default(true);
+            $table->integer('order')->nullable()->default(0);
 
             $table->timestamps();
         });

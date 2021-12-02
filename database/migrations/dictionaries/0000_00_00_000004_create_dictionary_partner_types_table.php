@@ -16,8 +16,9 @@ class CreateDictionaryPartnerTypesTable extends Migration
         Schema::create('dictionary_partner_types', function (Blueprint $table) {
             $table->increments('id')->from(1000);
             $table->string('name');
-
             $table->boolean('enabled')->nullable()->default(true);
+            $table->integer('order')->nullable()->default(0);
+
             $table->boolean('lock')->nullable()->default(false);
 
             $table->timestamps();

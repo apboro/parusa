@@ -3,6 +3,10 @@
 namespace App\Models\Dictionaries;
 
 /**
+ * @property int $id
+ * @property string $name
+ * @property bool $enabled
+ * @property int $order
  * @property int $sign
  */
 class AccountTransactionType extends AbstractDictionary

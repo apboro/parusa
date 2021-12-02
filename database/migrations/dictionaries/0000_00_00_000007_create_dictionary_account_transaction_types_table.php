@@ -17,6 +17,8 @@ class CreateDictionaryAccountTransactionTypesTable extends Migration
 
             $table->increments('id');
             $table->string('name');
+            $table->boolean('enabled')->nullable()->default(true);
+            $table->integer('order')->nullable()->default(0);
 
             $table->smallInteger('sign');
 

@@ -6,9 +6,10 @@ use Carbon\Carbon;
 
 /**
  * @property int $id
- * @property bool $enabled
- * @property bool $lock
  * @property string $name
+ * @property bool $enabled
+ * @property int $order
+ * @property bool $lock
  * @property bool $has_additional
  * @property string|null $link_pattern
  * @property Carbon $created_at
