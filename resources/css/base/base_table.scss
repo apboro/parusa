@@ -1,0 +1,71 @@
+@import "../colors";
+@import "../variables";
+
+.base-table {
+    border-collapse: collapse;
+    min-width: 100%;
+
+    &__container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    &__header {
+        background-color: $base_table_header_background_color;
+
+        &-row {
+        }
+
+        &-cell {
+            color: $base_table_header_color;
+            vertical-align: middle;
+            font-family: $project_font;
+            font-size: 14px;
+            text-transform: uppercase;
+            box-sizing: border-box;
+            padding: 15px 15px;
+            min-height: 60px;
+        }
+    }
+
+    &__row {
+        border-bottom: 1px solid $base_table_border_color;
+
+        &:nth-child(odd) {
+            background-color: $base_table_odd_background_color;
+        }
+
+        &:nth-child(even) {
+            background-color: $base_table_even_background_color;
+        }
+
+        &:hover {
+            background-color: $base_table_hover_background_color;
+        }
+    }
+
+    &__cell {
+        box-sizing: border-box;
+        padding: 15px 15px;
+        min-height: 60px;
+        font-size: 14px;
+        vertical-align: top;
+        font-family: $project_font;
+        color: $base_table_cell_color;
+
+        &-nonbreakable {
+            white-space: nowrap;
+        }
+
+        &-item {
+            display: block;
+
+            &:not(:last-child) {
+                margin-bottom: 8px;
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
+

@@ -1,4 +1,6 @@
 //$color_text: #1b2d49;
+$color_text: #1e1e1e;
+
 $body_background_color: #f7f8fb;
 
 $app_menu_text_color: #1b2d49;
@@ -24,9 +26,20 @@ $pagination_link_active_color: #fff;
 $pagination_link_active_border: #1e87f0;
 $pagination_link_active_background: #1e87f0;
 
+$loader_color: #1e87f0;
+$loader_background: rgba(255, 255, 255, 0.5);
+
 $base_color: #1e1e1e;
 $base_hover_color: #1e87f0;
 $base_active_color: #1e87f0;
 $base_border_color: #b7b7b7;
 $base_background_color: #ffffff;
-$base_background_changed_color: #d8e8ff;
+$base_background_changed_color: #ecf4ff;
+
+$base_table_header_background_color: #d2e8ff;
+$base_table_header_color: $color_text;
+$base_table_border_color: #e3e3e3;
+$base_table_odd_background_color: #ffffff;
+$base_table_even_background_color: #f7f7f7;
+$base_table_hover_background_color: #ebebeb;
+$base_table_cell_color: $color_text;

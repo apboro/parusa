@@ -55,6 +55,7 @@
             text-align: center;
             cursor: default;
             border-radius: 2px;
+            box-sizing: border-box;
             color: $pagination_default_color;
             border: 1px solid $pagination_default_border;
             background-color: $pagination_default_background;

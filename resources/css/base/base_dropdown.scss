@@ -27,6 +27,7 @@
             color: $base_color;
             font-family: $project_font;
             font-size: 14px;
+            flex-grow: 1;
 
             &-placeholder {
             }
@@ -68,6 +69,11 @@
         opacity: 0;
         visibility: hidden;
         transition: opacity $animation $animation_time, visibility $animation $animation_time;
+
+        &-top {
+            top: unset;
+            bottom: $base_base_unit;
+        }
 
         &-shown {
             opacity: 1;
