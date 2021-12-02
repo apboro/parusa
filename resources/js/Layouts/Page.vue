@@ -13,8 +13,6 @@
 </template>
 
 <script>
-export default {
-    name: "Page"
-}
+export default {}
 </script>
 

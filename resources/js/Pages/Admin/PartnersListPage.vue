@@ -1,40 +1,67 @@
 <template>
-    <page>
-        <template v-slot:header>Компании-партнеры</template>
-        <!-- list here -->
-        <base-pagination :pagination="pagination" @pagination="setPagination"/>
-    </page>
+    <list-page :loading="list.loading">
+
+        <template v-slot:header>{{ $route.meta.title }}</template>
+
+        <template v-slot:filters>
+            <dictionary-drop-down :dictionary="'partner_types'" :placeholder="'Все'" :has-null="true"/>
+            <dictionary-drop-down :dictionary="'partner_statuses'" :placeholder="'Все'" :has-null="true"/>
+        </template>
+
+        <template v-slot:search>
+            <dictionary-drop-down :dictionary="'partner_types'" :placeholder="'Все'" :has-null="true"/>
+        </template>
+
+        <base-table v-if="list.data">
+            <template v-slot:header>
+                <base-table-head :header="list.titles"/>
+            </template>
+            <base-table-row v-for="(row, key) in list.data" :key="key">
+                <base-table-cell v-for="(cell, key) in row['record']" :key="key">{{ cell }}</base-table-cell>
+            </base-table-row>
+        </base-table>
+        <base-pagination :pagination="list.pagination" @pagination="setPagination"/>
+
+    </list-page>
 </template>
 
 <script>
-import Page from "../../Layouts/Page";
+import listDataSource from "../../Helpers/Core/listDataSource";
+
+import ListPage from "../../Layouts/ListPage";
 import BasePagination from "../../Components/Base/BasePagination";
+import DictionaryDropDown from "../../Components/Dictionary/DictionaryDropDown";
+import BaseTable from "../../Components/Table/BaseTable";
+import BaseTableHead from "../../Components/Table/BaseTableHead";
+import BaseTableRow from "../../Components/Table/BaseTableRow";
+import BaseTableCell from "../../Components/Table/BaseTableCell";
 
 export default {
     components: {
-        Page,
+        ListPage,
         BasePagination,
+        DictionaryDropDown,
+        BaseTable,
+        BaseTableHead,
+        BaseTableRow,
+        BaseTableCell,
     },
 
     data: () => ({
-        pagination: {
-            current_page: 5,
-            last_page: 10,
-            from: 51,
-            to: 60,
-            total: 100,
-            per_page: 10,
-        },
+        list: null,
     }),
+
+    created() {
+        this.list = listDataSource('/api/partners');
+        this.list.load();
+    },
+
+    computed: {},
 
     methods: {
         setPagination(page, perPage) {
-            console.log(page, perPage);
-            this.pagination.per_page = perPage;
-            this.pagination.current_page = page;
-            this.pagination.from = (page - 1) * 10 + 1;
-            this.pagination.to = (page - 1) * 10 + 1 + 10;
-        }
+            this.list.load(page, perPage);
+        },
     },
 }
 </script>
