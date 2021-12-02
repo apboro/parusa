@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\Dictionary\DictionaryListController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-require base_path('routes/api/users.php');
-require base_path('routes/api/partners.php');
-require base_path('routes/api/dictionaries.php');
+Route::post('/dictionaries', [DictionaryListController::class, 'getDictionary'])->middleware('auth:sanctum');

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Users\UsersListController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-require base_path('routes/api/users.php');
-require base_path('routes/api/partners.php');
-require base_path('routes/api/dictionaries.php');
+Route::post('/users/staff', [UsersListController::class, 'staffList'])->middleware('auth:sanctum');
+Route::post('/users/list', [UsersListController::class, 'usersList'])->middleware('auth:sanctum');
