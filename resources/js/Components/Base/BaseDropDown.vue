@@ -1,17 +1,22 @@
 <template>
     <div class="base-dropdown">
-        <div class="base-dropdown__display" :class="{'base-dropdown__display-differs': differsFromInitial}" @click="toggle">
+        <div class="base-dropdown__display" :class="{'base-dropdown__display-differs': isDirty}" @click="toggle">
             <span class="base-dropdown__display-value"
                   :class="{'base-dropdown__display-value-placeholder': currentValue === null}">{{ currentValue }}</span>
             <span class="base-dropdown__display-icon" :class="{'base-dropdown__display-icon-dropped':dropped}"><icon-dropdown/></span>
         </div>
 
-        <div class="base-dropdown__list" :class="{'base-dropdown__list-shown': dropped}">
+        <div class="base-dropdown__list"
+             :class="{'base-dropdown__list-shown': dropped, 'base-dropdown__list-top': toTop}"
+        >
+                    <span class="base-dropdown__list-item" v-if="hasNull"
+                          :class="{'base-dropdown__list-item-current' : modelValue === null}"
+                          @click="setValue(null)">{{ placeholder }}</span>
                     <span class="base-dropdown__list-item" v-for="(value, key) in options"
                           :class="{'base-dropdown__list-item-current' : isCurrent(value)}"
                           :key="key"
                           @click="setValue(value)"
-                    >{{ value }}</span>
+                    >{{ displayValue(value) }}</span>
         </div>
     </div>
 </template>
@@ -25,7 +30,7 @@ export default {
             type: [Boolean, String, Number, Object],
             default: null,
         },
-        initial: {
+        original: {
             type: [Boolean, String, Number, Object],
             default: null,
         },
@@ -44,10 +49,18 @@ export default {
         placeholder: {
             type: String,
             default: null,
-        }
+        },
+        hasNull: {
+            type: Boolean,
+            default: false,
+        },
+        toTop: {
+            type: Boolean,
+            default: false,
+        },
     },
 
-    emits: ['update:modelValue'],
+    emits: ['update:modelValue', 'dropped'],
 
     components: {
         IconDropdown,
@@ -58,24 +71,29 @@ export default {
     }),
 
     computed: {
-        currentKey: function () {
-            if (typeof this.modelValue === "object") {
-                return (this.keyBy === null) || (typeof this.modelValue[this.keyBy] === "undefined") ? null : this.modelValue[this.keyBy];
-            }
-
-            return this.modelValue;
-        },
-
         currentValue() {
-            if (typeof this.modelValue === "object") {
-                return (this.valueBy === null) || (typeof this.modelValue[this.valueBy] === "undefined") ? null : this.modelValue[this.valueBy];
+            if (this.modelValue === null) {
+                return this.placeholder;
+            }
+
+            if (this.keyBy !== null && this.valueBy !== null) {
+                let current = null;
+                this.options.some((option => {
+                    if (option[this.keyBy] === this.modelValue) {
+                        current = option[this.valueBy];
+                        return true;
+                    }
+                    return false;
+                }))
+
+                return current !== null ? current : this.modelValue;
             }
 
             return this.modelValue;
         },
 
-        differsFromInitial() {
-            return this.initial !== this.modelValue;
+        isDirty() {
+            return this.original !== this.modelValue;
         }
     },
 
@@ -88,6 +106,7 @@ export default {
                 }, 100);
             } else {
                 this.dropped = true;
+                this.$emit('dropped');
                 setTimeout(() => {
                     window.addEventListener('click', this.close);
                 }, 100);
@@ -100,14 +119,40 @@ export default {
         },
 
         isCurrent(value) {
-            if (typeof this.modelValue === "object") {
-                return (this.keyBy === null) || (typeof this.modelValue[this.keyBy] === "undefined") ? false : this.modelValue[this.keyBy] === value[this.keyBy];
+            if (
+                typeof value === "object" &&
+                value !== null &&
+                this.keyBy !== null &&
+                typeof value[this.keyBy] !== "undefined"
+            ) {
+                return this.modelValue === value[this.keyBy]
             }
 
             return this.modelValue === value;
         },
 
+        displayValue(value) {
+            if (
+                typeof value === "object" &&
+                value !== null &&
+                this.valueBy !== null &&
+                typeof value[this.valueBy] !== "undefined"
+            ) {
+                value = value[this.valueBy]
+            }
+
+            return value
+        },
+
         setValue(value) {
+            if (
+                typeof value === "object" &&
+                value !== null &&
+                this.keyBy !== null &&
+                typeof value[this.keyBy] !== "undefined"
+            ) {
+                value = value[this.keyBy];
+            }
             this.$emit('update:modelValue', value);
             this.close();
         },
