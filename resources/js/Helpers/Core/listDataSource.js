@@ -19,7 +19,7 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
         has_error: false,
         error_message: null,
 
-        load(page = 1, perPage = initialPagination.per_page) {
+        load(page = 1, perPage = null) {
             this.loading = true;
 
             const options = {
@@ -28,7 +28,7 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
                 order: this.order,
                 order_by: this.order_by,
                 page: page,
-                per_page: perPage,
+                per_page: perPage === null ? this.pagination.per_page : perPage,
             }
 
             axios.post(this.dataSourceUrl, options)
