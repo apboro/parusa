@@ -12,16 +12,16 @@ class StatusesSeeder extends GenericSeeder
 {
     protected array $data = [
         UserStatus::class => [
-            UserStatus::blocked => ['name' => 'Заблокирован'],
             UserStatus::active => ['name' => 'Активен'],
+            UserStatus::blocked => ['name' => 'Заблокирован'],
         ],
         PartnerStatus::class => [
-            PartnerStatus::blocked => ['name' => 'Заблокирован'],
             PartnerStatus::active => ['name' => 'Активен'],
+            PartnerStatus::blocked => ['name' => 'Заблокирован'],
         ],
         PositionStatus::class => [
-            PositionStatus::blocked => ['name' => 'Заблокирован'],
             PositionStatus::active => ['name' => 'Активен'],
+            PositionStatus::blocked => ['name' => 'Заблокирован'],
         ],
         AccountTransactionStatus::class => [
             AccountTransactionStatus::accepted => ['name' => 'Принято'],
