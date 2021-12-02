@@ -54,6 +54,10 @@
                     font-family: $project_font;
                     margin-bottom: 5px;
                     color: $page_bar_item_title_color;
+
+                    &-empty {
+                        margin-bottom: 0;
+                    }
                 }
 
                 &-container {
