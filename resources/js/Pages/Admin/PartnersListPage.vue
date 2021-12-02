@@ -4,12 +4,18 @@
         <template v-slot:header>{{ $route.meta.title }}</template>
 
         <template v-slot:filters>
-            <dictionary-drop-down :dictionary="'partner_types'" :placeholder="'Все'" :has-null="true"/>
-            <dictionary-drop-down :dictionary="'partner_statuses'" :placeholder="'Все'" :has-null="true"/>
+            <page-bar-item :title="'Статус партнера'">
+                <dictionary-drop-down :dictionary="'partner_statuses'" :placeholder="'Все'" :has-null="true"/>
+            </page-bar-item>
+            <page-bar-item :title="'Тип партнера'">
+                <dictionary-drop-down :dictionary="'partner_types'" :placeholder="'Все'" :has-null="true"/>
+            </page-bar-item>
         </template>
 
         <template v-slot:search>
-            <dictionary-drop-down :dictionary="'partner_types'" :placeholder="'Все'" :has-null="true"/>
+            <page-bar-item :title="'Поиск'">
+                <dictionary-drop-down :dictionary="'partner_types'" :placeholder="'Все'" :has-null="true"/>
+            </page-bar-item>
         </template>
 
         <base-table v-if="list.data">
@@ -29,6 +35,7 @@
 import listDataSource from "../../Helpers/Core/listDataSource";
 
 import ListPage from "../../Layouts/ListPage";
+import PageBarItem from "../../Layouts/Parts/PageBarItem";
 import BasePagination from "../../Components/Base/BasePagination";
 import DictionaryDropDown from "../../Components/Dictionary/DictionaryDropDown";
 import BaseTable from "../../Components/Table/BaseTable";
@@ -39,6 +46,7 @@ import BaseTableCell from "../../Components/Table/BaseTableCell";
 export default {
     components: {
         ListPage,
+        PageBarItem,
         BasePagination,
         DictionaryDropDown,
         BaseTable,
