@@ -4,7 +4,9 @@
             <slot name="header"/>
         </div>
         <div class="page__body">
-            <slot/>
+            <loading-progress :loading="loading">
+                <slot/>
+            </loading-progress>
         </div>
         <div class="page__footer" v-if="$slots.footer">
             <slot name="footer"/>
@@ -13,6 +15,19 @@
 </template>
 
 <script>
-export default {}
+import LoadingProgress from "../Components/LoadingProgress";
+
+export default {
+    components: {
+        LoadingProgress,
+    },
+
+    props: {
+        loading: {
+            type: Boolean,
+            default: false,
+        }
+    }
+}
 </script>
 
