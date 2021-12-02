@@ -13,19 +13,22 @@
         "@vue/compiler-sfc": "^3.0.5",
         "autoprefixer": "^10.2.4",
         "axios": "^0.21",
+        "es6-object-assign": "^1.1.0",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
         "node-sass": "^6.0.1",
         "normalize.css": "^8.0.1",
         "postcss": "^8.1.14",
         "postcss-import": "^14.0.1",
+        "promise-polyfill": "^8.2.1",
         "resolve-url-loader": "^4.0.0",
         "sass": "^1.43.5",
         "sass-loader": "^12.3.0",
         "vue": "^3.2.23",
         "vue-loader": "^16.8.3",
-        "vue-router": "^4.0.12",
-        "es6-object-assign": "^1.1.0",
-        "promise-polyfill": "^8.2.1"
+        "vue-router": "^4.0.12"
+    },
+    "dependencies": {
+        "vuex": "^4.0.2"
     }
 }
