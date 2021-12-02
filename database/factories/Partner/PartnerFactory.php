@@ -17,7 +17,7 @@ class PartnerFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->jobTitle,
+            'name' => $this->faker->company,
             'type_id' => 1000,
         ];
     }
