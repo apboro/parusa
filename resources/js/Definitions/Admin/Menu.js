@@ -10,9 +10,9 @@ export default [
         'title': 'ПАРТНЕРЫ, КАССЫ', 'route': '',
         'items': [
             {'title': 'Компании-партнёры', 'route': 'partners-list'},
-            {'title': 'Представители', 'route': 'representative'},
-            {'title': 'Мобильные кассы', 'route': 'mobile-sales'},
-            {'title': 'Возврат билетов', 'route': 'ticket-refund'},
+            {'title': 'Представители', 'route': 'representatives-list'},
+            {'title': 'Мобильные кассы', 'route': 'mobile-sales-list'},
+            {'title': 'Возврат билетов', 'route': 'ticket-refund-list'},
         ]
     },
     {
