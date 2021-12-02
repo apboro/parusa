@@ -1,7 +1,10 @@
 <template>
     <label class="base-input" :class="{'base-input__differs': isDirty}">
+        <span class="base-input__icon">
+            <slot/>
+        </span>
         <input
-            class="base-input__input"
+            class="base-input__input base-input__input-no-left"
             :value="modelValue"
             :type="type"
             :required="required"

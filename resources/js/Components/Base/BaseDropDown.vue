@@ -2,21 +2,21 @@
     <div class="base-dropdown">
         <div class="base-dropdown__display" :class="{'base-dropdown__display-differs': isDirty}" @click="toggle">
             <span class="base-dropdown__display-value"
-                  :class="{'base-dropdown__display-value-placeholder': currentValue === null}">{{ currentValue }}</span>
+                  :class="{'base-dropdown__display-value-placeholder': value === null}">{{ value }}</span>
             <span class="base-dropdown__display-icon" :class="{'base-dropdown__display-icon-dropped':dropped}"><icon-dropdown/></span>
         </div>
 
         <div class="base-dropdown__list"
              :class="{'base-dropdown__list-shown': dropped, 'base-dropdown__list-top': toTop}"
         >
-                    <span class="base-dropdown__list-item" v-if="hasNull"
-                          :class="{'base-dropdown__list-item-current' : modelValue === null}"
-                          @click="setValue(null)">{{ placeholder }}</span>
-                    <span class="base-dropdown__list-item" v-for="(value, key) in options"
-                          :class="{'base-dropdown__list-item-current' : isCurrent(value)}"
-                          :key="key"
-                          @click="setValue(value)"
-                    >{{ displayValue(value) }}</span>
+            <span class="base-dropdown__list-item" v-if="hasNull"
+                  :class="{'base-dropdown__list-item-current' : modelValue === null}"
+                  @click="value = null">{{ placeholder }}</span>
+            <span class="base-dropdown__list-item" v-for="(val, key) in options"
+                  :class="{'base-dropdown__list-item-current' : isCurrent(val)}"
+                  :key="key"
+                  @click="value = val"
+            >{{ displayValue(val) }}</span>
         </div>
     </div>
 </template>
@@ -26,41 +26,20 @@ import IconDropdown from "../Icons/IconDropdown";
 
 export default {
     props: {
-        modelValue: {
-            type: [Boolean, String, Number, Object],
-            default: null,
-        },
-        original: {
-            type: [Boolean, String, Number, Object],
-            default: null,
-        },
-        options: {
-            type: Array,
-            default: () => ([]),
-        },
-        keyBy: {
-            type: String,
-            default: null,
-        },
-        valueBy: {
-            type: String,
-            default: null,
-        },
-        placeholder: {
-            type: String,
-            default: null,
-        },
-        hasNull: {
-            type: Boolean,
-            default: false,
-        },
-        toTop: {
-            type: Boolean,
-            default: false,
-        },
+        modelValue: {type: [Boolean, String, Number, Object], default: null},
+        name: String,
+        original: {type: [Boolean, String, Number, Object], default: null},
+
+        placeholder: {type: String, default: null},
+        hasNull: {type: Boolean, default: false},
+
+        options: {type: Array, default: () => ([])},
+        keyBy: {type: String, default: null},
+        valueBy: {type: String, default: null},
+        toTop: {type: Boolean, default: false},
     },
 
-    emits: ['update:modelValue', 'dropped'],
+    emits: ['update:modelValue', 'changed', 'dropped'],
 
     components: {
         IconDropdown,
@@ -71,25 +50,40 @@ export default {
     }),
 
     computed: {
-        currentValue() {
-            if (this.modelValue === null) {
-                return this.placeholder;
+        value: {
+            get() {
+                if (this.modelValue === null) {
+                    return this.placeholder;
+                }
+
+                if (this.keyBy !== null && this.valueBy !== null) {
+                    let current = null;
+                    this.options.some((option => {
+                        if (option[this.keyBy] === this.modelValue) {
+                            current = option[this.valueBy];
+                            return true;
+                        }
+                        return false;
+                    }))
+
+                    return current !== null ? current : this.modelValue;
+                }
+
+                return this.modelValue;
+            },
+            set(value) {
+                if (
+                    typeof value === "object" &&
+                    value !== null &&
+                    this.keyBy !== null &&
+                    typeof value[this.keyBy] !== "undefined"
+                ) {
+                    value = value[this.keyBy];
+                }
+                this.$emit('update:modelValue', value);
+                this.$emit('changed', this.name, value);
+                this.close();
             }
-
-            if (this.keyBy !== null && this.valueBy !== null) {
-                let current = null;
-                this.options.some((option => {
-                    if (option[this.keyBy] === this.modelValue) {
-                        current = option[this.valueBy];
-                        return true;
-                    }
-                    return false;
-                }))
-
-                return current !== null ? current : this.modelValue;
-            }
-
-            return this.modelValue;
         },
 
         isDirty() {
@@ -142,19 +136,6 @@ export default {
             }
 
             return value
-        },
-
-        setValue(value) {
-            if (
-                typeof value === "object" &&
-                value !== null &&
-                this.keyBy !== null &&
-                typeof value[this.keyBy] !== "undefined"
-            ) {
-                value = value[this.keyBy];
-            }
-            this.$emit('update:modelValue', value);
-            this.close();
         },
     },
 }

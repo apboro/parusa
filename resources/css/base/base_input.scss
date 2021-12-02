@@ -1,0 +1,43 @@
+@import "../variables";
+@import "../colors";
+
+.base-input {
+    display: flex;
+    width: 100%;
+    height: $base_base_unit;
+    border: 1px solid $base_border_color;
+    border-radius: 2px;
+
+    &__differs {
+        background-color: $base_background_changed_color;
+    }
+
+    &__input {
+        border: none !important;
+        outline: none !important;
+        box-sizing: border-box;
+        height: $base_base_unit;
+        line-height: $base_base_unit;
+        font-family: $project_font;
+        font-size: 16px;
+        color: $base_color;
+        padding: 0 10px;
+        flex-grow: 1;
+        background-color: transparent;
+
+        &-no-left {
+            padding-left: 0;
+        }
+    }
+
+    &__icon {
+        height: $base_base_unit;
+        width: $base_base_unit;
+        flex-grow: 0;
+        flex-shrink: 0;
+        box-sizing: border-box;
+        padding: $base_base_unit / 5;
+        color: $base_icon_color;
+        margin-right: 2px;
+    }
+}
