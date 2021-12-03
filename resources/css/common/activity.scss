@@ -1,0 +1,17 @@
+@import "../colors";
+
+.activity {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    vertical-align: baseline;
+    background-color: $activity_default_color;
+
+    &__active {
+        background-color: $activity_active_color;
+    }
+
+    &__inactive {
+        background-color: $activity_inactive_color;
+    }
+}
