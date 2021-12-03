@@ -11,7 +11,7 @@ export default {
     },
     computed: {
         containerClass() {
-            return w ? 'base-table__container-w-' + w : null;
+            return this.w ? 'base-table__container-w-' + this.w : null;
         },
     }
 }
