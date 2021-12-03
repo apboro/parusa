@@ -1,10 +1,5 @@
 <template>
-    <table class="base-table" :class="{
-        'base-table__hover': hover,
-        'base-table__highlight': highlight,
-        'base-table__borders': borders,
-        'base-table__small': small,
-    }">
+    <table class="base-table" :class="tableClass">
         <slot name="header"/>
         <tbody class="base-table__body">
         <slot/>
@@ -19,6 +14,17 @@ export default {
         hover: {type: Boolean, default: true},
         highlight: {type: Boolean, default: true},
         borders: {type: Boolean, default: true},
+    },
+
+    computed: {
+        tableClass() {
+            return {
+                'base-table__hover': this.hover,
+                'base-table__highlight': this.highlight,
+                'base-table__borders': this.borders,
+                'base-table__small': this.small,
+            }
+        }
     }
 }
 </script>

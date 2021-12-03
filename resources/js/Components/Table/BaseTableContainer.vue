@@ -1,5 +1,5 @@
 <template>
-    <div class="base-table__container" :class="[w ? 'base-table__container-w-'+w : '']">
+    <div class="base-table__container" :class="containerClass">
         <slot/>
     </div>
 </template>
@@ -9,5 +9,10 @@ export default {
     props: {
         w: {type: String, default: null},
     },
+    computed: {
+        containerClass() {
+            return w ? 'base-table__container-w-' + w : null;
+        },
+    }
 }
 </script>
