@@ -43,7 +43,7 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
                 })
                 .finally(() => {
                     this.loading = false;
-                })
+                });
         },
     };
 
