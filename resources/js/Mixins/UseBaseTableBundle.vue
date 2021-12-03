@@ -1,4 +1,5 @@
 <script>
+import BaseTableContainer from "../Components/Table/BaseTableContainer";
 import BaseTable from "../Components/Table/BaseTable";
 import BaseTableHead from "../Components/Table/BaseTableHead";
 import BaseTableRow from "../Components/Table/BaseTableRow";
@@ -9,6 +10,7 @@ export default {
     name: "UseBaseTableBundle",
 
     components: {
+        BaseTableContainer,
         BaseTable,
         BaseTableHead,
         BaseTableRow,

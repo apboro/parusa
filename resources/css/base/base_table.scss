@@ -8,6 +8,15 @@
     &__container {
         width: 100%;
         overflow-x: auto;
+        margin: 30px 0;
+        display: inline-block;
+        vertical-align: top;
+
+        &-w {
+            &-50 {
+                width: 50%;
+            }
+        }
     }
 
     &__header {
@@ -28,9 +37,7 @@
         }
     }
 
-    &__row {
-        border-bottom: 1px solid $base_table_border_color;
-
+    &__highlight &__row {
         &:nth-child(odd) {
             background-color: $base_table_odd_background_color;
         }
@@ -38,10 +45,14 @@
         &:nth-child(even) {
             background-color: $base_table_even_background_color;
         }
+    }
 
-        &:hover {
-            background-color: $base_table_hover_background_color;
-        }
+    &__hover &__row:hover {
+        background-color: $base_table_hover_background_color;
+    }
+
+    &__borders &__row {
+        border-bottom: 1px solid $base_table_border_color;
     }
 
     &__cell {
