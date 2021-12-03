@@ -1,0 +1,35 @@
+@import "../variables";
+@import "../colors";
+@import "../shadows";
+
+.button {
+    display: inline-block;
+    text-decoration: none;
+    height: $base_button_unit;
+    line-height: $base_button_unit;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 2px;
+    box-sizing: border-box;
+    padding: 0 $base_button_unit / 2;
+    letter-spacing: 0.03rem;
+    color: $base_button_color;
+    border: 1px solid $base_button_border;
+    background-color: $base_button_background_color;
+    transition: color $animation $animation_time, background-color $animation $animation_time, border-color $animation $animation_time, box-shadow $animation $animation_time;
+    font-family: $project_font;
+    font-size: 16px;
+    box-shadow: $shadow_1;
+    text-transform: uppercase;
+
+    &:hover {
+        box-shadow: $shadow_2;
+        color: $base_button_hover_color;
+        background-color: $base_button_hover_border;
+        border-color: $base_button_hover_background_color;
+    }
+
+    &:active {
+        box-shadow: none;
+    }
+}
