@@ -8,22 +8,22 @@
                 <base-table :borders="false" :highlight="false" :hover="false" :small="true">
                     <base-table-row>
                         <base-table-cell :bold="true" :w="'200'">ФИО сотрудника</base-table-cell>
-                        <base-table-cell :text="'lg'">{{ data.data.last_name }} {{ data.data.first_name }} {{
+                        <base-table-cell :size="'lg'">{{ data.data.last_name }} {{ data.data.first_name }} {{
                                 data.data.patronymic
                             }}
                         </base-table-cell>
                     </base-table-row>
                     <base-table-row>
                         <base-table-cell :bold="true" :w="'200'">Должность</base-table-cell>
-                        <base-table-cell :text="'lg'">{{ data.data.position_title }}</base-table-cell>
+                        <base-table-cell :size="'lg'">{{ data.data.position_title }}</base-table-cell>
                     </base-table-row>
                     <base-table-row>
                         <base-table-cell :bold="true" :w="'200'">Дата заведения</base-table-cell>
-                        <base-table-cell :text="'lg'">{{ data.data.created_at }}</base-table-cell>
+                        <base-table-cell :size="'lg'">{{ data.data.created_at }}</base-table-cell>
                     </base-table-row>
                     <base-table-row>
                         <base-table-cell :bold="true" :w="'200'">Статус трудоустройства</base-table-cell>
-                        <base-table-cell :text="'lg'">{{ data.data.position_status }}</base-table-cell>
+                        <base-table-cell :size="'lg'">{{ data.data.position_status }}</base-table-cell>
                     </base-table-row>
                 </base-table>
             </base-table-container>
@@ -32,11 +32,11 @@
                 <base-table :borders="false" :highlight="false" :hover="false" :small="true">
                     <base-table-row>
                         <base-table-cell :bold="true" :w="'200'">Дата рождения</base-table-cell>
-                        <base-table-cell :text="'lg'">{{ data.data.birth_date }}</base-table-cell>
+                        <base-table-cell :size="'lg'">{{ data.data.birth_date }}</base-table-cell>
                     </base-table-row>
                     <base-table-row>
                         <base-table-cell :bold="true" :w="'200'">Пол</base-table-cell>
-                        <base-table-cell :text="'lg'">{{ data.data.gender }}</base-table-cell>
+                        <base-table-cell :size="'lg'">{{ data.data.gender }}</base-table-cell>
                     </base-table-row>
                 </base-table>
             </base-table-container>
