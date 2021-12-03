@@ -83,33 +83,33 @@ const replacePart = function (message, search, replace) {
 };
 
 const messageFormatters = {
-    singleAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    singleAttributeMessage: (message) => {
         return message;
     },
 
-    minMaxAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    minMaxAttributeMessage: (message, name, failed_rule, validation_rule) => {
         let attributes = validation_rule[failed_rule].split(',');
         message = replacePart(message, ':min', attributes[0]);
         message = replacePart(message, ':max', attributes[1]);
         return message;
     },
 
-    minArrayAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    minArrayAttributeMessage: (message, name, failed_rule, validation_rule) => {
         return replacePart(message, ':min', validation_rule[failed_rule]);
     },
 
-    minMaxArrayAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    minMaxArrayAttributeMessage: (message, name, failed_rule, validation_rule) => {
         let attributes = validation_rule[failed_rule].split(',');
         message = replacePart(message, ':min', attributes[0]);
         message = replacePart(message, ':max', attributes[1]);
         return message;
     },
 
-    maxArrayAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    maxArrayAttributeMessage: (message, name, failed_rule, validation_rule) => {
         return replacePart(message, ':max', validation_rule[failed_rule]);
     },
 
-    dateAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    dateAttributeMessage: (message, name, failed_rule, validation_rule, fields) => {
         let attributes = validation_rule[failed_rule];
         if (!!fields[attributes]) {
             attributes = '"' + [fields[attributes]] + '"';
@@ -117,63 +117,63 @@ const messageFormatters = {
         return replacePart(message, ':date', attributes);
     },
 
-    formatAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    formatAttributeMessage: (message, name, failed_rule, validation_rule) => {
         return replacePart(message, ':format', validation_rule[failed_rule]);
     },
 
-    sizeAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    sizeAttributeMessage: (message, name, failed_rule, validation_rule) => {
         return replacePart(message, ':size', validation_rule[failed_rule]);
     },
 
-    digitsAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    digitsAttributeMessage: (message, name, failed_rule, validation_rule) => {
         return replacePart(message, ':digits', validation_rule[failed_rule]);
     },
 
-    otherAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    otherAttributeMessage: (message, name, failed_rule, validation_rule, titles) => {
         let attributes = validation_rule[failed_rule];
-        let other = localization[fields[attributes]];
+        let other = titles[attributes];
 
         return replacePart(message, ':other', other);
     },
 
-    valueAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    valueAttributeMessage: (message, name, failed_rule, validation_rule, titles) => {
         let attributes = validation_rule[failed_rule];
-        let other = '"' + localization[fields[attributes]] + '"';
+        let other = '"' + titles[attributes] + '"';
 
         return replacePart(message, ':value', other);
     },
 
-    valuesAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    valuesAttributeMessage: (message, name, failed_rule, validation_rule, titles) => {
         let attributes = validation_rule[failed_rule].split(',');
         let others = [];
         attributes.map((name) => {
-            others.push('"' + localization[fields[name]] + '"');
+            others.push('"' + titles[name] + '"');
         });
 
         return replacePart(message, ':values', others.join(', '));
     },
 
-    otherValueAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization, values) => {
+    otherValueAttributeMessage: (message, name, failed_rule, validation_rule, titles, values) => {
         const attributes = validation_rule[failed_rule].split(',');
         let other = attributes.splice(0, 1);
         const val = values[other];
-        other = localization[fields[other]];
+        other = titles[other];
         message = replacePart(message, ':other', other);
         message = replacePart(message, ':value', val);
 
         return message;
     },
 
-    otherValuesAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    otherValuesAttributeMessage: (message, name, failed_rule, validation_rule, titles) => {
         let attributes = validation_rule[failed_rule].split(',');
-        let other = localization[fields[attributes[0]]];
+        let other = titles[attributes[0]];
         message = replacePart(message, ':other', other);
         message = replacePart(message, ':values', attributes.splice(0, 1).join(', '));
 
         return message;
     },
 
-    mimesAttributeMessage: (message, name, failed_rule, validation_rule, fields, localization) => {
+    mimesAttributeMessage: (message, name, failed_rule, validation_rule) => {
         return replacePart(message, ':values', validation_rule[failed_rule].split(',').join(', '));
     },
 };
@@ -181,7 +181,7 @@ const messageFormatters = {
 /**
  * Make whole validation error message for given rule and field.
  */
-const getMessage = function (name, value, failed_rule, validation_rule, fields, values) {
+const getMessage = function (name, value, failed_rule, validation_rule, titles, values) {
     let message = localization[failed_rule];
 
     if (typeof message === 'object') {
@@ -192,8 +192,7 @@ const getMessage = function (name, value, failed_rule, validation_rule, fields, 
 
     if (!message || typeof message !== 'string') return null;
 
-    // TODO fix title
-    message = message.replace(':attribute', name);
+    message = message.replace(':attribute', '"' + titles[name] + '"');
 
     let formattedMessage = null;
 
@@ -201,7 +200,7 @@ const getMessage = function (name, value, failed_rule, validation_rule, fields, 
 
     for (let i = 0; i < formatters.length; i++) {
         if (messageFormatter[formatters[i]].indexOf(failed_rule) !== -1) {
-            formattedMessage = messageFormatters[formatters[i]](message, name, failed_rule, validation_rule, fields, localization, values);
+            formattedMessage = messageFormatters[formatters[i]](message, name, failed_rule, validation_rule, titles, values);
         }
     }
 
