@@ -23,6 +23,7 @@
 
 <script>
 import IconDropdown from "../Icons/IconDropdown";
+import empty from "../../Helpers/Lib/empty";
 
 export default {
     props: {
@@ -56,7 +57,7 @@ export default {
                     return this.placeholder;
                 }
 
-                if (this.keyBy !== null && this.valueBy !== null) {
+                if (this.keyBy !== null && this.valueBy !== null && !empty(this.options)) {
                     let current = null;
                     this.options.some((option => {
                         if (option[this.keyBy] === this.modelValue) {
