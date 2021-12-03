@@ -6,12 +6,11 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\UserStatus;
-use App\Models\Staff\StaffUserPosition;
 use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 
-class UsersListController extends ApiController
+class StaffListController extends ApiController
 {
     /**
      * Get staff list.
@@ -22,7 +21,7 @@ class UsersListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
-        $query = User::query()->with(['status', 'profile', 'staffPositions'])->where('is_staff', true);
+        $query = User::query()->with(['status', 'profile', 'staffPosition'])->where('is_staff', true);
 
         // apply filters
         // apply search
@@ -33,17 +32,14 @@ class UsersListController extends ApiController
         /** @var Collection $users */
         $users->transform(function (User $user) {
             $profile = $user->profile;
-            $positions = [];
-            foreach ($user->staffPositions as $position) {
-                /** @var StaffUserPosition $position */
-                $positions[] = $position->position_title;
-            };
+
             return [
                 // TODO fix to mysql $partner->hasStatus(PartnerStatus::active)
                 'active' => (int)$user->status_id === UserStatus::active,
+                'id' => $user->id,
                 'record' => [
                     'name' => $profile ? $profile->lastname . ' ' . $profile->firstname . ' ' . $profile->patronymic : null,
-                    'positions' => $positions,
+                    'position' => $user->staffPosition ? $user->staffPosition->position_title : null,
                     'contacts' => null,
                 ],
             ];
@@ -51,7 +47,7 @@ class UsersListController extends ApiController
 
         return APIResponse::paginationList($users, [
             'name' => 'ФИО сотрудника',
-            'positions' => 'Должность',
+            'position' => 'Должность',
             'contacts' => 'Контакты',
         ]);
     }
