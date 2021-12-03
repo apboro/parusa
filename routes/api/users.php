@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\API\Users\StaffCardController;
+use App\Http\Controllers\API\Users\StaffEditController;
+use App\Http\Controllers\API\Users\StaffListController;
 use App\Http\Controllers\API\Users\UsersListController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,5 +17,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/users/staff', [UsersListController::class, 'staffList'])->middleware('auth:sanctum');
-Route::post('/users/list', [UsersListController::class, 'usersList'])->middleware('auth:sanctum');
+Route::post('/users/staff', [StaffListController::class, 'list'])->middleware('auth:sanctum');
+Route::post('/users/staff/view', [StaffCardController::class, 'get'])->middleware('auth:sanctum');
+Route::post('/users/staff/edit', [StaffEditController::class, 'get'])->middleware('auth:sanctum');
+
+
+Route::post('/users/list', [UsersListController::class, 'list'])->middleware('auth:sanctum');
