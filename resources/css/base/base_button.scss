@@ -22,6 +22,14 @@
     box-shadow: $shadow_1;
     text-transform: uppercase;
 
+    &:not(:last-child) {
+        margin-right: 20px;
+    }
+
+    &:active {
+        box-shadow: none;
+    }
+
     &:hover {
         box-shadow: $shadow_2;
         color: $base_button_hover_color;
@@ -29,7 +37,15 @@
         border-color: $base_button_hover_background_color;
     }
 
-    &:active {
-        box-shadow: none;
+    &__gray {
+        color: $base_button_gray_color;
+        background-color: $base_button_gray_border;
+        border-color: $base_button_gray_background_color;
+
+        &:hover {
+            color: $base_button_gray_hover_color;
+            background-color: $base_button_gray_hover_border;
+            border-color: $base_button_gray_hover_background_color;
+        }
     }
 }
