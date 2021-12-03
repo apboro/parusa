@@ -8,6 +8,10 @@
     border: 1px solid $base_border_color;
     border-radius: 2px;
 
+    &__not-valid {
+        border-color: $base_error_color;
+    }
+
     &__differs {
         background-color: $base_background_changed_color;
     }

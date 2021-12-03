@@ -1,5 +1,5 @@
 <template>
-    <label class="base-input" :class="{'base-input__differs': isDirty}">
+    <label class="base-input" :class="{'base-input__differs': isDirty, 'base-input__not-valid': !valid}">
         <input
             class="base-input__input"
             :value="modelValue"
@@ -7,6 +7,7 @@
             :required="required"
             :disabled="disabled"
             :autocomplete="autocomplete"
+            :placeholder="placeholder"
             @input="update"
             ref="input">
     </label>
@@ -27,6 +28,7 @@ export default {
 
         type: {type: String, default: 'text'},
         autocomplete: {type: String, default: 'off'},
+        placeholder: {type: String, default: null},
     },
 
     emits: ['update:modelValue', 'changed'],
