@@ -5,7 +5,7 @@
 
         <template v-slot:filters>
             <page-bar-item :title="'Статус сотрудника'">
-                <dictionary-drop-down :dictionary="'user_statuses'" :placeholder="'Все'" :has-null="true"/>
+                <dictionary-drop-down :dictionary="'user_statuses'" :placeholder="'Все'" :has-null="true" v-model="list.filters.user_status"/>
             </page-bar-item>
         </template>
 
@@ -24,7 +24,8 @@
             <base-table-row v-for="(row, key) in list.data" :key="key">
                 <base-table-cell>
                     <!-- row.active -->
-                    <router-link :to="{ name: 'staff-user-view', params: { id: row.id }}">{{
+                    <activity :active="row.active"/>
+                    <router-link class="link" :to="{ name: 'staff-user-view', params: { id: row.id }}">{{
                             row.record['name']
                         }}
                     </router-link>
@@ -50,9 +51,11 @@ import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDow
 import BaseIconInput from "../../../Components/Base/BaseIconInput";
 import IconSearch from "../../../Components/Icons/IconSearch";
 import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
+import Activity from "../../../Components/Activity";
 
 export default {
     components: {
+        Activity,
         ListPage,
         PageBarItem,
         BasePagination,
