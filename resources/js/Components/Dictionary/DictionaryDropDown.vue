@@ -1,12 +1,16 @@
 <template>
     <base-drop-down
+        v-model="proxyValue"
         :options="items"
-        v-model="val"
-        :key-by="'id'"
-        :value-by="'name'"
+        :name="name"
+        :original="original"
+        :key-by="keyBy"
+        :value-by="valueBy"
         :placeholder="placeholder"
         :has-null="hasNull"
+        :to-top="toTop"
         @dropped="refresh"
+        @changed="changed"
     />
 </template>
 
@@ -15,27 +19,42 @@ import BaseDropDown from "../Base/BaseDropDown";
 
 export default {
     props: {
+        modelValue: {type: [Number, String], default: null},
+        original: {type: [Boolean, String, Number, Object], default: null},
+        name: String,
+
+        placeholder: {type: String, default: null},
+        hasNull: {type: Boolean, default: false},
+
+        keyBy: {type: String, default: 'id'},
+        valueBy: {type: String, default: 'name'},
+
+        toTop: {type: Boolean, default: false},
+
+        fresh: {type: Boolean, default: false},
+
         dictionary: String,
-        placeholder: {
-            type: String,
-            default: null,
-        },
-        hasNull: {
-            type: Boolean,
-            default: false,
-        },
     },
+
+    emits: ['update:modelValue', 'changed'],
 
     components: {
         BaseDropDown,
     },
 
-    data: ()=>({
-        val: null,
-    }),
-
     computed: {
+        proxyValue: {
+            get() {
+                return this.modelValue;
+            },
+            set(value) {
+                this.$emit('update:modelValue', value);
+            }
+        },
         items() {
+            if (!this.ready) {
+                return [];
+            }
             return this.$store.getters['dictionary/dictionary'](this.dictionary);
         },
         ready() {
@@ -43,14 +62,27 @@ export default {
         },
     },
 
+    data: () => ({
+        loaded: false,
+    }),
+
     created() {
         this.refresh();
     },
 
     methods: {
         refresh() {
-            this.$store.dispatch('dictionary/refresh', this.dictionary);
-        }
+            if (this.loaded && !this.fresh) {
+                return;
+            }
+            this.$store.dispatch('dictionary/refresh', this.dictionary)
+                .then(() => {
+                    this.loaded = true;
+                });
+        },
+        changed(name, value) {
+            this.$emit('changed', name, value);
+        },
     }
 }
 </script>
