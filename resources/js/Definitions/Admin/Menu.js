@@ -18,7 +18,7 @@ export default [
     {
         'title': 'КОМПАНИЯ', 'route': '',
         'items': [
-            {'title': 'Сотрудники', 'route': ''},
+            {'title': 'Сотрудники', 'route': 'staff-user-list'},
             {'title': 'Каталог экскурсий', 'route': ''},
             {'title': 'Настройки', 'route': ''},
             {'title': 'Справочники', 'route': ''},
@@ -32,4 +32,5 @@ export default [
             {'title': 'Реестр броней', 'route': ''},
         ]
     },
+    {'title': 'test', 'route': 'test'}
 ];
