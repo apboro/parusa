@@ -10,6 +10,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
 
         originals: {},
         values: {},
+        titles: {},
         validation_rules: {},
 
         payload: null,
@@ -17,6 +18,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
         valid: {},
         validation_errors: {},
 
+        loaded: false,
         loading: false,
 
         load() {
@@ -24,13 +26,15 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
 
             axios.post(this.dataSourceUrl, this.options)
                 .then(response => {
-                    this.values = response.data.data.values;
-                    this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : null;
+                    this.values = response.data.values;
                     this.originals = clone(this.values);
+                    this.titles = response.data.titles;
                     Object.keys(this.values).map(key => {
-                        this.validation_rules[key] = parseRules(response.data.data.rules[key]);
+                        this.validation_rules[key] = parseRules(response.data.rules[key]);
                     });
+                    this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : null;
                     this.validateAll();
+                    this.loaded = true;
                 })
                 .catch(error => {
                     console.log(error);
@@ -65,11 +69,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
 
             this.validation_errors[name] = [];
             failed.map((failed_rule) => {
-                let names = {};
-                Object.keys(this.values).map(field => {
-                    names[field] = 'caption';
-                });
-                this.validation_errors[name].push(getMessage(name, value, failed_rule, this.validation_rules[name], names, this.values));
+                this.validation_errors[name].push(getMessage(name, value, failed_rule, this.validation_rules[name], this.titles, this.values));
             });
 
             this.valid[name] = false;
