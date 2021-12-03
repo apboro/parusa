@@ -62,15 +62,17 @@ class APIResponse
      * Make 200 response with data.
      *
      * @param mixed $data
+     * @param $payload
      *
      * @return  JsonResponse
      */
-    public static function response($data): JsonResponse
+    public static function response($data, $payload = null): JsonResponse
     {
         return response()->json([
             'status' => 'OK',
             'code' => 200,
             'data' => $data,
+            'payload' => $payload,
         ], 200);
     }
 
