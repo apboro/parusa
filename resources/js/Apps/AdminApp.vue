@@ -25,5 +25,11 @@ export default {
         LayoutHeader,
         LayoutMenu,
     },
+
+    created() {
+        this.$router.afterEach((to, from) => {
+            this.$toast.clear();
+        })
+    },
 }
 </script>

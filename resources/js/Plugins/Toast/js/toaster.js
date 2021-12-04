@@ -65,6 +65,13 @@ const ToastPlugin = function (_options) {
         this._show(message, delay, 'error')
     };
 
+    this.clear = () => {
+        this.toasts.map((toast, key) => {
+            toast.remove();
+        });
+        this.toasts = [];
+    };
+
     return this;
 };
 
