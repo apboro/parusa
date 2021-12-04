@@ -48,4 +48,28 @@
             border-color: $base_button_gray_hover_background_color;
         }
     }
+
+    &__green {
+        color: $base_button_green_color;
+        background-color: $base_button_green_border;
+        border-color: $base_button_green_background_color;
+
+        &:hover {
+            color: $base_button_green_hover_color;
+            background-color: $base_button_green_hover_border;
+            border-color: $base_button_green_hover_background_color;
+        }
+    }
+
+    &__red {
+        color: $base_button_red_color;
+        background-color: $base_button_red_border;
+        border-color: $base_button_red_background_color;
+
+        &:hover {
+            color: $base_button_red_hover_color;
+            background-color: $base_button_red_hover_border;
+            border-color: $base_button_red_hover_background_color;
+        }
+    }
 }

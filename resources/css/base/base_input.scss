@@ -7,6 +7,7 @@
     height: $base_base_unit;
     border: 1px solid $base_border_color;
     border-radius: 2px;
+    box-sizing: border-box;
 
     &__not-valid {
         border-color: $base_error_color;
