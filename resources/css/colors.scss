@@ -30,12 +30,29 @@ $pagination_link_active_background: #1e87f0;
 $loader_color: #1e87f0;
 $loader_background: rgba(255, 255, 255, 0.5);
 
-$activity_default_color: #555;
+$activity_default_color: #595959;
 $activity_active_color: #14c709;
 $activity_inactive_color: #c00c0c;
 
 $link_color: #033970;
 $link_hover_color: #2f8aec;
+
+$toast_color: #2475c5;
+$toast_text_color: #ffffff;
+$toast_close_color: #a8c5e1;
+$toast_close_hover_color: #ffffff;
+$toast_success_color: #3d8d38;
+$toast_success_text_color: #ffffff;
+$toast_success_close_color: #a1d59e;
+$toast_success_close_hover_color: #ffffff;
+$toast_info_color: #c99029;
+$toast_info_text_color: #ffffff;
+$toast_info_close_color: #f9d28b;
+$toast_info_close_hover_color: #ffffff;
+$toast_error_color: #b92626;
+$toast_error_text_color: #ffffff;
+$toast_error_close_color: #e3a2a2;
+$toast_error_close_hover_color: #ffffff;
 
 $base_color: #1e1e1e;
 $base_icon_color: #ababab;
@@ -47,7 +64,7 @@ $base_background_changed_color: #ecf4ff;
 $base_error_color: #e71c1c;
 $base_required_color: #e71c1c;
 
-$base_table_header_background_color: #d2e8ff;
+$base_table_header_background_color: #e2eaf3;
 $base_table_header_color: $color_text;
 $base_table_border_color: #e3e3e3;
 $base_table_odd_background_color: #ffffff;

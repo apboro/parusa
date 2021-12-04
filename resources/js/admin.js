@@ -8,6 +8,8 @@ import menu from './Definitions/Admin/Menu';
 import routes from './Definitions/Admin/Routes';
 import store from './Stores/store';
 
+import Toast from "./Plugins/Toast/toaster";
+
 // add router
 const router = createRouter({
     history: createWebHistory(),
@@ -18,5 +20,6 @@ const app = createApp(App, {menu: menu});
 
 app.use(router);
 app.use(store);
+app.use(Toast);
 
-const vm = app.mount('#app');
+app.mount('#app');

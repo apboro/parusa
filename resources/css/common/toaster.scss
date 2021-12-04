@@ -1,0 +1,123 @@
+@import "../colors";
+@import "../variables";
+@import "../shadows";
+@import "../mixins/no-selection";
+
+$toast: (
+    xxs: (min-width: 100%, max-width: 100%),
+    xs: (min-width: 100%, max-width: 100%),
+    s: (min-width: 100%, max-width: 100%),
+    m: (min-width: 10%, max-width: 100%),
+    l: (min-width: 10%, max-width: 100%),
+    xl: (min-width: 10%, max-width: 100%),
+    xxl: (min-width: 10%, max-width: 100%),
+);
+
+.toaster {
+    display: block;
+    position: fixed;
+    z-index: 500;
+    top: 30px;
+    right: 10px;
+
+    &__toast {
+        margin-top: 10px;
+        max-width: 100%;
+        width: auto;
+        min-width: 10%;
+        position: relative;
+        word-break: break-all;
+        height: auto;
+        min-height: 40px;
+        line-height: 24px;
+        padding: 15px 60px 15px 25px;
+        font-family: $project_font;
+        font-size: 14px;
+        font-weight: normal;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: default;
+        background-color: $toast_color;
+        color: $toast_text_color;
+        border-radius: 2px;
+        box-shadow: $shadow_3;
+        letter-spacing: 0.05rem;
+        top: 20px;
+        opacity: 0;
+        transition: top $animation $animation_time, opacity $animation $animation_time, visibility $animation $animation_time;
+
+        &-show {
+            top: 0;
+            opacity: 1;
+        }
+
+        &-hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        &-close {
+            @include noSelection;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            cursor: pointer;
+            border-left: 1px solid transparentize($toast_close_color, 0.7);
+            color: $toast_close_color;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            transition: color $animation $animation_time;
+
+            &:hover {
+                color: $toast_close_hover_color;
+            }
+        }
+
+        &-success {
+            background-color: $toast_success_color;
+            color: $toast_success_text_color;
+        }
+
+        &-success &-close {
+            border-color: transparentize($toast_success_close_color, 0.7);
+            color: $toast_success_close_color;
+
+            &:hover {
+                color: $toast_success_close_hover_color;
+            }
+        }
+
+        &-info {
+            background-color: $toast_info_color;
+            color: $toast_info_text_color;
+        }
+
+        &-info &-close {
+            border-color: transparentize($toast_info_close_color, 0.7);
+            color: $toast_info_close_color;
+
+            &:hover {
+                color: $toast_info_close_hover_color;
+            }
+        }
+
+        &-error {
+            background-color: $toast_error_color;
+            color: $toast_error_text_color;
+        }
+
+        &-error &-close {
+            border-color: transparentize($toast_error_close_color, 0.7);
+            color: $toast_error_close_color;
+
+            &:hover {
+                color: $toast_error_close_hover_color;
+            }
+        }
+    }
+}
