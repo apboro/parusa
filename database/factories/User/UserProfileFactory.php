@@ -2,10 +2,9 @@
 
 namespace Database\Factories\User;
 
-use App\Models\User\User;
 use App\Models\User\UserProfile;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class UserProfileFactory extends Factory
 {
@@ -15,17 +14,18 @@ class UserProfileFactory extends Factory
      * Define the model's default state.
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function definition(): array
     {
         $gender = ['male', 'female'][random_int(0, 1)];
 
         return [
-            'lastname' => $this->faker->firstName($gender),
-            'firstname' => $this->faker->middleName($gender),
-            'patronymic' => $this->faker->lastName($gender),
+            'lastname' => $this->faker->lastName($gender),
+            'firstname' => $this->faker->firstName($gender),
+            'patronymic' => $this->faker->middleName($gender),
             'gender' => $gender,
+            'birthdate' => $this->faker->date('Y-m-d', '-20 years'),
         ];
     }
 }
