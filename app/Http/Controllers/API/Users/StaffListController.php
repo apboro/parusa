@@ -5,8 +5,9 @@ namespace App\Http\Controllers\API\Users;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
-use App\Models\Dictionaries\UserStatus;
+use App\Models\Dictionaries\PositionStatus;
 use App\Models\User\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 
@@ -24,7 +25,26 @@ class StaffListController extends ApiController
         $query = User::query()->with(['status', 'profile', 'staffPosition'])->where('is_staff', true);
 
         // apply filters
+        if (!empty($filters = $request->filters())) {
+            if (!empty($filters['position_status_id'])) {
+                $query->whereHas('status', function (Builder $query) use ($filters) {
+                    $query->where('status_id', $filters['position_status_id']);
+                });
+            }
+        }
+
         // apply search
+        if (!empty($search = $request->search())) {
+            foreach ($search as $term) {
+                $query->where(function (Builder $query) use ($term) {
+                    $query->whereHas('profile', function (Builder $query) use ($term) {
+                        $query->where('lastname', 'LIKE', "%$term%")
+                            ->orWhere('firstname', 'LIKE', "%$term%")
+                            ->orWhere('patronymic', 'LIKE', "%$term%");
+                    });
+                });
+            }
+        }
 
         // current page automatically resolved from request via `page` parameter
         $users = $query->paginate($request->perPage());
@@ -35,7 +55,7 @@ class StaffListController extends ApiController
 
             return [
                 // TODO fix to mysql $partner->hasStatus(PartnerStatus::active)
-                'active' => (int)$user->status_id === UserStatus::active,
+                'active' => $user->staffPosition ? (int)$user->staffPosition->status_id === PositionStatus::active : null,
                 'id' => $user->id,
                 'record' => [
                     'name' => $profile ? $profile->lastname . ' ' . $profile->firstname . ' ' . $profile->patronymic : null,
