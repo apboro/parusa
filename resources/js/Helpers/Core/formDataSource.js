@@ -13,7 +13,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
         titles: {},
         validation_rules: {},
 
-        payload: null,
+        payload: {},
 
         valid: {},
         validation_errors: {},
@@ -32,7 +32,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
                     Object.keys(this.values).map(key => {
                         this.validation_rules[key] = parseRules(response.data.rules[key]);
                     });
-                    this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : null;
+                    this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
                     this.validateAll();
                     this.loaded = true;
                 })
