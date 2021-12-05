@@ -11,9 +11,18 @@ use Illuminate\Http\Request;
 class StaffEditController extends ApiController
 {
     protected array $rules = [
-        'last_name' => 'required',
+        'last_name' => 'required|alpha|min:6|max:10',
         'first_name' => 'required',
         'status' => 'required',
+    ];
+
+    protected array $titles = [
+        'last_name' => 'Фамилия',
+        'first_name' => 'Имя',
+        'patronymic' => 'Отчество',
+        'position_title' => 'Должность',
+        'position_status_id' => 'Статус трудоустройства',
+        'birth_date' => 'Дата рождения',
     ];
 
     public function get(Request $request): JsonResponse
@@ -40,9 +49,8 @@ class StaffEditController extends ApiController
         ];
 
         // send response
-        return APIResponse::response([
-            'values' => $values,
-            'rules' => $this->rules,
+        return APIResponse::form($values, $this->rules, $this->titles, [], [
+            'full_name' => $profile->fullName,
         ]);
     }
 }
