@@ -23,6 +23,8 @@ class CreateUserProfilesTable extends Migration
 
             $table->enum('gender', ['male', 'female']);
 
+            $table->date('birthdate')->nullable();
+
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
