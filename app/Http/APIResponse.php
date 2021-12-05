@@ -131,6 +131,30 @@ class APIResponse
     }
 
     /**
+     * Make 200 form response with data and payload.
+     *
+     * @param array $values
+     * @param array $rules
+     * @param array $titles
+     * @param array|null $errors
+     * @param mixed $payload
+     *
+     * @return  JsonResponse
+     */
+    public static function form(array $values, array $rules, array $titles, ?array $errors = null, $payload = null): JsonResponse
+    {
+        return response()->json([
+            'status' => 'OK',
+            'code' => 200,
+            'values' => $values,
+            'rules' => $rules,
+            'titles' => $titles,
+            'errors' => $errors,
+            'payload' => $payload,
+        ], 200);
+    }
+
+    /**
      * Add last modifier header to response.
      * Modified timestamp must be GMT timezone.
      *
