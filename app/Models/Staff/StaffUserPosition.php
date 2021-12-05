@@ -9,13 +9,19 @@ use App\Models\Model;
 use App\Traits\HasStatus;
 use App\Models\User\User;
 use App\Models\User\UserContact;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
- *
+ * @property int $user_id
+ * @property string $position_title
+ * @property int $status_id
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property PositionStatus $status
  * @property User $user
  */
 class StaffUserPosition extends Model implements Statusable

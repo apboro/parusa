@@ -7,7 +7,8 @@ use App\Interfaces\Statusable;
 use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Dictionaries\UserRole;
 use App\Models\Dictionaries\UserStatus;
-use App\Models\Partner\Partner;
+use App\Models\Partner\PartnerUserPosition;
+use App\Models\Staff\StaffUserPosition;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,6 +27,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property UserProfile $profile
  * @property Collection $roles
  * @property Collection $contacts
+ * @property Collection $positions
+ * @property StaffUserPosition $staffPosition
  */
 class User extends Authenticatable implements Statusable
 {
@@ -122,7 +125,7 @@ class User extends Authenticatable implements Statusable
      */
     public function profile(): HasOne
     {
-        return $this->hasOne(UserProfile::class);
+        return $this->hasOne(UserProfile::class, 'user_id', 'id');
     }
 
     /**
@@ -136,26 +139,22 @@ class User extends Authenticatable implements Statusable
     }
 
     /**
-     * All active agents of this partner.
+     * All partner positions of user.
      *
-     * @return  BelongsToMany
+     * @return  HasMany
      */
-//    public function partners(): BelongsToMany
-//    {
-//        return $this->belongsToMany(Partner::class, 'user_belongs_to_partner', 'user_id', 'partner_id')
-//            ->withPivot(['position', 'blocked_at'])
-//            ->wherePivotNull('blocked_at', true);
-//    }
+    public function positions(): HasMany
+    {
+        return $this->hasMany(PartnerUserPosition::class, 'id', 'user_id');
+    }
 
     /**
-     * All agents of this partner.
+     * All partner positions of user.
      *
-     * @return  BelongsToMany
+     * @return  HasOne
      */
-//    public function allPartners(): BelongsToMany
-//    {
-//        return $this->belongsToMany(Partner::class, 'user_belongs_to_partner', 'user_id', 'partner_id')
-//            ->withPivot(['position', 'blocked_at']);
-//    }
-
+    public function staffPosition(): HasOne
+    {
+        return $this->hasOne(StaffUserPosition::class, 'user_id', 'id');
+    }
 }
