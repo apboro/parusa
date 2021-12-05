@@ -7,6 +7,10 @@
     cursor: pointer;
     transition: color $animation $animation_time;
 
+    &__bold {
+        font-weight: bold;
+    }
+
     &:hover {
         color: $link_hover_color;
     }

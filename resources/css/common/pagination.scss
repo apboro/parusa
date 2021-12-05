@@ -71,7 +71,7 @@
                 background-color: $pagination_link_background;
                 transition: color $animation $animation_time, background-color $animation $animation_time, border-color $animation $animation_time;
 
-                &:hover {
+                &:not(&-active):hover {
                     color: $pagination_link_hover_color;
                     border-color: $pagination_link_hover_border;
                     background-color: $pagination_link_hover_background;
@@ -81,6 +81,7 @@
                     color: $pagination_link_active_color !important;
                     border-color: $pagination_link_active_border !important;
                     background-color: $pagination_link_active_background !important;
+                    cursor: default;
                 }
             }
 
