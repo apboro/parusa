@@ -1,11 +1,18 @@
 <template>
     <list-page :loading="list.loading">
 
-        <template v-slot:header>{{ $route.meta.title }}</template>
+        <template v-slot:header>
+            <page-title-bar :title="$route.meta.title">
+                <actions-menu>
+                    <span>Добавить сотрудника</span>
+                </actions-menu>
+            </page-title-bar>
+        </template>
 
         <template v-slot:filters>
             <page-bar-item :title="'Статус сотрудника'">
-                <dictionary-drop-down :dictionary="'user_statuses'" :placeholder="'Все'" :has-null="true" v-model="list.filters.position_status_id" @changed="reload"/>
+                <dictionary-drop-down :dictionary="'user_statuses'" :placeholder="'Все'" :has-null="true"
+                                      v-model="list.filters.position_status_id" @changed="reload"/>
             </page-bar-item>
         </template>
 
@@ -55,9 +62,15 @@ import IconSearch from "../../../Components/Icons/IconSearch";
 import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
 import Activity from "../../../Components/Activity";
 import Message from "../../../Layouts/Parts/Message";
+import PageTitleBar from "../../../Layouts/Parts/PageTitleBar";
+import BaseButton from "../../../Components/Base/BaseButton";
+import ActionsMenu from "../../../Components/ActionsMenu";
 
 export default {
     components: {
+        ActionsMenu,
+        BaseButton,
+        PageTitleBar,
         Message,
         Activity,
         ListPage,
