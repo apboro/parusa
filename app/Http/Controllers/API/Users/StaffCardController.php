@@ -28,6 +28,8 @@ class StaffCardController extends ApiController
             'last_name' => $profile->lastname,
             'first_name' => $profile->firstname,
             'patronymic' => $profile->patronymic,
+            'full_name' => $profile->fullName,
+            'compact_name' => $profile->compactName,
             'gender' => $profile->gender === 'male' ? 'мужской' : 'женский',
             'position_title' => $user->staffPosition ? $user->staffPosition->position_title : null,
             'position_status' => $user->staffPosition->status->name,
