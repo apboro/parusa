@@ -141,7 +141,7 @@ class APIResponse
      *
      * @return  JsonResponse
      */
-    public static function form(array $values, array $rules, array $titles, ?array $errors = null, $payload = null): JsonResponse
+    public static function form(array $values, array $rules, array $titles, ?array $errors = null, array $payload = []): JsonResponse
     {
         return response()->json([
             'status' => 'OK',
