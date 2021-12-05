@@ -18,7 +18,7 @@
     background-color: $base_button_background_color;
     transition: color $animation $animation_time, background-color $animation $animation_time, border-color $animation $animation_time, box-shadow $animation $animation_time;
     font-family: $project_font;
-    font-size: 16px;
+    font-size: 14px;
     box-shadow: $shadow_1;
     text-transform: uppercase;
 
@@ -27,7 +27,7 @@
     }
 
     &:hover {
-        box-shadow: $shadow_2;
+        box-shadow: $shadow_hover;
         color: $base_button_hover_color;
         background-color: $base_button_hover_border;
         border-color: $base_button_hover_background_color;
