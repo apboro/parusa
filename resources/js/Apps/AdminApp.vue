@@ -10,6 +10,8 @@
         </layout-header>
         <router-view/>
     </div>
+    <div id="toaster" class="toaster"></div>
+    <div id="dialogs" class="dialogs"></div>
 </template>
 
 <script>
@@ -27,7 +29,7 @@ export default {
     },
 
     created() {
-        this.$router.afterEach((to, from) => {
+        this.$router.afterEach(() => {
             this.$toast.clear();
         })
     },
