@@ -3,10 +3,9 @@
 @import "../shadows";
 
 .actions-menu {
-    display: block;
+    display: inline-block;
     flex-grow: 0;
     flex-shrink: 0;
-    width: 100%;
     height: $actions_menu_base_unit;
     line-height: $actions_menu_base_unit;
     box-sizing: border-box;
@@ -17,7 +16,7 @@
         box-sizing: border-box;
         border-radius: 2px;
         padding: 0 12px;
-        display: flex;
+        display: inline-flex;
         flex-direction: row;
         align-items: center;
         font-family: $project_font;

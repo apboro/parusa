@@ -1,6 +1,7 @@
 @import "../variables";
 @import "../colors";
 @import "../shadows";
+@import "../mixins/no-selection";
 
 .button {
     display: inline-block;
@@ -21,6 +22,7 @@
     font-size: 14px;
     box-shadow: $shadow_1;
     text-transform: uppercase;
+    @include noSelection;
 
     &:not(:last-child) {
         margin-right: 20px;
