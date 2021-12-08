@@ -8,12 +8,12 @@
 export default {
     props: {
         identifier: {type: String, default: null},
-        type: {type: String, default: null},
+        color: {type: String, default: null},
     },
 
     computed: {
         classProxy() {
-            return 'button__' + this.type;
+            return 'button__' + this.color;
         }
     },
 }
