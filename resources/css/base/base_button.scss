@@ -28,27 +28,22 @@
         margin-right: 20px;
     }
 
-    &:hover {
+    &:not(&__disabled):hover {
         box-shadow: $shadow_hover;
         color: $base_button_hover_color;
         background-color: $base_button_hover_border;
         border-color: $base_button_hover_background_color;
     }
 
-    &:active {
+    &:not(&__disabled):active {
         box-shadow: none;
     }
 
-    &__gray {
-        color: $base_button_gray_color;
-        background-color: $base_button_gray_border;
-        border-color: $base_button_gray_background_color;
-
-        &:hover {
-            color: $base_button_gray_hover_color;
-            background-color: $base_button_gray_hover_border;
-            border-color: $base_button_gray_hover_background_color;
-        }
+    &__disabled {
+        color: $base_button_disabled_color !important;
+        background-color: $base_button_disabled_border !important;
+        border-color: $base_button_disabled_background_color !important;
+        cursor: not-allowed;
     }
 
     &__green {
