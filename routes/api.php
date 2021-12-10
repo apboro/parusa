@@ -14,6 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-require base_path('routes/api/users.php');
+require base_path('routes/api/company.php');
 require base_path('routes/api/partners.php');
 require base_path('routes/api/dictionaries.php');
