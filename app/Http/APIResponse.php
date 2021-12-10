@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 class APIResponse
 {
     /**
-     * Make 304 response.
+     * Make 304 not modified response.
      *
      * @return  JsonResponse
      */
@@ -136,12 +136,11 @@ class APIResponse
      * @param array $values
      * @param array $rules
      * @param array $titles
-     * @param array|null $errors
      * @param mixed $payload
      *
      * @return  JsonResponse
      */
-    public static function form(array $values, array $rules, array $titles, ?array $errors = null, array $payload = []): JsonResponse
+    public static function form(array $values, array $rules, array $titles, array $payload = []): JsonResponse
     {
         return response()->json([
             'status' => 'OK',
@@ -149,9 +148,50 @@ class APIResponse
             'values' => $values,
             'rules' => $rules,
             'titles' => $titles,
-            'errors' => $errors,
             'payload' => $payload,
         ], 200);
+    }
+
+    /**
+     * Make 200 form response with data and payload.
+     *
+     * @param string $message
+     * @param mixed $payload
+     *
+     * @return  JsonResponse
+     */
+    public static function formSuccess(string $message, array $payload = []): JsonResponse
+    {
+        return response()->json([
+            'status' => 'OK',
+            'code' => 200,
+            'message' => $message,
+            'payload' => $payload,
+        ], 200);
+    }
+
+    /**
+     * Make 422 form validation error response with data and payload.
+     *
+     * @param array $values
+     * @param array $rules
+     * @param array $titles
+     * @param array $errors
+     * @param mixed $payload
+     *
+     * @return  JsonResponse
+     */
+    public static function formError(array $values, array $rules, array $titles, array $errors = [], array $payload = []): JsonResponse
+    {
+        return response()->json([
+            'status' => 'Validation error',
+            'code' => 422,
+            'values' => $values,
+            'rules' => $rules,
+            'titles' => $titles,
+            'errors' => $errors,
+            'payload' => $payload,
+        ], 422);
     }
 
     /**
