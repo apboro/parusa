@@ -18,8 +18,8 @@ class CreateUsersTable extends Migration
 
             $table->id();
 
-            $table->string('login')->unique();
-            $table->string('password');
+            $table->string('login')->unique()->nullable();
+            $table->string('password')->nullable();
 
             $table->boolean('is_staff')->nullable()->default(false);
 
