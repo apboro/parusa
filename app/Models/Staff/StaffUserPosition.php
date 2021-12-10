@@ -34,6 +34,13 @@ class StaffUserPosition extends Model implements Statusable
     ];
 
     /**
+     * @var string[] Fillable attributes.
+     */
+    protected $fillable = [
+        'position_title',
+    ];
+
+    /**
      * Position's status.
      *
      * @return  HasOne
