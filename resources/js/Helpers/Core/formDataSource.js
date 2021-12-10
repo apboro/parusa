@@ -16,10 +16,15 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
         payload: {},
 
         valid: {},
+        valid_all: false,
         validation_errors: {},
 
         loaded: false,
         loading: false,
+        saving: false,
+
+        toaster: null,
+        afterSave: null,
 
         load() {
             this.loading = true;
@@ -44,9 +49,42 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
                 });
         },
 
+        save() {
+            this.saving = true;
+
+            let options = clone(this.options);
+            options['data'] = this.values;
+
+            axios.post(this.dataTargetUrl, options)
+                .then(response => {
+                    this.toast(response.data.message, 5000, 'success');
+                    if(typeof this.afterSave === "function") {
+                        this.afterSave(response.data.payload);
+                    }
+                })
+                .catch(error => {
+                    if (error.response.status === 422) {
+                        if (typeof error.response.data.errors !== "undefined") {
+                            this.validation_errors = error.response.data.errors;
+                            Object.keys(this.validation_errors).map(key => {
+                                this.valid[key] = false;
+                            });
+                        }
+                        this.toast('Не все поля корректно заполнены', 5000, 'error');
+                    } else {
+                        this.toast('Ошибка: ' + (error.response.data.status !== "undefined" ? error.response.data.status : error.response.code), 5000, 'error');
+                    }
+                })
+                .finally(() => {
+                    this.saving = false;
+                });
+        },
+
         validateAll() {
+            this.valid_all = true;
             Object.keys(this.values).map(key => {
-                this.validate(key, this.values[key]);
+                const valid = this.validate(key, this.values[key]);
+                this.valid_all = this.valid_all && valid;
             });
         },
 
@@ -54,7 +92,6 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
             if (Object.keys(this.validation_rules[name]).length === 0) {
                 this.validation_errors[name] = [];
                 this.valid[name] = true;
-                // this.updateErrorsCount(field_name, initialValid, true);
                 return true;
             }
 
@@ -77,48 +114,15 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
             return false;
         },
 
+        toast(message, delay = null, type = null) {
+            if (this.toaster !== null) {
+                this.toaster.show(message, delay, type);
+            } else {
+                console.log(type + ' ' + message);
+            }
+        },
         // hasErrors() {
         //     return Object.values(this.valid).some(val => !val);
-        // },
-        //
-        // sectionHasErrors(section) {
-        //     return Object.keys(this.fields).some(field => {
-        //         let _section = !!this.fields[field]['section'] ? this.fields[field]['section'] : null;
-        //         if (section === _section) {
-        //             return this.valid[field] === false;
-        //         }
-        //         return false;
-        //     });
-        // },
-        //
-        // sectionHasModified(section) {
-        //     return Object.keys(this.fields).some(field => {
-        //         let _section = !!this.fields[field]['section'] ? this.fields[field]['section'] : null;
-        //         if (section === _section) {
-        //             return this.isFieldModified(field);
-        //         }
-        //         return false;
-        //     });
-        // },
-        //
-        // reset() {
-        //     let needsReload = false;
-        //
-        //     Object.keys(this.fields).map(field => {
-        //
-        //         if (this.isFieldModified(field)) {
-        //             try {
-        //                 const json = JSON.stringify(this.fields[field]['value']);
-        //                 const parsed = JSON.parse(json);
-        //                 this.set(field, parsed);
-        //                 needsReload = needsReload || !!this.fields[field]['needs_reload'];
-        //             } catch (e) {
-        //
-        //             }
-        //         }
-        //     });
-        //
-        //     return needsReload;
         // },
     }
 
