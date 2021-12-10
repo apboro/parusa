@@ -52,8 +52,8 @@ const ToastPlugin = function (_options) {
         this.toasts.push(toast);
     };
 
-    this.show = (message, delay) => {
-        this._show(message, delay)
+    this.show = (message, delay, type = null) => {
+        this._show(message, delay, type)
     };
     this.success = (message, delay = null) => {
         this._show(message, delay, 'success')
@@ -66,7 +66,7 @@ const ToastPlugin = function (_options) {
     };
 
     this.clear = () => {
-        this.toasts.map((toast, key) => {
+        this.toasts.map((toast) => {
             toast.remove();
         });
         this.toasts = [];
