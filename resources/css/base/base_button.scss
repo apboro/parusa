@@ -28,7 +28,7 @@
         margin-right: 20px;
     }
 
-    &:not(&__disabled):hover {
+    &:hover {
         box-shadow: $shadow_hover;
         color: $base_button_hover_color;
         background-color: $base_button_hover_border;
@@ -44,6 +44,10 @@
         background-color: $base_button_disabled_border !important;
         border-color: $base_button_disabled_background_color !important;
         cursor: not-allowed;
+        box-shadow: $shadow_1 !important;
+
+        &:hover {
+        }
     }
 
     &__green {
