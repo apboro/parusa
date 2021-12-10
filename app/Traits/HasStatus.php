@@ -22,8 +22,8 @@ trait HasStatus
     protected function checkAndSetStatus(string $class, $status, string $exception, bool $save = true): void
     {
         /** @var AbstractDictionary $class */
-        if (is_int($status)) {
-            $status = $class::get($status);
+        if (is_string($status) || is_int($status)) {
+            $status = $class::get((int)$status);
         }
 
         if ($status === null || !$status->exists) {
@@ -46,10 +46,10 @@ trait HasStatus
      */
     public function hasStatus($status): bool
     {
-        if (is_int($status)) {
-            return $this->status_id === $status;
+        if (is_string($status) || is_int($status)) {
+            return (int)$this->status_id === (int)$status;
         }
 
-        return $this->status->id === $status->id;
+        return (int)$this->status_id === (int)$status->id;
     }
 }
