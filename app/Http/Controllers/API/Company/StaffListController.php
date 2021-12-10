@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Users;
+namespace App\Http\Controllers\API\Company;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
@@ -22,12 +22,15 @@ class StaffListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
-        $query = User::query()->with(['status', 'profile', 'staffPosition'])->where('is_staff', true);
+        $query = User::query()
+            ->with(['profile', 'staffPosition'])
+            ->where('is_staff', true)
+            ->join('user_profiles', 'users.id', '=', 'user_profiles.user_id');
 
         // apply filters
         if (!empty($filters = $request->filters())) {
             if (!empty($filters['position_status_id'])) {
-                $query->whereHas('status', function (Builder $query) use ($filters) {
+                $query->whereHas('staffPosition', function (Builder $query) use ($filters) {
                     $query->where('status_id', $filters['position_status_id']);
                 });
             }
@@ -46,6 +49,8 @@ class StaffListController extends ApiController
             }
         }
 
+        $query->orderBy('user_profiles.lastname', 'asc');
+
         // current page automatically resolved from request via `page` parameter
         $users = $query->paginate($request->perPage());
 
@@ -54,8 +59,7 @@ class StaffListController extends ApiController
             $profile = $user->profile;
 
             return [
-                // TODO fix to mysql $partner->hasStatus(PartnerStatus::active)
-                'active' => $user->staffPosition ? (int)$user->staffPosition->status_id === PositionStatus::active : null,
+                'active' => $user->staffPosition ? $user->staffPosition->hasStatus(PositionStatus::active) : null,
                 'id' => $user->id,
                 'record' => [
                     'name' => $profile ? $profile->lastname . ' ' . $profile->firstname . ' ' . $profile->patronymic : null,

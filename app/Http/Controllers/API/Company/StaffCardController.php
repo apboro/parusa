@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Users;
+namespace App\Http\Controllers\API\Company;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
@@ -33,7 +33,7 @@ class StaffCardController extends ApiController
             'gender' => $profile->gender === 'male' ? 'мужской' : 'женский',
             'position_title' => $user->staffPosition ? $user->staffPosition->position_title : null,
             'position_status' => $user->staffPosition->status->name,
-            'birth_date' => $profile->birthdate->format('d.m.Y'),
+            'birth_date' => $profile->birthdate ? $profile->birthdate->format('d.m.Y') : null,
             'created_at' => $user->staffPosition->created_at->format('d.m.Y'),
         ];
 
