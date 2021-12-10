@@ -15,6 +15,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
+ * @property int $status_id
+ * @property int $partner_id
+ * @property int $user_id
+ * @property string $position_title
  *
  * @property User $user
  * @property Partner $partner
@@ -26,6 +30,13 @@ class PartnerUserPosition extends Model implements Statusable
     /** @var array Default attributes. */
     protected $attributes = [
         'status_id' => PositionStatus::default,
+    ];
+
+    /**
+     * @var string[] Fillable attributes.
+     */
+    protected $fillable = [
+        'position_title',
     ];
 
     /**
@@ -80,6 +91,7 @@ class PartnerUserPosition extends Model implements Statusable
      */
     public function contacts(): BelongsToMany
     {
+        // TODO test
         return $this->belongsToMany(UserContact::class, 'partner_position_has_contacts');
     }
 }

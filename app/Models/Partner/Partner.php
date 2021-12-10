@@ -11,6 +11,7 @@ use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -20,10 +21,13 @@ use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property int $id
+ * @property string $name
+ * @property int $status_id
  *
  * @property PartnerStatus $status
  * @property PartnerType $type
  * @property Account $account
+ * @property Collection $positions
  */
 class Partner extends Model implements Statusable, Typeable
 {
@@ -101,7 +105,7 @@ class Partner extends Model implements Statusable, Typeable
      */
     public function profile(): HasOne
     {
-        return $this->hasOne(PartnerProfile::class);
+        return $this->hasOne(PartnerProfile::class, 'partner_id', 'id');
     }
 
     /**
@@ -109,22 +113,20 @@ class Partner extends Model implements Statusable, Typeable
      *
      * @return  HasMany
      */
-    public function documents(): HasMany
-    {
-        return $this->hasMany(PartnerDocuments::class);
-    }
+//    public function documents(): HasMany
+//    {
+//        return $this->hasMany(PartnerDocuments::class);
+//    }
 
     /**
-     * All active agents of this partner (users that belongs to this partner).
+     * All positions of this partner.
      *
-     * @return  BelongsToMany
+     * @return  HasMany
      */
-//    public function positions(): BelongsToMany
-//    {
-//        return $this->belongsToMany(User::class, 'user_belongs_to_partner', 'partner_id', 'user_id')
-//            ->withPivot(['position', 'blocked_at'])
-//            ->wherePivotNull('blocked_at', true);
-//    }
+    public function positions(): HasMany
+    {
+        return $this->hasMany(PartnerUserPosition::class, 'partner_id', 'id');
+    }
 
     /**
      * All agents of this partner.
