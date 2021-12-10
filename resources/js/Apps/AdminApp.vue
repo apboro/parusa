@@ -30,7 +30,7 @@ export default {
 
     created() {
         this.$router.afterEach(() => {
-            this.$toast.clear();
+            // this.$toast.clear();
         })
     },
 }
