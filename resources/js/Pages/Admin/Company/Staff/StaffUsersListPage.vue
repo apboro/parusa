@@ -4,7 +4,7 @@
         <template v-slot:header>
             <page-title-bar :title="$route.meta.title">
                 <actions-menu>
-                    <span>Добавить сотрудника</span>
+                    <router-link :to="{ name: 'staff-user-edit', params: { id: 0 }}">Добавить сотрудника</router-link>
                 </actions-menu>
             </page-title-bar>
         </template>
@@ -50,21 +50,21 @@
 </template>
 
 <script>
-import listDataSource from "../../../Helpers/Core/listDataSource";
-import empty from "../../../Mixins/empty";
+import listDataSource from "../../../../Helpers/Core/listDataSource";
+import empty from "../../../../Mixins/empty";
 
-import ListPage from "../../../Layouts/ListPage";
-import PageBarItem from "../../../Layouts/Parts/PageBarItem";
-import BasePagination from "../../../Components/Base/BasePagination";
-import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
-import BaseIconInput from "../../../Components/Base/BaseIconInput";
-import IconSearch from "../../../Components/Icons/IconSearch";
-import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
-import Activity from "../../../Components/Activity";
-import Message from "../../../Layouts/Parts/Message";
-import PageTitleBar from "../../../Layouts/Parts/PageTitleBar";
-import BaseButton from "../../../Components/Base/BaseButton";
-import ActionsMenu from "../../../Components/ActionsMenu";
+import ListPage from "../../../../Layouts/ListPage";
+import PageBarItem from "../../../../Layouts/Parts/PageBarItem";
+import BasePagination from "../../../../Components/Base/BasePagination";
+import DictionaryDropDown from "../../../../Components/Dictionary/DictionaryDropDown";
+import BaseIconInput from "../../../../Components/Base/BaseIconInput";
+import IconSearch from "../../../../Components/Icons/IconSearch";
+import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
+import Activity from "../../../../Components/Activity";
+import Message from "../../../../Layouts/Parts/Message";
+import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
+import BaseButton from "../../../../Components/Base/BaseButton";
+import ActionsMenu from "../../../../Components/ActionsMenu";
 
 export default {
     components: {
@@ -88,7 +88,7 @@ export default {
     }),
 
     created() {
-        this.list = listDataSource('/api/users/staff');
+        this.list = listDataSource('/api/company/staff');
         this.list.load();
     },
 

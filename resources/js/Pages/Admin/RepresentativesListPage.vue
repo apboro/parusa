@@ -1,7 +1,7 @@
 <template>
     <page>
-        <template v-slot:header>Представители партнеров</template>
-        <!-- list here -->
+        <template v-slot:header>{{ $route.meta.title }}</template>
+
         <template v-slot:footer>Здесь пагинация</template>
     </page>
 </template>

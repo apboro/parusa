@@ -1,6 +1,6 @@
 <template>
     <page>
-        <template v-slot:header>Возврат билетов</template>
+        <template v-slot:header>{{ $route.meta.title }}</template>
         <!-- list here -->
         <template v-slot:footer>Здесь пагинация</template>
     </page>

@@ -1,6 +1,6 @@
 <template>
     <page>
-        <template v-slot:header>Мобильные кассы</template>
+        <template v-slot:header>{{ $route.meta.title }}</template>
         <!-- list here -->
         <template v-slot:footer>Здесь пагинация</template>
     </page>

@@ -1,11 +1,11 @@
 <template>
-    <page :loading="data.loading">
+    <page :loading="processing">
         <template v-slot:header>
             <page-title-bar :title="data.data['full_name']" :breadcrumbs="[
                 {caption: 'Сотрудники', to: {name: 'staff-user-list'}},
             ]">
                 <actions-menu>
-                    <span>Удалить сотрудника</span>
+                    <span @click="deleteUser">Удалить сотрудника</span>
                 </actions-menu>
             </page-title-bar>
         </template>
@@ -56,15 +56,15 @@
 </template>
 
 <script>
-import genericDataSource from "../../../Helpers/Core/genericDataSource";
+import genericDataSource from "../../../../Helpers/Core/genericDataSource";
 
-import Page from "../../../Layouts/Page";
-import BaseButton from "../../../Components/Base/BaseButton";
-import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
-import Container from "../../../Layouts/Parts/Container";
-import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
-import PageTitleBar from "../../../Layouts/Parts/PageTitleBar";
-import ActionsMenu from "../../../Components/ActionsMenu";
+import Page from "../../../../Layouts/Page";
+import BaseButton from "../../../../Components/Base/BaseButton";
+import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
+import Container from "../../../../Layouts/Parts/Container";
+import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
+import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
+import ActionsMenu from "../../../../Components/ActionsMenu";
 
 export default {
     components: {
@@ -80,19 +80,55 @@ export default {
 
     data: () => ({
         data: null,
+        deleting: false,
     }),
 
     computed: {
         userId() {
             return this.$route.params.id;
-        }
+        },
+
+        processing() {
+            return this.deleting || this.data.loading;
+        },
     },
 
     created() {
-        this.data = genericDataSource('/api/users/staff/view');
+        this.data = genericDataSource('/api/company/staff/view');
         this.data.load({id: this.userId});
     },
 
-    methods: {}
+    methods: {
+        deleteUser() {
+            const name = this.data.data['full_name'];
+            this.$dialog.show('Удалить сотрудника "' + name + '"?', 'question', 'red', [
+                this.$dialog.button('no', 'Отмена', 'blue'),
+                this.$dialog.button('yes', 'Продолжить', 'red'),
+            ]).then(result => {
+                if (result === 'yes') {
+                    // delete logic
+                    // this.deleting = true;
+                    // axios.post('/api/users/staff/delete', {id: this.userId})
+                    //     .then(response => {
+                    this.$dialog.show('Сотрудник удалён', 'success', 'green', [
+                        this.$dialog.button('ok', 'OK', 'blue')
+                    ], 'center')
+                        .finally(() => {
+                            // this.$router.push({name: 'staff-user-list'});
+                            console.log('dialog closed');
+                        });
+                    // })
+                    // .catch(error => {
+                    //     this.$dialog.show(error.data.message, 'error', 'red', [
+                    //         this.$dialog.button('ok', 'OK', 'blue')
+                    //     ], 'center')
+                    // })
+                    // .finally(() => {
+                    //     this.deleting = false;
+                    // });
+                }
+            });
+        }
+    }
 }
 </script>
