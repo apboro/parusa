@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\Partners\PartnersListController;
+use App\Http\Controllers\API\Partners\RepresentativeListController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,4 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/partners', [PartnersListController::class, 'partnersList'])->middleware('auth:sanctum');
+Route::post('/partners', [PartnersListController::class, 'list'])->middleware('auth:sanctum');
+
+Route::post('/representatives', [RepresentativeListController::class, 'list'])->middleware('auth:sanctum');
