@@ -30,7 +30,8 @@ class UserProfile extends Model
     public $incrementing = false;
 
     /** @var string[] Relations eager loading. */
-    protected $with = ['user'];
+    // no need yet
+    // protected $with = ['user'];
 
     /** @var string[] Attributes casting */
     protected $casts = [
@@ -39,6 +40,15 @@ class UserProfile extends Model
 
     /** @var array The accessors to append to the model's array. */
     protected $appends = ['fullName', 'compactName'];
+
+    /** @var string[] Fillable attributes. */
+    protected $fillable = [
+        'lastname',
+        'firstname',
+        'patronymic',
+        'birthdate',
+        'gender',
+    ];
 
     /**
      * User this profile belongs to.
@@ -57,7 +67,7 @@ class UserProfile extends Model
      */
     public function getFullNameAttribute(): ?string
     {
-        return $this->fullName();
+        return $this->getFullName();
     }
 
     /**
@@ -67,7 +77,7 @@ class UserProfile extends Model
      */
     public function getCompactNameAttribute(): ?string
     {
-        return $this->compactName();
+        return $this->getCompactName();
     }
 
     /**
@@ -75,7 +85,7 @@ class UserProfile extends Model
      *
      * @return  string|null
      */
-    public function lastName(): ?string
+    public function getLastName(): ?string
     {
         return $this->format('lastname', true);
     }
@@ -87,7 +97,7 @@ class UserProfile extends Model
      *
      * @return  string|null
      */
-    public function firstName(bool $full = true): ?string
+    public function getFirstName(bool $full = true): ?string
     {
         return $this->format('firstname', $full);
     }
@@ -99,7 +109,7 @@ class UserProfile extends Model
      *
      * @return  string|null
      */
-    public function patronymic(bool $full = true): ?string
+    public function getPatronymic(bool $full = true): ?string
     {
         return $this->format('patronymic', $full);
     }
@@ -109,9 +119,9 @@ class UserProfile extends Model
      *
      * @return  string|null
      */
-    public function fullName(): ?string
+    public function getFullName(): ?string
     {
-        $value = str_replace('  ', ' ', trim(sprintf('%s %s %s', $this->lastName(), $this->firstName(), $this->patronymic())));
+        $value = str_replace('  ', ' ', trim(sprintf('%s %s %s', $this->getLastName(), $this->getFirstName(), $this->getPatronymic())));
 
         return empty($value) ? null : $value;
     }
@@ -121,9 +131,9 @@ class UserProfile extends Model
      *
      * @return  string|null
      */
-    public function compactName(): ?string
+    public function getCompactName(): ?string
     {
-        $value = trim(sprintf('%s %s%s', $this->lastName(), $this->firstName(false), $this->patronymic(false)));
+        $value = trim(sprintf('%s %s%s', $this->getLastName(), $this->getFirstName(false), $this->getPatronymic(false)));
 
         return empty($value) ? null : $value;
     }

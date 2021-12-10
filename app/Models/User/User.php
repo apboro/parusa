@@ -55,7 +55,8 @@ class User extends Authenticatable implements Statusable
     ];
 
     /** @var string[] Relations eager loading. */
-    protected $with = ['roles'];
+    // no need yet
+    // protected $with = ['roles'];
 
     /**
      * User's status.
@@ -125,7 +126,7 @@ class User extends Authenticatable implements Statusable
      */
     public function profile(): HasOne
     {
-        return $this->hasOne(UserProfile::class, 'user_id', 'id');
+        return $this->hasOne(UserProfile::class, 'user_id', 'id')->withDefault();
     }
 
     /**
@@ -145,7 +146,7 @@ class User extends Authenticatable implements Statusable
      */
     public function positions(): HasMany
     {
-        return $this->hasMany(PartnerUserPosition::class, 'id', 'user_id');
+        return $this->hasMany(PartnerUserPosition::class, 'user_id', 'id');
     }
 
     /**
