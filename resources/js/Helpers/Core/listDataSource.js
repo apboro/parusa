@@ -19,7 +19,7 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
         has_error: false,
         error_message: null,
 
-        load(page = 1, perPage = null) {
+        load(page = 1, perPage = null, initial = false) {
             this.loading = true;
 
             const options = {
@@ -29,6 +29,7 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
                 order_by: this.order_by,
                 page: page,
                 per_page: perPage === null ? this.pagination.per_page : perPage,
+                initial: initial,
             }
 
             axios.post(this.dataSourceUrl, options)
@@ -36,7 +37,12 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
                     this.data = response.data.list;
                     this.titles = typeof response.data.titles !== "undefined" ? response.data.titles : null;
                     this.pagination = typeof response.data.pagination !== "undefined" && usePagination ? response.data.pagination : null;
-                    this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : null;
+                    let payload = typeof response.data.payload !== "undefined" ? response.data.payload : null;
+                    if (typeof payload['filters'] !== "undefined") {
+                        this.filters = payload['filters'];
+                        delete payload['filters'];
+                    }
+                    this.payload = payload;
                 })
                 .catch(error => {
                     console.log(error);

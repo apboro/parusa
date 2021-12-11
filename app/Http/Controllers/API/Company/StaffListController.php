@@ -13,6 +13,16 @@ use Illuminate\Support\Collection;
 
 class StaffListController extends ApiController
 {
+    protected array $defaultFilters = [
+        'position_status_id' => PositionStatus::active,
+    ];
+
+    protected array $rememberFilters = [
+        'position_status_id',
+    ];
+
+    protected string $rememberKey = 'staff_list';
+
     /**
      * Get staff list.
      *
@@ -28,7 +38,7 @@ class StaffListController extends ApiController
             ->join('user_profiles', 'users.id', '=', 'user_profiles.user_id');
 
         // apply filters
-        if (!empty($filters = $request->filters())) {
+        if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
             if (!empty($filters['position_status_id'])) {
                 $query->whereHas('staffPosition', function (Builder $query) use ($filters) {
                     $query->where('status_id', $filters['position_status_id']);
@@ -52,7 +62,7 @@ class StaffListController extends ApiController
         $query->orderBy('user_profiles.lastname', 'asc');
 
         // current page automatically resolved from request via `page` parameter
-        $users = $query->paginate($request->perPage());
+        $users = $query->paginate($request->perPage(10, $this->rememberKey));
 
         /** @var Collection $users */
         $users->transform(function (User $user) {
@@ -73,6 +83,8 @@ class StaffListController extends ApiController
             'name' => 'ФИО сотрудника',
             'position' => 'Должность',
             'contacts' => 'Контакты',
-        ]);
+        ], [
+            'filters' => $filters,
+        ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }
