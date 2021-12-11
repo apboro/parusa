@@ -35,7 +35,11 @@ class StaffListController extends ApiController
         $query = User::query()
             ->with(['profile', 'staffPosition'])
             ->where('is_staff', true)
-            ->join('user_profiles', 'users.id', '=', 'user_profiles.user_id');
+            ->join('user_profiles', 'users.id', '=', 'user_profiles.user_id')
+            ->select('users.*')
+            ->orderBy('user_profiles.lastname', 'asc')
+            ->orderBy('user_profiles.firstname', 'asc')
+            ->orderBy('user_profiles.patronymic', 'asc');
 
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
@@ -58,8 +62,6 @@ class StaffListController extends ApiController
                 });
             }
         }
-
-        $query->orderBy('user_profiles.lastname', 'asc');
 
         // current page automatically resolved from request via `page` parameter
         $users = $query->paginate($request->perPage(10, $this->rememberKey));
