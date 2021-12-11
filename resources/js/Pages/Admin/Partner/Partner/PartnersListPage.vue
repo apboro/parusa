@@ -100,7 +100,7 @@ export default {
 
     created() {
         this.list = listDataSource('/api/partners');
-        this.list.load();
+        this.list.load(1, null, true);
     },
 
     methods: {

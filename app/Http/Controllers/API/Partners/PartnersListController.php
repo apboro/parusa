@@ -6,30 +6,99 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\PartnerStatus;
+use App\Models\Dictionaries\PositionStatus;
 use App\Models\Partner\Partner;
+use App\Models\Partner\PartnerUserPosition;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 
 class PartnersListController extends ApiController
 {
-    public function partnersList(APIListRequest $request): JsonResponse
+    protected array $defaultFilters = [
+        'partner_status_id' => PartnerStatus::active,
+    ];
+
+    protected array $rememberFilters = [
+        'partner_status_id',
+    ];
+
+    protected string $rememberKey = 'partners_list';
+
+    /**
+     * Get partners list.
+     *
+     * @param ApiListRequest $request
+     *
+     * @return  JsonResponse
+     */
+    public function list(APIListRequest $request): JsonResponse
     {
-        $query = Partner::query()->with(['type', 'status']);
+        $query = Partner::query()->with(['type', 'status'])
+            ->with('positions', function (HasMany $query) {
+                $query->where('status_id', PositionStatus::active)
+                    ->with(['user', 'user.profile'])
+                    ->join('user_profiles', 'partner_user_positions.user_id', '=', 'user_profiles.user_id')
+                    ->select('partner_user_positions.*')
+                    ->orderBy('user_profiles.lastname')
+                    ->orderBy('user_profiles.firstname')
+                    ->orderBy('user_profiles.patronymic');
+            });
 
         // apply filters
+        if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
+            if (!empty($filters['partner_status_id'])) {
+                $query->where('status_id', $filters['partner_status_id']);
+            }
+            if (!empty($filters['partner_type_id'])) {
+                $query->where('type_id', $filters['partner_type_id']);
+            }
+        }
+
         // apply search
+        if (!empty($search = $request->search())) {
+            $query->where(function (Builder $query) use ($search) {
+                $query
+                    ->where(function (Builder $query) use ($search) {
+                        foreach ($search as $term) {
+                            $query->orWhere('name', 'LIKE', "%$term%");
+                        }
+                    })
+                    ->orWhere(function (Builder $query) use ($search) {
+                        $query->whereHas('positions.user.profile', function (Builder $query) use ($search) {
+                            foreach ($search as $term) {
+                                $query->where(function (Builder $query) use ($term) {
+                                    $query->where('lastname', 'LIKE', "%$term%")
+                                        ->orWhere('firstname', 'LIKE', "%$term%")
+                                        ->orWhere('patronymic', 'LIKE', "%$term%");
+                                });
+                            }
+                        });
+                    });
+            });
+        }
 
         // current page automatically resolved from request via `page` parameter
-        $partners = $query->paginate($request->perPage());
+        $partners = $query->orderBy('name')->paginate($request->perPage(10, $this->rememberKey));
 
         /** @var Collection $partners */
         $partners->transform(function (Partner $partner) {
+            $representatives = [];
+            foreach ($partner->positions as $position) {
+                /** @var PartnerUserPosition $position */
+                $representatives[] = [
+                    'id' => $position->user->id,
+                    'name' => $position->user->profile ? $position->user->profile->fullName : '—',
+                    'active' => $position->hasStatus(PositionStatus::active),
+                ];
+            }
             return [
-                // TODO fix to mysql $partner->hasStatus(PartnerStatus::active)
-                'active' => (int)$partner->status_id === PartnerStatus::active,
+                'id' => $partner->id,
+                'active' => $partner->hasStatus(PartnerStatus::active),
                 'record' => [
                     'name' => $partner->name,
-                    'representatives' => [],
+                    'representatives' => $representatives,
                     'type' => $partner->type->name,
                     'balance' => null,
                     'limit' => null,
@@ -48,7 +117,8 @@ class PartnersListController extends ApiController
             'limit' => 'Лимит',
         ], [
             'available_types' => $types,
-        ]);
+            'filters' => $filters,
+        ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 
 }
