@@ -8,6 +8,8 @@ use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PiersStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\ShipStatus;
+use App\Models\Dictionaries\TripDiscountStatus;
+use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Dictionaries\UserStatus;
 use Database\Seeders\GenericSeeder;
@@ -41,8 +43,19 @@ class StatusesSeeder extends GenericSeeder
             ShipStatus::blocked => ['name' => 'Не действующий'],
         ],
         TripStatus::class => [
-            TripStatus::active => ['name' => 'Действующий'],
-            TripStatus::blocked => ['name' => 'Не действующий'],
+            TripStatus::regular => ['name' => 'По расписанию'],
+            TripStatus::processing => ['name' => 'Выполняется'],
+            TripStatus::finished => ['name' => 'Завершен'],
+            TripStatus::cancelled => ['name' => 'Отменен'],
+        ],
+        TripSaleStatus::class => [
+            TripSaleStatus::selling => ['name' => 'Идет продажа'],
+            TripSaleStatus::closed_manually => ['name' => 'Продажа закрыта (вручную)'],
+            TripSaleStatus::closed_automatically => ['name' => 'Продажа закрыта (автоматически)'],
+        ],
+        TripDiscountStatus::class => [
+            TripDiscountStatus::enabled => ['name' => 'Разрешены'],
+            TripDiscountStatus::disabled => ['name' => 'Запрещены'],
         ],
 
         AccountTransactionStatus::class => [

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Partner\Partner;
 use App\Models\Partner\PartnerUserPosition;
+use App\Models\Sails\Ship;
 use App\Models\Staff\StaffUserPosition;
 use App\Models\User\User;
 use App\Models\User\UserProfile;
@@ -46,5 +47,7 @@ class TestDataSeeder extends Seeder
             StaffUserPosition::factory()->create(['user_id' => $user->id]);
             UserProfile::factory()->create(['user_id' => $user->id]);
         });
+
+        Ship::factory(30)->create();
     }
 }

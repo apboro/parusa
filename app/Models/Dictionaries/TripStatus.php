@@ -10,14 +10,20 @@ namespace App\Models\Dictionaries;
  */
 class TripStatus extends AbstractDictionary
 {
-    /** @var int The id of active status */
-    public const active = 1;
+    /** @var int The id of regular status */
+    public const regular = 1;
 
-    /** @var int The id of blocked status */
-    public const blocked = 2;
+    /** @var int The id of processing status */
+    public const processing = 2;
+
+    /** @var int The id of finished status */
+    public const finished = 3;
+
+    /** @var int The id of cancelled status */
+    public const cancelled = 4;
 
     /** @var int Default status */
-    public const default = self::active;
+    public const default = self::regular;
 
     /** @var string Referenced table name. */
     protected $table = 'dictionary_trip_statuses';

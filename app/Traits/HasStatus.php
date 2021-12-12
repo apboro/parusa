@@ -19,7 +19,7 @@ trait HasStatus
      *
      * @throws WrongStatusException
      */
-    protected function checkAndSetStatus(string $class, $status, string $exception, bool $save = true): void
+    protected function checkAndSetStatus(string $class, $status, string $exception, bool $save = true, string $name = 'status_id'): void
     {
         /** @var AbstractDictionary $class */
         if (is_string($status) || is_int($status)) {
@@ -30,7 +30,7 @@ trait HasStatus
             throw new $exception;
         }
 
-        $this->setAttribute('status_id', $status->id);
+        $this->setAttribute($name, $status->id);
 
         if ($save) {
             $this->save();
