@@ -11,6 +11,7 @@ use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\UserContactType;
 use App\Models\Dictionaries\UserRole;
 use App\Models\Dictionaries\UserStatus;
+use App\Models\Partner\Partner;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,6 +25,7 @@ class DictionaryListController extends ApiController
         'partner_types' => PartnerType::class,
         'partner_statuses' => PartnerStatus::class,
         'position_statuses' => PositionStatus::class,
+        'partners' => Partner::class,
     ];
 
     /**
@@ -44,7 +46,12 @@ class DictionaryListController extends ApiController
         /** @var AbstractDictionary $class */
         $class = $this->dictionaries[$name];
 
-        $actual = $class::query()->latest('updated_at')->value('updated_at');
+        if(method_exists($class, 'asDictionary')) {
+            $query = $class::asDictionary();
+        }else{
+            $query = $class::query();
+        }
+        $actual = $query->clone()->latest('updated_at')->value('updated_at');
         $actual = Carbon::parse($actual)->setTimezone('GMT');
 
         $requested = $request->hasHeader('If-Modified-Since') ?
@@ -55,7 +62,7 @@ class DictionaryListController extends ApiController
             return APIResponse::notModified();
         }
 
-        $dictionary = $class::query()->get();
+        $dictionary = $query->get();
 
         return APIResponse::list($dictionary, null, null, $actual);
     }

@@ -7,6 +7,7 @@ use App\Exceptions\Partner\WrongPartnerTypeException;
 use App\Interfaces\Statusable;
 use App\Interfaces\Typeable;
 use App\Models\Account\Account;
+use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Traits\HasStatus;
@@ -29,9 +30,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Account $account
  * @property Collection $positions
  */
-class Partner extends Model implements Statusable, Typeable
+class Partner extends Model implements Statusable, Typeable, AsDictionary
 {
-    use HasApiTokens, HasStatus, HasType, HasFactory;
+    use HasApiTokens, HasStatus, HasType, HasFactory, PartnerAsDictionary;
 
     /** @var array Default attributes. */
     protected $attributes = [
@@ -138,4 +139,5 @@ class Partner extends Model implements Statusable, Typeable
 //        return $this->belongsToMany(User::class, 'user_belongs_to_partner', 'partner_id', 'user_id')
 //            ->withPivot(['position', 'blocked_at']);
 //    }
+
 }
