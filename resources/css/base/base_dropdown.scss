@@ -90,6 +90,7 @@
             cursor: pointer;
             height: $base_base_unit * 0.75;
             line-height: $base_base_unit * 0.75;
+            white-space: nowrap;
 
             &-current {
                 color: $base_active_color;
