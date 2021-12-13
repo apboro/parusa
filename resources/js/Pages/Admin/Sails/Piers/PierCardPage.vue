@@ -5,7 +5,7 @@
                 {caption: 'Причалы', to: {name: 'pier-list'}},
             ]">
                 <actions-menu>
-                    <span @click="deleteUser">Удалить причал</span>
+                    <span @click="deletePier">Удалить причал</span>
                 </actions-menu>
             </page-title-bar>
         </template>
@@ -41,6 +41,7 @@ import Container from "../../../../Layouts/Parts/Container";
 import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import ActionsMenu from "../../../../Components/ActionsMenu";
+import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 export default {
     components: {
@@ -52,7 +53,7 @@ export default {
         BaseLinkButton,
     },
 
-    mixins: [UseBaseTableBundle],
+    mixins: [UseBaseTableBundle, DeleteEntry],
 
     data: () => ({
         data: null,
@@ -75,36 +76,14 @@ export default {
     },
 
     methods: {
-        deleteUser() {
+        deletePier() {
             const name = this.data.data['name'];
-            this.$dialog.show('Удалить причал "' + name + '"?', 'question', 'red', [
-                this.$dialog.button('no', 'Отмена', 'blue'),
-                this.$dialog.button('yes', 'Продолжить', 'red'),
-            ]).then(result => {
-                if (result === 'yes') {
-                    // delete logic
-                    // this.deleting = true;
-                    // axios.post('/api/users/staff/delete', {id: this.userId})
-                    //     .then(response => {
-                    this.$dialog.show('Причал удалён', 'success', 'green', [
-                        this.$dialog.button('ok', 'OK', 'blue')
-                    ], 'center')
-                        .finally(() => {
-                            // this.$router.push({name: 'staff-user-list'});
-                            console.log('dialog closed');
-                        });
-                    // })
-                    // .catch(error => {
-                    //     this.$dialog.show(error.data.message, 'error', 'red', [
-                    //         this.$dialog.button('ok', 'OK', 'blue')
-                    //     ], 'center')
-                    // })
-                    // .finally(() => {
-                    //     this.deleting = false;
-                    // });
-                }
-            });
-        }
+
+            this.deleteEntry('Удалить причал "' + name + '"?', '/api/piers/delete', {id: this.pierId})
+                .then(() => {
+                    this.$router.push({name: 'pier-list'});
+                });
+        },
     }
 }
 </script>

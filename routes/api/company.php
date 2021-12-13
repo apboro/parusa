@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\Company\StaffCardController;
+use App\Http\Controllers\API\Company\StaffDeleteController;
 use App\Http\Controllers\API\Company\StaffEditController;
 use App\Http\Controllers\API\Company\StaffListController;
 use Illuminate\Support\Facades\Route;
@@ -20,4 +21,5 @@ Route::post('/company/staff', [StaffListController::class, 'list'])->middleware(
 Route::post('/company/staff/view', [StaffCardController::class, 'get'])->middleware('auth:sanctum');
 Route::post('/company/staff/get', [StaffEditController::class, 'get'])->middleware('auth:sanctum');
 Route::post('/company/staff/update', [StaffEditController::class, 'update'])->middleware('auth:sanctum');
+Route::post('/company/staff/delete', [StaffDeleteController::class, 'delete'])->middleware('auth:sanctum');
 
