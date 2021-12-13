@@ -17,3 +17,4 @@ use Illuminate\Support\Facades\Route;
 require base_path('routes/api/company.php');
 require base_path('routes/api/partners.php');
 require base_path('routes/api/dictionaries.php');
+require base_path('routes/api/sails.php');

@@ -13,6 +13,12 @@ import PartnerCardPage from "../../Pages/Admin/Partner/Partner/PartnerCardPage";
 import RepresentativeCardPage from "../../Pages/Admin/Partner/Representatives/RepresentativeCardPage";
 import RepresentativeEditPage from "../../Pages/Admin/Partner/Representatives/RepresentativeEditPage";
 import RepresentativesListPage from "../../Pages/Admin/Partner/Representatives/RepresentativesListPage";
+import PiersListPage from "../../Pages/Admin/Sails/Piers/PiersListPage";
+import PierCardPage from "../../Pages/Admin/Sails/Piers/PierCardPage";
+import PierEditPage from "../../Pages/Admin/Sails/Piers/PierEditPage";
+import ExcursionsListPage from "../../Pages/Admin/Sails/Excursions/ExcursionsListPage";
+import ExcursionCardPage from "../../Pages/Admin/Sails/Excursions/ExcursionCardPage";
+import ExcursionEditPage from "../../Pages/Admin/Sails/Excursions/ExcursionEditPage";
 
 export default [
     {path: '/', name: 'home', component: HomePage},
@@ -31,6 +37,19 @@ export default [
     {path: '/staff', name: 'staff-user-list', component: StaffUsersListPage, meta: {title: 'Сотрудники'}},
     {path: '/staff/:id', name: 'staff-user-view', component: StaffUserViewPage, meta: {title: 'Просмотр сотрудника'}},
     {path: '/staff/:id/edit', name: 'staff-user-edit', component: StaffUserEditPage, meta: {title: 'Редактирование сотрудника'}},
+
+    /**
+     * Sails part
+     */
+    {path: '/pier', name: 'pier-list', component: PiersListPage, meta: {title: 'Причалы'}},
+    {path: '/pier/:id', name: 'pier-view', component: PierCardPage, meta: {title: 'Просмотр причала'}},
+    {path: '/pier/:id/edit', name: 'pier-edit', component: PierEditPage, meta: {title: 'Редактирование причала'}},
+
+    {path: '/excursion', name: 'excursion-list', component: ExcursionsListPage, meta: {title: 'Каталог экскурсий'}},
+    {path: '/excursion/:id', name: 'excursion-view', component: ExcursionCardPage, meta: {title: 'Просмотр экскурсии'}},
+    {path: '/excursion/:id/edit', name: 'excursion-edit', component: ExcursionEditPage, meta: {title: 'Редактирование экскурсии'}},
+
+
 
 
     {path: '/test', name: 'test', component: TestPage, meta: {title: 'Страница для тестов'}},

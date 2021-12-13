@@ -3,7 +3,7 @@ export default [
         'title': 'ПРИЧАЛЫ И РЕЙСЫ', 'route': '',
         'items': [
             {'title': 'Рейсы', 'route': ''},
-            {'title': 'Причалы', 'route': ''},
+            {'title': 'Причалы', 'route': 'pier-list'},
         ]
     },
     {
@@ -19,7 +19,7 @@ export default [
         'title': 'КОМПАНИЯ', 'route': '',
         'items': [
             {'title': 'Сотрудники', 'route': 'staff-user-list'},
-            {'title': 'Каталог экскурсий', 'route': ''},
+            {'title': 'Каталог экскурсий', 'route': 'excursion-list'},
             {'title': 'Настройки', 'route': ''},
             {'title': 'Справочники', 'route': ''},
         ]
