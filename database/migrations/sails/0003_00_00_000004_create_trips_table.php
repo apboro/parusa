@@ -39,13 +39,13 @@ class CreateTripsTable extends Migration
 
             $table->timestamps();
 
-            $table->foreign('start_pier_id')->references('id')->on('')->restrictOnDelete()->restrictOnUpdate();
-            $table->foreign('end_pier_id')->references('id')->on('')->restrictOnDelete()->restrictOnUpdate();
-            $table->foreign('ship_id')->references('id')->on('')->restrictOnDelete()->restrictOnUpdate();
-            $table->foreign('excursion_id')->references('id')->on('')->restrictOnDelete()->restrictOnUpdate();
-            $table->foreign('status_id')->references('id')->on('')->restrictOnDelete()->restrictOnUpdate();
-            $table->foreign('sale_status_id')->references('id')->on('')->restrictOnDelete()->restrictOnUpdate();
-            $table->foreign('discount_status_id')->references('id')->on('')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('start_pier_id')->references('id')->on('piers')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('end_pier_id')->references('id')->on('piers')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('ship_id')->references('id')->on('ships')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('excursion_id')->references('id')->on('excursions')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('status_id')->references('id')->on('dictionary_trip_statuses')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('sale_status_id')->references('id')->on('dictionary_trip_sale_statuses')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('discount_status_id')->references('id')->on('dictionary_trip_discount_statuses')->restrictOnDelete()->restrictOnUpdate();
         });
     }
 

@@ -16,7 +16,7 @@ class CreateExcursionHasProgramsTable extends Migration
     {
         Schema::create('excursion_has_programs', function (Blueprint $table) {
 
-            $table->unsignedInteger('excursion_id');
+            $table->unsignedBigInteger('excursion_id');
             $table->unsignedInteger('program_id');
 
             $table->foreign('excursion_id')->references('id')->on('excursions')->cascadeOnDelete()->cascadeOnUpdate();

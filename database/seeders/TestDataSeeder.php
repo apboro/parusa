@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Partner\Partner;
 use App\Models\Partner\PartnerUserPosition;
+use App\Models\Sails\Excursion;
+use App\Models\Sails\Pier;
 use App\Models\Sails\Ship;
 use App\Models\Staff\StaffUserPosition;
 use App\Models\User\User;
@@ -49,5 +51,7 @@ class TestDataSeeder extends Seeder
         });
 
         Ship::factory(30)->create();
+        Pier::factory(30)->create();
+        Excursion::factory(30)->create();
     }
 }

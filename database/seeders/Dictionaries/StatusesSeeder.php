@@ -31,8 +31,8 @@ class StatusesSeeder extends GenericSeeder
         ],
 
         ExcursionStatus::class => [
-            ExcursionStatus::active => ['name' => 'Действующий'],
-            ExcursionStatus::blocked => ['name' => 'Не действующий'],
+            ExcursionStatus::active => ['name' => 'Действующая'],
+            ExcursionStatus::blocked => ['name' => 'Не действующая'],
         ],
         PiersStatus::class => [
             PiersStatus::active => ['name' => 'Действующий'],
