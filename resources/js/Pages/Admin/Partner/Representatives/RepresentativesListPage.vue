@@ -24,20 +24,23 @@
             </template>
             <base-table-row v-for="(row, key) in list.data" :key="key">
                 <base-table-cell>
-                    <router-link class="link" :to="{ name: 'representatives-view', params: { id: row.id }}">{{
-                            row.record['name']
-                        }}
-                    </router-link>
+                    <router-link class="link"
+                                 :to="{ name: 'representatives-view', params: { id: row.id }}"
+                                 v-html="$highlight(row.record['name'], list.search)"
+
+                    />
                 </base-table-cell>
                 <base-table-cell>
                     <template v-for="partner in row.record['partners']">
                         <base-table-cell-item>
                             <activity :active="partner.active"/>
-                            <router-link class="link" :to="{ name: 'partners-view', params: { id: partner.id }}">
-                                {{ partner.name }}
-                            </router-link>
+                            <router-link class="link"
+                                         :to="{ name: 'partners-view', params: { id: partner.id }}"
+                                         v-html="$highlight(partner.name, list.search)"
+                            />
                         </base-table-cell-item>
-                        <base-table-cell-item><span class="text-gray text-sm">{{ partner.position }}</span></base-table-cell-item>
+                        <base-table-cell-item><span class="text-gray text-sm">{{ partner.position }}</span>
+                        </base-table-cell-item>
                     </template>
                 </base-table-cell>
                 <base-table-cell>

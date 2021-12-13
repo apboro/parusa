@@ -62,7 +62,7 @@ class PartnersListController extends ApiController
                 $query
                     ->where(function (Builder $query) use ($search) {
                         foreach ($search as $term) {
-                            $query->orWhere('name', 'LIKE', "%$term%");
+                            $query->where('name', 'LIKE', "%$term%");
                         }
                     })
                     ->orWhere(function (Builder $query) use ($search) {
@@ -118,6 +118,7 @@ class PartnersListController extends ApiController
         ], [
             'available_types' => $types,
             'filters' => $filters,
+            'filters_original' => $this->defaultFilters,
         ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 

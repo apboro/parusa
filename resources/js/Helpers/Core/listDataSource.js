@@ -7,6 +7,8 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
         titles: [],
         data: [],
 
+        filters_original: {},
+
         search: null,
         filters: {},
         order: null,
@@ -41,6 +43,10 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
                     if (typeof payload['filters'] !== "undefined") {
                         this.filters = payload['filters'];
                         delete payload['filters'];
+                    }
+                    if (typeof payload['filters_original'] !== "undefined") {
+                        this.filters_original = payload['filters_original'];
+                        delete payload['filters_original'];
                     }
                     this.payload = payload;
                 })

@@ -1,0 +1,18 @@
+export default {
+    install: (app) => {
+        app.config.globalProperties.$highlight = function (text, terms) {
+            if (text !== null && terms !== null) {
+                let ref = text.toLowerCase();
+                terms = terms.split(' ');
+                terms.map(term => {
+                    let index = ref.indexOf(term.toLowerCase());
+                    if (index >= 0) {
+                        text = text.substring(0, index) + "<span class='highlight'>" + text.substring(index, index + term.length) + "</span>" + text.substring(index + term.length);
+                        ref = text.toLowerCase();
+                    }
+                });
+            }
+            return text;
+        }
+    }
+}

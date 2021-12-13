@@ -11,8 +11,14 @@
 
         <template v-slot:filters>
             <page-bar-item :title="'Статус сотрудника'">
-                <dictionary-drop-down :dictionary="'user_statuses'" :placeholder="'Все'" :has-null="true"
-                                      v-model="list.filters.position_status_id" @changed="reload"/>
+                <dictionary-drop-down
+                    :dictionary="'user_statuses'"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :original="list.filters_original.position_status_id"
+                  v-model="list.filters.position_status_id"
+                    @changed="reload"
+                />
             </page-bar-item>
         </template>
 
@@ -32,10 +38,10 @@
                 <base-table-cell>
                     <!-- row.active -->
                     <activity :active="row.active"/>
-                    <router-link class="link" :to="{ name: 'staff-user-view', params: { id: row.id }}">{{
-                            row.record['name']
-                        }}
-                    </router-link>
+                    <router-link class="link"
+                                 :to="{ name: 'staff-user-view', params: { id: row.id }}"
+                                 v-html="$highlight(row.record['name'], list.search)"
+                    />
                 </base-table-cell>
                 <base-table-cell>{{ row.record['position'] }}</base-table-cell>
                 <base-table-cell>

@@ -87,6 +87,7 @@ class StaffListController extends ApiController
             'contacts' => 'Контакты',
         ], [
             'filters' => $filters,
+            'filters_original' => $this->defaultFilters,
         ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }

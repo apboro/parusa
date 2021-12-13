@@ -10,6 +10,7 @@ import store from './Stores/store';
 
 import Toast from "./Plugins/Toast/toaster";
 import Dialog from "./Plugins/Dialog/dialog";
+import Highlight from "./Plugins/Highlight/highlight";
 
 // add router
 const router = createRouter({
@@ -23,5 +24,6 @@ app.use(router);
 app.use(store);
 app.use(Toast);
 app.use(Dialog);
+app.use(Highlight);
 
 app.mount('#app');

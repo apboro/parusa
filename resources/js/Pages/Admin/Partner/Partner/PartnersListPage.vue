@@ -4,19 +4,31 @@
         <template v-slot:header>
             <page-title-bar :title="$route.meta.title">
                 <actions-menu>
-                    <router-link :to="{ name: 'representatives-edit', params: { id: 0 }}">Добавить партнёра</router-link>
+                    <router-link :to="{ name: 'representatives-edit', params: { id: 0 }}">Добавить партнёра
+                    </router-link>
                 </actions-menu>
             </page-title-bar>
         </template>
 
         <template v-slot:filters>
             <page-bar-item :title="'Статус партнёра'">
-                <dictionary-drop-down :dictionary="'partner_statuses'" :placeholder="'Все'" :has-null="true"
-                                      v-model="list.filters.partner_status_id" @changed="reload"/>
+                <dictionary-drop-down
+                    :dictionary="'partner_statuses'"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :original="list.filters_original.partner_status_id"
+                    v-model="list.filters.partner_status_id"
+                    @changed="reload"
+                />
             </page-bar-item>
             <page-bar-item :title="'Тип партнёра'">
-                <dictionary-drop-down :dictionary="'partner_types'" :placeholder="'Все'" :has-null="true"
-                                      v-model="list.filters.partner_type_id" @changed="reload"/>
+                <dictionary-drop-down
+                    :dictionary="'partner_types'"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    v-model="list.filters.partner_type_id"
+                    @changed="reload"
+                />
             </page-bar-item>
         </template>
 
@@ -35,18 +47,18 @@
             <base-table-row v-for="(row, key) in list.data" :key="key">
                 <base-table-cell>
                     <activity :active="row.active"/>
-                    <router-link class="link" :to="{ name: 'partners-view', params: { id: row.id }}">{{
-                            row.record['name']
-                        }}
-                    </router-link>
+                    <router-link class="link"
+                                 :to="{ name: 'partners-view', params: { id: row.id }}"
+                                 v-html="$highlight(row.record['name'], list.search)"
+                    />
                 </base-table-cell>
                 <base-table-cell>
                     <base-table-cell-item v-for="representative in row.record['representatives']">
                         <activity :active="representative.active"/>
-                        <router-link  class="link" :to="{name: 'representatives-view', params: {id: representative.id}}">{{
-                                representative.name
-                            }}
-                        </router-link>
+                        <router-link class="link"
+                                     :to="{name: 'representatives-view', params: {id: representative.id}}"
+                                     v-html="$highlight(representative.name, list.search)"
+                        />
                     </base-table-cell-item>
                 </base-table-cell>
                 <base-table-cell>{{ row.record['type'] }}</base-table-cell>
