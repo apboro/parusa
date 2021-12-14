@@ -21,6 +21,7 @@
         outline: none !important;
         box-sizing: border-box;
         height: $base_base_unit * 3;
+        min-height: $base_base_unit * 3;
         line-height: $base_base_unit * 0.75;
         font-family: $project_font;
         font-size: 16px;
@@ -28,6 +29,7 @@
         padding: $base_base_unit * 0.25 10px;
         flex-grow: 1;
         background-color: transparent;
+        resize: vertical;
 
         &-no-left {
             padding-left: 0;
