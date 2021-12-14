@@ -58,7 +58,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
             axios.post(this.dataTargetUrl, options)
                 .then(response => {
                     this.toast(response.data.message, 5000, 'success');
-                    if(typeof this.afterSave === "function") {
+                    if (typeof this.afterSave === "function") {
                         this.afterSave(response.data.payload);
                     }
                 })
@@ -72,7 +72,15 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
                         }
                         this.toast('Не все поля корректно заполнены', 5000, 'error');
                     } else {
-                        this.toast('Ошибка: ' + (error.response.data.status !== "undefined" ? error.response.data.status : error.response.code), 5000, 'error');
+                        let message;
+                        if (typeof error.response.data.status !== "undefined") {
+                            message = error.response.data.status;
+                        } else if (typeof error.response.data.message !== "undefined") {
+                            message = error.response.data.message;
+                        } else {
+                            message = error.response.status;
+                        }
+                        this.toast('Ошибка: ' + message, 0, 'error');
                     }
                 })
                 .finally(() => {
