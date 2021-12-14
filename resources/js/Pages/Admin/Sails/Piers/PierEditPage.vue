@@ -9,6 +9,13 @@
         <container>
             <data-field-input :datasource="form" :name="'name'"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'pier_statuses'" :name="'status_id'"/>
+            <data-field-images :datasource="form" :name="'images'"/>
+            <data-field-input :datasource="form" :name="'work_time'"/>
+            <data-field-input :datasource="form" :name="'address'"/>
+            <data-field-input :datasource="form" :name="'latitude'"/>
+            <data-field-input :datasource="form" :name="'longitude'"/>
+            <data-field-text-area :datasource="form" :name="'description'"/>
+            <data-field-text-area :datasource="form" :name="'way_to'"/>
         </container>
 
         <container :no-bottom="true">
@@ -31,9 +38,13 @@ import Container from "../../../../Layouts/Parts/Container";
 import BaseButton from "../../../../Components/Base/BaseButton";
 import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
+import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
+import DataFieldImages from "../../../../Components/DataFields/DataFieldImages";
 
 export default {
     components: {
+        DataFieldImages,
+        DataFieldTextArea,
         PageTitleBar,
         Page,
         LoadingProgress,
