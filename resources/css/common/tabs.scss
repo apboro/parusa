@@ -1,0 +1,69 @@
+@import "../variables";
+@import "../colors";
+@import "../mixins/no-selection";
+
+.tabs {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+    box-sizing: border-box;
+    padding: 10px 3px;
+    @include noSelection;
+
+    &__tab {
+        font-size: 14px;
+        font-family: $project_font;
+        height: $base_tabs_unit;
+        line-height: $base_tabs_unit;
+        white-space: nowrap;
+        box-sizing: border-box;
+        padding: 0 8px;
+        border-style: solid;
+        color: $tab_color;
+        border-color: $tab_border_color;
+        border-width: 1px 1px 0;
+        border-radius: 4px 4px 0 0;
+        margin: 3px 2px 0;
+        background-color: $tab_background_color;
+        cursor: pointer;
+        transition: color $animation $animation_time, background-color $animation $animation_time, border-color $animation $animation_time;
+        position: relative;
+
+        &:before, &:after {
+            content: '';
+            display: block;
+            height: 1px;
+            background-color: $tab_border_color;
+            position: absolute;
+            bottom: 0;
+        }
+
+        &:before {
+            width: calc(50% + 6px);
+            left: -3px;
+        }
+
+        &:after {
+            width: calc(50% + 6px);
+            right: -3px;
+        }
+
+        &:not(&-active):hover {
+            color: $tab_hover_color;
+            border-color: $tab_hover_border_color;
+            background-color: $tab_hover_background_color;
+        }
+
+        &-active {
+            color: $tab_active_color;
+            border-color: $tab_active_border_color;
+            background-color: $tab_active_background_color;
+            cursor: default;
+
+            &:before, &:after {
+                width: 3px;
+            }
+        }
+    }
+}

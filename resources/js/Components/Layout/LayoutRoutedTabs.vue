@@ -1,0 +1,45 @@
+<template>
+    <layout-tabs
+        :tabs="tabs"
+        :initial="current"
+        @change="change"
+    />
+</template>
+
+<script>
+import LayoutTabs from "./LayoutTabs";
+
+export default {
+    components: {LayoutTabs},
+    props: {
+        tabs: {type: Object, default: null},
+        initial: {type: String, default: null},
+    },
+
+    emits: ['change'],
+
+    data: () => ({
+        current: null,
+    }),
+
+    created() {
+        if (this.$route.hash === '') {
+            this.current = this.initial;
+        } else {
+            this.current = this.$route.hash.replace('#', '');
+        }
+    },
+
+    methods: {
+        change(value) {
+            this.current = value;
+            this.$emit('change', value);
+            history.pushState(
+                {},
+                null,
+                this.$route.path + '#' + value
+            );
+        },
+    }
+}
+</script>
