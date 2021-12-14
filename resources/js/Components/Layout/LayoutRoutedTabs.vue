@@ -34,7 +34,7 @@ export default {
         change(value) {
             this.current = value;
             this.$emit('change', value);
-            history.pushState(
+            history.replaceState(
                 {},
                 null,
                 this.$route.path + '#' + value
