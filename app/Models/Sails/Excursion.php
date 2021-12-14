@@ -26,8 +26,13 @@ class Excursion extends Model implements Statusable, AsDictionary
 {
     use HasStatus, HasFactory, ExcursionAsDictionary;
 
+    /** @var array Default attributes. */
+    protected $attributes = [
+        'status_id' => ExcursionStatus::default,
+    ];
+
     /**
-     * User's status.
+     * Excursion status.
      *
      * @return  HasOne
      */
@@ -37,7 +42,7 @@ class Excursion extends Model implements Statusable, AsDictionary
     }
 
     /**
-     * Check and set new status for user.
+     * Check and set new status for excursion.
      *
      * @param int|ExcursionStatus $status
      * @param bool $save
@@ -52,7 +57,7 @@ class Excursion extends Model implements Statusable, AsDictionary
     }
 
     /**
-     * User's roles.
+     * Excursion programs.
      *
      * @return  BelongsToMany
      */
