@@ -38,7 +38,6 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
                         this.validation_rules[key] = parseRules(response.data.rules[key]);
                     });
                     this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
-                    this.validateAll();
                     this.loaded = true;
                 })
                 .catch(error => {
@@ -58,6 +57,8 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
             axios.post(this.dataTargetUrl, options)
                 .then(response => {
                     this.toast(response.data.message, 5000, 'success');
+                    this.originals = clone(this.values);
+                    this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
                     if (typeof this.afterSave === "function") {
                         this.afterSave(response.data.payload);
                     }
@@ -94,6 +95,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
                 const valid = this.validate(key, this.values[key]);
                 this.valid_all = this.valid_all && valid;
             });
+            return this.valid_all;
         },
 
         validate(name, value) {

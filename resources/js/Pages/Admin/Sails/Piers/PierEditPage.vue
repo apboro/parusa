@@ -19,7 +19,7 @@
         </container>
 
         <container :no-bottom="true">
-            <base-button @click="save" :color="'green'" :disabled="!form.valid_all">Сохранить</base-button>
+            <base-button @click="save" :color="'green'">Сохранить</base-button>
             <base-button @click="$router.push({ name: 'pier-view', params: { id: this.pierId }})">Отмена
             </base-button>
         </container>
@@ -77,13 +77,13 @@ export default {
 
     methods: {
         save() {
-            if (!this.form.valid_all) {
+            if (!this.form.validateAll()) {
                 return;
             }
             this.form.save()
         },
         afterSave(payload) {
-            if (Number(this.userId) === 0) {
+            if (Number(this.pierId) === 0) {
                 const newId = payload['id'];
                 this.$router.push({name: 'pier-edit', params: {id: newId}});
             }
