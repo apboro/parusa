@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Sails;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Common\Image;
 use App\Models\Sails\Pier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,11 +15,19 @@ class PierEditController extends ApiController
     protected array $rules = [
         'name' => 'required',
         'status_id' => 'required',
+        'images' => 'required|max:1',
     ];
 
     protected array $titles = [
         'name' => 'Название',
         'status_id' => 'Статус',
+        'work_time' => 'Время работы',
+        'address' => 'Адрес',
+        'latitude' => 'Координаты причала: широта',
+        'longitude' => 'Координаты причала: долгота',
+        'description' => 'Описание причала',
+        'way_to' => 'Как добраться',
+        'images' => 'Фотография причала',
     ];
 
     /**
@@ -47,10 +56,24 @@ class PierEditController extends ApiController
             return APIResponse::notFound();
         }
 
+        $images = $pier->images->map(function (Image $image) {
+            return [
+                'id' => $image->id,
+                'url' => $image->url,
+            ];
+        });
+
         // fill data
         $values = [
             'name' => $pier->name,
             'status_id' => $pier->status_id,
+            'work_time' => $pier->info->work_time,
+            'address' => $pier->info->address,
+            'latitude' => $pier->info->latitude,
+            'longitude' => $pier->info->longitude,
+            'description' => $pier->info->description,
+            'way_to' => $pier->info->way_to,
+            'images' => $images,
         ];
 
         // send response
@@ -102,6 +125,19 @@ class PierEditController extends ApiController
             $pier->setStatus($data['status_id'], false);
             $pier->save();
 
+            $pier->info()->create([
+                'work_time' => $data['work_time'],
+                'address' => $data['address'],
+                'latitude' => $data['latitude'],
+                'longitude' => $data['longitude'],
+                'description' => $data['description'],
+                'way_to' => $data['way_to'],
+            ]);
+            //images
+            $images = Image::createFromMany($data['images'], 'public_images');
+            $imageIds = $images->pluck('id')->toArray();
+            $pier->images()->sync($imageIds);
+
             return APIResponse::formSuccess('Причал добавлен', ['id' => $pier->id]);
         }
 
@@ -112,6 +148,20 @@ class PierEditController extends ApiController
         $pier->setAttribute('name', $data['name']);
         $pier->setStatus($data['status_id']);
         $pier->save();
+
+        $info = $pier->info;
+        $info->setAttribute('work_time', $data['work_time']);
+        $info->setAttribute('address', $data['address']);
+        $info->setAttribute('latitude', $data['latitude']);
+        $info->setAttribute('longitude', $data['longitude']);
+        $info->setAttribute('description', $data['description']);
+        $info->setAttribute('way_to', $data['way_to']);
+        $info->save();
+
+        //images
+        $images = Image::createFromMany($data['images'], 'public_images');
+        $imageIds = $images->pluck('id')->toArray();
+        $pier->images()->sync($imageIds);
 
         return APIResponse::formSuccess('Данные причала обновлены');
     }
