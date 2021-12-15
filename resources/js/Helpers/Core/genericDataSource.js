@@ -9,6 +9,8 @@ const genericDataSource = function (dataSourceUrl) {
         has_error: false,
         error_message: null,
 
+        onLoad: null,
+
         load(options = {}) {
             this.loading = true;
 
@@ -16,6 +18,9 @@ const genericDataSource = function (dataSourceUrl) {
                 .then(response => {
                     this.data = response.data.data;
                     this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : null;
+                    if (typeof this.onLoad === "function") {
+                        this.onLoad(this.data, this.payload);
+                    }
                 })
                 .catch(error => {
                     console.log(error);
