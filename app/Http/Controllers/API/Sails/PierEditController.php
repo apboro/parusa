@@ -163,6 +163,8 @@ class PierEditController extends ApiController
         $imageIds = $images->pluck('id')->toArray();
         $pier->images()->sync($imageIds);
 
-        return APIResponse::formSuccess('Данные причала обновлены');
+        return APIResponse::formSuccess('Данные причала обновлены', [
+            'title' => $pier->name,
+        ]);
     }
 }
