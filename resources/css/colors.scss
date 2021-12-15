@@ -43,6 +43,8 @@ $page_message_error_color: #e71c1c;
 $page_title_color: #525252;
 $page_title_divider_color: #9b9b9b;
 
+$text_container_border_color: #e9e9e9;
+
 $actions_menu_color: #147ee8;
 $actions_menu_border_color: #147ee8;
 $actions_menu_background_color: #ffffff;
@@ -113,19 +115,14 @@ $base_background_changed_color: #ecf4ff;
 $base_error_color: #e71c1c;
 $base_required_color: #e71c1c;
 
-$base_image_target_color: #ffffff;
-$base_image_target_border_color: #147ee8;
-$base_image_target_background_color: #147ee8;
-$base_image_target_hover_color: #ffffff;
-$base_image_target_hover_border_color: #147ee8;
-$base_image_target_hover_background_color: #147ee8;
-$base_image_target_disabled_color: #ffffff;
-$base_image_target_disabled_border_color: #787878;
-$base_image_target_disabled_background_color: #787878;
 $base_image_border_color: #cfcfcf;
 $base_image_background_color: #ffffff;
 $base_image_discard_color: #ffffff;
 $base_image_discard_background_color: #e71c1c;
+
+$base_image_target_color: #ffffff;
+$base_image_target_border_color: #147ee8;
+$base_image_target_background_color: #147ee8;
 
 $tab_color: #1660ad;
 $tab_border_color: #e5e5e5;

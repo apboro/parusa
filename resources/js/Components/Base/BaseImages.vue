@@ -9,27 +9,28 @@
                                :image="image"
                                @discard="discard"
             ></base-images-image>
+            <label class="base-images__add" v-if="canAdd">
+                <icon-plus :class="'base-images__add-icon'"/>
+                <template v-if="canAddCount === 1">
+                    <input class="base-images__add-input" type="file" accept="image/*"
+                           @change="handleFile">
+                </template>
+                <template v-else>
+                    <input class="base-images__add-input" type="file" accept="image/*" multiple
+                           @change="handleFile">
+                </template>
+            </label>
         </div>
-        <label class="base-images__target" :class="{'base-images__target-disabled': !canAdd}">
-            <template v-if="canAdd && canAddCount === 1">
-                <input class="base-images__target-input" type="file" accept="image/*"
-                       @change="handleFile">
-            </template>
-            <template v-else-if="canAdd">
-                <input class="base-images__target-input" type="file" accept="image/*" multiple
-                       @change="handleFile">
-            </template>
-            <span class="base-images__target-caption">Добавить</span>
-        </label>
     </div>
 </template>
 
 <script>
 import clone from "../../Helpers/Lib/clone";
 import BaseImagesImage from "./Parts/BaseImagesImage";
+import IconPlus from "../Icons/IconPlus";
 
 export default {
-    components: {BaseImagesImage},
+    components: {IconPlus, BaseImagesImage},
     props: {
         modelValue: {type: Array, default: () => ([])},
         name: String,
