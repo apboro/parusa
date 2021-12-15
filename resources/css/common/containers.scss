@@ -1,0 +1,38 @@
+@import "../variables";
+@import "../colors";
+
+.text-container {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 0;
+
+    &__no-top {
+        padding-top: 0;
+    }
+
+    &__no-bottom {
+        padding-bottom: 0;
+    }
+
+    &__title {
+        font-family: $project_font;
+        font-size: 14px;
+        margin: 0 0 8px;
+    }
+
+    &__wrapper {
+        font-family: $project_font;
+        font-size: 14px;
+        border: 1px solid $text_container_border_color;
+        border-radius: 2px;
+        box-sizing: border-box;
+        padding: 10px;
+    }
+}
+
+.container-50 {
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+    padding: 0 15px;
+}

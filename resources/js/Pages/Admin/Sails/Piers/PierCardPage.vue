@@ -1,7 +1,7 @@
 <template>
     <page :loading="processing">
         <template v-slot:header>
-            <page-title-bar :title="data.data['name']" :breadcrumbs="[
+            <page-title-bar :title="title" :breadcrumbs="[
                 {caption: 'Причалы', to: {name: 'pier-list'}},
             ]">
                 <actions-menu>
@@ -10,59 +10,57 @@
             </page-title-bar>
         </template>
 
-        <base-table-container>
-            <base-table :borders="false" :highlight="false" :hover="false" :small="true">
-                <base-table-row>
-                    <base-table-cell :w="'200'">Название</base-table-cell>
-                    <base-table-cell :bold="true" :size="'lg'">{{ data.data.name }}</base-table-cell>
-                </base-table-row>
-                <base-table-row>
-                    <base-table-cell :w="'200'">Статус</base-table-cell>
-                    <base-table-cell :bold="true" :size="'lg'">{{ data.data.status }}</base-table-cell>
-                </base-table-row>
-            </base-table>
-        </base-table-container>
+        <layout-routed-tabs
+            :tabs="{
+                description: 'Описание причала',
+                schedule: 'Расписание рейсов',
+            }"
+            @change="tab = $event"
+        />
 
-        <container :no-bottom="true">
-            <base-link-button :to="{ name: 'pier-edit', params: { id: pierId }}">Редактировать
-            </base-link-button>
-        </container>
+        <keep-alive>
+            <pier-info v-if="tab === 'description'"
+                       :pier-id="pierId"
+                       :datasource="data"
+            />
+        </keep-alive>
+        <message v-if="tab === 'schedule'">Здесь будет расписание рейсов для данного причала</message>
 
     </page>
 </template>
 
 <script>
-import genericDataSource from "../../../../Helpers/Core/genericDataSource";
-
 import Page from "../../../../Layouts/Page";
-import BaseButton from "../../../../Components/Base/BaseButton";
-import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
-import Container from "../../../../Layouts/Parts/Container";
-import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import ActionsMenu from "../../../../Components/ActionsMenu";
+import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
+import PierInfo from "../../../../Parts/Sails/Pier/PierInfo";
 import DeleteEntry from "../../../../Mixins/DeleteEntry";
+import genericDataSource from "../../../../Helpers/Core/genericDataSource";
+import Message from "../../../../Layouts/Parts/Message";
 
 export default {
     components: {
+        PierInfo,
+        LayoutRoutedTabs,
         ActionsMenu,
         PageTitleBar,
         Page,
-        BaseButton,
-        Container,
-        BaseLinkButton,
+        Message,
     },
 
-    mixins: [UseBaseTableBundle, DeleteEntry],
+    mixins: [DeleteEntry],
 
     data: () => ({
         data: null,
+        title: null,
         deleting: false,
+        tab: null,
     }),
 
     computed: {
         pierId() {
-            return this.$route.params.id;
+            return Number(this.$route.params.id);
         },
 
         processing() {
@@ -72,10 +70,15 @@ export default {
 
     created() {
         this.data = genericDataSource('/api/piers/view');
+        this.data.onLoad = this.loaded;
         this.data.load({id: this.pierId});
     },
 
     methods: {
+        loaded(data) {
+            this.title = data['name'];
+        },
+
         deletePier() {
             const name = this.data.data['name'];
 
