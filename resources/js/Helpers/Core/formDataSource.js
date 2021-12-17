@@ -56,7 +56,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
 
             axios.post(this.dataTargetUrl, options)
                 .then(response => {
-                    this.toast(response.data.message, 5000, 'success');
+                    this.toast(response.data.message, 2000, 'success');
                     this.originals = clone(this.values);
                     this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
                     if (typeof this.afterSave === "function") {
