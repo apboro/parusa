@@ -25,6 +25,7 @@ Route::post('/piers', [PiersListController::class, 'list'])->middleware('auth:sa
 Route::post('/piers/view', [PierCardController::class, 'get'])->middleware('auth:sanctum');
 Route::post('/piers/get', [PierEditController::class, 'get'])->middleware('auth:sanctum');
 Route::post('/piers/update', [PierEditController::class, 'update'])->middleware('auth:sanctum');
+Route::post('/piers/status', [PierEditController::class, 'setStatus'])->middleware('auth:sanctum');
 Route::post('/piers/delete', [PierDeleteController::class, 'delete'])->middleware('auth:sanctum');
 
 Route::post('/excursions', [ExcursionsListController::class, 'list'])->middleware('auth:sanctum');
