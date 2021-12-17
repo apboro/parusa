@@ -18,6 +18,12 @@
     justify-content: center;
     align-items: center;
     background-color: $loader_background;
+
+    @for $i from 0 through 10 {
+        &-#{$i * 10} {
+            background-color: transparentize($loader_background, 1 - $i / 10);
+        }
+    }
 }
 
 .loading-progress {
