@@ -33,12 +33,14 @@ class APIResponse
     /**
      * Make 404 response.
      *
+     * @param string $status
+     *
      * @return  JsonResponse
      */
-    public static function notFound(): JsonResponse
+    public static function notFound(string $status = 'Not found'): JsonResponse
     {
         return response()->json([
-            'status' => 'Not found',
+            'status' => $status,
             'code' => 404,
         ], 404);
     }
@@ -53,7 +55,7 @@ class APIResponse
     public static function error(string $status = 'Server error'): JsonResponse
     {
         return response()->json([
-            'status' => app()->isProduction() ? 'Server error' : $status,
+            'status' => $status,
             'code' => 500,
         ], 500);
     }
