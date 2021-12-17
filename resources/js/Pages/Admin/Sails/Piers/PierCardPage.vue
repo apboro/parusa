@@ -34,7 +34,7 @@ import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import ActionsMenu from "../../../../Components/ActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
-import PierInfo from "../../../../Parts/Sails/Pier/PierInfo";
+import PierInfo from "../../../../Parts/Sails/Piers/PierInfo";
 import DeleteEntry from "../../../../Mixins/DeleteEntry";
 import genericDataSource from "../../../../Helpers/Core/genericDataSource";
 import Message from "../../../../Layouts/Parts/Message";
