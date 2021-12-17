@@ -1,6 +1,6 @@
 <template>
     <div class="page">
-        <loading-progress :loading="loading">
+        <loading-progress :loading="loading" :opacity="0">
             <div class="page__header" v-if="$slots.header">
                 <slot name="header"/>
             </div>
