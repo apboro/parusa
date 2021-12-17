@@ -33,8 +33,6 @@ export default {
     actions: {
         async refresh({commit, state}, dictionary) {
 
-            commit('setDictionaryState', {name: dictionary, data: false});
-
             return new Promise(function (resolve, reject) {
                 let headers = {};
                 if (typeof state.timestamps[dictionary] !== "undefined" && state.timestamps[dictionary] !== null) {
@@ -45,12 +43,12 @@ export default {
                 })
                     .then(response => {
                         // set loading state
-                        commit('setDictionaryState', {name: dictionary, data: true});
                         commit('setDictionary', {name: dictionary, data: response.data.list});
                         commit('setDictionaryTimestamp', {
                             name: dictionary,
                             data: typeof response.headers['last-modified'] !== "undefined" ? response.headers['last-modified'] : null
                         });
+                        commit('setDictionaryState', {name: dictionary, data: true});
                         resolve();
                     })
                     .catch(error => {
