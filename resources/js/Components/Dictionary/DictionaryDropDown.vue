@@ -45,7 +45,7 @@ export default {
     computed: {
         proxyValue: {
             get() {
-                return this.modelValue;
+                return this.ready ? this.modelValue : null;
             },
             set(value) {
                 this.$emit('update:modelValue', value);
