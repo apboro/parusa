@@ -2,14 +2,8 @@
 
 namespace App\Models\Sails;
 
-use App\Exceptions\Sails\WrongPierStatusException;
-use App\Interfaces\Statusable;
-use App\Models\Dictionaries\Interfaces\AsDictionary;
-use App\Models\Dictionaries\PiersStatus;
 use App\Models\Model;
-use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $pier_id
