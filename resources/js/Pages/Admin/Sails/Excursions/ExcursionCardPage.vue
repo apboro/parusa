@@ -10,23 +10,23 @@
             </page-title-bar>
         </template>
 
-        <base-table-container>
-            <base-table :borders="false" :highlight="false" :hover="false" :small="true">
-                <base-table-row>
-                    <base-table-cell :w="'200'">Название экскурсии</base-table-cell>
-                    <base-table-cell :bold="true" :size="'lg'">{{ data.data.name }}</base-table-cell>
-                </base-table-row>
-                <base-table-row>
-                    <base-table-cell :w="'200'">Статус</base-table-cell>
-                    <base-table-cell :bold="true" :size="'lg'">{{ data.data.status }}</base-table-cell>
-                </base-table-row>
-            </base-table>
-        </base-table-container>
+        <layout-routed-tabs
+            :tabs="{
+                description: 'Описание экскурсии',
+                rates: 'Тарифы на билеты',
+                schedule: 'Расписание',
+            }"
+            @change="tab = $event"
+        />
 
-        <container :no-bottom="true">
-            <base-link-button :to="{ name: 'excursion-edit', params: { id: excursionId }}">Редактировать
-            </base-link-button>
-        </container>
+        <keep-alive>
+            <excursion-info v-if="tab === 'description'"
+                       :excursion-id="excursionId"
+                       :datasource="data"
+            />
+        </keep-alive>
+        <message v-if="tab === 'rates'">Здесь будут тарифы для данной экскурсии</message>
+        <message v-if="tab === 'schedule'">Здесь будет расписание рейсов для данной экскурсии</message>
 
     </page>
 </template>
@@ -42,9 +42,15 @@ import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import ActionsMenu from "../../../../Components/ActionsMenu";
 import DeleteEntry from "../../../../Mixins/DeleteEntry";
+import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
+import ExcursionInfo from "../../../../Parts/Sails/Excursions/ExcursionInfo";
+import Message from "../../../../Layouts/Parts/Message";
 
 export default {
     components: {
+        Message,
+        ExcursionInfo,
+        LayoutRoutedTabs,
         ActionsMenu,
         PageTitleBar,
         Page,
@@ -56,13 +62,14 @@ export default {
     mixins: [UseBaseTableBundle, DeleteEntry],
 
     data: () => ({
+        tab: null,
         data: null,
         deleting: false,
     }),
 
     computed: {
         excursionId() {
-            return this.$route.params.id;
+            return Number(this.$route.params.id);
         },
 
         processing() {

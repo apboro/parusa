@@ -7,16 +7,12 @@
                     <base-table-cell>{{ datasource.data.name }}</base-table-cell>
                 </base-table-row>
                 <base-table-row>
-                    <base-table-cell :w="'200'">Адрес причала</base-table-cell>
-                    <base-table-cell>{{ datasource.data.address }}</base-table-cell>
+                    <base-table-cell :w="'200'">Тип программы</base-table-cell>
+                    <base-table-cell>{{ datasource.data.types }}</base-table-cell>
                 </base-table-row>
                 <base-table-row>
-                    <base-table-cell :w="'200'">Время работы</base-table-cell>
-                    <base-table-cell>{{ datasource.data.work_time }}</base-table-cell>
-                </base-table-row>
-                <base-table-row>
-                    <base-table-cell :w="'200'">Координаты причала</base-table-cell>
-                    <base-table-cell>{{ datasource.data.latitude }}, {{ datasource.data.longitude }}</base-table-cell>
+                    <base-table-cell :w="'200'">Продолжительность</base-table-cell>
+                    <base-table-cell>{{ datasource.data.duration }}</base-table-cell>
                 </base-table-row>
                 <base-table-row>
                     <base-table-cell :w="'200'">Статус</base-table-cell>
@@ -31,24 +27,24 @@
             <img class="w-100" :src="datasource.data.images[0]" :alt="datasource.data.name"/>
         </div>
 
-        <text-container class="mt-30px" :title="'Описание причала'">{{ datasource.data.description }}</text-container>
-        <text-container :title="'Как добраться'">{{ datasource.data.way_to }}</text-container>
+        <text-container class="mt-30px" :title="'Краткое описание экскурсии'">{{ datasource.data.announce }}</text-container>
+        <text-container :title="'Полное описание экскурсии'">{{ datasource.data.description }}</text-container>
 
         <container :no-bottom="true">
-            <base-link-button :to="{ name: 'pier-edit', params: { id: pierId }}">Редактировать
+            <base-link-button :to="{ name: 'excursion-edit', params: { id: excursionId }}">Редактировать
             </base-link-button>
         </container>
 
         <pop-up ref="popup"
                 :manual="true"
-                :title="'Изменить статус причала'"
+                :title="'Изменить статус экскурсии'"
                 :buttons="[
                 {result: 'no', caption: 'Отмена', color: 'white'},
                 {result: 'yes', caption: 'OK', color: 'green'}
             ]"
         >
             <dictionary-drop-down
-                :dictionary="'pier_statuses'"
+                :dictionary="'excursion_statuses'"
                 :original="initial_status"
                 v-model="current_status"
                 :name="'status'"
@@ -69,7 +65,7 @@ export default {
     mixins: [UseBaseTableBundle],
 
     props: {
-        pierId: {type: Number, required: true},
+        excursionId: {type: Number, required: true},
         datasource: {type: Object},
     },
 
@@ -94,7 +90,7 @@ export default {
                 .then(result => {
                     if (result === 'yes') {
                         this.$refs.popup.process(true);
-                        axios.post('/api/piers/status', {id: this.pierId, status_id: this.current_status})
+                        axios.post('/api/excursions/status', {id: this.excursionId, status_id: this.current_status})
                             .then(response => {
                                 this.$toast.success(response.data.data.message, 2000);
                                 this.datasource.data.status = response.data.data.status;

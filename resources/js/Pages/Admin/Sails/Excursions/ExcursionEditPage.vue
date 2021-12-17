@@ -9,10 +9,16 @@
         <container>
             <data-field-input :datasource="form" :name="'name'"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'excursion_statuses'" :name="'status_id'"/>
+            <data-field-images :datasource="form" :name="'images'"/>
+<!--        TODO add multiselect component    -->
+<!--            <data-field-input :datasource="form" :name="'programs'"/>-->
+            <data-field-input :datasource="form" :name="'duration'"/>
+            <data-field-text-area :datasource="form" :name="'description'"/>
+            <data-field-text-area :datasource="form" :name="'announce'"/>
         </container>
 
-        <container :no-bottom="true">
-            <base-button @click="save" :color="'green'" :disabled="!form.valid_all">Сохранить</base-button>
+        <container no-bottom>
+            <base-button @click="save" :color="'green'">Сохранить</base-button>
             <base-button @click="$router.push({ name: 'excursion-view', params: { id: this.excursionId }})">Отмена
             </base-button>
         </container>
@@ -31,9 +37,13 @@ import Container from "../../../../Layouts/Parts/Container";
 import BaseButton from "../../../../Components/Base/BaseButton";
 import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
+import DataFieldImages from "../../../../Components/DataFields/DataFieldImages";
+import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
 
 export default {
     components: {
+        DataFieldTextArea,
+        DataFieldImages,
         PageTitleBar,
         Page,
         LoadingProgress,
@@ -50,7 +60,7 @@ export default {
 
     computed: {
         excursionId() {
-            return this.$route.params.id;
+            return Number(this.$route.params.id);
         },
         processing() {
             return this.form.loading || this.form.saving;
@@ -66,15 +76,17 @@ export default {
 
     methods: {
         save() {
-            if (!this.form.valid_all) {
+            if (!this.form.validateAll()) {
                 return;
             }
             this.form.save()
         },
         afterSave(payload) {
-            if (Number(this.userId) === 0) {
+            if (Number(this.excursionId) === 0) {
                 const newId = payload['id'];
-                this.$router.push({name: 'excursion-edit', params: {id: newId}});
+                this.$router.push({name: 'excursion-view', params: {id: newId}});
+            } else {
+                this.$router.push({name: 'excursion-view', params: {id: this.excursionId}});
             }
         },
     }
