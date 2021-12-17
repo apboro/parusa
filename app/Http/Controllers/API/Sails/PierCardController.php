@@ -30,6 +30,7 @@ class PierCardController extends ApiController
             'latitude' => $pier->info->latitude,
             'longitude' => $pier->info->longitude,
             'status' => $pier->status->name,
+            'status_id' => $pier->status_id,
             'description' => $pier->info->description,
             'way_to' => $pier->info->way_to,
             'images' => $pier->images->map(function (Image $image) {
