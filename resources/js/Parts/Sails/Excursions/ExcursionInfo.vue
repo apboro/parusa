@@ -8,7 +8,10 @@
                 </base-table-row>
                 <base-table-row>
                     <base-table-cell :w="'200'">Тип программы</base-table-cell>
-                    <base-table-cell>{{ datasource.data.types }}</base-table-cell>
+                    <base-table-cell>{{
+                            datasource.data.programs ? datasource.data.programs.join(', ') : ''
+                        }}
+                    </base-table-cell>
                 </base-table-row>
                 <base-table-row>
                     <base-table-cell :w="'200'">Продолжительность</base-table-cell>
@@ -27,7 +30,10 @@
             <img class="w-100" :src="datasource.data.images[0]" :alt="datasource.data.name"/>
         </div>
 
-        <text-container class="mt-30px" :title="'Краткое описание экскурсии'">{{ datasource.data.announce }}</text-container>
+        <text-container class="mt-30px" :title="'Краткое описание экскурсии'">{{
+                datasource.data.announce
+            }}
+        </text-container>
         <text-container :title="'Полное описание экскурсии'">{{ datasource.data.description }}</text-container>
 
         <container :no-bottom="true">

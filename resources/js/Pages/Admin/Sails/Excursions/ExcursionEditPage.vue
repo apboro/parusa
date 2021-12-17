@@ -10,8 +10,7 @@
             <data-field-input :datasource="form" :name="'name'"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'excursion_statuses'" :name="'status_id'"/>
             <data-field-images :datasource="form" :name="'images'"/>
-<!--        TODO add multiselect component    -->
-<!--            <data-field-input :datasource="form" :name="'programs'"/>-->
+            <data-field-dictionary-dropdown-multi :datasource="form" :dictionary="'excursion_programs'" :name="'programs'"/>
             <data-field-input :datasource="form" :name="'duration'"/>
             <data-field-text-area :datasource="form" :name="'description'"/>
             <data-field-text-area :datasource="form" :name="'announce'"/>
@@ -39,9 +38,11 @@ import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import DataFieldImages from "../../../../Components/DataFields/DataFieldImages";
 import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
+import DataFieldDictionaryDropdownMulti from "../../../../Components/DataFields/DataFieldDictionaryDropdownMulti";
 
 export default {
     components: {
+        DataFieldDictionaryDropdownMulti,
         DataFieldTextArea,
         DataFieldImages,
         PageTitleBar,
