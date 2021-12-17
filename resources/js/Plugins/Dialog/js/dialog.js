@@ -86,11 +86,16 @@ const Dialog = function (options) {
         buttons_container.appendChild(dialog_button);
     });
 
+    // Dialog wrapper
+    const wrapper = document.createElement("div");
+    wrapper.className = "dialogs__dialog-wrapper";
+    wrapper.appendChild(message_container);
+    wrapper.appendChild(buttons_container);
+
     // Create dialog
     const dialog_container = document.createElement("div");
     dialog_container.className = "dialogs__dialog";
-    dialog_container.appendChild(message_container);
-    dialog_container.appendChild(buttons_container);
+    dialog_container.appendChild(wrapper);
 
     // Create overlay
     const overlay = document.createElement("div");
