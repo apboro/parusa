@@ -69,7 +69,7 @@ export default {
         },
         changed(name, value) {
             this.datasource.values[name] = value;
-            this.datasource.validateAll();
+            this.datasource.validate(name, value);
         },
     }
 }
