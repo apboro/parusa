@@ -31,6 +31,7 @@ Route::post('/piers/delete', [PierDeleteController::class, 'delete'])->middlewar
 Route::post('/excursions', [ExcursionsListController::class, 'list'])->middleware('auth:sanctum');
 Route::post('/excursions/view', [ExcursionCardController::class, 'get'])->middleware('auth:sanctum');
 Route::post('/excursions/get', [ExcursionEditController::class, 'get'])->middleware('auth:sanctum');
+Route::post('/excursions/status', [ExcursionEditController::class, 'setStatus'])->middleware('auth:sanctum');
 Route::post('/excursions/update', [ExcursionEditController::class, 'update'])->middleware('auth:sanctum');
 Route::post('/excursions/delete', [ExcursionDeleteController::class, 'delete'])->middleware('auth:sanctum');
 

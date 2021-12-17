@@ -4,6 +4,7 @@ namespace App\Models\Sails;
 
 use App\Exceptions\Sails\WrongExcursionStatusException;
 use App\Interfaces\Statusable;
+use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
@@ -21,6 +22,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  *
  * @property ExcursionStatus $status
  * @property Collection $programs
+ * @property ExcursionInfo $info
+ * @property Collection $images
  */
 class Excursion extends Model implements Statusable, AsDictionary
 {
@@ -64,5 +67,25 @@ class Excursion extends Model implements Statusable, AsDictionary
     public function programs(): BelongsToMany
     {
         return $this->belongsToMany(ExcursionProgram::class, 'excursion_has_programs', 'excursion_id', 'program_id');
+    }
+
+    /**
+     * Excursion info.
+     *
+     * @return  HasOne
+     */
+    public function info(): HasOne
+    {
+        return $this->hasOne(ExcursionInfo::class, 'excursion_id', 'id')->withDefault();
+    }
+
+    /**
+     * Excursion images.
+     *
+     * @return  BelongsToMany
+     */
+    public function images(): BelongsToMany
+    {
+        return $this->belongsToMany(Image::class, 'excursion_has_image', 'excursion_id', 'image_id');
     }
 }

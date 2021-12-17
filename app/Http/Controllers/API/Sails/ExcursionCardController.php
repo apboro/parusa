@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Sails;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Common\Image;
+use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Sails\Excursion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,6 +27,16 @@ class ExcursionCardController extends ApiController
         $values = [
             'name' => $excursion->name,
             'status' => $excursion->status->name,
+            'status_id' => $excursion->status_id,
+            'images' => $excursion->images->map(function (Image $image) {
+                return $image->url;
+            }),
+            'programs' => $excursion->programs->map(function (ExcursionProgram $program) {
+                return $program->name;
+            }),
+            'duration' => $excursion->info->duration,
+            'description' => $excursion->info->description,
+            'announce' => $excursion->info->announce,
         ];
 
         // send response
