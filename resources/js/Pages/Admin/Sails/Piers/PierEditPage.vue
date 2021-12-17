@@ -61,7 +61,7 @@ export default {
 
     computed: {
         pierId() {
-            return this.$route.params.id;
+            return Number(this.$route.params.id);
         },
         processing() {
             return this.form.loading || this.form.saving;
@@ -85,7 +85,9 @@ export default {
         afterSave(payload) {
             if (Number(this.pierId) === 0) {
                 const newId = payload['id'];
-                this.$router.push({name: 'pier-edit', params: {id: newId}});
+                this.$router.push({name: 'pier-view', params: {id: newId}});
+            } else {
+                this.$router.push({name: 'pier-view', params: {id: this.pierId}});
             }
         },
     }
