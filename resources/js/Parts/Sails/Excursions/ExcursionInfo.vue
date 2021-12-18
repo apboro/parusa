@@ -1,53 +1,36 @@
 <template>
     <div>
-        <base-table-container :w="'50'">
-            <base-table :borders="false" :highlight="false" :hover="false" :small="true">
-                <base-table-row>
-                    <base-table-cell :w="'200'">Название</base-table-cell>
-                    <base-table-cell>{{ datasource.data.name }}</base-table-cell>
-                </base-table-row>
-                <base-table-row>
-                    <base-table-cell :w="'200'">Тип программы</base-table-cell>
-                    <base-table-cell>{{
-                            datasource.data.programs ? datasource.data.programs.join(', ') : ''
-                        }}
-                    </base-table-cell>
-                </base-table-row>
-                <base-table-row>
-                    <base-table-cell :w="'200'">Продолжительность</base-table-cell>
-                    <base-table-cell>{{ datasource.data.duration }}</base-table-cell>
-                </base-table-row>
-                <base-table-row>
-                    <base-table-cell :w="'200'">Статус</base-table-cell>
-                    <base-table-cell>
-                        <span class="link" @click="statusChange">{{ datasource.data.status }}</span>
-                    </base-table-cell>
-                </base-table-row>
-            </base-table>
-        </base-table-container>
+        <container w-50 mt-30 inline>
+            <value :title="'Название'">{{ datasource.data.name }}</value>
+            <value :title="'Тип программы'">{{ datasource.data.programs ? datasource.data.programs.join(', ') : '' }}</value>
+            <value :title="'Продолжительность'">{{ datasource.data.duration }} минут</value>
+            <value :title="'Статус'">
+                <span class="link" v-if="editable" @click="statusChange">{{ datasource.data.status }}</span>
+                <span v-else>{{ datasource.data.status }}</span>
+            </value>
+        </container>
 
-        <div class="container-50 w-50 mt-30px" v-if="datasource.data.images">
+        <container w-50 mt-30 inline pl-20 v-if="datasource.data.images && datasource.data.images[0]">
             <img class="w-100" :src="datasource.data.images[0]" :alt="datasource.data.name"/>
-        </div>
+        </container>
 
-        <text-container class="mt-30px" :title="'Краткое описание экскурсии'">{{
-                datasource.data.announce
-            }}
-        </text-container>
-        <text-container :title="'Полное описание экскурсии'">{{ datasource.data.description }}</text-container>
+        <container w-100 mt-30>
+            <value-area :title="'Краткое описание экскурсии'">{{ datasource.data.announce }}</value-area>
+            <value-area :title="'Полное описание экскурсии'">{{ datasource.data.description }}</value-area>
+        </container>
 
-        <container :no-bottom="true">
+        <container mt-15 v-if="editable">
             <base-link-button :to="{ name: 'excursion-edit', params: { id: excursionId }}">Редактировать
             </base-link-button>
         </container>
 
-        <pop-up ref="popup"
+        <pop-up ref="popup" v-if="editable"
                 :manual="true"
                 :title="'Изменить статус экскурсии'"
                 :buttons="[
-                {result: 'no', caption: 'Отмена', color: 'white'},
-                {result: 'yes', caption: 'OK', color: 'green'}
-            ]"
+                    {result: 'no', caption: 'Отмена', color: 'white'},
+                    {result: 'yes', caption: 'OK', color: 'green'}
+                ]"
         >
             <dictionary-drop-down
                 :dictionary="'excursion_statuses'"
@@ -61,11 +44,13 @@
 
 <script>
 import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
-import Container from "../../../Layouts/Parts/Container";
-import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
+import Container from "../../../Components/GUI/Container";
 import TextContainer from "../../../Layouts/Parts/TextContainer";
+import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
 import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
+import Value from "../../../Components/GUI/Value";
+import ValueArea from "../../../Components/GUI/ValueArea";
 
 export default {
     mixins: [UseBaseTableBundle],
@@ -73,9 +58,12 @@ export default {
     props: {
         excursionId: {type: Number, required: true},
         datasource: {type: Object},
+        editable: {type: Boolean, default: false},
     },
 
     components: {
+        ValueArea,
+        Value,
         DictionaryDropDown,
         TextContainer,
         Container,

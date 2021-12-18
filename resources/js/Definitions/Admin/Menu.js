@@ -32,5 +32,5 @@ export default [
             {'title': 'Реестр броней', 'route': ''},
         ]
     },
-    {'title': 'test', 'route': 'test'}
+    // {'title': 'test', 'route': 'test'}
 ];

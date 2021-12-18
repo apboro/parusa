@@ -8,7 +8,7 @@
     flex-direction: row;
     flex-wrap: wrap-reverse;
     box-sizing: border-box;
-    padding: 10px 3px;
+    padding: 15px 3px 10px;
     @include noSelection;
 
     &__tab {

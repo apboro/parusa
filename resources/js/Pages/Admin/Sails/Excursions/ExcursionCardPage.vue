@@ -1,9 +1,12 @@
 <template>
     <page :loading="processing">
         <template v-slot:header>
-            <page-title-bar :title="data.data['name']" :breadcrumbs="[
-                {caption: 'Каталог экскурсий', to: {name: 'excursion-list'}},
-            ]">
+            <page-title-bar
+                :title="data.data['name']"
+                :breadcrumbs="[{caption: 'Каталог экскурсий', to: {name: 'excursion-list'}}]"
+                :link="{name: 'excursion-list'}"
+                :link-title="'К списку экскурсий'"
+            >
                 <actions-menu>
                     <span @click="deleteExcursion">Удалить экскурсию</span>
                 </actions-menu>
@@ -21,8 +24,9 @@
 
         <keep-alive>
             <excursion-info v-if="tab === 'description'"
-                       :excursion-id="excursionId"
-                       :datasource="data"
+                            :excursion-id="excursionId"
+                            :datasource="data"
+                            :editable="true"
             />
         </keep-alive>
         <message v-if="tab === 'rates'">Здесь будут тарифы для данной экскурсии</message>

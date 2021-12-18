@@ -1,24 +1,29 @@
 <template>
     <page :loading="processing">
         <template v-slot:header>
-            <page-title-bar :title="form.payload['title']" :breadcrumbs="[
-                {caption: 'Каталог экскурсий', to: {name: 'excursion-list'}},
-            ]"/>
+            <page-title-bar
+                :title="form.payload['title']"
+                :title-link="excursionId === 0 ? null : backLink"
+                :breadcrumbs="[{caption: 'Каталог экскурсий', to: {name: 'excursion-list'}}]"
+                :link="{name: 'excursion-list'}"
+                :link-title="'К списку экскурсий'"
+            />
         </template>
 
-        <container>
+        <container mt-30>
             <data-field-input :datasource="form" :name="'name'"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'excursion_statuses'" :name="'status_id'"/>
             <data-field-images :datasource="form" :name="'images'"/>
-            <data-field-dictionary-dropdown-multi :datasource="form" :dictionary="'excursion_programs'" :name="'programs'"/>
+            <data-field-dictionary-dropdown-multi :datasource="form" :dictionary="'excursion_programs'"
+                                                  :name="'programs'"/>
             <data-field-input :datasource="form" :name="'duration'"/>
             <data-field-text-area :datasource="form" :name="'description'"/>
             <data-field-text-area :datasource="form" :name="'announce'"/>
         </container>
 
-        <container no-bottom>
+        <container mt-30>
             <base-button @click="save" :color="'green'">Сохранить</base-button>
-            <base-button @click="$router.push({ name: 'excursion-view', params: { id: this.excursionId }})">Отмена
+            <base-button @click="$router.push(backLink)">Отмена
             </base-button>
         </container>
 
@@ -32,7 +37,7 @@ import Page from "../../../../Layouts/Page";
 import LoadingProgress from "../../../../Components/LoadingProgress";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
 import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataFieldDictionaryDropdown";
-import Container from "../../../../Layouts/Parts/Container";
+import Container from "../../../../Components/GUI/Container";
 import BaseButton from "../../../../Components/Base/BaseButton";
 import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
@@ -66,6 +71,9 @@ export default {
         processing() {
             return this.form.loading || this.form.saving;
         },
+        backLink() {
+            return this.excursionId === 0 ? {name: 'excursion-list'} : { name: 'excursion-view', params: { id: this.excursionId }}
+        }
     },
 
     created() {

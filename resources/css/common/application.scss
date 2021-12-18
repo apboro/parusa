@@ -70,12 +70,15 @@
             flex-grow: 0;
             font-family: $project_font;
             font-size: 14px;
-            cursor: pointer;
             position: relative;
             color: $app_menu_text_color;
             transition: color $animation $animation_time, background-color $animation $animation_time;
             display: flex;
             align-items: center;
+
+            &-link {
+                cursor: pointer;
+            }
 
             &-link, &-no-link {
                 text-decoration: none;
@@ -121,7 +124,7 @@
                 height: 28px;
 
                 & > span {
-                    padding: 10px;
+                    padding: 0 10px;
                 }
             }
 
@@ -147,6 +150,102 @@
                 border-radius: 0 0 3px 3px;
                 min-width: 100%;
                 z-index: 200;
+            }
+        }
+    }
+
+    &__user-menu {
+        display: flex;
+        flex-grow: 0;
+        flex-shrink: 0;
+        align-items: center;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 0 5px 0 0;
+        cursor: pointer;
+        position: relative;
+
+        &-icon {
+            height: $header_height;
+            padding: $header_height / 4 8px;
+            box-sizing: border-box;
+            color: $app_user_menu_icon_color;
+
+            & > svg {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        &-info {
+            display: flex;
+            flex-direction: column;
+            font-family: $project_font;
+
+            &-name {
+                font-size: 12px;
+                font-weight: bold;
+                line-height: 18px;
+                color: $app_user_menu_name_color;
+            }
+
+            &-org {
+                font-size: 12px;
+                line-height: 18px;
+                color: $app_user_menu_org_color;
+            }
+        }
+
+        &-drop {
+            width: 8px;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            transition: transform $animation $animation_time;
+
+            &-dropped {
+                transform: rotate(-180deg);
+            }
+        }
+
+        &-actions {
+            position: absolute;
+            right: 0;
+            bottom: 5px;
+            transform: translateY(100%);
+            box-sizing: border-box;
+            padding: 12px 20px;
+            border-radius: 2px;
+            min-width: 100%;
+            z-index: 50;
+            background-color: $actions_menu_actions_background_color;
+            box-shadow: $shadow_2;
+            display: flex;
+            flex-direction: column;
+            line-height: 30px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity $animation $animation_time, visibility $animation $animation_time;
+            cursor: default;
+
+            &-shown {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            & > * {
+                color: $actions_menu_actions_color;
+                transition: color $animation $animation_time;
+                font-family: $project_font;
+                font-size: 14px;
+                white-space: nowrap;
+                cursor: pointer;
+                text-decoration: none;
+            }
+
+            & > *:hover {
+                color: $actions_menu_actions_hover_color;
             }
         }
     }

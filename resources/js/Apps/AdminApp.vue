@@ -5,7 +5,10 @@
                 <layout-menu :menu="menu"/>
             </template>
             <template v-slot:personal>
-                <div>User</div>
+                <layout-user-menu>
+                    <span class="link">Профиль</span>
+                    <span class="link" @click="logout">Выход</span>
+                </layout-user-menu>
             </template>
         </layout-header>
         <router-view/>
@@ -17,6 +20,7 @@
 <script>
 import LayoutHeader from "../Components/Layout/LayoutHeader";
 import LayoutMenu from "../Components/Layout/LayoutMenu";
+import LayoutUserMenu from "../Components/Layout/LayoutUserMenu";
 
 export default {
     props: {
@@ -24,14 +28,22 @@ export default {
     },
 
     components: {
+        LayoutUserMenu,
         LayoutHeader,
         LayoutMenu,
     },
 
     created() {
-        this.$router.afterEach(() => {
-            // this.$toast.clear();
-        })
+
+    },
+
+    methods: {
+        logout() {
+            axios.post('/logout', {})
+            .then(() => {
+                window.location.href = '/';
+            });
+        },
     },
 }
 </script>

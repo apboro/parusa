@@ -17,7 +17,7 @@
 
     &__header {
         box-sizing: border-box;
-        padding-bottom: 5px;
+        padding-bottom: 15px;
         border-bottom: 1px solid $page_header_divider_color;
         font-family: $project_font;
         font-size: 16px;
@@ -96,19 +96,6 @@
                     flex-grow: 1;
                 }
             }
-        }
-    }
-
-    &__container {
-        box-sizing: border-box;
-        padding: 30px 0;
-
-        &-no-top {
-            padding-top: 0;
-        }
-
-        &-no-bottom {
-            padding-bottom: 0;
         }
     }
 }

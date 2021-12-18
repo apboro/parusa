@@ -25,7 +25,7 @@ export default [
 
     {path: '/partners', name: 'partners-list', component: PartnersListPage, meta: {title: 'Компании-партнёры'}},
     {path: '/partners/:id', name: 'partners-view', component: PartnerCardPage, meta: {title: 'Просмотр партнёра'}},
-    {path: '/partners/:id/edit', name: 'partners-view', component: PartnerCardPage, meta: {title: 'Редактирование партнёра'}},
+    {path: '/partners/:id/edit', name: 'partners-edit', component: PartnerCardPage, meta: {title: 'Редактирование партнёра'}},
 
     {path: '/representatives', name: 'representatives-list', component: RepresentativesListPage, meta: {title: 'Представители'}},
     {path: '/representatives/:id', name: 'representatives-view', component: RepresentativeCardPage, meta: {title: 'Просмотр представителя'}},
@@ -41,13 +41,13 @@ export default [
     /**
      * Sails part
      */
-    {path: '/pier', name: 'pier-list', component: PiersListPage, meta: {title: 'Причалы'}},
-    {path: '/pier/:id', name: 'pier-view', component: PierCardPage, meta: {title: 'Просмотр причала'}},
-    {path: '/pier/:id/edit', name: 'pier-edit', component: PierEditPage, meta: {title: 'Редактирование причала'}},
+    {path: '/piers', name: 'pier-list', component: PiersListPage, meta: {title: 'Причалы'}},
+    {path: '/piers/:id', name: 'pier-view', component: PierCardPage, meta: {title: 'Просмотр причала'}},
+    {path: '/piers/:id/edit', name: 'pier-edit', component: PierEditPage, meta: {title: 'Редактирование причала'}},
 
-    {path: '/excursion', name: 'excursion-list', component: ExcursionsListPage, meta: {title: 'Каталог экскурсий'}},
-    {path: '/excursion/:id', name: 'excursion-view', component: ExcursionCardPage, meta: {title: 'Просмотр экскурсии'}},
-    {path: '/excursion/:id/edit', name: 'excursion-edit', component: ExcursionEditPage, meta: {title: 'Редактирование экскурсии'}},
+    {path: '/excursions', name: 'excursion-list', component: ExcursionsListPage, meta: {title: 'Каталог экскурсий'}},
+    {path: '/excursions/:id', name: 'excursion-view', component: ExcursionCardPage, meta: {title: 'Просмотр экскурсии'}},
+    {path: '/excursions/:id/edit', name: 'excursion-edit', component: ExcursionEditPage, meta: {title: 'Редактирование экскурсии'}},
 
 
 
