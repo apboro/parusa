@@ -5,12 +5,15 @@
 .page {
     max-width: $max_width;
     width: calc(100% - 20px);
-    margin: 0 auto;
+    margin: 20px auto 30px;
     background-color: $page_background_color;
-    box-shadow: $shadow_2;
+    box-shadow: $shadow_1;
     border-radius: 3px;
     box-sizing: border-box;
     padding: $page_padding;
+    border-style: solid;
+    border-color: #e5e5e5;
+    border-width: 1px;
 
     &__header {
         box-sizing: border-box;

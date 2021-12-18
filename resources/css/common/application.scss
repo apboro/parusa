@@ -4,37 +4,66 @@
 @import "../mixins/no-selection";
 
 .application {
+
     &__header {
-        width: 100%;
-        max-width: $max_width;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: row;
         height: $header_height;
+        box-sizing: border-box;
+        width: 100%;
+        box-shadow: $shadow_1;
+        background-color: $page_background_color;
+
+        &-wrapper {
+            width: calc(100% - 20px);
+            max-width: $max_width;
+            margin: 0 auto 20px;
+            display: flex;
+            flex-direction: row;
+            height: $header_height;
+            box-sizing: border-box;
+        }
 
         &-title {
             flex-grow: 0;
-            height: 100%;
-            background-color: #f0506e;
+            height: $header_height;
+            width: $header_height;
+            box-sizing: border-box;
+            padding: 5px;
+
+            &-link {
+                width: 100%;
+                height: 100%;
+                box-sizing: border-box;
+                padding: 5px;
+                display: block;
+                border-radius: 50%;
+                border: 1px solid $app_logo_border_color;
+
+                &-icon {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
         }
 
         &-menu {
             flex-grow: 1;
             height: 100%;
+            margin: 0 15px;
+            align-items: end;
+            display: flex;
         }
 
         &-personal {
             flex-grow: 0;
             height: 100%;
-            background-color: #6df050;
         }
     }
 
     &__menu {
         display: flex;
         flex-direction: row;
-        justify-content: center;
-        height: $header_height;
+        justify-content: start;
+        height: $header_menu_height;
         @include noSelection();
 
         &-item {
@@ -45,40 +74,23 @@
             position: relative;
             color: $app_menu_text_color;
             transition: color $animation $animation_time, background-color $animation $animation_time;
+            display: flex;
+            align-items: center;
 
-            &-0 {
-                height: $header_height;
-                line-height: $header_height;
-            }
-
-            &-0 > &-link {
-                display: block;
-                height: 100%;
-
-                & > span {
-                    padding: 0 10px;
-                }
-            }
-
-            &-1 {
-            }
-
-            &-1 > &-link {
-                display: block;
-                white-space: nowrap;
-                line-height: initial;
-
-                & > span {
-                    padding: 10px;
-                }
-            }
-
-            &-link {
+            &-link, &-no-link {
                 text-decoration: none;
                 color: $app_menu_text_color;
+                box-sizing: border-box;
 
                 & > span {
                     display: block;
+                    padding: 0 10px;
+                }
+
+                &-drop {
+                    width: 8px;
+                    margin-left: 6px;
+                    transition: transform $animation $animation_time;
                 }
             }
 
@@ -89,6 +101,34 @@
             &-link.router-link-exact-active {
                 color: $app_menu_active_text_color;
             }
+
+            &-0 > &-link, &-0 > &-no-link {
+                display: flex;
+                height: 100%;
+                align-items: center;
+                font-size: 12px;
+            }
+
+            &-0 > &-link:hover, &-0 > &-no-link:hover {
+
+            }
+
+            &-1 > &-link, &-1 > &-no-link {
+                display: flex;
+                align-items: center;
+                white-space: nowrap;
+                line-height: 28px;
+                height: 28px;
+
+                & > span {
+                    padding: 10px;
+                }
+            }
+
+            &-1 > &-no-link {
+                color: #8c8c8c;
+                cursor: default;
+            }
         }
 
         &-submenu {
@@ -97,14 +137,14 @@
                 opacity: 0;
                 visibility: hidden;
                 position: absolute;
-                left: 50%;
-                transform: translateX(-50%);
-                top: calc(#{$header_height} - 10px);
+                left: 0;
+                bottom: 10px;
+                transform: translateY(100%);
                 background-color: $app_menu_submenu_background_color;
                 box-sizing: border-box;
                 padding: 15px;
                 box-shadow: $shadow_2;
-                border-radius: 3px;
+                border-radius: 0 0 3px 3px;
                 min-width: 100%;
                 z-index: 200;
             }
@@ -115,4 +155,9 @@
 .application__menu-item-0.application__menu-item-hovered .application__menu-submenu-0 {
     opacity: 1;
     visibility: visible;
+}
+
+.application__menu-item-0.application__menu-item-hovered > .application__menu-item-link .application__menu-item-link-drop,
+.application__menu-item-0.application__menu-item-hovered > .application__menu-item-no-link .application__menu-item-link-drop {
+    transform: rotate(-180deg);
 }

@@ -4,11 +4,15 @@
          @mouseenter="show"
          @mouseleave="hide"
     >
-        <router-link v-if="route" class="application__menu-item-link"
-                     :to="{name:route}"
-        ><span @click="$emit('hide')">{{ title }}</span>
+
+        <router-link v-if="route" class="application__menu-item-link" :to="{name:route}">
+            <span @click="$emit('hide')">{{ title }}<icon-dropdown class="application__menu-item-link-drop" v-if="children"/></span>
         </router-link>
-        <span v-else class="application__menu-item-link"><span @click="$emit('hide')">{{ title }}</span></span>
+
+        <span v-else class="application__menu-item-no-link">
+            <span @click="$emit('hide')">{{ title }}<icon-dropdown class="application__menu-item-link-drop" v-if="children"/></span>
+        </span>
+
         <div v-if="children" class="application__menu-submenu" :class="'application__menu-submenu-'+level">
             <layout-menu-item v-for="(item, key) in children"
                               :key="key"
@@ -17,13 +21,15 @@
                               @hide="hide"
             />
         </div>
+
     </div>
 </template>
 
 <script>
+import IconDropdown from "../Icons/IconDropdown";
 export default {
     name: "LayoutMenuItem",
-
+    components: {IconDropdown},
     props: {
         item: Object,
         level: {type: Number, default: 0},
