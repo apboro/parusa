@@ -13,14 +13,42 @@
     vertical-align: top;
 }
 
-.w-50 {
-    width: 50%;
+/** Widths in %, from 5% to 100%, step by 5% */
+@for $i from 1 through 20 {
+    .w-#{$i * 5} {
+        width: $i * 5%;
+    }
 }
 
-.w-100 {
-    width: 100%;
+/** Margin in px, from 0 to 50px, step by 5px */
+@for $i from 0 through 10 {
+    .mt-#{$i * 5} {
+        margin-top: $i * 5px;
+    }
+    .mb-#{$i * 5} {
+        margin-bottom: $i * 5px;
+    }
+    .ml-#{$i * 5} {
+        margin-left: $i * 5px;
+    }
+    .mr-#{$i * 5} {
+        margin-right: $i * 5px;
+    }
 }
 
-.mt-30px {
-    margin-top: 30px;
+/** Padding in px, from 0 to 50px, step by 5px */
+@for $i from 0 through 10 {
+    .pt-#{$i * 5} {
+        padding-top: $i * 5px;
+    }
+    .pb-#{$i * 5} {
+        padding-bottom: $i * 5px;
+    }
+    .pl-#{$i * 5} {
+        padding-left: $i * 5px;
+    }
+    .pr-#{$i * 5} {
+        padding-right: $i * 5px;
+    }
 }
+
