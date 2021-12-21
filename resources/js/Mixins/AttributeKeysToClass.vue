@@ -8,11 +8,11 @@ export default {
     computed: {
         classFromAttributes() {
             let keys = Object.keys(this.$attrs);
-            if(this.attributesClassPrefix !== null) {
-                keys = keys.map(key => this.attributesClassPrefix + key);
-            }
-            if(this.attributesClassExcept !== []) {
+            if (this.attributesClassExcept !== []) {
                 keys = keys.filter(key => this.attributesClassExcept.indexOf(key) === -1);
+            }
+            if (this.attributesClassPrefix !== null) {
+                keys = keys.map(key => this.attributesClassPrefix + key);
             }
 
             return keys;
@@ -20,11 +20,14 @@ export default {
 
         classFromExceptedAttributes() {
             let keys = Object.keys(this.$attrs);
-            if(this.attributesClassPrefix !== null) {
-                keys = keys.map(key => this.attributesClassPrefix + key);
+            if (this.attributesClassExcept !== []) {
+                keys = keys.filter(key => this.attributesClassExcept.indexOf(key) !== -1);
             }
-            if(this.attributesClassExcept !== []) {
-                keys = keys.filter(key => this.attributesClassExcept.indexOf(key) === -1);
+
+            keys = keys.map(key => typeof this.$attrs[key] !== 'undefined' ? this.$attrs[key] : key);
+
+            if (this.attributesClassPrefix !== null) {
+                keys = keys.map(key => this.attributesClassPrefix + key);
             }
 
             return keys;

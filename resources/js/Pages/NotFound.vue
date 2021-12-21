@@ -1,6 +1,6 @@
 <template>
     <page>
-        <message :error="true">Страница не найдена.</message>
+        <message error>Страница не найдена.</message>
     </page>
 </template>
 

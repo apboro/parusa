@@ -18,7 +18,7 @@ export default [
     {
         'title': 'КОМПАНИЯ', 'route': '',
         'items': [
-            {'title': 'Сотрудники', 'route': 'staff-user-list'},
+            {'title': 'Сотрудники', 'route': 'staff-list'},
             {'title': 'Каталог экскурсий', 'route': 'excursion-list'},
             {'title': 'Настройки', 'route': ''},
             {'title': 'Справочники', 'route': ''},

@@ -4,7 +4,7 @@
         <template v-slot:header>
             <page-title-bar :title="$route.meta.title">
                 <actions-menu>
-                    <router-link :to="{ name: 'staff-user-edit', params: { id: 0 }}">Добавить сотрудника</router-link>
+                    <router-link :to="{ name: 'staff-edit', params: { id: 0 }}">Добавить сотрудника</router-link>
                 </actions-menu>
             </page-title-bar>
         </template>
@@ -16,7 +16,7 @@
                     :placeholder="'Все'"
                     :has-null="true"
                     :original="list.filters_original.position_status_id"
-                  v-model="list.filters.position_status_id"
+                    v-model="list.filters.position_status_id"
                     @changed="reload"
                 />
             </page-bar-item>
@@ -39,13 +39,25 @@
                     <!-- row.active -->
                     <activity :active="row.active"/>
                     <router-link class="link"
-                                 :to="{ name: 'staff-user-view', params: { id: row.id }}"
+                                 :to="{ name: 'staff-view', params: { id: row.id }}"
                                  v-html="$highlight(row.record['name'], list.search)"
                     />
                 </base-table-cell>
                 <base-table-cell>{{ row.record['position'] }}</base-table-cell>
                 <base-table-cell>
-                    <base-table-cell-item v-for="item in row.record['contacts']">{{ item }}</base-table-cell-item>
+                    <base-table-cell-item v-if="row.record['contacts']['email']">
+                        <a class="link" target="_blank" :href="'mailto:' + row.record['contacts']['email']"
+                        >{{ row.record['contacts']['email'] }}</a>
+                    </base-table-cell-item>
+                    <base-table-cell-item v-if="row.record['contacts']['mobile_phone']">
+                        <span>{{ row.record['contacts']['work_phone'] }}</span>
+                        <span v-if="row.record['contacts']['work_phone_add']"> доб. {{
+                                row.record['contacts']['work_phone_add']
+                            }}</span>
+                    </base-table-cell-item>
+                    <base-table-cell-item v-if="row.record['contacts']['mobile_phone']">
+                        {{ row.record['contacts']['mobile_phone'] }}
+                    </base-table-cell-item>
                 </base-table-cell>
             </base-table-row>
         </base-table>

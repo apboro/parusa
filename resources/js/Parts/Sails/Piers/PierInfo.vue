@@ -1,6 +1,6 @@
 <template>
     <div>
-        <base-table-container :w="'50'">
+        <container w-50 mt-30 inline>
             <base-table :borders="false" :highlight="false" :hover="false" :small="true">
                 <base-table-row>
                     <base-table-cell :w="'200'">Название</base-table-cell>
@@ -25,11 +25,11 @@
                     </base-table-cell>
                 </base-table-row>
             </base-table>
-        </base-table-container>
+        </container>
 
-        <div class="container-50 w-50 mt-30px" v-if="datasource.data.images">
+        <container w-50 mt-30 inline v-if="datasource.data.images">
             <img class="w-100" :src="datasource.data.images[0]" :alt="datasource.data.name"/>
-        </div>
+        </container>
 
         <text-container class="mt-30px" :title="'Описание причала'">{{ datasource.data.description }}</text-container>
         <text-container :title="'Как добраться'">{{ datasource.data.way_to }}</text-container>
@@ -59,7 +59,7 @@
 
 <script>
 import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
-import Container from "../../../Layouts/Parts/Container";
+import Container from "../../../Components/GUI/Container";
 import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
 import TextContainer from "../../../Layouts/Parts/TextContainer";
 import PopUp from "../../../Components/PopUp";
@@ -75,8 +75,8 @@ export default {
 
     components: {
         DictionaryDropDown,
-        TextContainer,
         Container,
+        TextContainer,
         BaseLinkButton,
         PopUp,
     },

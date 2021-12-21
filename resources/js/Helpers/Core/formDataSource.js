@@ -1,6 +1,7 @@
 import {parseRules, validate} from "./validator/validator"
 import {getMessage} from "./validator/messages";
 import clone from "../Lib/clone";
+import empty from "../Lib/empty";
 
 const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
     let form = {
@@ -99,6 +100,9 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
         },
 
         validate(name, value) {
+            if(empty(this.validation_rules)) {
+                return true;
+            }
             if (Object.keys(this.validation_rules[name]).length === 0) {
                 this.validation_errors[name] = [];
                 this.valid[name] = true;
@@ -131,9 +135,6 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
                 console.log(type + ' ' + message);
             }
         },
-        // hasErrors() {
-        //     return Object.values(this.valid).some(val => !val);
-        // },
     }
 
     form.dataSourceUrl = dataSourceUrl;

@@ -4,11 +4,10 @@ import PartnersListPage from "../../Pages/Admin/Partner/Partner/PartnersListPage
 import TicketRefundsListPage from "../../Pages/Admin/TicketRefundsListPage";
 import MobileSalesListPage from "../../Pages/Admin/MobileSalesListPage";
 
-import StaffUsersListPage from "../../Pages/Admin/Company/Staff/StaffUsersListPage";
+import StaffListPage from "../../Pages/Admin/Company/Staff/StaffListPage";
+import StaffViewPage from "../../Pages/Admin/Company/Staff/StaffCardPage";
+import StaffEditPage from "../../Pages/Admin/Company/Staff/StaffEditPage";
 
-import TestPage from "../../Pages/Admin/TestPage";
-import StaffUserViewPage from "../../Pages/Admin/Company/Staff/StaffUserCardPage";
-import StaffUserEditPage from "../../Pages/Admin/Company/Staff/StaffUserEditPage";
 import PartnerCardPage from "../../Pages/Admin/Partner/Partner/PartnerCardPage";
 import RepresentativeCardPage from "../../Pages/Admin/Partner/Representatives/RepresentativeCardPage";
 import RepresentativeEditPage from "../../Pages/Admin/Partner/Representatives/RepresentativeEditPage";
@@ -19,6 +18,8 @@ import PierEditPage from "../../Pages/Admin/Sails/Piers/PierEditPage";
 import ExcursionsListPage from "../../Pages/Admin/Sails/Excursions/ExcursionsListPage";
 import ExcursionCardPage from "../../Pages/Admin/Sails/Excursions/ExcursionCardPage";
 import ExcursionEditPage from "../../Pages/Admin/Sails/Excursions/ExcursionEditPage";
+
+// import TestPage from "../../Pages/Admin/TestPage";
 
 export default [
     {path: '/', name: 'home', component: HomePage},
@@ -34,9 +35,9 @@ export default [
     {path: '/mobile-sales', name: 'mobile-sales-list', component: MobileSalesListPage, meta: {title: 'Мобильные кассы'}},
     {path: '/ticket-refund', name: 'ticket-refund-list', component: TicketRefundsListPage, meta: {title: 'Возврат билетов'}},
 
-    {path: '/staff', name: 'staff-user-list', component: StaffUsersListPage, meta: {title: 'Сотрудники'}},
-    {path: '/staff/:id', name: 'staff-user-view', component: StaffUserViewPage, meta: {title: 'Просмотр сотрудника'}},
-    {path: '/staff/:id/edit', name: 'staff-user-edit', component: StaffUserEditPage, meta: {title: 'Редактирование сотрудника'}},
+    {path: '/staff', name: 'staff-list', component: StaffListPage, meta: {title: 'Сотрудники'}},
+    {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника'}},
+    {path: '/staff/:id/edit', name: 'staff-edit', component: StaffEditPage, meta: {title: 'Редактирование сотрудника'}},
 
     /**
      * Sails part
@@ -52,6 +53,6 @@ export default [
 
 
 
-    {path: '/test', name: 'test', component: TestPage, meta: {title: 'Страница для тестов'}},
+    // {path: '/test', name: 'test', component: TestPage, meta: {title: 'Страница для тестов'}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 ];

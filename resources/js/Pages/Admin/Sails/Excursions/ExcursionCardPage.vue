@@ -22,13 +22,11 @@
             @change="tab = $event"
         />
 
-        <keep-alive>
-            <excursion-info v-if="tab === 'description'"
-                            :excursion-id="excursionId"
-                            :datasource="data"
-                            :editable="true"
-            />
-        </keep-alive>
+        <excursion-info v-if="tab === 'description'"
+                        :excursion-id="excursionId"
+                        :datasource="data"
+                        :editable="true"
+        />
         <message v-if="tab === 'rates'">Здесь будут тарифы для данной экскурсии</message>
         <message v-if="tab === 'schedule'">Здесь будет расписание рейсов для данной экскурсии</message>
 
@@ -39,31 +37,24 @@
 import genericDataSource from "../../../../Helpers/Core/genericDataSource";
 
 import Page from "../../../../Layouts/Page";
-import BaseButton from "../../../../Components/Base/BaseButton";
-import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
-import Container from "../../../../Layouts/Parts/Container";
-import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import ActionsMenu from "../../../../Components/ActionsMenu";
-import DeleteEntry from "../../../../Mixins/DeleteEntry";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import ExcursionInfo from "../../../../Parts/Sails/Excursions/ExcursionInfo";
 import Message from "../../../../Layouts/Parts/Message";
+import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 export default {
     components: {
-        Message,
-        ExcursionInfo,
-        LayoutRoutedTabs,
-        ActionsMenu,
-        PageTitleBar,
         Page,
-        BaseButton,
-        Container,
-        BaseLinkButton,
+        PageTitleBar,
+        ActionsMenu,
+        LayoutRoutedTabs,
+        ExcursionInfo,
+        Message,
     },
 
-    mixins: [UseBaseTableBundle, DeleteEntry],
+    mixins: [DeleteEntry],
 
     data: () => ({
         tab: null,

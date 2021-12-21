@@ -34,28 +34,26 @@
 import formDataSource from "../../../../Helpers/Core/formDataSource";
 
 import Page from "../../../../Layouts/Page";
-import LoadingProgress from "../../../../Components/LoadingProgress";
-import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
-import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataFieldDictionaryDropdown";
+import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import Container from "../../../../Components/GUI/Container";
+import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
+import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
+import DataFieldImages from "../../../../Components/DataFields/DataFieldImages";
+import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataFieldDictionaryDropdown";
+import DataFieldDictionaryDropdownMulti from "../../../../Components/DataFields/DataFieldDictionaryDropdownMulti";
 import BaseButton from "../../../../Components/Base/BaseButton";
 import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
-import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import DataFieldImages from "../../../../Components/DataFields/DataFieldImages";
-import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
-import DataFieldDictionaryDropdownMulti from "../../../../Components/DataFields/DataFieldDictionaryDropdownMulti";
 
 export default {
     components: {
-        DataFieldDictionaryDropdownMulti,
+        Page,
+        PageTitleBar,
+        Container,
+        DataFieldInput,
         DataFieldTextArea,
         DataFieldImages,
-        PageTitleBar,
-        Page,
-        LoadingProgress,
-        DataFieldInput,
         DataFieldDictionaryDropdown,
-        Container,
+        DataFieldDictionaryDropdownMulti,
         BaseButton,
         BaseLinkButton,
     },

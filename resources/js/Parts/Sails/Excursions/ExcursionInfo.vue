@@ -3,10 +3,10 @@
         <container w-50 mt-30 inline>
             <value :title="'Название'">{{ datasource.data.name }}</value>
             <value :title="'Тип программы'">{{ datasource.data.programs ? datasource.data.programs.join(', ') : '' }}</value>
-            <value :title="'Продолжительность'">{{ datasource.data.duration }} минут</value>
+            <value :title="'Продолжительность'"><span v-if="datasource.data.duration">{{ datasource.data.duration }} минут</span></value>
             <value :title="'Статус'">
-                <span class="link" v-if="editable" @click="statusChange">{{ datasource.data.status }}</span>
-                <span v-else>{{ datasource.data.status }}</span>
+                <span class="link" v-if="editable" @click="statusChange"><activity :active="datasource.data.active"/>{{ datasource.data.status }}</span>
+                <span v-else><activity :active="datasource.data.active"/>{{ datasource.data.status }}</span>
             </value>
         </container>
 
@@ -15,8 +15,8 @@
         </container>
 
         <container w-100 mt-30>
-            <value-area :title="'Краткое описание экскурсии'">{{ datasource.data.announce }}</value-area>
-            <value-area :title="'Полное описание экскурсии'">{{ datasource.data.description }}</value-area>
+            <value-area :title="'Краткое описание экскурсии'" v-text="datasource.data.announce"/>
+            <value-area :title="'Полное описание экскурсии'" v-text="datasource.data.description"/>
         </container>
 
         <container mt-15 v-if="editable">
@@ -51,6 +51,7 @@ import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
 import Value from "../../../Components/GUI/Value";
 import ValueArea from "../../../Components/GUI/ValueArea";
+import Activity from "../../../Components/Activity";
 
 export default {
     mixins: [UseBaseTableBundle],
@@ -62,6 +63,7 @@ export default {
     },
 
     components: {
+        Activity,
         ValueArea,
         Value,
         DictionaryDropDown,
@@ -89,6 +91,7 @@ export default {
                                 this.$toast.success(response.data.data.message, 2000);
                                 this.datasource.data.status = response.data.data.status;
                                 this.datasource.data.status_id = response.data.data.status_id;
+                                this.datasource.data.active = response.data.data.active;
                             })
                             .catch(error => {
                                 this.$toast.error(error.response.data.status);
