@@ -44,7 +44,13 @@ class APIListRequest extends APIRequest
      */
     public function search(): array
     {
-        $search = explode(' ', $this->input('search'));
+        $search = $this->input('search');
+
+        if(empty($search)) {
+            return [];
+        }
+
+        $search = explode(' ', $search);
 
         return array_map(function ($term) {
             return trim($term);

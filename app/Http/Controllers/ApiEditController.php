@@ -29,7 +29,6 @@ class ApiEditController extends ApiController
 
         if ($id === 0) {
             return new $class;
-
         }
 
         /** @var Model $model */
