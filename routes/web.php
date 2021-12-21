@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'form'])->middleware('guest')->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
-Route::any('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 Route::get('/login/token', [AuthController::class, 'token'])->name('login.token.refresh');
 
 Route::name('frontend')
