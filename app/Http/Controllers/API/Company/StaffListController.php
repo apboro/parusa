@@ -34,8 +34,8 @@ class StaffListController extends ApiController
     {
         $query = User::query()
             ->with(['profile', 'staffPosition'])
-            ->where('is_staff', true)
-            ->join('user_profiles', 'users.id', '=', 'user_profiles.user_id')
+            ->has('staffPosition')
+            ->leftJoin('user_profiles', 'users.id', '=', 'user_profiles.user_id')
             ->select('users.*')
             ->orderBy('user_profiles.lastname', 'asc')
             ->orderBy('user_profiles.firstname', 'asc')
@@ -69,14 +69,21 @@ class StaffListController extends ApiController
         /** @var Collection $users */
         $users->transform(function (User $user) {
             $profile = $user->profile;
+            $position = $user->staffPosition;
+            $info = $position->staffInfo;
 
             return [
                 'active' => $user->staffPosition ? $user->staffPosition->hasStatus(PositionStatus::active) : null,
                 'id' => $user->id,
                 'record' => [
                     'name' => $profile ? $profile->lastname . ' ' . $profile->firstname . ' ' . $profile->patronymic : null,
-                    'position' => $user->staffPosition ? $user->staffPosition->position_title : null,
-                    'contacts' => null,
+                    'position' => $position->title,
+                    'contacts' => [
+                        'email' => $info->email,
+                        'work_phone' => $info->work_phone,
+                        'work_phone_add' => $info->work_phone_additional,
+                        'mobile_phone' => $info->mobile_phone,
+                    ],
                 ],
             ];
         });

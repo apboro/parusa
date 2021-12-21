@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Models\Staff;
+namespace App\Models\Positions;
 
 use App\Exceptions\Partner\WrongPositionStatusException;
 use App\Interfaces\Statusable;
 use App\Models\Dictionaries\PositionStatus;
+use App\Models\Dictionaries\Role;
 use App\Models\Model;
-use App\Traits\HasStatus;
 use App\Models\User\User;
-use App\Models\User\UserContact;
+use App\Traits\HasStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -16,15 +16,20 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
- * @property int $user_id
- * @property string $position_title
  * @property int $status_id
+ * @property int $user_id
+ * @property int $partner_id
+ * @property string $title
+ * @property bool $is_staff
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ *
  * @property PositionStatus $status
  * @property User $user
+ * @property PositionInfo $info
+ * @property StaffPositionInfo $staffInfo
  */
-class StaffUserPosition extends Model implements Statusable
+class Position extends Model implements Statusable
 {
     use HasStatus, HasFactory;
 
@@ -65,8 +70,45 @@ class StaffUserPosition extends Model implements Statusable
         $this->checkAndSetStatus(PositionStatus::class, $status, WrongPositionStatusException::class, $save);
     }
 
+
     /**
-     * Position's user.
+     * Position roles.
+     *
+     * @return  BelongsToMany
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'position_has_role', 'position_id', 'role_id');
+    }
+
+    /**
+     * Check if position has role.
+     *
+     * @param int $roleId
+     * @param bool $fresh
+     *
+     * @return  bool
+     */
+    public function hasRole(int $roleId, bool $fresh = false): bool
+    {
+        if ($fresh && $this->relationLoaded('roles')) {
+            $this->unsetRelation('roles');
+        }
+
+        $this->loadMissing('roles');
+
+        foreach ($this->getRelation('roles') as $usersRole) {
+            /** @var Role $usersRole */
+            if ($usersRole->matches($roleId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Position related user.
      *
      * @return  HasOne
      */
@@ -76,12 +118,22 @@ class StaffUserPosition extends Model implements Statusable
     }
 
     /**
-     * User related contacts.
+     * Position info.
      *
-     * @return  BelongsToMany
+     * @return  HasOne
      */
-    public function contacts(): BelongsToMany
+    public function info(): HasOne
     {
-        return $this->belongsToMany(UserContact::class, 'partner_position_has_contacts');
+        return $this->hasOne(PositionInfo::class, 'position_id', 'id')->withDefault();
+    }
+
+    /**
+     * Position info.
+     *
+     * @return  HasOne
+     */
+    public function staffInfo(): HasOne
+    {
+        return$this->hasOne(StaffPositionInfo::class, 'position_id', 'id')->withDefault();
     }
 }

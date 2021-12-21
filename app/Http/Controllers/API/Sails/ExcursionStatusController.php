@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Sails;
 use App\Exceptions\Sails\WrongExcursionStatusException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Sails\Excursion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,6 +38,7 @@ class ExcursionStatusController extends ApiController
         return APIResponse::response([
             'status' => $excursion->status->name,
             'status_id' => $excursion->status_id,
+            'active' => $excursion->hasStatus(ExcursionStatus::active),
             'message' => 'Статус экскурсии обновлён',
         ]);
     }

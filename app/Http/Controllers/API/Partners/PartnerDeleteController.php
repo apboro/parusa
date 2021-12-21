@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\API\Company;
+namespace App\Http\Controllers\API\Partners;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Models\User\User;
+use App\Models\Partner\Partner;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class StaffDeleteController extends ApiController
+class PartnerDeleteController extends ApiController
 {
     /**
      * Delete staff user.
@@ -23,19 +23,19 @@ class StaffDeleteController extends ApiController
     {
         $id = $request->input('id');
 
-        if ($id === null || null === ($user = User::query()->where('id', $id)->has('staffPosition')->first())) {
+        if ($id === null || null === ($partner = Partner::query()->where('id', $id)->first())) {
             return APIResponse::notFound();
         }
 
         try {
-            /** @var User $user */
-            $user->delete();
+            /** @var Partner $partner */
+            $partner->delete();
         } catch (QueryException $exception) {
-            return APIResponse::error('Невозможно удалить сотрудника. Есть блокирующие связи.');
+            return APIResponse::error('Невозможно удалить партнёра. Есть блокирующие связи.');
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response('Сотрудник удалён');
+        return APIResponse::response('Партнёр удален');
     }
 }

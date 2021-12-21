@@ -8,13 +8,13 @@ namespace App\Models\Dictionaries;
  * @property bool $enabled
  * @property int $order
  */
-class UserRole extends AbstractDictionary
+class Role extends AbstractDictionary
 {
     /** @var int The id of admin role. */
     public const admin = 1;
 
     /** @var string Referenced table name. */
-    protected $table = 'dictionary_user_roles';
+    protected $table = 'dictionary_roles';
 
     /**
      * Match this role against given.
@@ -26,15 +26,5 @@ class UserRole extends AbstractDictionary
     public function matches(int $roleId): bool
     {
         return $this->getAttribute('id') === $roleId;
-    }
-
-    /**
-     * Get role display name.
-     *
-     * @return  string
-     */
-    public function name(): string
-    {
-        return $this->getAttribute('name');
     }
 }

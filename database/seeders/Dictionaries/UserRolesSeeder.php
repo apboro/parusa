@@ -2,14 +2,14 @@
 
 namespace Database\Seeders\Dictionaries;
 
-use App\Models\Dictionaries\UserRole;
+use App\Models\Dictionaries\Role;
 use Database\Seeders\GenericSeeder;
 
 class UserRolesSeeder extends GenericSeeder
 {
     protected array $data = [
-        UserRole::class => [
-            UserRole::admin => ['name' => 'Администратор'],
+        Role::class => [
+            Role::admin => ['name' => 'Администратор'],
         ]
     ];
 }

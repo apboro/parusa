@@ -29,10 +29,6 @@ class UserProfile extends Model
     /** @var bool Disable auto-incrementing on model. */
     public $incrementing = false;
 
-    /** @var string[] Relations eager loading. */
-    // no need yet
-    // protected $with = ['user'];
-
     /** @var string[] Attributes casting */
     protected $casts = [
         'birthdate' => 'date',

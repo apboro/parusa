@@ -119,15 +119,15 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
 //        return $this->hasMany(PartnerDocuments::class);
 //    }
 
-    /**
-     * All positions of this partner.
-     *
-     * @return  HasMany
-     */
-    public function positions(): HasMany
-    {
-        return $this->hasMany(PartnerUserPosition::class, 'partner_id', 'id');
-    }
+//    /**
+//     * All positions of this partner.
+//     *
+//     * @return  HasMany
+//     */
+//    public function positions(): HasMany
+//    {
+//        return $this->hasMany(PartnerUserPosition::class, 'partner_id', 'id');
+//    }
 
     /**
      * All agents of this partner.

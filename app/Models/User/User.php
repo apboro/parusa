@@ -5,14 +5,11 @@ namespace App\Models\User;
 use App\Exceptions\User\WrongUserStatusException;
 use App\Interfaces\Statusable;
 use App\Models\Dictionaries\AbstractDictionary;
-use App\Models\Dictionaries\UserRole;
 use App\Models\Dictionaries\UserStatus;
-use App\Models\Partner\PartnerUserPosition;
-use App\Models\Staff\StaffUserPosition;
+use App\Models\Positions\Position;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -21,14 +18,15 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * @property int $id
  * @property int $status_id
- * @property bool $is_staff
+ * @property string $login
+ * @property string $password
  *
  * @property UserStatus $status
  * @property UserProfile $profile
  * @property Collection $roles
  * @property Collection $contacts
- * @property Collection $positions
- * @property StaffUserPosition $staffPosition
+ *
+ * @property Position $staffPosition
  */
 class User extends Authenticatable implements Statusable
 {
@@ -53,10 +51,6 @@ class User extends Authenticatable implements Statusable
     protected $attributes = [
         'status_id' => UserStatus::default,
     ];
-
-    /** @var string[] Relations eager loading. */
-    // no need yet
-    // protected $with = ['roles'];
 
     /**
      * User's status.
@@ -84,42 +78,6 @@ class User extends Authenticatable implements Statusable
     }
 
     /**
-     * User's roles.
-     *
-     * @return  BelongsToMany
-     */
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(UserRole::class, 'user_has_role', 'user_id', 'user_role_id');
-    }
-
-    /**
-     * Check if user has role.
-     *
-     * @param int $roleId
-     * @param bool $fresh
-     *
-     * @return  bool
-     */
-    public function hasRole(int $roleId, bool $fresh = false): bool
-    {
-        if ($fresh && $this->relationLoaded('roles')) {
-            $this->unsetRelation('roles');
-        }
-
-        $this->loadMissing('roles');
-
-        foreach ($this->getRelation('roles') as $usersRole) {
-            /** @var UserRole $usersRole */
-            if ($usersRole->matches($roleId)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * User's profile.
      *
      * @return  HasOne
@@ -140,22 +98,22 @@ class User extends Authenticatable implements Statusable
     }
 
     /**
-     * All partner positions of user.
+     * All positions of user.
      *
      * @return  HasMany
      */
     public function positions(): HasMany
     {
-        return $this->hasMany(PartnerUserPosition::class, 'user_id', 'id');
+        return $this->hasMany(Position::class, 'user_id', 'id');
     }
 
     /**
-     * All partner positions of user.
+     * Staff position of user.
      *
      * @return  HasOne
      */
     public function staffPosition(): HasOne
     {
-        return $this->hasOne(StaffUserPosition::class, 'user_id', 'id');
+        return $this->hasOne(Position::class, 'user_id', 'id')->where('is_staff', true)->withDefault();
     }
 }

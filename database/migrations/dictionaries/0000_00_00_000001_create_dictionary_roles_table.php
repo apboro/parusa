@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDictionaryUserRolesTable extends Migration
+class CreateDictionaryRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateDictionaryUserRolesTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('dictionary_user_roles', function (Blueprint $table) {
+        Schema::create('dictionary_roles', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->boolean('enabled')->nullable()->default(true);
@@ -30,6 +30,6 @@ class CreateDictionaryUserRolesTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dictionary_user_roles');
+        Schema::dropIfExists('dictionary_roles');
     }
 }

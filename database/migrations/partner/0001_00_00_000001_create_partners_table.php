@@ -27,6 +27,7 @@ class CreatePartnersTable extends Migration
             $table->timestamps();
 
             $table->foreign('status_id')->references('id')->on('dictionary_partner_statuses')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('type_id')->references('id')->on('dictionary_partner_types')->restrictOnDelete()->restrictOnUpdate();
         });
     }
 

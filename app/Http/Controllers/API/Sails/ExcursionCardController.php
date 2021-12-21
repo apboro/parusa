@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
+use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Sails\Excursion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ class ExcursionCardController extends ApiController
             'name' => $excursion->name,
             'status' => $excursion->status->name,
             'status_id' => $excursion->status_id,
+            'active' => $excursion->hasStatus(ExcursionStatus::active),
             'images' => $excursion->images->map(function (Image $image) {
                 return $image->url;
             }),
