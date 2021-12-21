@@ -15,7 +15,7 @@
 
     &__value {
         flex-grow: 1;
-        font-size: 14px;
+        font-size: 16px;
     }
 }
 
@@ -32,12 +32,20 @@
     }
 
     &__value {
-        font-size: 14px;
+        font-size: 16px;
         box-sizing: border-box;
         padding: 15px;
         border: 1px solid #e5e5e5;
         border-radius: 2px;
         line-height: 20px;
         letter-spacing: 0.02em;
+
+        &-paragraph {
+            display: block;
+
+            &:not(:last-child) {
+                margin-bottom: 5px;
+            }
+        }
     }
 }
