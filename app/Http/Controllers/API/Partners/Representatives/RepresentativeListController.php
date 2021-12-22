@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\API\Partners;
+namespace App\Http\Controllers\API\Partners\Representatives;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
-use App\Models\Partner\PartnerUserPosition;
+use App\Models\Positions\Position;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -18,7 +19,7 @@ class RepresentativeListController extends ApiController
     protected string $rememberKey = 'representatives_list';
 
     /**
-     * Get staff list.
+     * Get representatives list.
      *
      * @param ApiListRequest $request
      *
@@ -31,7 +32,7 @@ class RepresentativeListController extends ApiController
             ->with('positions.partner', function (HasOne $query) {
                 $query->orderBy('name');
             })
-            ->where('is_staff', false)
+            ->doesntHave('staffPosition')
             ->join('user_profiles', 'users.id', '=', 'user_profiles.user_id')
             ->select('users.*')
             ->orderBy('user_profiles.lastname', 'asc')
@@ -72,20 +73,25 @@ class RepresentativeListController extends ApiController
 
             $partners = [];
             foreach ($user->positions ?? [] as $position) {
-                /** @var PartnerUserPosition $position */
+                /** @var Position $position */
                 $partners[] = [
-                    'active' => $position->hasStatus(PositionStatus::active),
+                    'active' => $position->hasStatus(PositionAccessStatus::active, 'access_status_id'),
                     'id' => $position->partner_id,
                     'name' => $position->partner->name,
-                    'position' => $position->position_title,
+                    'position' => $position->title,
+                    'email' => $position->info->email,
+                    'work_phone' => [
+                        'number' => $position->info->work_phone,
+                        'additional' => $position->info->work_phone_additional,
+                    ],
+                    'mobile_phone' => $position->info->mobile_phone,
                 ];
             }
             return [
                 'id' => $user->id,
                 'record' => [
-                    'name' => $profile ? $profile->lastname . ' ' . $profile->firstname . ' ' . $profile->patronymic : null,
+                    'name' => $profile ? $profile->fullName : null,
                     'partners' => $partners,
-                    'contacts' => [],
                 ],
             ];
         });

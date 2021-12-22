@@ -10,6 +10,7 @@ use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\PiersStatus;
+use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\ShipStatus;
 use App\Models\Dictionaries\TripDiscountStatus;
@@ -29,7 +30,7 @@ use Illuminate\Http\Request;
 class DictionaryListController extends ApiController
 {
     protected array $dictionaries = [
-        'user_roles' => Role::class,
+        'roles' => Role::class,
         'user_statuses' => UserStatus::class,
         'user_contact_types' => UserContactType::class,
 
@@ -37,6 +38,7 @@ class DictionaryListController extends ApiController
         'partner_statuses' => PartnerStatus::class,
 
         'position_statuses' => PositionStatus::class,
+        'position_access_statuses' => PositionAccessStatus::class,
 
         'partners' => Partner::class,
 
