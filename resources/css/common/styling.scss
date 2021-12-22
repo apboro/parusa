@@ -17,6 +17,18 @@
     display: inline-flex;
 }
 
+.va-top {
+    vertical-align: top;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
 /** Widths in %, from 5% to 100%, step by 5% */
 @for $i from 1 through 20 {
     .w-#{$i * 5} {

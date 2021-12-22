@@ -33,11 +33,12 @@
 
     &__message {
         font-family: $project_font;
-        font-size: 24px;
+        font-size: 20px;
         width: 100%;
         text-align: center;
-        padding: 50px 20px;
+        padding: 30px 20px;
         color: $page_message_color;
+        box-sizing: border-box;
 
         &-error {
             color: $page_message_error_color;

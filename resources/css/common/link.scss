@@ -6,6 +6,7 @@
     color: $link_color;
     cursor: pointer;
     transition: color $animation $animation_time;
+    font-family: $project_font;
 
     &__bold {
         font-weight: bold;
