@@ -4,9 +4,11 @@ namespace App\Models\Positions;
 
 use App\Exceptions\Partner\WrongPositionStatusException;
 use App\Interfaces\Statusable;
+use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\Role;
 use App\Models\Model;
+use App\Models\Partner\Partner;
 use App\Models\User\User;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * @property int $id
  * @property int $status_id
+ * @property int $access_status_id
  * @property int $user_id
  * @property int $partner_id
  * @property string $title
@@ -25,7 +28,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Carbon $updated_at
  *
  * @property PositionStatus $status
+ * @property PositionAccessStatus $accessStatus
  * @property User $user
+ * @property Partner $partner
  * @property PositionInfo $info
  * @property StaffPositionInfo $staffInfo
  */
@@ -36,6 +41,7 @@ class Position extends Model implements Statusable
     /** @var array Default attributes. */
     protected $attributes = [
         'status_id' => PositionStatus::default,
+        'access_status_id' => PositionAccessStatus::default,
     ];
 
     /**
@@ -70,6 +76,30 @@ class Position extends Model implements Statusable
         $this->checkAndSetStatus(PositionStatus::class, $status, WrongPositionStatusException::class, $save);
     }
 
+    /**
+     * Position's access status.
+     *
+     * @return  HasOne
+     */
+    public function accessStatus(): HasOne
+    {
+        return $this->hasOne(PositionAccessStatus::class, 'id', 'access_status_id');
+    }
+
+    /**
+     * Check and set new status for position.
+     *
+     * @param int|PositionStatus $status
+     * @param bool $save
+     *
+     * @return  void
+     *
+     * @throws WrongPositionStatusException
+     */
+    public function setAccessStatus($status, bool $save = true): void
+    {
+        $this->checkAndSetStatus(PositionAccessStatus::class, $status, WrongPositionStatusException::class, $save, 'access_status_id');
+    }
 
     /**
      * Position roles.
@@ -115,6 +145,16 @@ class Position extends Model implements Statusable
     public function user(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    /**
+     * Position related partner.
+     *
+     * @return  HasOne
+     */
+    public function partner(): HasOne
+    {
+        return $this->hasOne(Partner::class, 'id', 'partner_id');
     }
 
     /**

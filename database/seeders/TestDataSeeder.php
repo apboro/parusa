@@ -4,16 +4,15 @@ namespace Database\Seeders;
 
 use App\Models\Partner\Partner;
 use App\Models\Positions\Position;
+use App\Models\Positions\PositionInfo;
 use App\Models\Positions\StaffPositionInfo;
 use App\Models\Sails\Excursion;
 use App\Models\Sails\Pier;
 use App\Models\Sails\Ship;
 use App\Models\User\User;
 use App\Models\User\UserProfile;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Symfony\Component\HttpKernel\Profiler\Profile;
 
 class TestDataSeeder extends Seeder
 {
@@ -44,32 +43,29 @@ class TestDataSeeder extends Seeder
         Partner::factory(50)->create();
 
         // Create users
-        User::factory(200)->create();
+        User::factory(200)->afterCreating(function (User $user) {
+            UserProfile::factory()->create(['user_id' => $user->id]);
+        })->create();
 
-//        $partners = Partner::query()->pluck('id')->toArray();
-//        $partnersCount = count($partners);
+        $partners = Partner::query()->pluck('id')->toArray();
+        $partnersCount = count($partners);
 
-//        $users = User::query()->where('is_staff', false)->get();
-//        $users->map(function (User $user) use ($partners, $partnersCount) {
-//            if (random_int(0, 100) > 10) {
-//                $pc = random_int(1, 3);
-//                for ($i = 1; $i <= $pc; $i++) {
-//                    $pid = random_int(1, $partnersCount);
-//                    PartnerUserPosition::factory()->create(['user_id' => $user->id, 'partner_id' => $pid]);
-//                }
-//
-//            }
-//            UserProfile::factory()->create(['user_id' => $user->id]);
-//        });
+        // Attach some users to organizations
+        $users = User::query()->doesntHave('staffPosition')->get();
+        $users->map(function (User $user) use ($partners, $partnersCount) {
+            if (random_int(0, 100) > 10) {
+                $pc = random_int(1, 3);
+                for ($i = 1; $i <= $pc; $i++) {
+                    $pid = random_int(1, $partnersCount);
+                    /** @var Position $position */
+                    $position = Position::factory()->create(['user_id' => $user->id, 'partner_id' => $pid]);
+                    PositionInfo::factory()->create(['position_id' => $position->id]);
+                }
+            }
+        });
 
-//        $staff = User::query()->where('is_staff', true)->get();
-//        $staff->map(function (User $user) {
-//            StaffUserPosition::factory()->create(['user_id' => $user->id]);
-//            UserProfile::factory()->create(['user_id' => $user->id]);
-//        });
-
-//        Ship::factory(30)->create();
-//        Pier::factory(30)->create();
-//        Excursion::factory(30)->create();
+        Ship::factory(30)->create();
+        Pier::factory(30)->create();
+        Excursion::factory(30)->create();
     }
 }

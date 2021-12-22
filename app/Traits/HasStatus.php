@@ -14,10 +14,10 @@ trait HasStatus
      * @param int|AbstractDictionary $status
      * @param string $exception
      * @param bool $save
+     * @param string $name
      *
      * @return  void
      *
-     * @throws WrongStatusException
      */
     protected function checkAndSetStatus(string $class, $status, string $exception, bool $save = true, string $name = 'status_id'): void
     {
@@ -41,15 +41,16 @@ trait HasStatus
      * Check if the model has the status.
      *
      * @param int|AbstractDictionary $status
+     * @param string $name
      *
      * @return  bool
      */
-    public function hasStatus($status): bool
+    public function hasStatus($status, string $name = 'status_id'): bool
     {
         if (is_string($status) || is_int($status)) {
-            return (int)$this->status_id === (int)$status;
+            return (int)$this->getAttribute($name) === (int)$status;
         }
 
-        return (int)$this->status_id === (int)$status->id;
+        return (int)$this->getAttribute($name) === (int)$status->id;
     }
 }

@@ -14,6 +14,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $gender
  * @property Carbon $birthdate
  *
+ * @property string $email
+ * @property string $work_phone
+ * @property string $work_phone_additional
+ * @property string $mobile_phone
+ * @property string $vkontakte
+ * @property string $facebook
+ * @property string $telegram
+ * @property string $skype
+ * @property string $whatsapp
+ * @property string $notes
+ *
  * @property User $user
  *
  * @property-read string|null $fullName

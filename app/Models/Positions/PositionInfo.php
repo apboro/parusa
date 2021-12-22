@@ -3,6 +3,7 @@
 namespace App\Models\Positions;
 
 use App\Models\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @property int $position_id
@@ -19,6 +20,8 @@ use App\Models\Model;
  */
 class PositionInfo extends Model
 {
+    use HasFactory;
+
     /** @var string The primary key associated with the table. */
     protected $primaryKey = 'position_id';
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -18,6 +19,7 @@ class CreatePositionsTable extends Migration
             $table->id();
 
             $table->unsignedInteger('status_id')->default(PositionStatus::default);
+            $table->unsignedInteger('access_status_id')->default(PositionAccessStatus::default);
 
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('partner_id')->nullable();
@@ -27,9 +29,10 @@ class CreatePositionsTable extends Migration
 
             $table->timestamps();
 
-            $table->foreign('status_id')->references('id')->on('dictionary_position_statuses')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnDelete();
             $table->foreign('partner_id')->references('id')->on('partners')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('status_id')->references('id')->on('dictionary_position_statuses')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('access_status_id')->references('id')->on('dictionary_position_access_statuses')->restrictOnDelete()->restrictOnUpdate();
         });
     }
 

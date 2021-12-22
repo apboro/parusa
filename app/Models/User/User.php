@@ -8,6 +8,7 @@ use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Dictionaries\UserStatus;
 use App\Models\Positions\Position;
 use App\Traits\HasStatus;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,12 +21,14 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int $status_id
  * @property string $login
  * @property string $password
+ * @property Carbon $created_at
  *
  * @property UserStatus $status
  * @property UserProfile $profile
  * @property Collection $roles
  * @property Collection $contacts
  *
+ * @property Collection $positions
  * @property Position $staffPosition
  */
 class User extends Authenticatable implements Statusable
@@ -104,7 +107,7 @@ class User extends Authenticatable implements Statusable
      */
     public function positions(): HasMany
     {
-        return $this->hasMany(Position::class, 'user_id', 'id');
+        return $this->hasMany(Position::class, 'user_id', 'id')->where('is_staff', false);
     }
 
     /**
