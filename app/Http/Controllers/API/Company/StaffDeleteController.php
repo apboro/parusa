@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\API\Company;
 
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Models\User\User;
 use Exception;
+use App\Models\User\User;
 use Illuminate\Database\QueryException;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class StaffDeleteController extends ApiController
 {

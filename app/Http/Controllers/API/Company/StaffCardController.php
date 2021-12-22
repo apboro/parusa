@@ -41,7 +41,7 @@ class StaffCardController extends ApiController
             'status_id' => $position->status_id,
             'active' => $position->hasStatus(PositionStatus::active),
             'birth_date' => $profile->birthdate ? $profile->birthdate->format('d.m.Y') : null,
-            'created_at' => $position->created_at->format('d.m.Y'),
+            'created_at' => $user->created_at->format('d.m.Y'),
 
             'email' => $info->email,
             'work_phone' => $info->work_phone,

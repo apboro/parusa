@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\API\Company;
 
-use App\Exceptions\Sails\WrongExcursionStatusException;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\User\User;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Models\Dictionaries\PositionStatus;
+use App\Exceptions\Partner\WrongPositionStatusException;
 
 class StaffStatusController extends ApiController
 {
@@ -38,14 +38,14 @@ class StaffStatusController extends ApiController
             $position->setStatus((int)$request->input('status_id'));
             $position->save();
             $position->load('status');
-        } catch (WrongExcursionStatusException $e) {
+        } catch (WrongPositionStatusException $e) {
             return APIResponse::error('Неверный статус трудоустройства сотрудника');
         }
 
         return APIResponse::response([
             'status' => $position->status->name,
             'status_id' => $position->status_id,
-            'active' => $position->hasStatus(ExcursionStatus::active),
+            'active' => $position->hasStatus(PositionStatus::active),
             'message' => 'Статус трудоустройства сотрудника обновлён',
         ]);
     }
