@@ -40,11 +40,11 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
                     this.titles = typeof response.data.titles !== "undefined" ? response.data.titles : null;
                     this.pagination = typeof response.data.pagination !== "undefined" && usePagination ? response.data.pagination : null;
                     let payload = typeof response.data.payload !== "undefined" ? response.data.payload : null;
-                    if (typeof payload['filters'] !== "undefined") {
+                    if (payload !== null && typeof payload['filters'] !== "undefined") {
                         this.filters = payload['filters'];
                         delete payload['filters'];
                     }
-                    if (typeof payload['filters_original'] !== "undefined") {
+                    if (payload !== null && typeof payload['filters_original'] !== "undefined") {
                         this.filters_original = payload['filters_original'];
                         delete payload['filters_original'];
                     }
