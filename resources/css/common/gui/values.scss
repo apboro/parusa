@@ -1,4 +1,5 @@
 @import "../../variables";
+@import "../../colors";
 
 .value {
     width: 100%;
@@ -7,15 +8,22 @@
     padding: 10px 0;
     font-family: $project_font;
 
+    &__dotted {
+        border-bottom: 1px dashed $gui_value_dots_color;
+    }
+
     &__title {
         width: 200px;
         flex-shrink: 0;
         font-size: 14px;
+        color: $gui_value_title_color;
+        display: flex;
+        align-items: center;
     }
 
     &__value {
         flex-grow: 1;
-        font-size: 16px;
+        font-size: 14px;
     }
 }
 
@@ -29,10 +37,11 @@
     &__title {
         font-size: 14px;
         margin-bottom: 10px;
+        color: $gui_value_title_color;
     }
 
     &__value {
-        font-size: 16px;
+        font-size: 14px;
         box-sizing: border-box;
         padding: 15px;
         border: 1px solid #e5e5e5;
