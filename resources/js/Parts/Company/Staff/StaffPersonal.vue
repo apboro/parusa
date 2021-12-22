@@ -1,6 +1,6 @@
 <template>
     <div>
-        <container w-100 mt-30 inline>
+        <container w-50 mt-30>
             <value :title="'ФИО сотрудника'">{{ datasource.data['full_name'] }}</value>
             <value :title="'Должность'">{{ datasource.data['position'] }}</value>
             <value :title="'Дата заведения'">{{ datasource.data['created_at'] }}</value>
@@ -25,12 +25,12 @@
             <value :title="'Мобильный телефон'">{{ datasource.data['mobile_phone'] }}</value>
         </container>
 
-        <container w-50 mt-30 inline>
-            <value :title="'ВК'">{{ datasource.data['vkontakte'] }}</value>
-            <value :title="'Facebook'">{{ datasource.data['facebook'] }}</value>
-            <value :title="'Telegram'">{{ datasource.data['telegram'] }}</value>
-            <value :title="'Skype'">{{ datasource.data['skype'] }}</value>
-            <value :title="'WhatsApp'">{{ datasource.data['whatsapp'] }}</value>
+        <container w-50 mt-30 pl-40 inline>
+            <value :class="'w-150px'" :title="'ВК'">{{ datasource.data['vkontakte'] }}</value>
+            <value :class="'w-150px'" :title="'Facebook'">{{ datasource.data['facebook'] }}</value>
+            <value :class="'w-150px'" :title="'Telegram'">{{ datasource.data['telegram'] }}</value>
+            <value :class="'w-150px'" :title="'Skype'">{{ datasource.data['skype'] }}</value>
+            <value :class="'w-150px'" :title="'WhatsApp'">{{ datasource.data['whatsapp'] }}</value>
         </container>
 
         <container w-100 mt-30>

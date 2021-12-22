@@ -33,7 +33,7 @@
                     Для открытия доступа смените статус трудоустройства на “Действующий”.
                 </message>
                 <template v-else-if="data.data['has_access']">
-                    <value :title="'Доступ активирован для логина'" :class="'w-230px'" mt-30 mb-20><b>{{
+                    <value :title="'Доступ активирован для логина'" :dots="false" :class="'w-230px'" mt-30 mb-20><b>{{
                             data.data['login']
                         }}</b></value>
                     <base-button @click="closeAccess" :color="'red'">Закрыть доступ в систему</base-button>

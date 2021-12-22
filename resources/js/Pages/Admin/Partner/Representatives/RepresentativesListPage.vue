@@ -30,21 +30,36 @@
 
                     />
                 </base-table-cell>
-                <base-table-cell>
-                    <template v-for="partner in row.record['partners']">
-                        <base-table-cell-item>
-                            <activity :active="partner.active"/>
-                            <router-link class="link"
-                                         :to="{ name: 'partners-view', params: { id: partner.id }}"
-                                         v-html="$highlight(partner.name, list.search)"
-                            />
-                        </base-table-cell-item>
-                        <base-table-cell-item><span class="text-gray text-sm">{{ partner.position }}</span>
-                        </base-table-cell-item>
-                    </template>
-                </base-table-cell>
-                <base-table-cell>
-                    <base-table-cell-item v-for="item in row.record['contacts']">{{ item }}</base-table-cell-item>
+                <base-table-cell colspan="2">
+                    <table class="w-100">
+                        <tr v-for="partner in row.record['partners']">
+                            <td class="w-50 pb-15 va-top">
+                                <base-table-cell-item>
+                                    <activity :active="partner.active"/>
+                                    <router-link class="link"
+                                                 :to="{ name: 'partners-view', params: { id: partner.id }}"
+                                                 v-html="$highlight(partner.name, list.search)"
+                                    />
+                                </base-table-cell-item>
+                                <base-table-cell-item>
+                                    <span class="text-gray text-sm">{{ partner.position }}</span>
+                                </base-table-cell-item>
+                            </td>
+                            <td class="w-50 pb-15 va-top">
+                                <base-table-cell-item>
+                                    <a class="link" :href="'mailto:' + partner['email']"
+                                       target="_blank">{{ partner['email'] }}</a>
+                                </base-table-cell-item>
+                                <base-table-cell-item v-if="partner['work_phone']">
+                                    {{ partner['work_phone']['number'] }}
+                                    <span v-if="partner['work_phone']['additional']">доб. {{ partner['work_phone']['additional'] }}</span>
+                                </base-table-cell-item>
+                                <base-table-cell-item v-if="partner['mobile_phone']">
+                                    {{ partner['mobile_phone'] }}
+                                </base-table-cell-item>
+                            </td>
+                        </tr>
+                    </table>
                 </base-table-cell>
             </base-table-row>
         </base-table>
