@@ -117,7 +117,7 @@ export default {
             this.form.titles['login'] = 'Логин';
             this.form.titles['password'] = 'Новый пароль';
             this.form.titles['password_confirmation'] = 'Подтверждение пароля';
-            this.form.loaded = true
+            this.form.loaded = true;
         };
         this.data.load({id: this.representativeId});
     },
@@ -164,6 +164,7 @@ export default {
 
             this.form.save()
         },
+
 
         afterSave(payload) {
             this.data.data.has_access = payload.has_access;

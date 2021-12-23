@@ -38,6 +38,7 @@ export default {
         align: {type: String, default: 'center'},
         manual: {type: Boolean, default: false},
         title: {type: String, default: null},
+        resolving: {type: Function, default: null},
     },
 
     data: () => ({
@@ -74,10 +75,12 @@ export default {
         },
 
         resolve(value) {
-            if (typeof this.resolve_function === "function") {
-                this.resolve_function(value);
-                if (!this.manual) {
-                    this.hide();
+            if (this.resolving === null || (this.resolving(value) !== false)) {
+                if (typeof this.resolve_function === "function") {
+                    this.resolve_function(value);
+                    if (!this.manual) {
+                        this.hide();
+                    }
                 }
             }
         },

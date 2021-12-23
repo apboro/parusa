@@ -91,6 +91,7 @@ class RepresentativeListController extends ApiController
                 'id' => $user->id,
                 'record' => [
                     'name' => $profile ? $profile->fullName : null,
+                    'has_access' => !empty($user->login) && !empty($user->password),
                     'partners' => $partners,
                 ],
             ];

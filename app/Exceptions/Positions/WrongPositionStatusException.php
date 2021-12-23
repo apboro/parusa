@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions\Partner;
+namespace App\Exceptions\Positions;
 
 use App\Exceptions\Base\WrongStatusException;
 

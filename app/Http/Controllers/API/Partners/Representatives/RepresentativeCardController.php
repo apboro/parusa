@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\Partners\Representatives;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\PositionAccessStatus;
-use App\Models\Dictionaries\PositionStatus;
 use App\Models\Positions\Position;
 use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
@@ -37,6 +36,7 @@ class RepresentativeCardController extends ApiController
             'birth_date' => $profile->birthdate ? $profile->birthdate->format('d.m.Y') : null,
             'created_at' => $user->created_at->format('d.m.Y'),
 
+            'default_position_title' => $profile->default_position_title,
             'email' => $profile->email,
             'work_phone' => $profile->work_phone,
             'work_phone_additional' => $profile->work_phone_additional,

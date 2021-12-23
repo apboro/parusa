@@ -20,42 +20,47 @@
 
         <base-table v-if="!empty(list.data)">
             <template v-slot:header>
-                <base-table-head :header="list.titles"/>
+                <thead class="base-table__header">
+                <tr class="base-table__header-row">
+                    <td class="base-table__header-cell">{{ list.titles.name }}</td>
+                    <td class="base-table__header-cell" colspan="2">
+                        <span class="inline w-50">{{ list.titles.position }}</span>
+                        <span class="inline w-50">{{ list.titles.contacts }}</span>
+                    </td>
+                </tr>
+                </thead>
             </template>
             <base-table-row v-for="(row, key) in list.data" :key="key">
                 <base-table-cell>
-                    <router-link class="link"
-                                 :to="{ name: 'representatives-view', params: { id: row.id }}"
-                                 v-html="$highlight(row.record['name'], list.search)"
-
-                    />
+                    <base-table-cell-item :class="'mt-5 mb-5'">
+                        <router-link class="link" :to="{ name: 'representatives-view', params: { id: row.id }}" v-html="$highlight(row.record['name'], list.search)"/>
+                    </base-table-cell-item>
+                    <base-table-cell-item v-if="!row.record['has_access']">
+                        <span class="text-gray text-sm">доступ в систему закрыт</span>
+                    </base-table-cell-item>
                 </base-table-cell>
                 <base-table-cell colspan="2">
                     <table class="w-100">
                         <tr v-for="partner in row.record['partners']">
-                            <td class="w-50 pb-15 va-top">
+                            <td class="w-50 pb-5 pt-5 va-top">
                                 <base-table-cell-item>
                                     <activity :active="partner.active"/>
-                                    <router-link class="link"
-                                                 :to="{ name: 'partners-view', params: { id: partner.id }}"
-                                                 v-html="$highlight(partner.name, list.search)"
-                                    />
+                                    <router-link class="link" :to="{ name: 'partners-view', params: { id: partner.id }}" v-html="$highlight(partner.name, list.search)"/>
                                 </base-table-cell-item>
                                 <base-table-cell-item>
                                     <span class="text-gray text-sm">{{ partner.position }}</span>
                                 </base-table-cell-item>
                             </td>
-                            <td class="w-50 pb-15 va-top">
+                            <td class="w-50 pb-5 pt-5 va-top">
                                 <base-table-cell-item>
-                                    <a class="link" :href="'mailto:' + partner['email']"
-                                       target="_blank">{{ partner['email'] }}</a>
+                                    <a class="link" :href="'mailto:' + partner['email']" target="_blank">{{ partner['email'] }}</a>
                                 </base-table-cell-item>
                                 <base-table-cell-item v-if="partner['work_phone']">
-                                    {{ partner['work_phone']['number'] }}
+                                    <span class="text-gray text-sm">тел.: </span>{{ partner['work_phone']['number'] }}
                                     <span v-if="partner['work_phone']['additional']">доб. {{ partner['work_phone']['additional'] }}</span>
                                 </base-table-cell-item>
                                 <base-table-cell-item v-if="partner['mobile_phone']">
-                                    {{ partner['mobile_phone'] }}
+                                    <span class="text-gray text-sm">моб.: </span>{{ partner['mobile_phone'] }}
                                 </base-table-cell-item>
                             </td>
                         </tr>

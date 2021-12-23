@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $gender
  * @property Carbon $birthdate
  *
+ * @property string $default_position_title
  * @property string $email
  * @property string $work_phone
  * @property string $work_phone_additional

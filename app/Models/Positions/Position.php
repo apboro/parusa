@@ -2,7 +2,8 @@
 
 namespace App\Models\Positions;
 
-use App\Exceptions\Partner\WrongPositionStatusException;
+use App\Exceptions\Positions\WrongPositionAccessStatusException;
+use App\Exceptions\Positions\WrongPositionStatusException;
 use App\Interfaces\Statusable;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
@@ -98,7 +99,7 @@ class Position extends Model implements Statusable
      */
     public function setAccessStatus($status, bool $save = true): void
     {
-        $this->checkAndSetStatus(PositionAccessStatus::class, $status, WrongPositionStatusException::class, $save, 'access_status_id');
+        $this->checkAndSetStatus(PositionAccessStatus::class, $status, WrongPositionAccessStatusException::class, $save, 'access_status_id');
     }
 
     /**

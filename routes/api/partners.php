@@ -5,6 +5,8 @@ use App\Http\Controllers\API\Partners\Representatives\RepresentativeAccessContro
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeCardController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeDeleteController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeListController;
+use App\Http\Controllers\API\Partners\Representatives\RepresentativePositionsController;
+use App\Http\Controllers\API\Partners\Representatives\RepresentativeStatusController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,7 +32,9 @@ Route::post('/representatives/view', [RepresentativeCardController::class, 'get'
 
 //Route::post('/representatives/get', [StaffEditController::class, 'get'])->middleware('auth:sanctum');
 //Route::post('/representatives/update', [StaffEditController::class, 'update'])->middleware('auth:sanctum');
-//Route::post('/representatives/status', [StaffStatusController::class, 'setStatus'])->middleware('auth:sanctum');
+Route::post('/representatives/status', [RepresentativeStatusController::class, 'setStatus'])->middleware('auth:sanctum');
 Route::post('/representatives/delete', [RepresentativeDeleteController::class, 'delete'])->middleware('auth:sanctum');
+Route::post('/representatives/attach', [RepresentativePositionsController::class, 'attach'])->middleware('auth:sanctum');
+Route::post('/representatives/detach', [RepresentativePositionsController::class, 'detach'])->middleware('auth:sanctum');
 Route::post('/representatives/access/set', [RepresentativeAccessController::class, 'set'])->middleware('auth:sanctum');
 Route::post('/representatives/access/release', [RepresentativeAccessController::class, 'release'])->middleware('auth:sanctum');

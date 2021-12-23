@@ -26,6 +26,7 @@ class UserProfileFactory extends Factory
             'patronymic' => $this->faker->middleName($gender),
             'gender' => $gender,
             'birthdate' => $this->faker->date('Y-m-d', '-20 years'),
+            'default_position_title' => $this->faker->jobTitle,
             'email' => $this->faker->email,
             'work_phone' => $this->faker->phoneNumber,
             'work_phone_additional' => random_int(0, 1) === 1 ? $this->faker->numberBetween(100, 999) : null,

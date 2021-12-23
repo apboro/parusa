@@ -36,8 +36,8 @@
     }
 }
 
-/** Widths in px, from 10px to 500px, step by 10 */
-@for $i from 1 through 50 {
+/** Widths in px, from 10px to 700px, step by 10 */
+@for $i from 1 through 70 {
     .w-#{$i * 10}px {
         width: $i * 10px;
     }

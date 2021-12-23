@@ -25,7 +25,9 @@ class CreateUserProfilesTable extends Migration
 
             $table->date('birthdate')->nullable();
 
-            $table->string('email');
+            $table->string('default_position_title')->nullable();
+
+            $table->string('email')->nullable();
             $table->string('work_phone')->nullable();
             $table->string('work_phone_additional')->nullable();
             $table->string('mobile_phone')->nullable();
