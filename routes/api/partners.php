@@ -4,6 +4,7 @@ use App\Http\Controllers\API\Partners\PartnersListController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeAccessController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeCardController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeDeleteController;
+use App\Http\Controllers\API\Partners\Representatives\RepresentativeEditController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeListController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativePositionsController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeStatusController;
@@ -29,9 +30,8 @@ Route::post('/partners/delete', [PartnersListController::class, 'delete'])->midd
 
 Route::post('/representatives', [RepresentativeListController::class, 'list'])->middleware('auth:sanctum');
 Route::post('/representatives/view', [RepresentativeCardController::class, 'get'])->middleware('auth:sanctum');
-
-//Route::post('/representatives/get', [StaffEditController::class, 'get'])->middleware('auth:sanctum');
-//Route::post('/representatives/update', [StaffEditController::class, 'update'])->middleware('auth:sanctum');
+Route::post('/representatives/get', [RepresentativeEditController::class, 'get'])->middleware('auth:sanctum');
+Route::post('/representatives/update', [RepresentativeEditController::class, 'update'])->middleware('auth:sanctum');
 Route::post('/representatives/status', [RepresentativeStatusController::class, 'setStatus'])->middleware('auth:sanctum');
 Route::post('/representatives/delete', [RepresentativeDeleteController::class, 'delete'])->middleware('auth:sanctum');
 Route::post('/representatives/attach', [RepresentativePositionsController::class, 'attach'])->middleware('auth:sanctum');
