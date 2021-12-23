@@ -8,7 +8,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\User\User;
 use App\Models\Dictionaries\PositionStatus;
-use App\Exceptions\Partner\WrongPositionStatusException;
+use App\Exceptions\Positions\WrongPositionStatusException;
 
 class StaffStatusController extends ApiController
 {
