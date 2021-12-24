@@ -4,7 +4,10 @@ namespace App\Http\Controllers\API\Partners;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\PartnerStatus;
+use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Partner\Partner;
+use App\Models\Positions\Position;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -15,17 +18,45 @@ class PartnerCardController extends ApiController
         $id = $request->input('id');
 
         if ($id === null ||
-            null === ($partner = Partner::query()->with(['status'])->where('id', $id)->first())) {
+            null === ($partner = Partner::query()
+                ->with([
+                    'status', 'type', 'account', 'profile', 'documents',
+                    'positions', 'positions.info', 'positions.accessStatus', 'positions.user', 'positions.user.profile',
+                ])
+                ->where('id', $id)->first())
+        ) {
             return APIResponse::notFound();
         }
 
         /** @var Partner $partner */
+        $profile = $partner->profile;
 
         // fill data
         $values = [
             'name' => $partner->name,
+            'created_at' => $partner->created_at->format('d.m.Y'),
             'status' => $partner->status->name,
             'status_id' => $partner->status_id,
+            'active' => $partner->hasStatus(PartnerStatus::active),
+            'type' => $partner->type->name,
+            'tickets_for_guides' => $profile->tickets_for_guides ?? 0,
+            'can_reserve_tickets' => $profile->can_reserve_tickets ? 1 : 0,
+            'notes' => $profile->notes,
+            'documents' => [],
+            'positions' => $partner->positions->map(function (Position $position) {
+                return [
+                    'position_id' => $position->id,
+                    'user_id' => $position->user->id,
+                    'user' => $position->user->profile->fullName,
+                    'title' => $position->title,
+                    'work_phone' => $position->info->work_phone,
+                    'work_phone_additional' => $position->info->work_phone_additional,
+                    'email' => $position->info->email,
+                    'status' => $position->accessStatus->name,
+                    'status_id' => $position->access_status_id,
+                    'active' => $position->hasStatus(PositionAccessStatus::active, 'access_status_id'),
+                ];
+            }),
         ];
 
         // send response

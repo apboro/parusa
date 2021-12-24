@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 class PartnerDeleteController extends ApiController
 {
     /**
-     * Delete staff user.
+     * Delete partner.
      *
      * @param Request $request
      *

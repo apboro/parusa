@@ -6,9 +6,10 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\PartnerStatus;
+use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Partner\Partner;
-use App\Models\Partner\PartnerUserPosition;
+use App\Models\Positions\Position;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
@@ -39,8 +40,8 @@ class PartnersListController extends ApiController
             ->with('positions', function (HasMany $query) {
                 $query->where('status_id', PositionStatus::active)
                     ->with(['user', 'user.profile'])
-                    ->join('user_profiles', 'partner_user_positions.user_id', '=', 'user_profiles.user_id')
-                    ->select('partner_user_positions.*')
+                    ->join('user_profiles', 'positions.user_id', '=', 'user_profiles.user_id')
+                    ->select('positions.*')
                     ->orderBy('user_profiles.lastname')
                     ->orderBy('user_profiles.firstname')
                     ->orderBy('user_profiles.patronymic');
@@ -86,11 +87,11 @@ class PartnersListController extends ApiController
         $partners->transform(function (Partner $partner) {
             $representatives = [];
             foreach ($partner->positions as $position) {
-                /** @var PartnerUserPosition $position */
+                /** @var Position $position */
                 $representatives[] = [
                     'id' => $position->user->id,
                     'name' => $position->user->profile ? $position->user->profile->fullName : '—',
-                    'active' => $position->hasStatus(PositionStatus::active),
+                    'active' => $position->hasStatus(PositionAccessStatus::active, 'access_status_id'),
                 ];
             }
             return [

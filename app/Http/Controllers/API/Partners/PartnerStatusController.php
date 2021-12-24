@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Partners;
 use App\Exceptions\Partner\WrongPartnerStatusException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Partner\Partner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,6 +36,7 @@ class PartnerStatusController extends ApiController
         }
 
         return APIResponse::response([
+            'active' => $partner->hasStatus(PartnerStatus::active),
             'status' => $partner->status->name,
             'status_id' => $partner->status_id,
             'message' => 'Статус партнёра обновлён',
