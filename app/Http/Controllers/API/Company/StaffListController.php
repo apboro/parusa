@@ -84,6 +84,7 @@ class StaffListController extends ApiController
                         'work_phone_add' => $info->work_phone_additional,
                         'mobile_phone' => $info->mobile_phone,
                     ],
+                    'has_access' => !empty($user->login) && !empty($user->password),
                 ],
             ];
         });
