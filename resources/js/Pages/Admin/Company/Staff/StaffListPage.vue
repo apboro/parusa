@@ -36,12 +36,16 @@
             </template>
             <base-table-row v-for="(row, key) in list.data" :key="key">
                 <base-table-cell>
-                    <!-- row.active -->
-                    <activity :active="row.active"/>
-                    <router-link class="link"
-                                 :to="{ name: 'staff-view', params: { id: row.id }}"
-                                 v-html="$highlight(row.record['name'], list.search)"
-                    />
+                    <base-table-cell-item>
+                        <activity :active="row.active"/>
+                        <router-link class="link"
+                                     :to="{ name: 'staff-view', params: { id: row.id }}"
+                                     v-html="$highlight(row.record['name'], list.search)"
+                        />
+                    </base-table-cell-item>
+                    <base-table-cell-item v-if="!row.record['has_access']">
+                        <span class="text-gray text-sm"><activity-locked :locked="true"/>доступ в систему закрыт</span>
+                    </base-table-cell-item>
                 </base-table-cell>
                 <base-table-cell>{{ row.record['position'] }}</base-table-cell>
                 <base-table-cell>
@@ -83,9 +87,11 @@ import Message from "../../../../Layouts/Parts/Message";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import BaseButton from "../../../../Components/Base/BaseButton";
 import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActivityLocked from "../../../../Components/ActivityLocked";
 
 export default {
     components: {
+        ActivityLocked,
         ActionsMenu,
         BaseButton,
         PageTitleBar,
