@@ -5,6 +5,7 @@ namespace App\Models\User;
 use App\Exceptions\User\WrongUserStatusException;
 use App\Interfaces\Statusable;
 use App\Models\Dictionaries\AbstractDictionary;
+use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\UserStatus;
 use App\Models\Positions\Position;
 use App\Traits\HasStatus;
@@ -31,9 +32,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Collection $positions
  * @property Position $staffPosition
  */
-class User extends Authenticatable implements Statusable
+class User extends Authenticatable implements Statusable, AsDictionary
 {
-    use HasApiTokens, HasFactory, HasStatus;
+    use HasApiTokens, HasFactory, HasStatus, UserAsRepresentativesDictionary;
 
     /** @var string Referenced table. */
     protected $table = 'users';

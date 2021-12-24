@@ -23,6 +23,7 @@ use App\Models\Partner\Partner;
 use App\Models\Sails\Excursion;
 use App\Models\Sails\Pier;
 use App\Models\Sails\Ship;
+use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -41,6 +42,7 @@ class DictionaryListController extends ApiController
         'position_access_statuses' => PositionAccessStatus::class,
 
         'partners' => Partner::class,
+        'representatives' => User::class,
 
         'ships' => Ship::class,
         'ships_statuses' => ShipStatus::class,
