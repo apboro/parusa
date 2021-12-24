@@ -26,9 +26,11 @@
         "sass-loader": "^12.3.0",
         "vue": "^3.2.23",
         "vue-loader": "^16.8.3",
-        "vue-router": "^4.0.12"
+        "vue-router": "^4.0.12",
+        "xregexp": "^5.1.0"
     },
     "dependencies": {
-        "vuex": "^4.0.2"
+        "vuex": "^4.0.2",
+        "resize-observer-polyfill": "^1.5.1"
     }
 }
