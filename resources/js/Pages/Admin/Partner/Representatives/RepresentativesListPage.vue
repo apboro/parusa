@@ -36,7 +36,7 @@
                         <router-link class="link" :to="{ name: 'representatives-view', params: { id: row.id }}" v-html="$highlight(row.record['name'], list.search)"/>
                     </base-table-cell-item>
                     <base-table-cell-item v-if="!row.record['has_access']">
-                        <span class="text-gray text-sm">доступ в систему закрыт</span>
+                        <span class="text-gray text-sm"><activity-locked :locked="true"/>доступ в систему закрыт</span>
                     </base-table-cell-item>
                 </base-table-cell>
                 <base-table-cell colspan="2">
@@ -44,7 +44,7 @@
                         <tr v-for="partner in row.record['partners']">
                             <td class="w-50 pb-5 pt-5 va-top">
                                 <base-table-cell-item>
-                                    <activity :active="partner.active"/>
+                                    <activity-locked :locked="true" v-if="!partner.active"/>
                                     <router-link class="link" :to="{ name: 'partners-view', params: { id: partner.id }}" v-html="$highlight(partner.name, list.search)"/>
                                 </base-table-cell-item>
                                 <base-table-cell-item>
@@ -61,6 +61,22 @@
                                 </base-table-cell-item>
                                 <base-table-cell-item v-if="partner['mobile_phone']">
                                     <span class="text-gray text-sm">моб.: </span>{{ partner['mobile_phone'] }}
+                                </base-table-cell-item>
+                            </td>
+                        </tr>
+                        <tr v-if="row.record['partners'].length === 0">
+                            <td class="w-50 pb-5 pt-5 va-top">
+                            </td>
+                            <td class="w-50 pb-5 pt-5 va-top">
+                                <base-table-cell-item>
+                                    <a class="link" :href="'mailto:' + row.record['email']" target="_blank">{{ row.record['email'] }}</a>
+                                </base-table-cell-item>
+                                <base-table-cell-item v-if="row.record['work_phone']">
+                                    <span class="text-gray text-sm">тел.: </span>{{ row.record['work_phone'] }}
+                                    <span v-if="row.record['work_phone_additional']">доб. {{ row.record['work_phone_additional'] }}</span>
+                                </base-table-cell-item>
+                                <base-table-cell-item v-if="row.record['mobile_phone']">
+                                    <span class="text-gray text-sm">моб.: </span>{{ row.record['mobile_phone'] }}
                                 </base-table-cell-item>
                             </td>
                         </tr>
@@ -90,9 +106,11 @@ import Message from "../../../../Layouts/Parts/Message";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import BaseButton from "../../../../Components/Base/BaseButton";
 import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActivityLocked from "../../../../Components/ActivityLocked";
 
 export default {
     components: {
+        ActivityLocked,
         ActionsMenu,
         BaseButton,
         PageTitleBar,
