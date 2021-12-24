@@ -3,8 +3,13 @@
 namespace App\Models\Partner;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $partner_id
+ * @property int $tickets_for_guides
+ * @property bool $can_reserve_tickets
+ * @property string $notes
+ */
 class PartnerProfile extends Model
 {
     /** @var string The primary key associated with the table. */
@@ -13,13 +18,9 @@ class PartnerProfile extends Model
     /** @var bool Disable auto-incrementing on model. */
     public $incrementing = false;
 
-    /**
-     * Partner this profile belongs to.
-     *
-     * @return  BelongsTo
-     */
-    public function partner(): BelongsTo
-    {
-        return $this->belongsTo(Partner::class);
-    }
+    /** @var array Default attributes */
+    protected $attributes = [
+        'tickets_for_guides' => 0,
+        'can_reserve_tickets' => true,
+    ];
 }

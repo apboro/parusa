@@ -10,8 +10,10 @@ use App\Models\Account\Account;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
+use App\Models\Positions\Position;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,9 +26,11 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int $id
  * @property string $name
  * @property int $status_id
+ * @property Carbon $created_at
  *
  * @property PartnerStatus $status
  * @property PartnerType $type
+ * @property PartnerProfile $profile
  * @property Account $account
  * @property Collection $positions
  */
@@ -96,7 +100,7 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
      */
     public function account(): HasOne
     {
-        return $this->hasOne(Account::class, 'partner_id', 'id');
+        return $this->hasOne(Account::class, 'partner_id', 'id')->withDefault();
     }
 
     /**
@@ -106,7 +110,7 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
      */
     public function profile(): HasOne
     {
-        return $this->hasOne(PartnerProfile::class, 'partner_id', 'id');
+        return $this->hasOne(PartnerProfile::class, 'partner_id', 'id')->withDefault();
     }
 
     /**
@@ -114,30 +118,18 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
      *
      * @return  HasMany
      */
-//    public function documents(): HasMany
-//    {
-//        return $this->hasMany(PartnerDocuments::class);
-//    }
-
-//    /**
-//     * All positions of this partner.
-//     *
-//     * @return  HasMany
-//     */
-//    public function positions(): HasMany
-//    {
-//        return $this->hasMany(PartnerUserPosition::class, 'partner_id', 'id');
-//    }
+    public function documents(): HasMany
+    {
+        return $this->hasMany(PartnerDocuments::class);
+    }
 
     /**
-     * All agents of this partner.
+     * All positions of this partner.
      *
-     * @return  BelongsToMany
+     * @return  HasMany
      */
-//    public function allPositions(): BelongsToMany
-//    {
-//        return $this->belongsToMany(User::class, 'user_belongs_to_partner', 'partner_id', 'user_id')
-//            ->withPivot(['position', 'blocked_at']);
-//    }
-
+    public function positions(): HasMany
+    {
+        return $this->hasMany(Position::class, 'partner_id', 'id')->where('is_staff', false);
+    }
 }

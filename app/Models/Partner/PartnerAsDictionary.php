@@ -12,7 +12,7 @@ trait PartnerAsDictionary
             ->select([
                 'id',
                 'name',
-                'enabled', // TODO subselect status_id === PartnerStatus::active
+                'status_id as enabled', // TODO subselect status_id === PartnerStatus::active
                 'name as order',
                 'created_at',
                 'updated_at',
