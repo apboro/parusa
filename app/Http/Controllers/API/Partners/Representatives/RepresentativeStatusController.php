@@ -30,6 +30,7 @@ class RepresentativeStatusController extends ApiController
         ) {
             return APIResponse::notFound('Представитель не найден');
         }
+        /** @var User $user */
 
         $positionId = $request->input('position_id');
 

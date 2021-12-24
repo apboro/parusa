@@ -60,10 +60,11 @@ class RepresentativePositionsController extends ApiEditController
         }
 
         /** @var User $user */
+        /** @var Partner $partner */
         /** @var Position $position */
 
-        $position->user_id = $userId;
-        $position->partner_id = $partnerId;
+        $position->user_id = $user->id;
+        $position->partner_id = $partner->id;
         $position->title = $data['title'];
         $position->save();
 
