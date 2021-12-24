@@ -57,18 +57,24 @@
     &__list {
         position: absolute;
         top: $base_base_unit;
-        display: flex;
-        flex-direction: column;
         box-sizing: border-box;
-        padding: 10px 0;
-        min-width: 100%;
+        padding: 0;
         background-color: $base_background_color;
         box-shadow: $shadow_1;
-        left: 0;
+        left: -1px;
         opacity: 0;
         visibility: hidden;
         transition: opacity $animation $animation_time, visibility $animation $animation_time;
         z-index: 10;
+        display: flex;
+        flex-direction: column;
+        max-height: $base_base_unit * 8;
+        width: calc(100% + 2px);
+
+        &-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
 
         &-top {
             top: unset;

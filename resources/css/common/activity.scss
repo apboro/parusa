@@ -19,3 +19,20 @@
         background-color: $activity_inactive_color;
     }
 }
+
+.activity-locked {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    vertical-align: baseline;
+    margin-right: 6px;
+    top: -1px;
+
+    &__locked {
+        color: $activity_inactive_color;
+    }
+
+    &__unlocked {
+        color: $activity_active_color;
+    }
+}
