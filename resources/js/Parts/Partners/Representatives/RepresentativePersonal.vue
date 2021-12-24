@@ -8,7 +8,7 @@
             <value :title="'Email'"><a class="link" v-if="datasource.data.email" target="_blank" :href="'mailto:'+datasource.data.email">{{ datasource.data['email'] }}</a></value>
             <value :title="'Мобильный телефон'">{{ datasource.data['mobile_phone'] }}</value>
             <value :title="'Рабочий телефон'">{{ datasource.data['work_phone'] }}<span
-                v-if="datasource.data['work_phone_additional']">доб. {{ datasource.data['work_phone_additional'] }}</span></value>
+                v-if="datasource.data['work_phone_additional']"> доб. {{ datasource.data['work_phone_additional'] }}</span></value>
             <value :title="'Должность по умолчанию'">{{ datasource.data['default_position_title'] }}</value>
         </container>
 
@@ -28,7 +28,7 @@
                 </template>
                 <base-table-row v-for="(position, key) in datasource.data.positions" v-if="datasource.data.positions" :key="key">
                     <base-table-cell>
-                        <router-link :class="'link'" :to="{name: 'partners-view', props: {id: position['partner_id']}}">{{ position['partner'] }}</router-link>
+                        <router-link :class="'link'" :to="{name: 'partners-view', params: {id: position['partner_id']}}">{{ position['partner'] }}</router-link>
                     </base-table-cell>
                     <base-table-cell>{{ position['title'] }}</base-table-cell>
                     <base-table-cell>
@@ -39,8 +39,8 @@
                         </base-table-cell-item>
                     </base-table-cell>
                     <base-table-cell>
-                        <span class="link" v-if="editable" @click="statusChange(position)"><activity :active="position['active']"/>{{ position['status'] }}</span>
-                        <span v-else><activity :active="position['active']"/>{{ position['status'] }}</span>
+                        <span class="link" v-if="editable" @click="statusChange(position)"><activity-locked :locked="!position['active']"/>{{ position['status'] }}</span>
+                        <span v-else><activity-locked :locked="!position['active']"/>{{ position['status'] }}</span>
                     </base-table-cell>
                     <base-table-cell v-if="editable">
                         <actions-menu :title="null">
@@ -93,7 +93,6 @@ import Value from "../../../Components/GUI/Value";
 import ValueArea from "../../../Components/GUI/ValueArea";
 import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
 import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
-import Activity from "../../../Components/Activity";
 import ActionsMenu from "../../../Components/ActionsMenu";
 import Heading from "../../../Components/GUI/Heading";
 import Message from "../../../Layouts/Parts/Message";
@@ -104,6 +103,7 @@ import {parseRules} from "../../../Helpers/Core/validator/validator";
 import formDataSource from "../../../Helpers/Core/formDataSource";
 import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
 import DataFieldDictionaryDropdown from "../../../Components/DataFields/DataFieldDictionaryDropdown";
+import ActivityLocked from "../../../Components/ActivityLocked";
 
 export default {
     props: {
@@ -113,6 +113,7 @@ export default {
     },
 
     components: {
+        ActivityLocked,
         DataFieldDictionaryDropdown,
         DataFieldInput,
         DictionaryDropDown,
@@ -120,7 +121,6 @@ export default {
         Message,
         Heading,
         ActionsMenu,
-        Activity,
         ValueArea,
         Value,
         Container,
@@ -234,7 +234,14 @@ export default {
                 work_phone_additional: this.datasource.data['work_phone_additional'],
                 email: this.datasource.data['email'],
             };
-            this.position_popup_title = 'Прикрепление сотрудника';
+            this.form.valid = {
+                partner_id: true,
+                title: true,
+                work_phone: true,
+                work_phone_additional: true,
+                email: true,
+            };
+            this.position_popup_title = 'Прикрепление представителя к компании';
             this.position_change_partner = true;
             this.form.loaded = true;
 
