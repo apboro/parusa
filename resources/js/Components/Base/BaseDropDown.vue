@@ -9,6 +9,9 @@
         <div class="base-dropdown__list"
              :class="{'base-dropdown__list-shown': dropped, 'base-dropdown__list-top': toTop}"
         >
+            <scroll-box :mode="'vertical'"
+                        :scrollable-class="'base-dropdown__list-wrapper'"
+            >
             <span class="base-dropdown__list-item" v-if="hasNull"
                   :class="{'base-dropdown__list-item-current' : modelValue === null}"
                   @click="value = null">{{ placeholder }}</span>
@@ -17,6 +20,7 @@
                   :key="key"
                   @click="value = val"
             >{{ displayValue(val) }}</span>
+            </scroll-box>
         </div>
     </div>
 </template>
@@ -24,6 +28,7 @@
 <script>
 import IconDropdown from "../Icons/IconDropdown";
 import empty from "../../Helpers/Lib/empty";
+import ScrollBox from "../ScrollBox";
 
 export default {
     props: {
@@ -43,6 +48,7 @@ export default {
     emits: ['update:modelValue', 'changed', 'dropped'],
 
     components: {
+        ScrollBox,
         IconDropdown,
     },
 
@@ -102,6 +108,13 @@ export default {
             } else {
                 this.dropped = true;
                 this.$emit('dropped');
+                this.$nextTick(() => {
+                    const el = this.$el.querySelector('.base-dropdown__list');
+                    el.style.height = null;
+                    const height = el.clientHeight + 1;
+                    el.style.height = height + 'px';
+                    el.parentElement.focus();
+                });
                 setTimeout(() => {
                     window.addEventListener('click', this.close);
                 }, 100);
