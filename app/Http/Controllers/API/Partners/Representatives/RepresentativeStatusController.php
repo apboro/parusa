@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\API\Partners\Representatives;
 
 use App\Exceptions\Positions\WrongPositionAccessStatusException;
-use App\Exceptions\Sails\WrongExcursionStatusException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Positions\Position;
 use App\Models\User\User;
@@ -27,7 +25,6 @@ class RepresentativeStatusController extends ApiController
         $id = $request->input('id');
 
         if ($id === null || null === ($user = User::query()
-                ->with(['positions'])
                 ->where('id', $id)
                 ->doesntHave('staffPosition')->first())
         ) {
@@ -37,7 +34,7 @@ class RepresentativeStatusController extends ApiController
         $positionId = $request->input('position_id');
 
         if ($positionId === null || null === ($position = Position::query()
-                ->where(['id' => $positionId, 'user_id' => $id])->first())
+                ->where(['id' => $positionId, 'user_id' => $user->id])->first())
         ) {
             return APIResponse::notFound('Такая привязка пользователя к организации не найдена');
         }
@@ -46,7 +43,6 @@ class RepresentativeStatusController extends ApiController
 
         try {
             $position->setAccessStatus((int)$request->input('status_id'));
-            $position->save();
             $position->load('accessStatus');
         } catch (WrongPositionAccessStatusException $e) {
             return APIResponse::error('Неверный статус доступа представителя');

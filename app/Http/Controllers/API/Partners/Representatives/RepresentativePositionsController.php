@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Partners\Representatives;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\PositionAccessStatus;
+use App\Models\Partner\Partner;
 use App\Models\Positions\Position;
 use App\Models\User\User;
 use Exception;
@@ -45,7 +46,11 @@ class RepresentativePositionsController extends ApiEditController
         }
 
         if (($userId = $request->input('representative_id')) === null || null === ($user = User::query()->where('id', $userId)->doesntHave('staffPosition')->first())) {
-            return APIResponse::notFound('Такой сотрудник не найден');
+            return APIResponse::notFound('Такой представитель не найден');
+        }
+
+        if (($partnerId = $request->input('partner_id')) === null || null === ($partner = Partner::query()->where('id', $partnerId)->first())) {
+            return APIResponse::notFound('Такой партнёр не найден');
         }
 
         $position = $this->firstOrNew(Position::class, $request);
@@ -57,8 +62,8 @@ class RepresentativePositionsController extends ApiEditController
         /** @var User $user */
         /** @var Position $position */
 
-        $position->user_id = $user->id;
-        $position->partner_id = $data['partner_id'];
+        $position->user_id = $userId;
+        $position->partner_id = $partnerId;
         $position->title = $data['title'];
         $position->save();
 

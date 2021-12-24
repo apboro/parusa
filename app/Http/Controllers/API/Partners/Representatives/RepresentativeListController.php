@@ -6,7 +6,6 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\PositionAccessStatus;
-use App\Models\Dictionaries\PositionStatus;
 use App\Models\Positions\Position;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,7 +32,7 @@ class RepresentativeListController extends ApiController
                 $query->orderBy('name');
             })
             ->doesntHave('staffPosition')
-            ->join('user_profiles', 'users.id', '=', 'user_profiles.user_id')
+            ->leftJoin('user_profiles', 'users.id', '=', 'user_profiles.user_id')
             ->select('users.*')
             ->orderBy('user_profiles.lastname', 'asc')
             ->orderBy('user_profiles.firstname', 'asc')
@@ -93,6 +92,10 @@ class RepresentativeListController extends ApiController
                     'name' => $profile ? $profile->fullName : null,
                     'has_access' => !empty($user->login) && !empty($user->password),
                     'partners' => $partners,
+                    'email' => $profile->email,
+                    'work_phone' => $profile->work_phone,
+                    'work_phone_additional' => $profile->work_phone_additional,
+                    'mobile_phone' => $profile->mobile_phone,
                 ],
             ];
         });
