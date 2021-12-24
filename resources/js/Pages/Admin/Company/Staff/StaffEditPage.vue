@@ -94,7 +94,7 @@ export default {
         },
         backLink() {
             return this.staffId === 0 ? {name: 'staff-list'} : {name: 'staff-view', params: {id: this.staffId}}
-        }
+        },
     },
 
     created() {
