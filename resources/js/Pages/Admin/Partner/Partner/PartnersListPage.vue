@@ -54,7 +54,7 @@
                 </base-table-cell>
                 <base-table-cell>
                     <base-table-cell-item v-for="representative in row.record['representatives']">
-                        <activity :active="representative.active"/>
+                        <activity-locked :locked="true" v-if="!representative.active"/>
                         <router-link class="link"
                                      :to="{name: 'representatives-view', params: {id: representative.id}}"
                                      v-html="$highlight(representative.name, list.search)"
@@ -88,9 +88,11 @@ import Message from "../../../../Layouts/Parts/Message";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import BaseButton from "../../../../Components/Base/BaseButton";
 import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActivityLocked from "../../../../Components/ActivityLocked";
 
 export default {
     components: {
+        ActivityLocked,
         ActionsMenu,
         BaseButton,
         PageTitleBar,
