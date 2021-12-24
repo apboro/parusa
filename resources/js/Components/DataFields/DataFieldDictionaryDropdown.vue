@@ -25,6 +25,8 @@ export default {
         dictionary: String,
     },
 
+    emits: ['changed'],
+
     components: {
         FieldDictionaryDropDown,
     },
@@ -70,6 +72,7 @@ export default {
         changed(name, value) {
             this.datasource.values[name] = value;
             this.datasource.validate(name, value);
+            this.$emit('changed', name, value);
         },
     }
 }
