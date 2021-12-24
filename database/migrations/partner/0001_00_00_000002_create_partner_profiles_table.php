@@ -17,7 +17,7 @@ class CreatePartnerProfilesTable extends Migration
 
             $table->unsignedBigInteger('partner_id')->unique()->primary();
 
-            $table->unsignedInteger('tickets_for_guides');
+            $table->unsignedInteger('tickets_for_guides')->default(0);
 
             $table->boolean('can_reserve_tickets')->nullable()->default(true);
 
