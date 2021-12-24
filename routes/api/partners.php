@@ -1,6 +1,11 @@
 <?php
 
+use App\Http\Controllers\API\Partners\PartnerCardController;
+use App\Http\Controllers\API\Partners\PartnerDeleteController;
+use App\Http\Controllers\API\Partners\PartnerRepresentativePositionsController;
+use App\Http\Controllers\API\Partners\PartnerRepresentativeStatusController;
 use App\Http\Controllers\API\Partners\PartnersListController;
+use App\Http\Controllers\API\Partners\PartnerStatusController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeAccessController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeCardController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeDeleteController;
@@ -22,11 +27,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/partners', [PartnersListController::class, 'list'])->middleware('auth:sanctum');
-Route::post('/partners/view', [PartnersListController::class, 'get'])->middleware('auth:sanctum');
-Route::post('/partners/get', [PartnersListController::class, 'get'])->middleware('auth:sanctum');
-Route::post('/partners/update', [PartnersListController::class, 'update'])->middleware('auth:sanctum');
-Route::post('/partners/status', [PartnersListController::class, 'setStatus'])->middleware('auth:sanctum');
-Route::post('/partners/delete', [PartnersListController::class, 'delete'])->middleware('auth:sanctum');
+Route::post('/partners/view', [PartnerCardController::class, 'get'])->middleware('auth:sanctum');
+//Route::post('/partners/get', [PartnersListController::class, 'get'])->middleware('auth:sanctum');
+//Route::post('/partners/update', [PartnersListController::class, 'update'])->middleware('auth:sanctum');
+Route::post('/partners/status', [PartnerStatusController::class, 'setStatus'])->middleware('auth:sanctum');
+Route::post('/partners/delete', [PartnerDeleteController::class, 'delete'])->middleware('auth:sanctum');
+Route::post('/partners/representative/status', [PartnerRepresentativeStatusController::class, 'setStatus'])->middleware('auth:sanctum');
+Route::post('/partners/representative/details', [PartnerRepresentativePositionsController::class, 'details'])->middleware('auth:sanctum');
+Route::post('/partners/representative/attach', [PartnerRepresentativePositionsController::class, 'attach'])->middleware('auth:sanctum');
+Route::post('/partners/representative/detach', [PartnerRepresentativePositionsController::class, 'detach'])->middleware('auth:sanctum');
 
 Route::post('/representatives', [RepresentativeListController::class, 'list'])->middleware('auth:sanctum');
 Route::post('/representatives/view', [RepresentativeCardController::class, 'get'])->middleware('auth:sanctum');
