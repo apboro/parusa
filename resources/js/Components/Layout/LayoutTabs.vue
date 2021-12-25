@@ -37,7 +37,7 @@ export default {
     },
 
     created() {
-        this.current_tab = this.initial;
+        this.current_tab = (typeof this.initial !== "undefined" && this.initial !== null) ? this.initial : Object.keys(this.tabs)[0];
         this.$emit('change', this.current);
     }
 }

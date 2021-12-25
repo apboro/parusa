@@ -32,13 +32,13 @@ export default {
 
     methods: {
         change(value) {
-            this.current = value;
-            this.$emit('change', value);
             history.replaceState(
                 {},
                 null,
                 this.$route.path + '#' + value
             );
+            this.current = value;
+            this.$emit('change', value);
         },
     }
 }
