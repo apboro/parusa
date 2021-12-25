@@ -6,6 +6,7 @@ const genericDataSource = function (dataSourceUrl) {
         payload: null,
 
         loading: false,
+        loaded: false,
         has_error: false,
         error_message: null,
 
@@ -21,6 +22,7 @@ const genericDataSource = function (dataSourceUrl) {
                     if (typeof this.onLoad === "function") {
                         this.onLoad(this.data, this.payload);
                     }
+                    this.loaded = true;
                 })
                 .catch(error => {
                     console.log(error);
