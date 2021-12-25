@@ -27,6 +27,8 @@ export default {
         autocomplete: {type: String, default: 'off'},
     },
 
+    emits: ['changed'],
+
     components: {
         FieldInput,
     },
@@ -65,6 +67,7 @@ export default {
         changed(name, value) {
             this.datasource.values[name] = value;
             this.datasource.validate(name, value);
+            this.$emit('changed', name, value);
         },
     }
 }
