@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\Partners\PartnerCardController;
 use App\Http\Controllers\API\Partners\PartnerDeleteController;
+use App\Http\Controllers\API\Partners\PartnerEditController;
 use App\Http\Controllers\API\Partners\PartnerRepresentativePositionsController;
 use App\Http\Controllers\API\Partners\PartnerRepresentativeStatusController;
 use App\Http\Controllers\API\Partners\PartnersListController;
@@ -28,9 +29,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/partners', [PartnersListController::class, 'list'])->middleware('auth:sanctum');
 Route::post('/partners/view', [PartnerCardController::class, 'get'])->middleware('auth:sanctum');
-//Route::post('/partners/get', [PartnersListController::class, 'get'])->middleware('auth:sanctum');
-//Route::post('/partners/update', [PartnersListController::class, 'update'])->middleware('auth:sanctum');
+Route::post('/partners/get', [PartnerEditController::class, 'get'])->middleware('auth:sanctum');
+Route::post('/partners/update', [PartnerEditController::class, 'update'])->middleware('auth:sanctum');
 Route::post('/partners/status', [PartnerStatusController::class, 'setStatus'])->middleware('auth:sanctum');
+Route::post('/partners/reservable', [PartnerStatusController::class, 'setCanReserve'])->middleware('auth:sanctum');
+Route::post('/partners/guides-tickets', [PartnerStatusController::class, 'setGuideTickets'])->middleware('auth:sanctum');
 Route::post('/partners/delete', [PartnerDeleteController::class, 'delete'])->middleware('auth:sanctum');
 Route::post('/partners/representative/status', [PartnerRepresentativeStatusController::class, 'setStatus'])->middleware('auth:sanctum');
 Route::post('/partners/representative/details', [PartnerRepresentativePositionsController::class, 'details'])->middleware('auth:sanctum');

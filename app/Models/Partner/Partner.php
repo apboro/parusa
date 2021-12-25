@@ -10,14 +10,13 @@ use App\Models\Account\Account;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
+use App\Models\Model;
 use App\Models\Positions\Position;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Sanctum\HasApiTokens;
@@ -26,6 +25,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int $id
  * @property string $name
  * @property int $status_id
+ * @property int $type_id
  * @property Carbon $created_at
  *
  * @property PartnerStatus $status

@@ -23,6 +23,8 @@ class CreatePartnerProfilesTable extends Migration
 
             $table->text('notes')->nullable();
 
+            $table->timestamps();
+
             $table->foreign('partner_id')->references('id')->on('partners')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }

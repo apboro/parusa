@@ -1,52 +1,64 @@
 <template>
     <page :loading="form.loading">
         <template v-slot:header>
-            <page-title-bar :title="form.payload['title']" :breadcrumbs="[
-                {caption: 'Сотрудники', to: {name: 'staff-user-list'}},
-            ]"/>
+            <page-title-bar
+                :title="form.payload['title']"
+                :title-link="partnerId === 0 ? null : backLink"
+                :breadcrumbs="[{caption: 'Партнёры', to: {name: 'partners-list'}}]"
+                :link="{name: 'partners-list'}"
+                :link-title="'К списку партнёров'"
+            />
         </template>
 
-        <container>
-            <data-field-input :datasource="form" :name="'lastname'"/>
-            <data-field-input :datasource="form" :name="'firstname'"/>
-            <data-field-input :datasource="form" :name="'patronymic'"/>
-            <data-field-input :datasource="form" :name="'position_title'"/>
-            <data-field-dictionary-dropdown :datasource="form" :dictionary="'position_statuses'"
-                                            :name="'position_status_id'"/>
-            <data-field-input :datasource="form" :name="'birthdate'"/>
+        <container mt-30>
+            <data-field-input :datasource="form" :name="'name'"/>
+            <data-field-dictionary-dropdown :datasource="form" :dictionary="'partner_types'" :name="'type_id'"/>
+            <data-field-dictionary-dropdown :datasource="form" :dictionary="'position_statuses'" :name="'status_id'"/>
+            <data-field-input :datasource="form" :name="'tickets_for_guides'"/>
+            <data-field-dropdown :datasource="form" :name="'can_reserve_tickets'" :key-by="'id'" :value-by="'name'" :options="[
+                {id: 0, name: 'Запрещено'},
+                {id: 1, name: 'Разрешено'},
+            ]" :placeholder="'Бронирование билетов'"/>
         </container>
 
-        <container :no-bottom="true">
-            <base-button @click="save" :color="'green'" :disabled="!form.valid_all">Сохранить</base-button>
-            <base-button @click="$router.push({ name: 'staff-user-view', params: { id: this.userId }})">Отмена
-            </base-button>
+        <message>documents</message>
+
+        <container mt-30>
+            <data-field-text-area :datasource="form" :name="'notes'"/>
         </container>
 
+        <container mt-30>
+            <base-button @click="save" :color="'green'">Сохранить</base-button>
+            <base-button @click="$router.push(backLink)">Отмена</base-button>
+        </container>
     </page>
 </template>
 
 <script>
 import formDataSource from "../../../../Helpers/Core/formDataSource";
-
 import Page from "../../../../Layouts/Page";
-import LoadingProgress from "../../../../Components/LoadingProgress";
+import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
+import Container from "../../../../Components/GUI/Container";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
 import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataFieldDictionaryDropdown";
-import Container from "../../../../Layouts/Parts/Container";
+import DataFieldDropdown from "../../../../Components/DataFields/DataFieldDropdown";
+import DataFieldMaskedInput from "../../../../Components/DataFields/DataFieldMaskedInput";
+import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
 import BaseButton from "../../../../Components/Base/BaseButton";
-import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
-import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
+import Message from "../../../../Layouts/Parts/Message";
 
 export default {
     components: {
-        PageTitleBar,
-        Page,
-        LoadingProgress,
-        DataFieldInput,
-        DataFieldDictionaryDropdown,
-        Container,
+        Message,
         BaseButton,
-        BaseLinkButton,
+        DataFieldTextArea,
+        DataFieldMaskedInput,
+        DataFieldDropdown,
+        DataFieldDictionaryDropdown,
+        DataFieldInput,
+        Container,
+        PageTitleBar,
+        Page
     },
 
     data: () => ({
@@ -54,13 +66,19 @@ export default {
     }),
 
     computed: {
-        userId() {
-            return this.$route.params.id;
-        }
+        partnerId() {
+            return Number(this.$route.params.id);
+        },
+        processing() {
+            return this.form.loading || this.form.saving;
+        },
+        backLink() {
+            return this.partnerId === 0 ? {name: 'partners-list'} : {name: 'partners-view', params: {id: this.partnerId}}
+        },
     },
 
     created() {
-        this.form = formDataSource('/api/users/staff/get', '/api/users/staff/update', {id: this.userId});
+        this.form = formDataSource('/api/partners/get', '/api/partners/update', {id: this.partnerId});
         this.form.toaster = this.$toast;
         this.form.afterSave = this.afterSave;
         this.form.load();
@@ -68,15 +86,18 @@ export default {
 
     methods: {
         save() {
-            if (!this.form.valid_all) {
+            if (!this.form.validateAll()) {
                 return;
             }
             this.form.save()
         },
+
         afterSave(payload) {
-            if (Number(this.userId) === 0) {
+            if (this.partnerId === 0) {
                 const newId = payload['id'];
-                this.$router.push({name: 'staff-user-edit', params: {id: newId}});
+                this.$router.push({name: 'partners-view', params: {id: newId}});
+            } else {
+                this.$router.push({name: 'partners-view', params: {id: this.partnerId}});
             }
         },
     }

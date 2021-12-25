@@ -11,20 +11,20 @@
         </container>
         <container w-50 mt-30>
             <value :title="'Билеты для гидов'">
-                <span class="link" v-if="editable" @click="statusChange">{{ datasource.data['tickets_for_guides'] }}</span>
+                <span class="link" v-if="editable" @click="ticketsChange">{{ datasource.data['tickets_for_guides'] }}</span>
                 <span v-else>{{ datasource.data['tickets_for_guides'] }}</span>
             </value>
             <hint mt-5 mb-10>При значении "0" партнер не может включать в заказ бесплатные билеты для гидов. Любое положительное число разрешает данную возможность и определяет
                 максимальное количество таких билетов для одного заказа. Например, при значении "1" к заказу можно будет добавить 1 билет для гида.
             </hint>
             <value :title="'Бронирование билетов'">
-                <span class="link" v-if="editable" @click="statusChange">{{ datasource.data['tickets_for_guides'] === 1 ? 'Разрешено' : 'Запрещено' }}</span>
-                <span v-else>{{ datasource.data['tickets_for_guides'] }}</span>
+                <span class="link" v-if="editable" @click="reserveChange">{{ datasource.data['can_reserve_tickets'] === 1 ? 'Разрешено' : 'Запрещено' }}</span>
+                <span v-else>{{ datasource.data['can_reserve_tickets'] }}</span>
             </value>
         </container>
 
         <container w-100 mt-50>
-            <value-area :title="'документы'"/>
+            <value-area :title="'Документы'"/>
         </container>
 
         <container w-100 mt-50>
@@ -35,19 +35,30 @@
             <base-link-button :to="{ name: 'partners-edit', params: { id: partnerId }}">Редактировать</base-link-button>
         </container>
 
-        <pop-up ref="popup" v-if="editable"
-                :manual="true"
-                :title="'Изменить статус партнёра'"
-                :buttons="[
-                    {result: 'no', caption: 'Отмена', color: 'white'},
-                    {result: 'yes', caption: 'OK', color: 'green'}
-                ]"
+
+        <pop-up ref="popup" v-if="editable" :manual="true" :title="'Изменить статус партнёра'"
+                :buttons="[{result: 'no', caption: 'Отмена', color: 'white'}, {result: 'yes', caption: 'OK', color: 'green'}]"
         >
-            <dictionary-drop-down
-                :dictionary="'partner_statuses'"
-                :original="initial_status"
-                v-model="current_status"
-                :name="'status'"
+            <dictionary-drop-down :dictionary="'partner_statuses'" :name="'status'" :original="initial_status" v-model="current_status"/>
+        </pop-up>
+
+        <pop-up ref="popup_tickets" v-if="editable" :manual="true" :title="'Билеты для гидов'"
+                :buttons="[{result: 'no', caption: 'Отмена', color: 'white'}, {result: 'yes', caption: 'OK', color: 'green'}]"
+                :resolving="ticketsFormResolving"
+        >
+            <data-field-input :datasource="form" :name="'tickets_for_guides'" @changed="ticketsChanged"/>
+        </pop-up>
+
+        <pop-up ref="popup_reserve" v-if="editable" :manual="true" :title="'Бронирование билетов'"
+                :buttons="[{result: 'no', caption: 'Отмена', color: 'white'}, {result: 'yes', caption: 'OK', color: 'green'}]"
+        >
+            <base-drop-down :name="'can_reserve_tickets'" :key-by="'id'" :value-by="'name'"
+                            v-model="current_can_reserve_tickets"
+                            :original="datasource.data['can_reserve_tickets']"
+                            :options="[
+                                {id: 0, name: 'Запрещено'},
+                                {id: 1, name: 'Разрешено'},
+                            ]" :placeholder="'Бронирование билетов'"
             />
         </pop-up>
     </div>
@@ -65,6 +76,11 @@ import ValueArea from "../../../Components/GUI/ValueArea";
 import Activity from "../../../Components/Activity";
 import Message from "../../../Layouts/Parts/Message";
 import Hint from "../../../Components/GUI/Hint";
+import FieldDropDown from "../../../Components/Fields/FieldDropDown";
+import BaseDropDown from "../../../Components/Base/BaseDropDown";
+import formDataSource from "../../../Helpers/Core/formDataSource";
+import {parseRules} from "../../../Helpers/Core/validator/validator";
+import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
 
 export default {
     mixins: [UseBaseTableBundle],
@@ -76,6 +92,9 @@ export default {
     },
 
     components: {
+        DataFieldInput,
+        BaseDropDown,
+        FieldDropDown,
         Hint,
         Message,
         Activity,
@@ -91,6 +110,8 @@ export default {
     data: () => ({
         initial_status: null,
         current_status: null,
+        current_can_reserve_tickets: null,
+        form: null,
     }),
 
     methods: {
@@ -116,6 +137,66 @@ export default {
                             })
                     } else {
                         this.$refs.popup.hide();
+                    }
+                });
+        },
+
+        ticketsFormResolving(result) {
+            return result !== 'yes' || this.form.validateAll();
+        },
+
+        ticketsAfterSave(payload) {
+            this.datasource.data['tickets_for_guides'] = payload['tickets_for_guides'];
+            this.form.loaded = false;
+            this.$refs.popup_tickets.hide();
+        },
+
+        ticketsChanged(name, value) {
+            if (!isNaN(Number(value))) {
+                this.form.validate(name, Number(value));
+            }
+        },
+
+        ticketsChange() {
+            this.form = formDataSource(null, '/api/partners/guides-tickets', {id: this.partnerId});
+            this.form.values = {tickets_for_guides: String(this.datasource.data['tickets_for_guides'])};
+            this.form.originals = {tickets_for_guides: String(this.datasource.data['tickets_for_guides'])};
+            this.form.validation_rules = {tickets_for_guides: parseRules('required|integer|min:0|bail')};
+            this.form.afterSave = this.ticketsAfterSave;
+            this.form.toaster = this.$toast;
+            this.form.titles = {tickets_for_guides: 'Билеты для гидов'};
+            this.form.loaded = true;
+
+            this.$refs.popup_tickets.show()
+                .then(result => {
+                    if (result === 'yes') {
+                        this.$refs.popup_tickets.process(true);
+                        this.form.save();
+                    } else {
+                        this.$refs.popup_tickets.hide();
+                    }
+                });
+        },
+
+        reserveChange() {
+            this.current_can_reserve_tickets = Number(this.datasource.data['can_reserve_tickets']);
+            this.$refs.popup_reserve.show()
+                .then(result => {
+                    if (result === 'yes') {
+                        this.$refs.popup_reserve.process(true);
+                        axios.post('/api/partners/reservable', {id: this.partnerId, can_reserve_tickets: this.current_can_reserve_tickets})
+                            .then(response => {
+                                this.$toast.success(response.data.data.message, 2000);
+                                this.datasource.data['can_reserve_tickets'] = response.data.data.can_reserve_tickets;
+                            })
+                            .catch(error => {
+                                this.$toast.error(error.response.data.status);
+                            })
+                            .finally(() => {
+                                this.$refs.popup_reserve.hide();
+                            })
+                    } else {
+                        this.$refs.popup_reserve.hide();
                     }
                 });
         },
