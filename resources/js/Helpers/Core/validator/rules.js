@@ -258,7 +258,7 @@ const Rules = function() {
          */
         integer: (value, attributes, name, fields, nullable) => {
             if(nullable && isValueNull(value)) return true;
-            return String(value) === String(parseInt(value));
+            return !isNaN(Number(value));
         },
 
         // The field under validation must be an IP address.
