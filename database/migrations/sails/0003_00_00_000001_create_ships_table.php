@@ -20,6 +20,7 @@ class CreateShipsTable extends Migration
             $table->string('name');
             $table->unsignedInteger('status_id')->default(ShipStatus::default);
             $table->unsignedInteger('type_id')->nullable();
+            $table->integer('order')->nullable()->default(0);
 
             $table->string('owner');
             $table->string('decks');

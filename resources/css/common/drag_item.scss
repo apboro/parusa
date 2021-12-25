@@ -1,0 +1,85 @@
+@import "../variables";
+@import "../colors";
+@import "../mixins/no-selection";
+
+.drag-item {
+    display: flex;
+    width: 100%;
+    min-height: $drag_item_base;
+    margin: 5px 0;
+    box-sizing: border-box;
+    border: 1px solid $drag_item_border_color;
+    border-radius: 2px;
+    background-color: $drag_item_background_color;
+
+    &__dragging {
+        background-color: transparent;
+    }
+
+    &__head {
+        display: inline-flex;
+        width: $drag_item_base;
+        justify-content: center;
+        align-items: center;
+        cursor: grab;
+        color: $drag_item_head_color;
+        flex-grow: 0;
+        flex-shrink: 0;
+        @include noSelection;
+
+        & > * {
+            height: $drag_item_base / 2;
+        }
+    }
+
+    &__body {
+        flex-grow: 1;
+        flex-shrink: 0;
+        font-size: 14px;
+        font-family: $project_font;
+        box-sizing: border-box;
+        padding: 10px 15px 10px 0;
+        color: $drag_item_body_color;
+    }
+
+    &__actions {
+        flex-grow: 0;
+        flex-shrink: 0;
+        display: inline-flex;
+
+        &-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: $drag_item_base;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity $animation $animation_time;
+
+            &:hover {
+                opacity: 1;
+            }
+
+            &-on {
+                color: $drag_item_action_on_color;
+            }
+
+            &-off {
+                color: $drag_item_action_off_color;
+            }
+
+            &-edit {
+                color: $drag_item_action_edit_color;
+            }
+
+            &-remove {
+                color: $drag_item_action_remove_color;
+            }
+
+            & > * {
+                width: $drag_item_base * 0.5;
+                height: $drag_item_base * 0.5;
+            }
+        }
+    }
+}

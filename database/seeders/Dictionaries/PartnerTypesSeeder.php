@@ -18,6 +18,9 @@ class PartnerTypesSeeder extends GenericSeeder
         PartnerType::class => [
             1000 => ['name' => 'Гостиница'],
             1001 => ['name' => 'Ресторан'],
+            1002 => ['name' => 'Тур-оператор'],
+            1003 => ['name' => 'Промоутер'],
+            1004 => ['name' => 'Отель'],
         ]
     ];
 }

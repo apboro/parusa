@@ -13,7 +13,7 @@ trait ShipAsDictionary
                 'id',
                 'name',
                 'enabled', // TODO sub select status_id === ShipStatus::active
-                'name as order',
+                'order',
                 'created_at',
                 'updated_at',
             ]);

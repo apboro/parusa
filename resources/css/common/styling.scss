@@ -29,6 +29,11 @@
     text-align: right;
 }
 
+.border {
+    border: 1px solid $color_light_gray;
+    border-radius: 2px;
+}
+
 /** Widths in %, from 5% to 100%, step by 5% */
 @for $i from 1 through 20 {
     .w-#{$i * 5} {
@@ -72,6 +77,17 @@
     }
     .pr-#{$i * 5} {
         padding-right: $i * 5px;
+    }
+    .p-#{$i * 5} {
+        padding: $i * 5px;
+    }
+    .ph-#{$i * 5} {
+        padding-left: $i * 5px;
+        padding-right: $i * 5px;
+    }
+    .pv-#{$i * 5} {
+        padding-top: $i * 5px;
+        padding-bottom: $i * 5px;
     }
 }
 

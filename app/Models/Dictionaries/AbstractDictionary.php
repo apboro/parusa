@@ -9,6 +9,15 @@ use App\Models\Model;
  */
 abstract class AbstractDictionary extends Model
 {
+    /** @var array Attributes casting. */
+    protected $casts = [
+        'enabled' => 'boolean',
+        'lock' => 'boolean',
+        'order' => 'int',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     /**
      * Get dictionary item instance by id.
      *

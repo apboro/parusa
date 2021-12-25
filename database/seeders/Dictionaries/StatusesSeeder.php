@@ -31,8 +31,8 @@ class StatusesSeeder extends GenericSeeder
             PositionStatus::blocked => ['name' => 'Не действующий'],
         ],
         PositionAccessStatus::class => [
-            PositionAccessStatus::active => ['name' => 'Разрешён', 'order' => 1],
-            PositionAccessStatus::blocked => ['name' => 'Запрещён', 'order' => 2],
+            PositionAccessStatus::active => ['name' => 'Открыт', 'order' => 1],
+            PositionAccessStatus::blocked => ['name' => 'Закрыт', 'order' => 2],
         ],
 
         ExcursionStatus::class => [

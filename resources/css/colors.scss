@@ -23,6 +23,7 @@ $color_red: #FF2300;
 $color_red: #C31B00;
 $color_red: #781000;
 
+$color_light_gray: #e5e5e5;
 $color_gray: #585858;
 
 $body_background_color: #f9fafd;
@@ -181,3 +182,13 @@ $base_button_red_background_color: #c00c0c;
 $base_button_red_hover_color: #ffffff;
 $base_button_red_hover_border: #cc1717;
 $base_button_red_hover_background_color: #cc1717;
+
+
+$drag_item_body_color: $color_text;
+$drag_item_border_color: #ededed;
+$drag_item_background_color: #fbfbfb;
+$drag_item_head_color: #787878;
+$drag_item_action_on_color: #0e9106;
+$drag_item_action_off_color: #c00c0c;
+$drag_item_action_edit_color: #147ee8;
+$drag_item_action_remove_color: #c00c0c;

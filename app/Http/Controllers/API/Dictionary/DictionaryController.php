@@ -28,10 +28,9 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class DictionaryListController extends ApiController
+class DictionaryController extends ApiController
 {
     protected array $dictionaries = [
-        'roles' => Role::class,
         'user_statuses' => UserStatus::class,
         'user_contact_types' => UserContactType::class,
 
@@ -40,16 +39,20 @@ class DictionaryListController extends ApiController
 
         'position_statuses' => PositionStatus::class,
         'position_access_statuses' => PositionAccessStatus::class,
+        'roles' => Role::class,
 
         'partners' => Partner::class,
         'representatives' => User::class,
 
         'ships' => Ship::class,
         'ships_statuses' => ShipStatus::class,
+
         'piers' => Pier::class,
         'pier_statuses' => PiersStatus::class,
+
         'excursions' => Excursion::class,
         'excursion_statuses' => ExcursionStatus::class,
+
         'excursion_programs' => ExcursionProgram::class,
 
         'trip_statuses' => TripStatus::class,
