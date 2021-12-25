@@ -11,8 +11,8 @@ export default [
         'items': [
             {'title': 'Компании-партнёры', 'route': 'partners-list'},
             {'title': 'Представители', 'route': 'representatives-list'},
-            {'title': 'Мобильные кассы', 'route': 'mobile-sales-list'},
-            {'title': 'Возврат билетов', 'route': 'ticket-refund-list'},
+            {'title': 'Мобильные кассы', 'route': ''},
+            {'title': 'Возврат билетов', 'route': ''},
         ]
     },
     {
@@ -21,7 +21,7 @@ export default [
             {'title': 'Сотрудники', 'route': 'staff-list'},
             {'title': 'Каталог экскурсий', 'route': 'excursion-list'},
             {'title': 'Настройки', 'route': ''},
-            {'title': 'Справочники', 'route': ''},
+            {'title': 'Справочники', 'route': 'dictionaries'},
         ]
     },
     {
