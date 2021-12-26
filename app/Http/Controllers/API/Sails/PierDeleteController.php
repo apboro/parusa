@@ -24,18 +24,20 @@ class PierDeleteController extends ApiController
         $id = $request->input('id');
 
         if ($id === null || null === ($pier = Pier::query()->where('id', $id)->first())) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Причал не найден');
         }
+        /** @var Pier $pier */
+
+        $name = $pier->name;
 
         try {
-            /** @var Pier $pier */
             $pier->delete();
         } catch (QueryException $exception) {
-            return APIResponse::error('Невозможно удалить причал. Есть блокирующие связи.');
+            return APIResponse::error("Невозможно удалить причал \"{$name}\". Есть блокирующие связи.");
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response('Причал удалён');
+        return APIResponse::response([], [], "Причал \"{$name}\" удалён");
     }
 }

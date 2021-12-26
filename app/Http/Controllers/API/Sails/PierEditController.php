@@ -43,7 +43,7 @@ class PierEditController extends ApiEditController
         $pier = $this->firstOrNew(Pier::class, $request, ['info', 'images']);
 
         if ($pier === null) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Причал не найден');
         }
 
         // send response
@@ -88,7 +88,7 @@ class PierEditController extends ApiEditController
         $pier = $this->firstOrNew(Pier::class, $request);
 
         if ($pier === null) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Причал не найден');
         }
 
         $pier->setAttribute('name', $data['name']);

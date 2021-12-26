@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Sails;
 use App\Exceptions\Sails\WrongPierStatusException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\PiersStatus;
 use App\Models\Sails\Pier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,19 +26,21 @@ class PierStatusController extends ApiController
         if ($id === null || null === ($pier = Pier::query()->where('id', $id)->first())) {
             return APIResponse::notFound('Причал не найден');
         }
-
         /** @var Pier $pier */
+
+        $name = $pier->name;
+
         try {
             $pier->setStatus((int)$request->input('status_id'));
             $pier->save();
         } catch (WrongPierStatusException $e) {
-            return APIResponse::error('Неверный статус причала');
+            return APIResponse::error("Неверный статус причала \"{$name}\"");
         }
 
         return APIResponse::response([
             'status' => $pier->status->name,
             'status_id' => $pier->status_id,
-            'message' => 'Статус причала обновлён',
-        ]);
+            'active' => $pier->hasStatus(PiersStatus::active),
+        ], [], "Статус причала \"{$name}\" обновлён");
     }
 }

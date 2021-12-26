@@ -1,67 +1,49 @@
 <template>
     <div>
         <container w-50 mt-30 inline>
-            <base-table :borders="false" :highlight="false" :hover="false" :small="true">
-                <base-table-row>
-                    <base-table-cell :w="'200'">Название</base-table-cell>
-                    <base-table-cell>{{ datasource.data.name }}</base-table-cell>
-                </base-table-row>
-                <base-table-row>
-                    <base-table-cell :w="'200'">Адрес причала</base-table-cell>
-                    <base-table-cell>{{ datasource.data.address }}</base-table-cell>
-                </base-table-row>
-                <base-table-row>
-                    <base-table-cell :w="'200'">Время работы</base-table-cell>
-                    <base-table-cell>{{ datasource.data.work_time }}</base-table-cell>
-                </base-table-row>
-                <base-table-row>
-                    <base-table-cell :w="'200'">Координаты причала</base-table-cell>
-                    <base-table-cell>{{ datasource.data.latitude }}, {{ datasource.data.longitude }}</base-table-cell>
-                </base-table-row>
-                <base-table-row>
-                    <base-table-cell :w="'200'">Статус</base-table-cell>
-                    <base-table-cell>
-                        <span class="link" @click="statusChange">{{ datasource.data.status }}</span>
-                    </base-table-cell>
-                </base-table-row>
-            </base-table>
+            <value :title="'Название'">{{ datasource.data['name'] }}</value>
+            <value :title="'Адрес причала'">{{ datasource.data['address'] }}</value>
+            <value :title="'Время работы'">{{ datasource.data['work_time'] }}</value>
+            <value :title="'Координаты причала'">
+                <span v-if="datasource.data['latitude'] && datasource.data['longitude']">{{ datasource.data['latitude'] }}, {{ datasource.data['longitude'] }}</span>
+            </value>
+            <value :title="'Статус'">
+                <span class="link" v-if="editable" @click="statusChange"><activity :active="datasource.data['active']"/>{{ datasource.data['status'] }}</span>
+                <span v-else><activity :active="datasource.data['active']"/>{{ datasource.data['status'] }}</span>
+            </value>
         </container>
 
-        <container w-50 mt-30 inline v-if="datasource.data.images">
-            <img class="w-100" :src="datasource.data.images[0]" :alt="datasource.data.name"/>
+        <container w-50 mt-30 inline pl-20 v-if="datasource.data['images'] && datasource.data['images'][0]">
+            <img class="w-100" :src="datasource.data['images'][0]" :alt="datasource.data['name']"/>
         </container>
 
-        <text-container class="mt-30px" :title="'Описание причала'">{{ datasource.data.description }}</text-container>
-        <text-container :title="'Как добраться'">{{ datasource.data.way_to }}</text-container>
+        <container w-100 mt-30>
+            <value-area :title="'Описание причала'" v-text="datasource.data['description']"/>
+            <value-area :title="'Как добраться'" v-text="datasource.data['way_to']"/>
+        </container>
 
-        <container :no-bottom="true">
-            <base-link-button :to="{ name: 'pier-edit', params: { id: pierId }}">Редактировать
-            </base-link-button>
+        <container mt-15 v-if="editable">
+            <base-link-button :to="{ name: 'pier-edit', params: { id: pierId }}">Редактировать</base-link-button>
         </container>
 
         <pop-up ref="popup"
-                :manual="true"
                 :title="'Изменить статус причала'"
-                :buttons="[
-                {result: 'no', caption: 'Отмена', color: 'white'},
-                {result: 'yes', caption: 'OK', color: 'green'}
-            ]"
+                :buttons="[{result: 'no', caption: 'Отмена', color: 'white'}, {result: 'yes', caption: 'OK', color: 'green'}]"
+                :manual="true"
         >
-            <dictionary-drop-down
-                :dictionary="'pier_statuses'"
-                :original="initial_status"
-                v-model="current_status"
-                :name="'status'"
-            />
+            <dictionary-drop-down :dictionary="'pier_statuses'" v-model="current_status" :name="'status'" :original="initial_status"/>
         </pop-up>
     </div>
 </template>
 
 <script>
 import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
+
 import Container from "../../../Components/GUI/Container";
+import Value from "../../../Components/GUI/Value";
+import Activity from "../../../Components/Activity";
+import ValueArea from "../../../Components/GUI/ValueArea";
 import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
-import TextContainer from "../../../Layouts/Parts/TextContainer";
 import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
 
@@ -71,14 +53,17 @@ export default {
     props: {
         pierId: {type: Number, required: true},
         datasource: {type: Object},
+        editable: {type: Boolean, default: false},
     },
 
     components: {
-        DictionaryDropDown,
         Container,
-        TextContainer,
+        Value,
+        Activity,
+        ValueArea,
         BaseLinkButton,
         PopUp,
+        DictionaryDropDown,
     },
 
     data: () => ({
@@ -96,12 +81,13 @@ export default {
                         this.$refs.popup.process(true);
                         axios.post('/api/piers/status', {id: this.pierId, status_id: this.current_status})
                             .then(response => {
-                                this.$toast.success(response.data.data.message, 2000);
+                                this.$toast.success(response.data.message, 3000);
                                 this.datasource.data.status = response.data.data.status;
                                 this.datasource.data.status_id = response.data.data.status_id;
+                                this.datasource.data.active = response.data.data.active;
                             })
                             .catch(error => {
-                                this.$toast.error(error.response.data.status);
+                                this.$toast.error(error.response.data.message);
                             })
                             .finally(() => {
                                 this.$refs.popup.hide();

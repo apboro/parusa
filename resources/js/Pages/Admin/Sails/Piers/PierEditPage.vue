@@ -1,12 +1,12 @@
 <template>
     <page :loading="processing">
         <template v-slot:header>
-            <page-title-bar :title="form.payload['title']" :breadcrumbs="[
-                {caption: 'Причалы', to: {name: 'pier-list'}},
-            ]"/>
+            <page-title-bar :title="form.payload['title']"
+                            :breadcrumbs="[{caption: 'Причалы', to: {name: 'pier-list'}}]"
+            />
         </template>
 
-        <container>
+        <container mt-30>
             <data-field-input :datasource="form" :name="'name'"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'pier_statuses'" :name="'status_id'"/>
             <data-field-images :datasource="form" :name="'images'"/>
@@ -18,10 +18,9 @@
             <data-field-text-area :datasource="form" :name="'way_to'"/>
         </container>
 
-        <container :no-bottom="true">
+        <container mt-30>
             <base-button @click="save" :color="'green'">Сохранить</base-button>
-            <base-button @click="$router.push({ name: 'pier-view', params: { id: this.pierId }})">Отмена
-            </base-button>
+            <base-button @click="$router.push({ name: 'pier-view', params: { id: this.pierId }})">Отмена</base-button>
         </container>
 
     </page>
@@ -31,28 +30,24 @@
 import formDataSource from "../../../../Helpers/Core/formDataSource";
 
 import Page from "../../../../Layouts/Page";
-import LoadingProgress from "../../../../Components/LoadingProgress";
+import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
+import Container from "../../../../Components/GUI/Container";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
 import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataFieldDictionaryDropdown";
-import Container from "../../../../Layouts/Parts/Container";
-import BaseButton from "../../../../Components/Base/BaseButton";
-import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
-import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
 import DataFieldImages from "../../../../Components/DataFields/DataFieldImages";
+import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
+import BaseButton from "../../../../Components/Base/BaseButton";
 
 export default {
     components: {
-        DataFieldImages,
-        DataFieldTextArea,
-        PageTitleBar,
         Page,
-        LoadingProgress,
+        PageTitleBar,
+        Container,
         DataFieldInput,
         DataFieldDictionaryDropdown,
-        Container,
+        DataFieldImages,
+        DataFieldTextArea,
         BaseButton,
-        BaseLinkButton,
     },
 
     data: () => ({
@@ -83,7 +78,7 @@ export default {
             this.form.save()
         },
         afterSave(payload) {
-            if (Number(this.pierId) === 0) {
+            if (this.pierId === 0) {
                 const newId = payload['id'];
                 this.$router.push({name: 'pier-view', params: {id: newId}});
             } else {
