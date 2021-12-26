@@ -72,36 +72,32 @@
 
 <script>
 import listDataSource from "../../../../Helpers/Core/listDataSource";
+import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
 import empty from "../../../../Mixins/empty";
 
 import ListPage from "../../../../Layouts/ListPage";
+import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
+import ActionsMenu from "../../../../Components/ActionsMenu";
 import PageBarItem from "../../../../Layouts/Parts/PageBarItem";
-import BasePagination from "../../../../Components/Base/BasePagination";
-import DictionaryDropDown from "../../../../Components/Dictionary/DictionaryDropDown";
 import BaseIconInput from "../../../../Components/Base/BaseIconInput";
 import IconSearch from "../../../../Components/Icons/IconSearch";
-import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
+import DictionaryDropDown from "../../../../Components/Dictionary/DictionaryDropDown";
 import Activity from "../../../../Components/Activity";
 import Message from "../../../../Layouts/Parts/Message";
-import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import BaseButton from "../../../../Components/Base/BaseButton";
-import ActionsMenu from "../../../../Components/ActionsMenu";
-import ActivityLocked from "../../../../Components/ActivityLocked";
+import BasePagination from "../../../../Components/Base/BasePagination";
 
 export default {
     components: {
-        ActivityLocked,
-        ActionsMenu,
-        BaseButton,
-        PageTitleBar,
-        Message,
-        Activity,
         ListPage,
+        PageTitleBar,
+        ActionsMenu,
         PageBarItem,
-        BasePagination,
-        DictionaryDropDown,
         BaseIconInput,
         IconSearch,
+        DictionaryDropDown,
+        Activity,
+        Message,
+        BasePagination,
     },
 
     mixins: [UseBaseTableBundle, empty],

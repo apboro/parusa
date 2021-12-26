@@ -56,29 +56,23 @@ import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import Container from "../../../../Components/GUI/Container";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
-import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
-import DataFieldImages from "../../../../Components/DataFields/DataFieldImages";
 import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataFieldDictionaryDropdown";
-import DataFieldDictionaryDropdownMulti from "../../../../Components/DataFields/DataFieldDictionaryDropdownMulti";
-import BaseButton from "../../../../Components/Base/BaseButton";
-import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
-import DataFieldDropdown from "../../../../Components/DataFields/DataFieldDropdown";
 import DataFieldMaskedInput from "../../../../Components/DataFields/DataFieldMaskedInput";
+import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
+import DataFieldDropdown from "../../../../Components/DataFields/DataFieldDropdown";
+import BaseButton from "../../../../Components/Base/BaseButton";
 
 export default {
     components: {
-        DataFieldMaskedInput,
-        DataFieldDropdown,
         Page,
         PageTitleBar,
         Container,
         DataFieldInput,
-        DataFieldTextArea,
-        DataFieldImages,
+        DataFieldDropdown,
         DataFieldDictionaryDropdown,
-        DataFieldDictionaryDropdownMulti,
+        DataFieldMaskedInput,
+        DataFieldTextArea,
         BaseButton,
-        BaseLinkButton,
     },
 
     data: () => ({

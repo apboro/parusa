@@ -1,11 +1,10 @@
 <template>
     <page :loading="processing">
         <template v-slot:header>
-            <page-title-bar
-                :title="data.data['full_name']"
-                :breadcrumbs="[{caption: 'Сотрудники', to: {name: 'staff-list'}}]"
-                :link="{name: 'staff-list'}"
-                :link-title="'К списку сотрудников'"
+            <page-title-bar :title="data.data['full_name']"
+                            :breadcrumbs="[{caption: 'Сотрудники', to: {name: 'staff-list'}}]"
+                            :link="{name: 'staff-list'}"
+                            :link-title="'К списку сотрудников'"
             >
                 <actions-menu>
                     <span @click="deleteStaff">Удалить сотрудника</span>
@@ -13,29 +12,15 @@
             </page-title-bar>
         </template>
 
-        <layout-routed-tabs
-            :tabs="{
-                personal: 'Персональные данные',
-                access: 'Доступ',
-            }"
-            @change="tab = $event"
-        />
+        <layout-routed-tabs :tabs="{personal: 'Персональные данные', access: 'Доступ'}" @change="tab = $event"/>
 
-        <staff-personal v-if="tab === 'personal'"
-                        :staff-id="staffId"
-                        :datasource="data"
-                        :editable="true"
-        />
+        <staff-personal v-if="tab === 'personal'" :staff-id="staffId" :datasource="data" :editable="true"/>
 
         <container v-if="tab === 'access'">
             <loading-progress :loading="access_updating || form.saving">
-                <message v-if="!data.data['active']">
-                    Для открытия доступа смените статус трудоустройства на “Действующий”.
-                </message>
+                <message v-if="!data.data['active']">Для открытия доступа смените статус трудоустройства на “Действующий”.</message>
                 <template v-else-if="data.data['has_access']">
-                    <value :title="'Доступ активирован для логина'" :dots="false" :class="'w-230px'" mt-30 mb-20><b>{{
-                            data.data['login']
-                        }}</b></value>
+                    <value :title="'Доступ активирован для логина'" :dots="false" :class="'w-230px'" mt-30 mb-20><b>{{ data.data['login'] }}</b></value>
                     <base-button @click="closeAccess" :color="'red'">Закрыть доступ в систему</base-button>
                 </template>
                 <container w-50 mt-20 v-else>
@@ -52,37 +37,35 @@
 
 <script>
 import genericDataSource from "../../../../Helpers/Core/genericDataSource";
+import formDataSource from "../../../../Helpers/Core/formDataSource";
+import {parseRules} from "../../../../Helpers/Core/validator/validator";
+import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import ActionsMenu from "../../../../Components/ActionsMenu";
-import DeleteEntry from "../../../../Mixins/DeleteEntry";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
-import Message from "../../../../Layouts/Parts/Message";
 import StaffPersonal from "../../../../Parts/Company/Staff/StaffPersonal";
 import Container from "../../../../Components/GUI/Container";
-import BaseButton from "../../../../Components/Base/BaseButton";
-import FieldInput from "../../../../Components/Fields/FieldInput";
-import Value from "../../../../Components/GUI/Value";
 import LoadingProgress from "../../../../Components/LoadingProgress";
-import formDataSource from "../../../../Helpers/Core/formDataSource";
-import {parseRules} from "../../../../Helpers/Core/validator/validator";
+import Message from "../../../../Layouts/Parts/Message";
+import Value from "../../../../Components/GUI/Value";
+import BaseButton from "../../../../Components/Base/BaseButton";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
 
 export default {
     components: {
-        DataFieldInput,
-        LoadingProgress,
-        Value,
-        FieldInput,
-        BaseButton,
-        Container,
-        StaffPersonal,
         Page,
         PageTitleBar,
         ActionsMenu,
         LayoutRoutedTabs,
+        StaffPersonal,
+        LoadingProgress,
+        Container,
         Message,
+        Value,
+        BaseButton,
+        DataFieldInput,
     },
 
     mixins: [DeleteEntry],

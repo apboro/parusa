@@ -5,8 +5,7 @@
             <value :title="'Должность'">{{ datasource.data['position'] }}</value>
             <value :title="'Дата заведения'">{{ datasource.data['created_at'] }}</value>
             <value :title="'Статус трудоустройства'">
-                <span class="link" v-if="editable" @click="statusChange"><activity
-                    :active="datasource.data['active']"/>{{ datasource.data['status'] }}</span>
+                <span class="link" v-if="editable" @click="statusChange"><activity :active="datasource.data['active']"/>{{ datasource.data['status'] }}</span>
                 <span v-else><activity :active="datasource.data.active"/>{{ datasource.data['status'] }}</span>
             </value>
         </container>
@@ -14,13 +13,11 @@
         <container w-50 mt-30 inline>
             <value :title="'Дата рождения'">{{ datasource.data['birth_date'] }}</value>
             <value :title="'Пол'">{{ datasource.data['gender'] }}</value>
-            <value :title="'Email'"><a class="link" v-if="datasource.data.email" target="_blank"
-                                       :href="'mailto:'+datasource.data.email"
-            >{{ datasource.data['email'] }}</a></value>
+            <value :title="'Email'">
+                <a class="link" v-if="datasource.data.email" target="_blank" :href="'mailto:'+datasource.data.email">{{ datasource.data['email'] }}</a>
+            </value>
             <value :title="'Рабочий телефон'">{{ datasource.data['work_phone'] }}
-                <span v-if="datasource.data['work_phone_additional']"> доб. {{
-                        datasource.data['work_phone_additional']
-                    }}</span>
+                <span v-if="datasource.data['work_phone_additional']"> доб. {{ datasource.data['work_phone_additional'] }}</span>
             </value>
             <value :title="'Мобильный телефон'">{{ datasource.data['mobile_phone'] }}</value>
         </container>
@@ -38,24 +35,15 @@
         </container>
 
         <container mt-15 v-if="editable">
-            <base-link-button :to="{ name: 'staff-edit', params: { id: staffId }}">Редактировать
-            </base-link-button>
+            <base-link-button :to="{ name: 'staff-edit', params: { id: staffId }}">Редактировать</base-link-button>
         </container>
 
         <pop-up ref="popup" v-if="editable"
-                :manual="true"
                 :title="'Изменить статус сотрудника'"
-                :buttons="[
-                    {result: 'no', caption: 'Отмена', color: 'white'},
-                    {result: 'yes', caption: 'OK', color: 'green'}
-                ]"
+                :buttons="[{result: 'no', caption: 'Отмена', color: 'white'},{result: 'yes', caption: 'OK', color: 'green'}]"
+                :manual="true"
         >
-            <dictionary-drop-down
-                :dictionary="'position_statuses'"
-                :original="initial_status"
-                v-model="current_status"
-                :name="'status'"
-            />
+            <dictionary-drop-down :dictionary="'position_statuses'" v-model="current_status" :name="'status'" :original="initial_status"/>
         </pop-up>
     </div>
 </template>
@@ -63,8 +51,8 @@
 <script>
 import Container from "../../../Components/GUI/Container";
 import Value from "../../../Components/GUI/Value";
-import ValueArea from "../../../Components/GUI/ValueArea";
 import Activity from "../../../Components/Activity";
+import ValueArea from "../../../Components/GUI/ValueArea";
 import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
 import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
@@ -77,13 +65,13 @@ export default {
     },
 
     components: {
+        Container,
+        Value,
         Activity,
         ValueArea,
-        Value,
-        DictionaryDropDown,
-        Container,
         BaseLinkButton,
         PopUp,
+        DictionaryDropDown,
     },
 
     data: () => ({
