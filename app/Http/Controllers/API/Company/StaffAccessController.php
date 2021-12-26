@@ -37,6 +37,9 @@ class StaffAccessController extends ApiEditController
         }
 
         /** @var User $user */
+        if($user->id === $request->user()->id) {
+            return APIResponse::error('Вы не можете отключить себе доступ.');
+        }
 
         $user->login = null;
         $user->password = null;

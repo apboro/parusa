@@ -30,8 +30,13 @@ class StaffStatusController extends ApiController
         ) {
             return APIResponse::notFound('Сотрудник не найден');
         }
+        /** @var User $user */
 
         /** @var User $user */
+        if($user->id === $request->user()->id) {
+            return APIResponse::error('Вы не можете изменять свой статус трудоустройства.');
+        }
+
         $position = $user->staffPosition;
         $name = $user->profile->fullName;
 
