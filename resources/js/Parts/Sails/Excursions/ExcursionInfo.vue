@@ -1,7 +1,7 @@
 <template>
     <div>
         <container w-50 mt-30 inline>
-            <value :title="'Название'">{{ datasource.data.name }}</value>
+            <value :title="'Название'">{{ datasource.data['name'] }}</value>
             <value :title="'Тип программы'">{{ datasource.data['programs'] ? datasource.data['programs'].join(', ') : '' }}</value>
             <value :title="'Продолжительность'"><span v-if="datasource.data['duration']">{{ datasource.data['duration'] }} минут</span></value>
             <value :title="'Статус'">
