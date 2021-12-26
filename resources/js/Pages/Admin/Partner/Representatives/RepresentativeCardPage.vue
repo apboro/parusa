@@ -13,26 +13,14 @@
             </page-title-bar>
         </template>
 
-        <layout-routed-tabs
-            :tabs="{
-                personal: 'Персональные данные',
-                access: 'Доступ',
-            }"
-            @change="tab = $event"
-        />
+        <layout-routed-tabs :tabs="{personal: 'Персональные данные', access: 'Доступ'}" @change="tab = $event"/>
 
-        <representative-personal v-if="tab === 'personal'"
-                        :representative-id="representativeId"
-                        :datasource="data"
-                        :editable="true"
-        />
+        <representative-personal v-if="tab === 'personal'" :representative-id="representativeId" :datasource="data" :editable="true"/>
 
         <container v-if="tab === 'access'">
             <loading-progress :loading="access_updating || form.saving">
                 <template v-if="data.data['has_access']">
-                    <value :title="'Доступ активирован для логина'" :dots="false" :class="'w-230px'" mt-30 mb-20><b>{{
-                            data.data['login']
-                        }}</b></value>
+                    <value :title="'Доступ активирован для логина'" :dots="false" :class="'w-230px'" mt-30 mb-20><b>{{data.data['login']}}</b></value>
                     <base-button @click="closeAccess" :color="'red'">Закрыть доступ в систему</base-button>
                 </template>
                 <container w-50 mt-20 v-else>
@@ -49,37 +37,33 @@
 
 <script>
 import genericDataSource from "../../../../Helpers/Core/genericDataSource";
+import formDataSource from "../../../../Helpers/Core/formDataSource";
+import {parseRules} from "../../../../Helpers/Core/validator/validator";
+import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import ActionsMenu from "../../../../Components/ActionsMenu";
-import DeleteEntry from "../../../../Mixins/DeleteEntry";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
-import Message from "../../../../Layouts/Parts/Message";
-import Container from "../../../../Components/GUI/Container";
-import BaseButton from "../../../../Components/Base/BaseButton";
-import FieldInput from "../../../../Components/Fields/FieldInput";
-import Value from "../../../../Components/GUI/Value";
-import LoadingProgress from "../../../../Components/LoadingProgress";
-import formDataSource from "../../../../Helpers/Core/formDataSource";
-import {parseRules} from "../../../../Helpers/Core/validator/validator";
-import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
 import RepresentativePersonal from "../../../../Parts/Partners/Representatives/RepresentativePersonal";
+import Container from "../../../../Components/GUI/Container";
+import LoadingProgress from "../../../../Components/LoadingProgress";
+import Value from "../../../../Components/GUI/Value";
+import BaseButton from "../../../../Components/Base/BaseButton";
+import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
 
 export default {
     components: {
-        RepresentativePersonal,
-        DataFieldInput,
-        LoadingProgress,
-        Value,
-        FieldInput,
-        BaseButton,
-        Container,
         Page,
         PageTitleBar,
         ActionsMenu,
         LayoutRoutedTabs,
-        Message,
+        RepresentativePersonal,
+        Container,
+        LoadingProgress,
+        Value,
+        BaseButton,
+        DataFieldInput,
     },
 
     mixins: [DeleteEntry],
@@ -144,11 +128,10 @@ export default {
                         .then(response => {
                             this.data.data['has_access'] = response.data.data.has_access;
                             this.data.data['login'] = response.data.data.login;
-                            this.$toast.success(response.data.data.message, 2000);
+                            this.$toast.success(response.data.message, 3000);
                         })
                         .catch(error => {
-                            // TODO handle error
-                            console.log(error);
+                            this.$toast.error(error.response.data.message, 5000);
                         })
                         .finally(() => {
                             this.access_updating = false;

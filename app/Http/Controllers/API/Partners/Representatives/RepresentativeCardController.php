@@ -22,7 +22,7 @@ class RepresentativeCardController extends ApiController
                 ->where('id', $id)
                 ->doesntHave('staffPosition')->first())
         ) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Представитель не найден');
         }
 
         /** @var User $user */

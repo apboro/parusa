@@ -24,7 +24,7 @@ class RepresentativeDeleteController extends ApiController
         $id = $request->input('id');
 
         if ($id === null || null === ($user = User::query()->where('id', $id)->doesntHave('staffPosition')->first())) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Представитель не найден');
         }
 
         try {

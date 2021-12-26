@@ -55,7 +55,7 @@ class RepresentativeEditController extends ApiEditController
         $user = $this->firstOrNewUser($request, ['profile']);
 
         if ($user === null) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Представитель не найден');
         }
 
         $profile = $user->profile;
@@ -109,7 +109,7 @@ class RepresentativeEditController extends ApiEditController
         $user = $this->firstOrNewUser($request);
 
         if ($user === null) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Представитель не найден');
         }
 
         $user->save();

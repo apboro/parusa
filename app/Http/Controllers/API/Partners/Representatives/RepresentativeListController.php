@@ -27,7 +27,7 @@ class RepresentativeListController extends ApiController
     public function list(ApiListRequest $request): JsonResponse
     {
         $query = User::query()
-            ->with(['profile', 'positions'])
+            ->with(['profile', 'positions', 'positions.info'])
             ->with('positions.partner', function (HasOne $query) {
                 $query->orderBy('name');
             })
@@ -70,33 +70,29 @@ class RepresentativeListController extends ApiController
         $users->transform(function (User $user) {
             $profile = $user->profile;
 
-            $partners = [];
+            $positions = [];
             foreach ($user->positions ?? [] as $position) {
                 /** @var Position $position */
-                $partners[] = [
-                    'active' => $position->hasStatus(PositionAccessStatus::active, 'access_status_id'),
-                    'id' => $position->partner_id,
-                    'name' => $position->partner->name,
-                    'position' => $position->title,
+                $positions[] = [
+                    'partner_id' => $position->partner_id,
+                    'partner' => $position->partner->name,
+                    'title' => $position->title,
                     'email' => $position->info->email,
-                    'work_phone' => [
-                        'number' => $position->info->work_phone,
-                        'additional' => $position->info->work_phone_additional,
-                    ],
+                    'work_phone' => $position->info->work_phone,
+                    'work_phone_additional' => $position->info->work_phone_additional,
                     'mobile_phone' => $position->info->mobile_phone,
+                    'active' => $position->hasStatus(PositionAccessStatus::active, 'access_status_id'),
                 ];
             }
             return [
                 'id' => $user->id,
-                'record' => [
-                    'name' => $profile ? $profile->fullName : null,
-                    'has_access' => !empty($user->login) && !empty($user->password),
-                    'partners' => $partners,
-                    'email' => $profile->email,
-                    'work_phone' => $profile->work_phone,
-                    'work_phone_additional' => $profile->work_phone_additional,
-                    'mobile_phone' => $profile->mobile_phone,
-                ],
+                'name' => $profile ? $profile->fullName : null,
+                'positions' => $positions,
+                'email' => $profile->email,
+                'work_phone' => $profile->work_phone,
+                'work_phone_additional' => $profile->work_phone_additional,
+                'mobile_phone' => $profile->mobile_phone,
+                'has_access' => !empty($user->login) && !empty($user->password),
             ];
         });
 
@@ -104,6 +100,7 @@ class RepresentativeListController extends ApiController
             'name' => 'ФИО представителя',
             'position' => 'Компания-партнер, должность',
             'contacts' => 'Контакты',
+            'access' => 'Доступ в систему',
         ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }

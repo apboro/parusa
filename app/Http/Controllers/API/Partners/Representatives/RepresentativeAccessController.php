@@ -45,8 +45,7 @@ class RepresentativeAccessController extends ApiEditController
         return APIResponse::response([
             'has_access' => false,
             'login' => null,
-            'message' => 'Доступ закрыт',
-        ]);
+        ], [], 'Доступ в систему для представителя закрыт');
     }
 
     /**
@@ -76,7 +75,7 @@ class RepresentativeAccessController extends ApiEditController
         $user->save();
 
         return APIResponse::formSuccess(
-            'Доступ открыт',
+            'Доступ в систему для представителя открыт',
             [
                 'has_access' => true,
                 'login' => $user->login,

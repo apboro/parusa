@@ -46,17 +46,17 @@ class RepresentativePositionsController extends ApiEditController
         }
 
         if (($userId = $request->input('representative_id')) === null || null === ($user = User::query()->where('id', $userId)->doesntHave('staffPosition')->first())) {
-            return APIResponse::notFound('Такой представитель не найден');
+            return APIResponse::notFound('Представитель не найден');
         }
 
-        if (($partnerId = $request->input('partner_id')) === null || null === ($partner = Partner::query()->where('id', $partnerId)->first())) {
-            return APIResponse::notFound('Такой партнёр не найден');
+        if (null === ($partner = Partner::query()->where('id', $data['partner_id'])->first())) {
+            return APIResponse::notFound('Партнёр не найден');
         }
 
         $position = $this->firstOrNew(Position::class, $request);
 
         if ($position === null) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Привязка пользователя к организации не найдена');
         }
 
         /** @var User $user */
@@ -119,7 +119,7 @@ class RepresentativePositionsController extends ApiEditController
         if ($positionId === null || null === ($position = Position::query()
                 ->where(['id' => $positionId, 'user_id' => $id])->first())
         ) {
-            return APIResponse::notFound('Такая привязка пользователя к организации не найдена');
+            return APIResponse::notFound('Привязка пользователя к организации не найдена');
         }
 
         /** @var Position $position */
@@ -132,6 +132,6 @@ class RepresentativePositionsController extends ApiEditController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response('Представитель откреплён');
+        return APIResponse::response([], [], 'Представитель откреплён');
     }
 }

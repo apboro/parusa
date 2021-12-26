@@ -39,8 +39,8 @@
                         </base-table-cell-item>
                     </base-table-cell>
                     <base-table-cell>
-                        <span class="link" v-if="editable" @click="statusChange(position)"><activity-locked :locked="!position['active']"/>{{ position['status'] }}</span>
-                        <span v-else><activity-locked :locked="!position['active']"/>{{ position['status'] }}</span>
+                        <span class="link" v-if="editable" @click="statusChange(position)"><access-locked :locked="!position['active']"/>{{ position['status'] }}</span>
+                        <span v-else><access-locked :locked="!position['active']"/>{{ position['status'] }}</span>
                     </base-table-cell>
                     <base-table-cell v-if="editable">
                         <actions-menu :title="null">
@@ -61,8 +61,7 @@
         </container>
 
         <container mt-15 v-if="editable">
-            <base-link-button :to="{ name: 'representatives-edit', params: { id: representativeId }}">Редактировать
-            </base-link-button>
+            <base-link-button :to="{ name: 'representatives-edit', params: { id: representativeId }}">Редактировать</base-link-button>
         </container>
 
         <pop-up ref="popup" v-if="editable" :manual="true" :title="popup_title" :buttons="[
@@ -72,10 +71,12 @@
             <dictionary-drop-down :dictionary="'position_access_statuses'" :original="initial_status" v-model="current_status" :name="'status'"/>
         </pop-up>
 
-        <pop-up ref="position" v-if="editable" :manual="true" :title="position_popup_title" :resolving="positionFormResolving" :buttons="[
-            {result: 'no', caption: 'Отмена', color: 'white'},
-            {result: 'yes', caption: 'OK', color: 'green'}
-        ]">
+        <pop-up ref="position" v-if="editable"
+                :title="position_popup_title"
+                :buttons="[{result: 'no', caption: 'Отмена', color: 'white'},{result: 'yes', caption: 'OK', color: 'green'}]"
+                :resolving="positionFormResolving"
+                :manual="true"
+        >
             <container w-600px>
                 <data-field-dictionary-dropdown :datasource="form" :name="'partner_id'" :dictionary="'partners'" :disabled="!position_change_partner"/>
                 <data-field-input :datasource="form" :name="'title'"/>
@@ -88,22 +89,23 @@
 </template>
 
 <script>
+import formDataSource from "../../../Helpers/Core/formDataSource";
+import {parseRules} from "../../../Helpers/Core/validator/validator";
+import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
+import DeleteEntry from "../../../Mixins/DeleteEntry";
+
 import Container from "../../../Components/GUI/Container";
 import Value from "../../../Components/GUI/Value";
+import Heading from "../../../Components/GUI/Heading";
+import AccessLocked from "../../../Components/AccessLocked";
+import ActionsMenu from "../../../Components/ActionsMenu";
+import Message from "../../../Layouts/Parts/Message";
 import ValueArea from "../../../Components/GUI/ValueArea";
 import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
-import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
-import ActionsMenu from "../../../Components/ActionsMenu";
-import Heading from "../../../Components/GUI/Heading";
-import Message from "../../../Layouts/Parts/Message";
 import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
-import DeleteEntry from "../../../Mixins/DeleteEntry";
-import {parseRules} from "../../../Helpers/Core/validator/validator";
-import formDataSource from "../../../Helpers/Core/formDataSource";
-import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
 import DataFieldDictionaryDropdown from "../../../Components/DataFields/DataFieldDictionaryDropdown";
-import ActivityLocked from "../../../Components/ActivityLocked";
+import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
 
 export default {
     props: {
@@ -113,18 +115,18 @@ export default {
     },
 
     components: {
-        ActivityLocked,
+        Container,
+        Value,
+        Heading,
+        AccessLocked,
+        ActionsMenu,
+        Message,
+        ValueArea,
+        BaseLinkButton,
+        PopUp,
+        DictionaryDropDown,
         DataFieldDictionaryDropdown,
         DataFieldInput,
-        DictionaryDropDown,
-        PopUp,
-        Message,
-        Heading,
-        ActionsMenu,
-        ValueArea,
-        Value,
-        Container,
-        BaseLinkButton,
     },
 
     mixins: [UseBaseTableBundle, DeleteEntry],
@@ -176,7 +178,7 @@ export default {
                         this.$refs.popup.process(true);
                         axios.post('/api/representatives/status', {id: this.representativeId, position_id: position['position_id'], status_id: this.current_status})
                             .then(response => {
-                                this.$toast.success(response.data.data.message, 2000);
+                                this.$toast.success(response.data.message, 3000);
                                 const position_id = response.data.data.position_id;
                                 this.datasource.data['positions'].some(position => {
                                     if (position['position_id'] === position_id) {
@@ -189,7 +191,7 @@ export default {
                                 })
                             })
                             .catch(error => {
-                                this.$toast.error(error.response.data.status);
+                                this.$toast.error(error.response.data.message);
                             })
                             .finally(() => {
                                 this.initial_status = null;
