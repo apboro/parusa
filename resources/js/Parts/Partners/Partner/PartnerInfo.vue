@@ -14,7 +14,8 @@
                 <span class="link" v-if="editable" @click="ticketsChange">{{ datasource.data['tickets_for_guides'] }}</span>
                 <span v-else>{{ datasource.data['tickets_for_guides'] }}</span>
             </value>
-            <hint mt-5 mb-10>При значении "0" партнер не может включать в заказ бесплатные билеты для гидов. Любое положительное число разрешает данную возможность и определяет
+            <hint mt-5 mb-10>
+                При значении "0" партнер не может включать в заказ бесплатные билеты для гидов. Любое положительное число разрешает данную возможность и определяет
                 максимальное количество таких билетов для одного заказа. Например, при значении "1" к заказу можно будет добавить 1 билет для гида.
             </hint>
             <value :title="'Бронирование билетов'">
@@ -36,21 +37,27 @@
         </container>
 
 
-        <pop-up ref="popup" v-if="editable" :manual="true" :title="'Изменить статус партнёра'"
+        <pop-up ref="popup" v-if="editable"
+                :title="'Изменить статус партнёра'"
                 :buttons="[{result: 'no', caption: 'Отмена', color: 'white'}, {result: 'yes', caption: 'OK', color: 'green'}]"
+                :manual="true"
         >
             <dictionary-drop-down :dictionary="'partner_statuses'" :name="'status'" :original="initial_status" v-model="current_status"/>
         </pop-up>
 
-        <pop-up ref="popup_tickets" v-if="editable" :manual="true" :title="'Билеты для гидов'"
+        <pop-up ref="popup_tickets" v-if="editable"
+                :title="'Билеты для гидов'"
                 :buttons="[{result: 'no', caption: 'Отмена', color: 'white'}, {result: 'yes', caption: 'OK', color: 'green'}]"
                 :resolving="ticketsFormResolving"
+                :manual="true"
         >
             <data-field-input :datasource="form" :name="'tickets_for_guides'" @changed="ticketsChanged"/>
         </pop-up>
 
-        <pop-up ref="popup_reserve" v-if="editable" :manual="true" :title="'Бронирование билетов'"
+        <pop-up ref="popup_reserve" v-if="editable"
+                :title="'Бронирование билетов'"
                 :buttons="[{result: 'no', caption: 'Отмена', color: 'white'}, {result: 'yes', caption: 'OK', color: 'green'}]"
+                :manual="true"
         >
             <base-drop-down :name="'can_reserve_tickets'" :key-by="'id'" :value-by="'name'"
                             v-model="current_can_reserve_tickets"
@@ -65,22 +72,20 @@
 </template>
 
 <script>
+import formDataSource from "../../../Helpers/Core/formDataSource";
+import {parseRules} from "../../../Helpers/Core/validator/validator";
 import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
+
 import Container from "../../../Components/GUI/Container";
-import TextContainer from "../../../Layouts/Parts/TextContainer";
+import Value from "../../../Components/GUI/Value";
+import Activity from "../../../Components/Activity";
+import Hint from "../../../Components/GUI/Hint";
+import ValueArea from "../../../Components/GUI/ValueArea";
 import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
 import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
-import Value from "../../../Components/GUI/Value";
-import ValueArea from "../../../Components/GUI/ValueArea";
-import Activity from "../../../Components/Activity";
-import Message from "../../../Layouts/Parts/Message";
-import Hint from "../../../Components/GUI/Hint";
-import FieldDropDown from "../../../Components/Fields/FieldDropDown";
-import BaseDropDown from "../../../Components/Base/BaseDropDown";
-import formDataSource from "../../../Helpers/Core/formDataSource";
-import {parseRules} from "../../../Helpers/Core/validator/validator";
 import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
+import BaseDropDown from "../../../Components/Base/BaseDropDown";
 
 export default {
     mixins: [UseBaseTableBundle],
@@ -92,19 +97,16 @@ export default {
     },
 
     components: {
-        DataFieldInput,
-        BaseDropDown,
-        FieldDropDown,
-        Hint,
-        Message,
-        Activity,
-        ValueArea,
-        Value,
-        DictionaryDropDown,
-        TextContainer,
         Container,
+        Value,
+        Activity,
+        Hint,
+        ValueArea,
         BaseLinkButton,
         PopUp,
+        DictionaryDropDown,
+        DataFieldInput,
+        BaseDropDown,
     },
 
     data: () => ({
@@ -124,13 +126,13 @@ export default {
                         this.$refs.popup.process(true);
                         axios.post('/api/partners/status', {id: this.partnerId, status_id: this.current_status})
                             .then(response => {
-                                this.$toast.success(response.data.data.message, 2000);
+                                this.$toast.success(response.data.message, 3000);
                                 this.datasource.data.status = response.data.data.status;
                                 this.datasource.data.status_id = response.data.data.status_id;
                                 this.datasource.data.active = response.data.data.active;
                             })
                             .catch(error => {
-                                this.$toast.error(error.response.data.status);
+                                this.$toast.error(error.response.data.message);
                             })
                             .finally(() => {
                                 this.$refs.popup.hide();
@@ -186,11 +188,11 @@ export default {
                         this.$refs.popup_reserve.process(true);
                         axios.post('/api/partners/reservable', {id: this.partnerId, can_reserve_tickets: this.current_can_reserve_tickets})
                             .then(response => {
-                                this.$toast.success(response.data.data.message, 2000);
+                                this.$toast.success(response.data.message, 3000);
                                 this.datasource.data['can_reserve_tickets'] = response.data.data.can_reserve_tickets;
                             })
                             .catch(error => {
-                                this.$toast.error(error.response.data.status);
+                                this.$toast.error(error.response.data.message);
                             })
                             .finally(() => {
                                 this.$refs.popup_reserve.hide();

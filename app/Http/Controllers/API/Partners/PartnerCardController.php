@@ -25,7 +25,7 @@ class PartnerCardController extends ApiController
                 ])
                 ->where('id', $id)->first())
         ) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Партнёр не найден');
         }
 
         /** @var Partner $partner */

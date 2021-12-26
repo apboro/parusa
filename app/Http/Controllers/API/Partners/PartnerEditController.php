@@ -41,7 +41,7 @@ class PartnerEditController extends ApiEditController
         $partner = $this->firstOrNew(Partner::class, $request);
 
         if ($partner === null) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Партнёр не найден');
         }
 
         // send response
@@ -76,7 +76,7 @@ class PartnerEditController extends ApiEditController
         $partner = $this->firstOrNew(Partner::class, $request);
 
         if ($partner === null) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Партнёр не найден');
         }
 
         $data = $this->getData($request);

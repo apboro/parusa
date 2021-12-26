@@ -47,8 +47,7 @@ class PartnerStatusController extends ApiEditController
             'active' => $partner->hasStatus(PartnerStatus::active),
             'status' => $partner->status->name,
             'status_id' => $partner->status_id,
-            'message' => 'Статус партнёра обновлён',
-        ]);
+        ], [], 'Статус партнёра обновлён');
     }
 
     /**
@@ -73,8 +72,7 @@ class PartnerStatusController extends ApiEditController
 
         return APIResponse::response([
             'can_reserve_tickets' => $partner->profile->can_reserve_tickets ? 1 : 0,
-            'message' => 'Данные обновлёны',
-        ]);
+        ], [], 'Данные обновлёны');
     }
 
     /**

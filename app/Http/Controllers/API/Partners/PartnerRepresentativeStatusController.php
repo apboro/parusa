@@ -35,7 +35,7 @@ class PartnerRepresentativeStatusController extends ApiController
         if ($positionId === null || null === ($position = Position::query()
                 ->where(['id' => $positionId, 'partner_id' => $partner->id])->first())
         ) {
-            return APIResponse::notFound('Такая привязка пользователя к организации не найдена');
+            return APIResponse::notFound('Привязка пользователя к организации не найдена');
         }
 
         /** @var Position $position */
@@ -52,7 +52,6 @@ class PartnerRepresentativeStatusController extends ApiController
             'status' => $position->accessStatus->name,
             'status_id' => $position->access_status_id,
             'active' => $position->hasStatus(PositionAccessStatus::active, 'access_status_id'),
-            'message' => 'Статус доступа представителя обновлён',
-        ]);
+        ], [], 'Статус доступа представителя обновлён');
     }
 }

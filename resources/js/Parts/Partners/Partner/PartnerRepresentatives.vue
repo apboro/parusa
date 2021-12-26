@@ -10,10 +10,7 @@
                 </template>
                 <base-table-row v-for="(position, key) in datasource.data.positions" v-if="datasource.data.positions" :key="key">
                     <base-table-cell>
-                        <router-link :class="'link'" :to="{name: 'representatives-view', params: {id: position['user_id']}}">{{
-                                position['user']
-                            }}
-                        </router-link>
+                        <router-link :class="'link'" :to="{name: 'representatives-view', params: {id: position['user_id']}}">{{ position['user'] }}</router-link>
                     </base-table-cell>
                     <base-table-cell>{{ position['title'] }}</base-table-cell>
                     <base-table-cell>
@@ -24,8 +21,8 @@
                         </base-table-cell-item>
                     </base-table-cell>
                     <base-table-cell>
-                        <span class="link" v-if="editable" @click="statusChange(position)"><activity-locked :locked="!position['active']"/>{{ position['status'] }}</span>
-                        <span v-else><activity-locked :locked="!position['active']"/>{{ position['status'] }}</span>
+                        <span class="link" v-if="editable" @click="statusChange(position)"><access-locked :locked="!position['active']"/>{{ position['status'] }}</span>
+                        <span v-else><access-locked :locked="!position['active']"/>{{ position['status'] }}</span>
                     </base-table-cell>
                     <base-table-cell v-if="editable">
                         <actions-menu :title="null">
@@ -38,20 +35,22 @@
             <message v-if="!datasource.data.positions || datasource.data.positions.length === 0">Нет прикреплённых представителей</message>
         </container>
 
-        <pop-up ref="popup" v-if="editable" :manual="true" :title="popup_title" :buttons="[
-            {result: 'no', caption: 'Отмена', color: 'white'},
-            {result: 'yes', caption: 'OK', color: 'green'}
-        ]">
+        <pop-up ref="popup" v-if="editable"
+                :title="popup_title"
+                :buttons="[{result: 'no', caption: 'Отмена', color: 'white'},{result: 'yes', caption: 'OK', color: 'green'}]"
+                :manual="true"
+        >
             <dictionary-drop-down :dictionary="'position_access_statuses'" :original="initial_status" v-model="current_status" :name="'status'"/>
         </pop-up>
 
-        <pop-up ref="position" v-if="editable" :manual="true" :title="position_popup_title" :resolving="positionFormResolving" :buttons="[
-            {result: 'no', caption: 'Отмена', color: 'white'},
-            {result: 'yes', caption: 'OK', color: 'green'}
-        ]">
+        <pop-up ref="position" v-if="editable"
+                :title="position_popup_title"
+                :buttons="[{result: 'no', caption: 'Отмена', color: 'white'},{result: 'yes', caption: 'OK', color: 'green'}]"
+                :resolving="positionFormResolving"
+                :manual="true"
+        >
             <container w-600px>
-                <data-field-dictionary-dropdown :datasource="form" :name="'representative_id'"
-                                                :dictionary="'representatives'"
+                <data-field-dictionary-dropdown :dictionary="'representatives'" :datasource="form" :name="'representative_id'"
                                                 :disabled="!position_change_user"
                                                 @changed="representativeSelected"
                 />
@@ -67,17 +66,17 @@
 <script>
 import formDataSource from "../../../Helpers/Core/formDataSource";
 import {parseRules} from "../../../Helpers/Core/validator/validator";
+import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
+import DeleteEntry from "../../../Mixins/DeleteEntry";
+
 import Container from "../../../Components/GUI/Container";
+import AccessLocked from "../../../Components/AccessLocked";
 import ActionsMenu from "../../../Components/ActionsMenu";
-import Heading from "../../../Components/GUI/Heading";
 import Message from "../../../Layouts/Parts/Message";
 import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
-import DeleteEntry from "../../../Mixins/DeleteEntry";
-import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
 import DataFieldDictionaryDropdown from "../../../Components/DataFields/DataFieldDictionaryDropdown";
-import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
-import ActivityLocked from "../../../Components/ActivityLocked";
+import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
 
 export default {
     props: {
@@ -87,15 +86,14 @@ export default {
     },
 
     components: {
-        ActivityLocked,
+        Container,
+        AccessLocked,
+        ActionsMenu,
+        Message,
+        PopUp,
+        DictionaryDropDown,
         DataFieldDictionaryDropdown,
         DataFieldInput,
-        DictionaryDropDown,
-        PopUp,
-        Message,
-        Heading,
-        ActionsMenu,
-        Container,
     },
 
     mixins: [UseBaseTableBundle, DeleteEntry],
@@ -140,7 +138,7 @@ export default {
                         this.$refs.popup.process(true);
                         axios.post('/api/partners/representative/status', {id: this.partnerId, position_id: position['position_id'], status_id: this.current_status})
                             .then(response => {
-                                this.$toast.success(response.data.data.message, 2000);
+                                this.$toast.success(response.data.message, 2000);
                                 const position_id = response.data.data.position_id;
                                 this.datasource.data['positions'].some(position => {
                                     if (position['position_id'] === position_id) {
@@ -153,7 +151,7 @@ export default {
                                 })
                             })
                             .catch(error => {
-                                this.$toast.error(error.response.data.status);
+                                this.$toast.error(error.response.data.message);
                             })
                             .finally(() => {
                                 this.initial_status = null;
@@ -194,7 +192,7 @@ export default {
                     this.form.values.email = response.data.data['email'];
                 })
                 .catch(error => {
-                    console.log(error);
+                    this.$toast.error(error.response.data.message);
                 })
                 .finally(() => {
                     this.$refs.position.process(false);

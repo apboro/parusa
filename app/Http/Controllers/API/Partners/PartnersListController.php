@@ -97,13 +97,11 @@ class PartnersListController extends ApiController
             return [
                 'id' => $partner->id,
                 'active' => $partner->hasStatus(PartnerStatus::active),
-                'record' => [
-                    'name' => $partner->name,
-                    'representatives' => $representatives,
-                    'type' => $partner->type->name,
-                    'balance' => null,
-                    'limit' => null,
-                ],
+                'name' => $partner->name,
+                'representatives' => $representatives,
+                'type' => $partner->type->name,
+                'balance' => null,
+                'limit' => null,
             ];
         });
 

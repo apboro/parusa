@@ -24,7 +24,7 @@ class PartnerDeleteController extends ApiController
         $id = $request->input('id');
 
         if ($id === null || null === ($partner = Partner::query()->where('id', $id)->first())) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Партнёр не найден');
         }
 
         try {
@@ -36,6 +36,6 @@ class PartnerDeleteController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response('Партнёр удален');
+        return APIResponse::response([], [], 'Партнёр удален');
     }
 }

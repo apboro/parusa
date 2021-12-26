@@ -2,7 +2,7 @@
     <list-page :loading="list.loading">
 
         <template v-slot:header>
-            <page-title-bar :title="$route.meta.title">
+            <page-title-bar :title="$route.meta['title']">
                 <actions-menu>
                     <router-link :to="{ name: 'representatives-edit', params: { id: 0 }}">Добавить партнёра
                     </router-link>
@@ -16,8 +16,8 @@
                     :dictionary="'partner_statuses'"
                     :placeholder="'Все'"
                     :has-null="true"
-                    :original="list.filters_original.partner_status_id"
-                    v-model="list.filters.partner_status_id"
+                    :original="list.filters_original['partner_status_id']"
+                    v-model="list.filters['partner_status_id']"
                     @changed="reload"
                 />
             </page-bar-item>
@@ -26,7 +26,7 @@
                     :dictionary="'partner_types'"
                     :placeholder="'Все'"
                     :has-null="true"
-                    v-model="list.filters.partner_type_id"
+                    v-model="list.filters['partner_type_id']"
                     @changed="reload"
                 />
             </page-bar-item>
@@ -44,26 +44,20 @@
             <template v-slot:header>
                 <base-table-head :header="list.titles"/>
             </template>
-            <base-table-row v-for="(row, key) in list.data" :key="key">
+            <base-table-row v-for="(partner, key) in list.data" :key="key">
                 <base-table-cell>
-                    <activity :active="row.active"/>
-                    <router-link class="link"
-                                 :to="{ name: 'partners-view', params: { id: row.id }}"
-                                 v-html="$highlight(row.record['name'], list.search)"
-                    />
+                    <activity :active="partner['active']"/>
+                    <router-link class="link" :to="{ name: 'partners-view', params: { id: partner['id'] }}" v-html="highlight(partner['name'])"/>
                 </base-table-cell>
                 <base-table-cell>
-                    <base-table-cell-item v-for="representative in row.record['representatives']">
-                        <activity-locked :locked="true" v-if="!representative.active"/>
-                        <router-link class="link"
-                                     :to="{name: 'representatives-view', params: {id: representative.id}}"
-                                     v-html="$highlight(representative.name, list.search)"
-                        />
+                    <base-table-cell-item v-for="representative in partner['representatives']">
+                        <access-locked :locked="!representative['active']"/>
+                        <router-link class="link" :to="{name: 'representatives-view', params: {id: representative['id']}}" v-html="highlight(representative['name'])"/>
                     </base-table-cell-item>
                 </base-table-cell>
-                <base-table-cell>{{ row.record['type'] }}</base-table-cell>
-                <base-table-cell>{{ row.record['balance'] }}</base-table-cell>
-                <base-table-cell>{{ row.record['limit'] }}</base-table-cell>
+                <base-table-cell>{{ partner['type'] }}</base-table-cell>
+                <base-table-cell>{{ partner['balance'] }}</base-table-cell>
+                <base-table-cell>{{ partner['limit'] }}</base-table-cell>
             </base-table-row>
         </base-table>
         <message v-else>Ничего не найдено</message>
@@ -74,36 +68,34 @@
 
 <script>
 import listDataSource from "../../../../Helpers/Core/listDataSource";
+import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
 import empty from "../../../../Mixins/empty";
 
 import ListPage from "../../../../Layouts/ListPage";
+import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
+import ActionsMenu from "../../../../Components/ActionsMenu";
 import PageBarItem from "../../../../Layouts/Parts/PageBarItem";
-import BasePagination from "../../../../Components/Base/BasePagination";
 import DictionaryDropDown from "../../../../Components/Dictionary/DictionaryDropDown";
 import BaseIconInput from "../../../../Components/Base/BaseIconInput";
 import IconSearch from "../../../../Components/Icons/IconSearch";
-import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
 import Activity from "../../../../Components/Activity";
+import AccessLocked from "../../../../Components/AccessLocked";
 import Message from "../../../../Layouts/Parts/Message";
-import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import BaseButton from "../../../../Components/Base/BaseButton";
-import ActionsMenu from "../../../../Components/ActionsMenu";
-import ActivityLocked from "../../../../Components/ActivityLocked";
+import BasePagination from "../../../../Components/Base/BasePagination";
 
 export default {
     components: {
-        ActivityLocked,
-        ActionsMenu,
-        BaseButton,
-        PageTitleBar,
-        Message,
-        Activity,
         ListPage,
+        PageTitleBar,
+        ActionsMenu,
         PageBarItem,
-        BasePagination,
         DictionaryDropDown,
         BaseIconInput,
         IconSearch,
+        Activity,
+        AccessLocked,
+        Message,
+        BasePagination,
     },
 
     mixins: [UseBaseTableBundle, empty],
@@ -123,6 +115,9 @@ export default {
         },
         reload() {
             this.list.load();
+        },
+        highlight(text) {
+            return this.$highlight(text, this.list.search);
         },
     },
 }

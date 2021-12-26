@@ -24,16 +24,8 @@
             @change="tab = $event"
         />
 
-        <partenr-info v-if="tab === 'details'"
-                      :partner-id="partnerId"
-                      :editable="true"
-                      :datasource="data"
-        />
-        <partner-representatives v-if="tab === 'representatives'"
-                                 :partner-id="partnerId"
-                                 :editable="true"
-                                 :datasource="data"
-        />
+        <partner-info v-if="tab === 'details'" :datasource="data" :partner-id="partnerId" :editable="true"/>
+        <partner-representatives v-if="tab === 'representatives'" :datasource="data" :partner-id="partnerId" :editable="true"/>
         <message v-if="tab === 'account'">Здесь будет лицевой счёт</message>
         <message v-if="tab === 'rates'">Здесь будет тарифы</message>
         <message v-if="tab === 'sale_registry'">Здесь будет реестр продаж</message>
@@ -43,26 +35,25 @@
 
 <script>
 import genericDataSource from "../../../../Helpers/Core/genericDataSource";
-
 import DeleteEntry from "../../../../Mixins/DeleteEntry";
+
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import ActionsMenu from "../../../../Components/ActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
-import Message from "../../../../Layouts/Parts/Message";
-import PartenrInfo from "../../../../Parts/Partners/Partner/PartenrInfo";
+import PartnerInfo from "../../../../Parts/Partners/Partner/PartnerInfo";
 import PartnerRepresentatives from "../../../../Parts/Partners/Partner/PartnerRepresentatives";
+import Message from "../../../../Layouts/Parts/Message";
 
 export default {
     components: {
-        PartnerRepresentatives,
-        PartenrInfo,
-        Message,
-        LayoutRoutedTabs,
-        ActionsMenu,
+        Page,
         PageTitleBar,
-        Page
-
+        ActionsMenu,
+        LayoutRoutedTabs,
+        PartnerInfo,
+        PartnerRepresentatives,
+        Message,
     },
 
     mixins: [DeleteEntry],

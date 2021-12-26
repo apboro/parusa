@@ -36,29 +36,30 @@
 
 <script>
 import formDataSource from "../../../../Helpers/Core/formDataSource";
+
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import Container from "../../../../Components/GUI/Container";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
 import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataFieldDictionaryDropdown";
 import DataFieldDropdown from "../../../../Components/DataFields/DataFieldDropdown";
-import DataFieldMaskedInput from "../../../../Components/DataFields/DataFieldMaskedInput";
 import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
 import BaseButton from "../../../../Components/Base/BaseButton";
+
 import Message from "../../../../Layouts/Parts/Message";
 
 export default {
     components: {
-        Message,
-        BaseButton,
-        DataFieldTextArea,
-        DataFieldMaskedInput,
-        DataFieldDropdown,
-        DataFieldDictionaryDropdown,
-        DataFieldInput,
-        Container,
+        Page,
         PageTitleBar,
-        Page
+        Container,
+        DataFieldInput,
+        DataFieldDictionaryDropdown,
+        DataFieldDropdown,
+        DataFieldTextArea,
+        BaseButton,
+
+        Message,
     },
 
     data: () => ({
