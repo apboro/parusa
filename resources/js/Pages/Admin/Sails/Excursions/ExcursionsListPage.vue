@@ -2,7 +2,7 @@
     <list-page :loading="list.loading">
 
         <template v-slot:header>
-            <page-title-bar :title="$route.meta.title">
+            <page-title-bar :title="$route.meta['title']">
                 <actions-menu>
                     <router-link :to="{ name: 'excursion-edit', params: { id: 0 }}">Добавить экскурсию</router-link>
                 </actions-menu>
@@ -16,7 +16,7 @@
                     :placeholder="'Все'"
                     :has-null="true"
                     :original="list.filters_original.status_id"
-                  v-model="list.filters.status_id"
+                    v-model="list.filters.status_id"
                     @changed="reload"
                 />
             </page-bar-item>
@@ -28,10 +28,8 @@
             </template>
             <base-table-row v-for="(row, key) in list.data" :key="key">
                 <base-table-cell>
-                    <!-- row.active -->
                     <activity :active="row.active"/>
-                    <router-link class="link"
-                                 :to="{ name: 'excursion-view', params: { id: row.id }}">{{ row.record['name'] }}</router-link>
+                    <router-link class="link" :to="{ name: 'excursion-view', params: { id: row.id }}">{{ row.record['name'] }}</router-link>
                 </base-table-cell>
                 <base-table-cell>{{ row.record['status'] }}</base-table-cell>
             </base-table-row>
@@ -44,34 +42,28 @@
 
 <script>
 import listDataSource from "../../../../Helpers/Core/listDataSource";
+import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
 import empty from "../../../../Mixins/empty";
 
 import ListPage from "../../../../Layouts/ListPage";
+import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
+import ActionsMenu from "../../../../Components/ActionsMenu";
 import PageBarItem from "../../../../Layouts/Parts/PageBarItem";
-import BasePagination from "../../../../Components/Base/BasePagination";
 import DictionaryDropDown from "../../../../Components/Dictionary/DictionaryDropDown";
-import BaseIconInput from "../../../../Components/Base/BaseIconInput";
-import IconSearch from "../../../../Components/Icons/IconSearch";
-import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
 import Activity from "../../../../Components/Activity";
 import Message from "../../../../Layouts/Parts/Message";
-import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import BaseButton from "../../../../Components/Base/BaseButton";
-import ActionsMenu from "../../../../Components/ActionsMenu";
+import BasePagination from "../../../../Components/Base/BasePagination";
 
 export default {
     components: {
-        ActionsMenu,
-        BaseButton,
-        PageTitleBar,
-        Message,
-        Activity,
         ListPage,
+        PageTitleBar,
+        ActionsMenu,
         PageBarItem,
-        BasePagination,
         DictionaryDropDown,
-        BaseIconInput,
-        IconSearch,
+        Activity,
+        Message,
+        BasePagination,
     },
 
     mixins: [UseBaseTableBundle, empty],

@@ -42,7 +42,7 @@ class ExcursionEditController extends ApiEditController
         $excursion = $this->firstOrNew(Excursion::class, $request, ['status', 'images', 'programs', 'info']);
 
         if ($excursion === null) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Экскурсия не найдена');
         }
 
         // send response
@@ -85,7 +85,7 @@ class ExcursionEditController extends ApiEditController
         $excursion = $this->firstOrNew(Excursion::class, $request);
 
         if ($excursion === null) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Экскурсия не найдена');
         }
 
         $excursion->setAttribute('name', $data['name']);

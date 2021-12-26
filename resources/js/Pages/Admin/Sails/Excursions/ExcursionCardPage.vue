@@ -13,28 +13,18 @@
             </page-title-bar>
         </template>
 
-        <layout-routed-tabs
-            :tabs="{
-                description: 'Описание экскурсии',
-                rates: 'Тарифы на билеты',
-                schedule: 'Расписание',
-            }"
-            @change="tab = $event"
-        />
+        <layout-routed-tabs :tabs="{description: 'Описание экскурсии',rates: 'Тарифы на билеты',schedule: 'Расписание'}" @change="tab = $event"/>
 
-        <excursion-info v-if="tab === 'description'"
-                        :excursion-id="excursionId"
-                        :datasource="data"
-                        :editable="true"
-        />
+        <excursion-info v-if="tab === 'description'" :excursion-id="excursionId" :datasource="data" :editable="true"/>
+
         <message v-if="tab === 'rates'">Здесь будут тарифы для данной экскурсии</message>
         <message v-if="tab === 'schedule'">Здесь будет расписание рейсов для данной экскурсии</message>
-
     </page>
 </template>
 
 <script>
 import genericDataSource from "../../../../Helpers/Core/genericDataSource";
+import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
@@ -42,7 +32,6 @@ import ActionsMenu from "../../../../Components/ActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import ExcursionInfo from "../../../../Parts/Sails/Excursions/ExcursionInfo";
 import Message from "../../../../Layouts/Parts/Message";
-import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 export default {
     components: {

@@ -14,8 +14,7 @@
             <data-field-input :datasource="form" :name="'name'"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'excursion_statuses'" :name="'status_id'"/>
             <data-field-images :datasource="form" :name="'images'"/>
-            <data-field-dictionary-dropdown-multi :datasource="form" :dictionary="'excursion_programs'"
-                                                  :name="'programs'"/>
+            <data-field-dictionary-dropdown-multi :datasource="form" :dictionary="'excursion_programs'" :name="'programs'"/>
             <data-field-input :datasource="form" :name="'duration'"/>
             <data-field-text-area :datasource="form" :name="'description'"/>
             <data-field-text-area :datasource="form" :name="'announce'"/>
@@ -23,8 +22,7 @@
 
         <container mt-30>
             <base-button @click="save" :color="'green'">Сохранить</base-button>
-            <base-button @click="$router.push(backLink)">Отмена
-            </base-button>
+            <base-button @click="$router.push(backLink)">Отмена</base-button>
         </container>
 
     </page>
@@ -37,12 +35,11 @@ import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import Container from "../../../../Components/GUI/Container";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
-import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
-import DataFieldImages from "../../../../Components/DataFields/DataFieldImages";
 import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataFieldDictionaryDropdown";
+import DataFieldImages from "../../../../Components/DataFields/DataFieldImages";
 import DataFieldDictionaryDropdownMulti from "../../../../Components/DataFields/DataFieldDictionaryDropdownMulti";
+import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
 import BaseButton from "../../../../Components/Base/BaseButton";
-import BaseLinkButton from "../../../../Components/Base/BaseLinkButton";
 
 export default {
     components: {
@@ -50,12 +47,11 @@ export default {
         PageTitleBar,
         Container,
         DataFieldInput,
-        DataFieldTextArea,
-        DataFieldImages,
         DataFieldDictionaryDropdown,
+        DataFieldImages,
         DataFieldDictionaryDropdownMulti,
+        DataFieldTextArea,
         BaseButton,
-        BaseLinkButton,
     },
 
     data: () => ({
@@ -71,7 +67,7 @@ export default {
         },
         backLink() {
             return this.excursionId === 0 ? {name: 'excursion-list'} : { name: 'excursion-view', params: { id: this.excursionId }}
-        }
+        },
     },
 
     created() {

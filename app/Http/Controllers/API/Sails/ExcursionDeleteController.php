@@ -24,18 +24,20 @@ class ExcursionDeleteController extends ApiController
         $id = $request->input('id');
 
         if ($id === null || null === ($excursion = Excursion::query()->where('id', $id)->first())) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Экскурсия не найдена');
         }
+        /** @var Excursion $excursion */
+
+        $name = $excursion->name;
 
         try {
-            /** @var Excursion $excursion */
             $excursion->delete();
         } catch (QueryException $exception) {
-            return APIResponse::error('Невозможно удалить экскурсию. Есть блокирующие связи.');
+            return APIResponse::error("Невозможно удалить экскурсию \"{$name}\". Есть блокирующие связи.");
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response('Экскурсия удалена');
+        return APIResponse::response([], [], "Экскурсия \"{$name}\" удалена");
     }
 }

@@ -26,20 +26,20 @@ class ExcursionStatusController extends ApiController
         if ($id === null || null === ($excursion = Excursion::query()->where('id', $id)->first())) {
             return APIResponse::notFound('Экскурсия не найдена');
         }
-
         /** @var Excursion $excursion */
+        $name = $excursion->name;
+
         try {
             $excursion->setStatus((int)$request->input('status_id'));
             $excursion->save();
         } catch (WrongExcursionStatusException $e) {
-            return APIResponse::error('Неверный статус экскурсии');
+            return APIResponse::error("Неверный статус экскурсии \"{$name}\"");
         }
 
         return APIResponse::response([
             'status' => $excursion->status->name,
             'status_id' => $excursion->status_id,
             'active' => $excursion->hasStatus(ExcursionStatus::active),
-            'message' => 'Статус экскурсии обновлён',
-        ]);
+        ], [], "Статус экскурсии \"{$name}\" обновлён");
     }
 }

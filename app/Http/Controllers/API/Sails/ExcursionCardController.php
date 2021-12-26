@@ -19,7 +19,7 @@ class ExcursionCardController extends ApiController
 
         if ($id === null ||
             null === ($excursion = Excursion::query()->with(['status', 'programs'])->where('id', $id)->first())) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Экскурсия не найдена');
         }
 
         /** @var Excursion $excursion */
