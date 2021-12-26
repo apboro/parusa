@@ -42,7 +42,11 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
                     this.loaded = true;
                 })
                 .catch(error => {
-                    console.log(error);
+                    if (this.toaster !== null) {
+                        this.toaster.error(error.response.data.message, 5000);
+                    } else {
+                        console.log(error.response.data.message);
+                    }
                 })
                 .finally(() => {
                     this.loading = false;
@@ -57,7 +61,11 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
 
             axios.post(this.dataTargetUrl, options)
                 .then(response => {
-                    this.toast(response.data.message, 2000, 'success');
+                    if (this.toaster !== null) {
+                        this.toaster.success(response.data.message, 3000);
+                    } else {
+                        console.log(response.data.message);
+                    }
                     this.originals = clone(this.values);
                     this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
                     if (typeof this.afterSave === "function") {
@@ -72,17 +80,11 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
                                 this.valid[key] = false;
                             });
                         }
-                        this.toast('Не все поля корректно заполнены', 5000, 'error');
+                    }
+                    if (this.toaster !== null) {
+                        this.toaster.error(error.response.data.message, 5000);
                     } else {
-                        let message;
-                        if (typeof error.response.data.status !== "undefined") {
-                            message = error.response.data.status;
-                        } else if (typeof error.response.data.message !== "undefined") {
-                            message = error.response.data.message;
-                        } else {
-                            message = error.response.status;
-                        }
-                        this.toast('Ошибка: ' + message, 0, 'error');
+                        console.log(error.response.data.message);
                     }
                 })
                 .finally(() => {
@@ -100,7 +102,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
         },
 
         validate(name, value) {
-            if(empty(this.validation_rules)) {
+            if (empty(this.validation_rules)) {
                 return true;
             }
             if (Object.keys(this.validation_rules[name]).length === 0) {

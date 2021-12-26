@@ -147,11 +147,10 @@ export default {
                         .then(response => {
                             this.data.data['has_access'] = response.data.data.has_access;
                             this.data.data['login'] = response.data.data.login;
-                            this.$toast.success(response.data.data.message, 2000);
+                            this.$toast.success(response.data.message, 3000);
                         })
                         .catch(error => {
-                            // TODO handle error
-                            console.log(error);
+                            this.$toast.error(error.response.data.message, 5000);
                         })
                         .finally(() => {
                             this.access_updating = false;

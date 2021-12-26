@@ -20,11 +20,14 @@ class APIResponse
     /**
      * Make 403 response.
      *
+     * @param string $message
+     *
      * @return  JsonResponse
      */
-    public static function forbidden(): JsonResponse
+    public static function forbidden(string $message = 'Доступ запрещён'): JsonResponse
     {
         return response()->json([
+            'message' => $message,
             'status' => 'Forbidden',
             'code' => 403,
         ], 403);
@@ -33,29 +36,31 @@ class APIResponse
     /**
      * Make 404 response.
      *
-     * @param string $status
+     * @param string $message
      *
      * @return  JsonResponse
      */
-    public static function notFound(string $status = 'Not found'): JsonResponse
+    public static function notFound(string $message = 'Не найдено'): JsonResponse
     {
         return response()->json([
-            'status' => $status,
+            'message' => $message,
+            'status' => $message,
             'code' => 404,
         ], 404);
     }
 
     /**
-     * Make 404 response.
+     * Make error response.
      *
-     * @param string $status
+     * @param string $message
      *
      * @return  JsonResponse
      */
-    public static function error(string $status = 'Server error'): JsonResponse
+    public static function error(string $message = 'Server error'): JsonResponse
     {
         return response()->json([
-            'status' => $status,
+            'message' => $message,
+            'status' => $message,
             'code' => 500,
         ], 500);
     }
@@ -64,13 +69,15 @@ class APIResponse
      * Make 200 response with data.
      *
      * @param mixed $data
-     * @param $payload
+     * @param null $payload
+     * @param string $message
      *
      * @return  JsonResponse
      */
-    public static function response($data, $payload = null): JsonResponse
+    public static function response($data, $payload = null, string $message = 'Успешно'): JsonResponse
     {
         return response()->json([
+            'message' => $message,
             'status' => 'OK',
             'code' => 200,
             'data' => $data,
@@ -117,6 +124,7 @@ class APIResponse
 
         return response()->json([
             'status' => 'OK',
+            'message' => 'OK',
             'code' => 200,
             'list' => $list['data'],
             'titles' => $titles,
@@ -146,6 +154,7 @@ class APIResponse
     {
         return response()->json([
             'status' => 'OK',
+            'message' => 'OK',
             'code' => 200,
             'values' => $values,
             'rules' => $rules,
@@ -166,8 +175,8 @@ class APIResponse
     {
         return response()->json([
             'status' => 'OK',
-            'code' => 200,
             'message' => $message,
+            'code' => 200,
             'payload' => $payload,
         ], 200);
     }
@@ -186,6 +195,7 @@ class APIResponse
     public static function formError(array $values, array $rules, array $titles, array $errors = [], array $payload = []): JsonResponse
     {
         return response()->json([
+            'message' => 'Не все поля корректно заполнены',
             'status' => 'Validation error',
             'code' => 422,
             'values' => $values,

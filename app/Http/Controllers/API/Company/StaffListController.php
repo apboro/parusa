@@ -93,6 +93,7 @@ class StaffListController extends ApiController
             'name' => 'ФИО сотрудника',
             'position' => 'Должность',
             'contacts' => 'Контакты',
+            'access' => 'Доступ в систему',
         ], [
             'filters' => $filters,
             'filters_original' => $this->defaultFilters,

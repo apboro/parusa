@@ -23,12 +23,18 @@ class StaffDeleteController extends ApiController
     {
         $id = $request->input('id');
 
-        if ($id === null || null === ($user = User::query()->where('id', $id)->has('staffPosition')->first())) {
-            return APIResponse::notFound();
+        if ($id === null || null === ($user = User::query()->with('profile')->where('id', $id)->has('staffPosition')->first())) {
+            return APIResponse::notFound('Сотрудник не найен');
+        }
+        /** @var User $user */
+
+        if ($user->id === $request->user()->id) {
+            return APIResponse::error('Вы не можете удалить свою учётную запись');
         }
 
+        $name = $user->profile->fullName;
+
         try {
-            /** @var User $user */
             $user->delete();
         } catch (QueryException $exception) {
             return APIResponse::error('Невозможно удалить сотрудника. Есть блокирующие связи.');
@@ -36,6 +42,6 @@ class StaffDeleteController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response('Сотрудник удалён');
+        return APIResponse::response([], [], "Сотрудник \"{$name}\" удалён");
     }
 }

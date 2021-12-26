@@ -56,7 +56,7 @@ class StaffEditController extends ApiEditController
         $user = $this->firstOrNewUser($request, ['profile', 'staffPosition', 'staffPosition.status', 'staffPosition.staffInfo']);
 
         if ($user === null) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Сотрудник не найен');
         }
 
         $profile = $user->profile;
@@ -111,7 +111,7 @@ class StaffEditController extends ApiEditController
         $user = $this->firstOrNewUser($request);
 
         if ($user === null) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Сотрудник не найен');
         }
 
         $profile = $user->profile;

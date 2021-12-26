@@ -22,7 +22,7 @@ class StaffCardController extends ApiController
                 ->where('id', $id)
                 ->has('staffPosition')->first())
         ) {
-            return APIResponse::notFound();
+            return APIResponse::notFound('Сотрудник не найен');
         }
 
         /** @var User $user */

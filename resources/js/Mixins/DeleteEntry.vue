@@ -16,24 +16,13 @@ export default {
                         axios.post(url, options)
                             .then((response) => {
                                 this.deleting = false;
-                                this.$dialog.show(response.data.data, 'success', 'green', [
-                                    this.$dialog.button('ok', 'OK', 'blue')
-                                ], 'center')
-                                    .finally(() => {
-                                        resolve();
-                                    });
+                                this.$toast.success(response.data.message, 5000);
+                                resolve();
                             })
                             .catch(error => {
                                 this.deleting = false;
-                                let message;
-                                if (error.response.status === 404) {
-                                    message = 'Запись не найдена';
-                                } else {
-                                    message = typeof error.response.data.status !== "undefined" ? error.response.data.status : error.response.data;
-                                }
-                                this.$dialog.show(message, 'error', 'red', [
-                                    this.$dialog.button('ok', 'OK', 'blue')
-                                ], 'center').finally(() => reject());
+                                this.$toast.error(error.response.data.message, 5000);
+                                reject();
                             });
                     }
                 });

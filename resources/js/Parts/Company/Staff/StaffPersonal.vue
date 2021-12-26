@@ -101,13 +101,13 @@ export default {
                         this.$refs.popup.process(true);
                         axios.post('/api/company/staff/status', {id: this.staffId, status_id: this.current_status})
                             .then(response => {
-                                this.$toast.success(response.data.data.message, 2000);
+                                this.$toast.success(response.data.message, 5000);
                                 this.datasource.data.status = response.data.data.status;
                                 this.datasource.data.status_id = response.data.data.status_id;
                                 this.datasource.data.active = response.data.data.active;
                             })
                             .catch(error => {
-                                this.$toast.error(error.response.data.status);
+                                this.$toast.error(error.response.data.message);
                             })
                             .finally(() => {
                                 this.$refs.popup.hide();

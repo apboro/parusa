@@ -45,8 +45,7 @@ class StaffAccessController extends ApiEditController
         return APIResponse::response([
             'has_access' => false,
             'login' => null,
-            'message' => 'Доступ закрыт',
-        ]);
+        ], [], 'Доступ закрыт');
     }
 
     /**

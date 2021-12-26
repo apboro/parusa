@@ -2,7 +2,7 @@
     <list-page :loading="list.loading">
 
         <template v-slot:header>
-            <page-title-bar :title="$route.meta.title">
+            <page-title-bar :title="$route.meta['title']">
                 <actions-menu>
                     <router-link :to="{ name: 'staff-edit', params: { id: 0 }}">Добавить сотрудника</router-link>
                 </actions-menu>
@@ -36,16 +36,11 @@
             </template>
             <base-table-row v-for="(row, key) in list.data" :key="key">
                 <base-table-cell>
-                    <base-table-cell-item>
-                        <activity :active="row.active"/>
-                        <router-link class="link"
-                                     :to="{ name: 'staff-view', params: { id: row.id }}"
-                                     v-html="$highlight(row.record['name'], list.search)"
-                        />
-                    </base-table-cell-item>
-                    <base-table-cell-item v-if="!row.record['has_access']">
-                        <span class="text-gray text-sm"><activity-locked :locked="true"/>доступ в систему закрыт</span>
-                    </base-table-cell-item>
+                    <activity :active="row.active"/>
+                    <router-link class="link"
+                                 :to="{ name: 'staff-view', params: { id: row.id }}"
+                                 v-html="highlight(row.record['name'], list.search)"
+                    />
                 </base-table-cell>
                 <base-table-cell>{{ row.record['position'] }}</base-table-cell>
                 <base-table-cell>
@@ -62,6 +57,10 @@
                     <base-table-cell-item v-if="row.record['contacts']['mobile_phone']">
                         {{ row.record['contacts']['mobile_phone'] }}
                     </base-table-cell-item>
+                </base-table-cell>
+                <base-table-cell>
+                    <activity :active="row.record['has_access']"/>
+                        <span>{{ row.record['has_access'] ? 'открыт' : 'закрыт'}}</span>
                 </base-table-cell>
             </base-table-row>
         </base-table>
@@ -122,6 +121,9 @@ export default {
         },
         reload() {
             this.list.load();
+        },
+        highlight(text) {
+            return this.$highlight(text);
         },
     },
 }
