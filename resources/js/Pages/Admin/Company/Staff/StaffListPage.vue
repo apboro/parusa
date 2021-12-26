@@ -39,7 +39,7 @@
                     <activity :active="row.active"/>
                     <router-link class="link"
                                  :to="{ name: 'staff-view', params: { id: row.id }}"
-                                 v-html="highlight(row.record['name'], list.search)"
+                                 v-html="highlight(row.record['name'])"
                     />
                 </base-table-cell>
                 <base-table-cell>{{ row.record['position'] }}</base-table-cell>
@@ -60,7 +60,7 @@
                 </base-table-cell>
                 <base-table-cell>
                     <activity :active="row.record['has_access']"/>
-                        <span>{{ row.record['has_access'] ? 'открыт' : 'закрыт'}}</span>
+                    <span>{{ row.record['has_access'] ? 'открыт' : 'закрыт' }}</span>
                 </base-table-cell>
             </base-table-row>
         </base-table>
@@ -119,7 +119,7 @@ export default {
             this.list.load();
         },
         highlight(text) {
-            return this.$highlight(text);
+            return this.$highlight(text, this.list.search);
         },
     },
 }

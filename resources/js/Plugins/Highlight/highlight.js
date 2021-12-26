@@ -1,7 +1,7 @@
 export default {
     install: (app) => {
         app.config.globalProperties.$highlight = function (text, terms) {
-            if (text !== null && terms !== null) {
+            if (typeof text !== "undefined" && text !== null && terms !== null) {
                 let ref = text.toLowerCase();
                 terms = terms.split(' ');
                 terms.map(term => {
