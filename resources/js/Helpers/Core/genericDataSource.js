@@ -3,7 +3,7 @@ const genericDataSource = function (dataSourceUrl) {
         dataSourceUrl: null,
 
         data: [],
-        payload: null,
+        payload: {},
 
         loading: false,
         loaded: false,
