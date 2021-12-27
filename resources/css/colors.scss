@@ -125,6 +125,7 @@ $base_background_color: #ffffff;
 $base_background_changed_color: #ecf4ff;
 $base_error_color: #e71c1c;
 $base_required_color: #e71c1c;
+$base_remove_color: #e71c1c;
 
 $base_drop_multi_item_color: #1e1e1e;
 $base_drop_multi_item_border_color: #dbdbdb;
@@ -185,9 +186,12 @@ $base_button_red_hover_background_color: #cc1717;
 
 
 $drag_item_body_color: $color_text;
+$drag_item_header_color: #565656;
+$drag_item_separator_color: #e1e1e1;
 $drag_item_border_color: #ededed;
 $drag_item_background_color: #fbfbfb;
 $drag_item_head_color: #787878;
+$drag_item_head_inactive_color: #d7d7d7;
 $drag_item_action_on_color: #0e9106;
 $drag_item_action_off_color: #c00c0c;
 $drag_item_action_edit_color: #147ee8;

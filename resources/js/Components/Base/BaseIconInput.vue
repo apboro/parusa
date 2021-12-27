@@ -4,7 +4,7 @@
             <slot/>
         </span>
         <input
-            class="base-input__input base-input__input-no-left"
+            class="base-input__input base-input__input-no-left base-input__input-no-right"
             :value="modelValue"
             :type="type"
             :required="required"
@@ -12,13 +12,16 @@
             :autocomplete="autocomplete"
             @input="update"
             ref="input">
+        <span class="base-input__clear" v-if="clearable" @click="setValue(null)"><icon-cross/></span>
     </label>
 </template>
 
 <script>
 import empty from "../../Helpers/Lib/empty";
+import IconCross from "../Icons/IconCross";
 
 export default {
+    components: {IconCross},
     props: {
         modelValue: {type: String, default: null},
         name: String,
@@ -35,6 +38,9 @@ export default {
     emits: ['update:modelValue', 'changed'],
 
     computed: {
+        clearable() {
+            return this.modelValue !== null && this.modelValue !== ''
+        },
         isDirty() {
             return empty(this.original) ? !empty(this.modelValue) : this.original !== this.modelValue;
         },
@@ -46,10 +52,20 @@ export default {
         },
 
         update(event) {
-            const value = String(event.target.value);
+            this.setValue(event.target.value);
+        },
+
+        setValue(value) {
+            if (value !== null) {
+                if (this.type === 'number') {
+                    value = Number(value);
+                } else {
+                    value = String(value);
+                }
+            }
             this.$emit('update:modelValue', value);
             this.$emit('changed', this.name, value);
-        },
+        }
     }
 }
 </script>
