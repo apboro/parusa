@@ -15,7 +15,7 @@ class ExcursionEditController extends ApiEditController
         'name' => 'required',
         'status_id' => 'required',
         'images' => 'required|max:1',
-        'duration' => 'required|numeric',
+        'duration' => 'required|integer|min:0',
     ];
 
     protected array $titles = [

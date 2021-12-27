@@ -26,10 +26,10 @@ import BaseInput from "../Base/BaseInput";
 
 export default {
     props: {
-        modelValue: {type: String, default: null},
+        modelValue: {type: [String, Number], default: null},
         title: String,
         name: String,
-        original: {type: String, default: null},
+        original: {type: [String, Number], default: null},
 
         required: {type: Boolean, default: false},
         disabled: {type: Boolean, default: false},

@@ -18,9 +18,9 @@ import empty from "../../Helpers/Lib/empty";
 
 export default {
     props: {
-        modelValue: {type: String, default: null},
+        modelValue: {type: [String, Number], default: null},
         name: String,
-        original: {type: String, default: null},
+        original: {type: [String, Number], default: null},
 
         required: {type: Boolean, default: false},
         disabled: {type: Boolean, default: false},
@@ -45,7 +45,12 @@ export default {
         },
 
         update(event) {
-            const value = String(event.target.value);
+            let value;
+            if (this.type === 'number') {
+                value = Number(event.target.value);
+            } else {
+                value = String(event.target.value);
+            }
             this.$emit('update:modelValue', value);
             this.$emit('changed', this.name, value);
         },

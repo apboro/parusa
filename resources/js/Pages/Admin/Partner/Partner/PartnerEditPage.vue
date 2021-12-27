@@ -14,7 +14,7 @@
             <data-field-input :datasource="form" :name="'name'"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'partner_types'" :name="'type_id'"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'position_statuses'" :name="'status_id'"/>
-            <data-field-input :datasource="form" :name="'tickets_for_guides'"/>
+            <data-field-input :datasource="form" :name="'tickets_for_guides'" :type="'number'"/>
             <data-field-dropdown :datasource="form" :name="'can_reserve_tickets'" :key-by="'id'" :value-by="'name'" :options="[
                 {id: 0, name: 'Запрещено'},
                 {id: 1, name: 'Разрешено'},

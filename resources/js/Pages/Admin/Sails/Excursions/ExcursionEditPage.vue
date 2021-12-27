@@ -15,7 +15,7 @@
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'excursion_statuses'" :name="'status_id'"/>
             <data-field-images :datasource="form" :name="'images'"/>
             <data-field-dictionary-dropdown-multi :datasource="form" :dictionary="'excursion_programs'" :name="'programs'"/>
-            <data-field-input :datasource="form" :name="'duration'"/>
+            <data-field-input :datasource="form" :name="'duration'" :type="'number'"/>
             <data-field-text-area :datasource="form" :name="'description'"/>
             <data-field-text-area :datasource="form" :name="'announce'"/>
         </container>
