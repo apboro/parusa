@@ -50,8 +50,11 @@
                 :manual="true"
         >
             <container w-600px>
-                <data-field-dictionary-dropdown :dictionary="'representatives'" :datasource="form" :name="'representative_id'"
+                <data-field-dictionary-dropdown :dictionary="'representatives'"
+                                                :datasource="form"
+                                                :name="'representative_id'"
                                                 :disabled="!position_change_user"
+                                                :search="true"
                                                 @changed="representativeSelected"
                 />
                 <data-field-input :datasource="form" :name="'title'"/>

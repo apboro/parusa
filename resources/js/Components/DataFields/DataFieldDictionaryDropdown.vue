@@ -9,6 +9,7 @@
         :errors="errors"
         :disabled="disabled"
         :required="required"
+        :search="search"
         @changed="changed"
     />
 </template>
@@ -23,6 +24,7 @@ export default {
         name: String,
         disabled: {type: Boolean, default: false},
         dictionary: String,
+        search: {type: Boolean, default: false},
     },
 
     emits: ['changed'],

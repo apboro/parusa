@@ -71,6 +71,11 @@
         max-height: $base_base_unit * 8;
         width: calc(100% + 2px);
 
+        &-search {
+            box-sizing: border-box;
+            margin: 5px;
+        }
+
         &-wrapper {
             display: flex;
             flex-direction: column;
@@ -94,8 +99,8 @@
             font-size: 14px;
             transition: color $animation $animation_time;
             cursor: pointer;
-            height: $base_base_unit * 0.75;
-            line-height: $base_base_unit * 0.75;
+            height: $base_base_unit * 0.8;
+            line-height: $base_base_unit * 0.8;
             white-space: nowrap;
 
             &-current {
@@ -104,6 +109,14 @@
 
             &:hover {
                 color: $base_hover_color;
+            }
+
+            &:first-child {
+                margin-top: 10px;
+            }
+
+            &:last-child {
+                margin-bottom: 10px;
             }
         }
     }

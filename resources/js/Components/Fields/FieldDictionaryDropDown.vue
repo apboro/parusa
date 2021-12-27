@@ -9,6 +9,7 @@
                 :required="required"
                 :disabled="disabled"
                 :valid="valid"
+                :search="search"
                 v-model="proxyValue"
                 @changed="changed"
             />
@@ -29,6 +30,7 @@ export default {
         name: String,
         original: {type: [Boolean, String, Number, Object], default: null},
         dictionary: String,
+        search: {type: Boolean, default: false},
 
         required: {type: Boolean, default: false},
         disabled: {type: Boolean, default: false},

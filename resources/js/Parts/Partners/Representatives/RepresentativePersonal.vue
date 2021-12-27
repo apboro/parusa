@@ -78,7 +78,12 @@
                 :manual="true"
         >
             <container w-600px>
-                <data-field-dictionary-dropdown :datasource="form" :name="'partner_id'" :dictionary="'partners'" :disabled="!position_change_partner"/>
+                <data-field-dictionary-dropdown :datasource="form"
+                                                :name="'partner_id'"
+                                                :dictionary="'partners'"
+                                                :disabled="!position_change_partner"
+                                                :search="true"
+                />
                 <data-field-input :datasource="form" :name="'title'"/>
                 <data-field-input :datasource="form" :name="'work_phone'"/>
                 <data-field-input :datasource="form" :name="'work_phone_additional'"/>

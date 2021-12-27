@@ -1,6 +1,8 @@
 .scroll-box {
-    height: 100%;
     position: relative;
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
 }
 
 .scroll-box.with-scroll-box-vertical {

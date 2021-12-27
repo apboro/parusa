@@ -13,6 +13,7 @@
                 :placeholder="placeholder"
                 :has-null="hasNull"
                 :valid="valid"
+                :search="search"
                 v-model="proxyValue"
                 @changed="changed"
             />
@@ -38,6 +39,7 @@ export default {
         valueBy: {type: String, default: null},
         placeholder: {type: String, default: null},
         hasNull: {type: Boolean, default: false},
+        search: {type: Boolean, default: false},
 
         required: {type: Boolean, default: false},
         disabled: {type: Boolean, default: false},

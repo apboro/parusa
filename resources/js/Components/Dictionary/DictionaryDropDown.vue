@@ -9,6 +9,7 @@
         :placeholder="placeholder"
         :has-null="hasNull"
         :to-top="toTop"
+        :search="search"
         @dropped="refresh"
         @changed="changed"
     />
@@ -30,6 +31,7 @@ export default {
         valueBy: {type: String, default: 'name'},
 
         toTop: {type: Boolean, default: false},
+        search: {type: Boolean, default: false},
 
         fresh: {type: Boolean, default: false},
 
