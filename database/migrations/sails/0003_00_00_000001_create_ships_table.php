@@ -18,12 +18,13 @@ class CreateShipsTable extends Migration
             $table->id();
 
             $table->string('name');
-            $table->unsignedInteger('status_id')->default(ShipStatus::default);
-            $table->unsignedInteger('type_id')->nullable();
+            $table->boolean('enabled')->nullable()->default(true);
             $table->integer('order')->nullable()->default(0);
 
+            $table->unsignedInteger('status_id')->default(ShipStatus::default); // ready to move ships from dictionaries
+            $table->unsignedInteger('type_id')->nullable(); // ready to move ships from dictionaries
+
             $table->string('owner');
-            $table->string('decks');
             $table->smallInteger('capacity', false, true);
 
             $table->timestamps();

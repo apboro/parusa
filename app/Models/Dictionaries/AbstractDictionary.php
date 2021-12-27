@@ -6,6 +6,7 @@ use App\Models\Model;
 
 /**
  * @property int $id
+ * @property string $name
  */
 abstract class AbstractDictionary extends Model
 {

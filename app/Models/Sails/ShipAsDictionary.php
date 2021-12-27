@@ -12,7 +12,7 @@ trait ShipAsDictionary
             ->select([
                 'id',
                 'name',
-                'enabled', // TODO sub select status_id === ShipStatus::active
+                'enabled',
                 'order',
                 'created_at',
                 'updated_at',

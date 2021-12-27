@@ -72,7 +72,7 @@ class DictionaryController extends ApiController
         $name = $request->input('dictionary');
 
         if ($name === null || !array_key_exists($name, $this->dictionaries)) {
-            return APIResponse::notFound();
+            return APIResponse::notFound("Справочник {$name} не найден");
         }
 
         /** @var AbstractDictionary $class */

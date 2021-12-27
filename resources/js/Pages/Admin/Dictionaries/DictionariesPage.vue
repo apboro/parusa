@@ -6,8 +6,7 @@
 
         <layout-routed-tabs v-if="data.loaded" :tabs="data.data" @change="changeTab"/>
 
-        <ships-dictionary v-if="!processing && (current === 'ships')" :dictionary="current"/>
-        <generic-dictionary v-else-if="!processing" :dictionary="current"/>
+        <dictionary v-if="!processing" :dictionary="current"/>
     </page>
 </template>
 
@@ -16,16 +15,14 @@ import genericDataSource from "../../../Helpers/Core/genericDataSource";
 import Page from "../../../Layouts/Page";
 import PageTitleBar from "../../../Layouts/Parts/PageTitleBar";
 import LayoutRoutedTabs from "../../../Components/Layout/LayoutRoutedTabs";
-import GenericDictionary from "../../../Parts/Dictionaries/GenericDictionary";
-import ShipsDictionary from "../../../Parts/Dictionaries/ShipsDictionary";
+import Dictionary from "../../../Parts/Dictionaries/Dictionary";
 
 export default {
     components: {
-        ShipsDictionary,
-        GenericDictionary,
-        LayoutRoutedTabs,
-        PageTitleBar,
         Page,
+        PageTitleBar,
+        LayoutRoutedTabs,
+        Dictionary,
     },
 
     data: () => ({

@@ -24,7 +24,6 @@ class ShipFactory extends Factory
             'status_id' => ShipStatus::default,
             'type_id' => null,
             'owner' => $this->faker->company,
-            'decks' => ['Однопалубный', 'Двухпалубный', 'Трёхпалубный'][random_int(0, 2)],
             'capacity' => [50, 100, 150, 200][random_int(0, 3)],
         ];
     }

@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $id
  * @property string $name
  * @property string $owner
- * @property string $decks
  * @property int $capacity
  * @property int $status_id
  * @property int $type_id
@@ -35,6 +34,13 @@ class Ship extends Model implements Statusable, Typeable, AsDictionary
     protected $attributes = [
         'status_id' => ShipStatus::default,
         'type_id' => null,
+        'enabled' => true,
+    ];
+
+    /** @var array Attributes casting. */
+    protected $casts = [
+        'enabled' => 'bool',
+        'order' => 'int',
     ];
 
     /** @var bool Type can be null */
