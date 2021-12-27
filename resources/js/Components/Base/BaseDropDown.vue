@@ -1,25 +1,17 @@
 <template>
     <div class="base-dropdown">
         <div class="base-dropdown__display" :class="{'base-dropdown__display-differs': isDirty}" @click="toggle">
-            <span class="base-dropdown__display-value"
-                  :class="{'base-dropdown__display-value-placeholder': value === null}">{{ value }}</span>
+            <span class="base-dropdown__display-value" :class="{'base-dropdown__display-value-placeholder': value === null}">{{ value }}</span>
             <span class="base-dropdown__display-icon" :class="{'base-dropdown__display-icon-dropped':dropped}"><icon-dropdown/></span>
         </div>
 
-        <div class="base-dropdown__list"
-             :class="{'base-dropdown__list-shown': dropped, 'base-dropdown__list-top': toTop}"
-        >
-            <scroll-box :mode="'vertical'"
-                        :scrollable-class="'base-dropdown__list-wrapper'"
-            >
-            <span class="base-dropdown__list-item" v-if="hasNull"
-                  :class="{'base-dropdown__list-item-current' : modelValue === null}"
-                  @click="value = null">{{ placeholder }}</span>
-            <span class="base-dropdown__list-item" v-for="(val, key) in options"
-                  :class="{'base-dropdown__list-item-current' : isCurrent(val)}"
-                  :key="key"
-                  @click="value = val"
-            >{{ displayValue(val) }}</span>
+        <div class="base-dropdown__list" :class="{'base-dropdown__list-shown': dropped, 'base-dropdown__list-top': toTop}">
+
+            <scroll-box :mode="'vertical'" :scrollable-class="'base-dropdown__list-wrapper'">
+                <span class="base-dropdown__list-item" v-if="hasNull" :class="{'base-dropdown__list-item-current' : modelValue === null}"
+                      @click="value = null">{{ placeholder }}</span>
+                <span class="base-dropdown__list-item" v-for="(val, key) in options" :class="{'base-dropdown__list-item-current' : isCurrent(val)}"
+                      :key="key" @click="value = val">{{ displayValue(val) }}</span>
             </scroll-box>
         </div>
     </div>

@@ -27,19 +27,40 @@
         flex-shrink: 0;
         @include noSelection;
 
+        &-non-draggable {
+            cursor: default;
+            color: $drag_item_head_inactive_color;
+        }
+
         & > * {
             height: $drag_item_base / 2;
         }
     }
 
-    &__body {
+    &__body, &__header {
         flex-grow: 1;
         flex-shrink: 0;
         font-size: 14px;
         font-family: $project_font;
         box-sizing: border-box;
-        padding: 10px 15px 10px 0;
+        padding: 5px 15px 5px 0;
         color: $drag_item_body_color;
+
+        &-value {
+            margin: 0 50px 0 10px;
+            padding: 5px 5px 5px 0;
+            min-width: 50px;
+            display: inline-block;
+
+            &:not(:last-child) {
+                //border-right: 1px solid $drag_item_separator_color;
+            }
+        }
+    }
+
+    &__header {
+        padding-left: $drag_item_base;
+        color: $drag_item_header_color;
     }
 
     &__actions {
