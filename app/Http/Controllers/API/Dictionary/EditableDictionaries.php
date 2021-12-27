@@ -17,6 +17,7 @@ trait EditableDictionaries
                 'name' => 'Название теплохода',
                 'capacity' => 'Вместимость',
                 'owner' => 'Владелец',
+                'description' => 'Описание',
             ],
             'validation' => [
                 'name' => 'required',
@@ -27,7 +28,9 @@ trait EditableDictionaries
                 'name' => 'string',
                 'capacity' => 'number',
                 'owner' => 'string',
+                'description' => 'text',
             ],
+            'hide' => ['description'],
         ],
         'excursion_programs' => [
             'name' => 'Типы программ',

@@ -4,7 +4,7 @@
 
         <container w-100 mt-15 pv-10 ph-15 border v-if="!processing">
             <div class="drag-item__header" v-if="active.length !== 0">
-                        <span class="drag-item__body-value" :class="'same-width-' + name" v-for="(type, name) in data.payload.fields"
+                        <span class="drag-item__body-value" :class="'same-width-' + name" v-for="name in displayableFields"
                         >{{ data.payload['titles'][name] }}</span>
             </div>
             <div class="drag-item" v-for="(item, key) in active"
@@ -20,8 +20,7 @@
                     <icon-grip-vertical/>
                 </div>
                 <div class="drag-item__body">
-                        <span class="drag-item__body-value" :class="'same-width-' + name" v-for="(type, name) in data.payload.fields"
-                        >{{ item[name] }}</span>
+                    <span class="drag-item__body-value" :class="'same-width-' + name" v-for="name in displayableFields">{{ item[name] }}</span>
                 </div>
                 <div class="drag-item__actions">
                     <div class="drag-item__actions-button drag-item__actions-button-on" title="Отключить" @click="switchOff(item)">
@@ -41,8 +40,7 @@
         <heading mt-15>Неактивные</heading>
         <container w-100 mt-15 pv-10 ph-15 border v-if="!processing">
             <div class="drag-item__header" v-if="inactive.length !== 0">
-                        <span class="drag-item__body-value" :class="'same-width-' + name" v-for="(type, name) in data.payload.fields"
-                        >{{ data.payload['titles'][name] }}</span>
+                <span class="drag-item__body-value" :class="'same-width-' + name" v-for="name in displayableFields">{{ data.payload['titles'][name] }}</span>
             </div>
             <div class="drag-item" v-for="(item, key) in inactive"
                  :key="key"
@@ -52,8 +50,7 @@
                     <icon-grip-vertical/>
                 </div>
                 <div class="drag-item__body">
-                        <span class="drag-item__body-value" :class="'same-width-' + name" v-for="(type, name) in data.payload.fields"
-                        >{{ item[name] }}</span>
+                        <span class="drag-item__body-value" :class="'same-width-' + name" v-for="name in displayableFields">{{ item[name] }}</span>
                 </div>
                 <div class="drag-item__actions">
                     <span class="drag-item__actions-button drag-item__actions-button-off" title="Включить" @click="switchOn(item)">
@@ -79,6 +76,7 @@
             <container w-600px>
                 <template v-for="(type, name) in data.payload.fields">
                     <data-field-input v-if="type === 'number'" :datasource="form" :name="name" :type="'number'"/>
+                    <data-field-text-area v-else-if="type === 'text'" :datasource="form" :name="name"/>
                     <data-field-input v-else :datasource="form" :name="name"/>
                 </template>
             </container>
@@ -102,9 +100,11 @@ import PopUp from "../../Components/PopUp";
 import DataFieldInput from "../../Components/DataFields/DataFieldInput";
 import formDataSource from "../../Helpers/Core/formDataSource";
 import {parseRules} from "../../Helpers/Core/validator/validator";
+import DataFieldTextArea from "../../Components/DataFields/DataFieldTextArea";
 
 export default {
     components: {
+        DataFieldTextArea,
         DataFieldInput,
         PopUp,
         Message,
@@ -146,6 +146,13 @@ export default {
         },
         inactive() {
             return this.data.data.filter(item => Boolean(item.enabled) === false).sort((a, b) => a.order - b.order);
+        },
+        displayableFields() {
+            const keys = Object.keys(this.data.payload.fields);
+            if (typeof this.data.payload['hide'] === "undefined" || this.data.payload['hide'] === null) {
+                return keys;
+            }
+            return keys.filter(key => this.data.payload['hide'].indexOf(key) === -1)
         },
     },
 
@@ -230,6 +237,7 @@ export default {
         },
 
         dragenter(event, item) {
+            console.log(item);
             if (this.dragging === null) {
                 return true;
             }

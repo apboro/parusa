@@ -26,6 +26,7 @@ class CreateShipsTable extends Migration
 
             $table->string('owner');
             $table->smallInteger('capacity', false, true);
+            $table->text('description')->nullable();
 
             $table->timestamps();
 
