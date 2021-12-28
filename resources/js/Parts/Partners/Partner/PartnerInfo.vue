@@ -74,7 +74,6 @@
 <script>
 import formDataSource from "../../../Helpers/Core/formDataSource";
 import {parseRules} from "../../../Helpers/Core/validator/validator";
-import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
 
 import Container from "../../../Components/GUI/Container";
 import Value from "../../../Components/GUI/Value";
@@ -88,8 +87,6 @@ import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
 import BaseDropDown from "../../../Components/Base/BaseDropDown";
 
 export default {
-    mixins: [UseBaseTableBundle],
-
     props: {
         partnerId: {type: Number, required: true},
         datasource: {type: Object},

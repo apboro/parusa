@@ -60,7 +60,7 @@
                 <base-table-cell>{{ partner['limit'] }}</base-table-cell>
             </base-table-row>
         </base-table>
-        <message v-else>Ничего не найдено</message>
+        <message v-else-if="list.loaded">Ничего не найдено</message>
         <base-pagination :pagination="list.pagination" @pagination="setPagination"/>
 
     </list-page>

@@ -37,8 +37,6 @@
 </template>
 
 <script>
-import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
-
 import Container from "../../../Components/GUI/Container";
 import Value from "../../../Components/GUI/Value";
 import Activity from "../../../Components/Activity";
@@ -48,8 +46,6 @@ import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
 
 export default {
-    mixins: [UseBaseTableBundle],
-
     props: {
         pierId: {type: Number, required: true},
         datasource: {type: Object},
