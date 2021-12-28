@@ -150,7 +150,9 @@ export default {
                 this.$emit('dropped');
                 this.updateHeight();
                 if (this.search) {
-                    this.$refs.search.focus();
+                    this.$nextTick(() => {
+                        this.$refs.search.focus();
+                    })
                 }
                 setTimeout(() => {
                     window.addEventListener('click', this.close);

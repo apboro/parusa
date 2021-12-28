@@ -11,8 +11,9 @@
             :disabled="disabled"
             :autocomplete="autocomplete"
             @input="update"
+            @click.stop.prevent="focus"
             ref="input">
-        <span class="base-input__clear" v-if="clearable" @click="setValue(null)"><icon-cross/></span>
+        <span class="base-input__clear" v-if="clearable" @click.stop.prevent="setValue(null)"><icon-cross/></span>
     </label>
 </template>
 

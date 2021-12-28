@@ -3,9 +3,9 @@
          :class="{
             'dialogs__overlay-hide': hiding,
             'dialogs__overlay-shown': showing,
-         }" @click="resolve(null)"
+         }" @click="popupClose"
     >
-        <div class="dialogs__dialog" @click.stop.prevent="false">
+        <div class="dialogs__dialog">
             <loading-progress :loading="processing" :opacity="70">
                 <div class="dialogs__dialog-wrapper">
                     <div class="dialogs__dialog-message" v-if="title">
@@ -39,6 +39,7 @@ export default {
         manual: {type: Boolean, default: false},
         title: {type: String, default: null},
         resolving: {type: Function, default: null},
+        closeOnOverlay: {type: Boolean, default: false},
     },
 
     data: () => ({
@@ -87,6 +88,12 @@ export default {
 
         process(value) {
             this.processing = value;
+        },
+
+        popupClose(event) {
+            if (this.closeOnOverlay && event.target === this.$el) {
+                this.resolve(null);
+            }
         },
     }
 }

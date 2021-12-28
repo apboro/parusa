@@ -11,7 +11,7 @@
 export default {
     props: {
         loading: {type: Boolean, default: false},
-        opacity: {type: Number, default: 30}
+        opacity: {type: Number, default: 50}
     }
 }
 </script>
