@@ -25,6 +25,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
         saving: false,
 
         toaster: null,
+        onLoad: null,
         afterSave: null,
 
         load() {
@@ -40,6 +41,9 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
                     });
                     this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
                     this.loaded = true;
+                    if (typeof this.onLoad === "function") {
+                        this.onLoad(this.values, this.payload);
+                    }
                 })
                 .catch(error => {
                     if (this.toaster !== null) {
