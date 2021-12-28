@@ -2,7 +2,7 @@ export default [
     {
         'title': 'ПРИЧАЛЫ И РЕЙСЫ', 'route': '',
         'items': [
-            {'title': 'Рейсы', 'route': ''},
+            {'title': 'Рейсы', 'route': 'trip-list'},
             {'title': 'Причалы', 'route': 'pier-list'},
         ]
     },

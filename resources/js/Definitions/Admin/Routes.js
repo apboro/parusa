@@ -24,6 +24,10 @@ import ExcursionCardPage from "../../Pages/Admin/Sails/Excursions/ExcursionCardP
 import ExcursionEditPage from "../../Pages/Admin/Sails/Excursions/ExcursionEditPage";
 import DictionariesPage from "../../Pages/Admin/Dictionaries/DictionariesPage";
 
+import TripsListPage from "../../Pages/Admin/Sails/Trips/TripsListPage";
+import TripCardPage from "../../Pages/Admin/Sails/Trips/TripCardPage";
+import TripEditPage from "../../Pages/Admin/Sails/Trips/TripEditPage";
+
 // import TestPage from "../../Pages/Admin/TestPage";
 
 export default [
@@ -54,6 +58,10 @@ export default [
     {path: '/excursions', name: 'excursion-list', component: ExcursionsListPage, meta: {title: 'Каталог экскурсий'}},
     {path: '/excursions/:id', name: 'excursion-view', component: ExcursionCardPage, meta: {title: 'Просмотр экскурсии'}},
     {path: '/excursions/:id/edit', name: 'excursion-edit', component: ExcursionEditPage, meta: {title: 'Редактирование экскурсии'}},
+
+    {path: '/trips', name: 'trip-list', component: TripsListPage, meta: {title: 'Список рейсов'}},
+    {path: '/trips/:id', name: 'trip-view', component: TripCardPage, meta: {title: 'Просмотр рейса'}},
+    {path: '/trips/:id/edit', name: 'trip-edit', component: TripEditPage, meta: {title: 'Редактирование рейса'}},
 
     /**
      * Dictionaries

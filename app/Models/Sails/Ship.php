@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $name
  * @property string $owner
  * @property int $capacity
+ * @property string $description
  * @property int $status_id
  * @property int $type_id
  *
@@ -41,6 +42,7 @@ class Ship extends Model implements Statusable, Typeable, AsDictionary
     protected $casts = [
         'enabled' => 'bool',
         'order' => 'int',
+        'capacity' => 'int',
     ];
 
     /** @var bool Type can be null */

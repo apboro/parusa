@@ -14,6 +14,7 @@ trait ShipAsDictionary
                 'name',
                 'enabled',
                 'order',
+                'capacity',
                 'created_at',
                 'updated_at',
             ]);

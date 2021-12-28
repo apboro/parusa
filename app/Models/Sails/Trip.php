@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
+ * @property string $name
  * @property Carbon $start_at
  * @property Carbon $end_at
  * @property int $start_pier_id
@@ -25,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $excursion_id
  * @property int $status_id
  * @property int $sale_status_id
- * @property positive-int $tickets_count
+ * @property int $tickets_count
  * @property int $discount_status_id
  * @property int $cancellation_time
  *
@@ -37,9 +38,36 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property TripSaleStatus $saleStatus
  * @property TripDiscountStatus $discountStatus
  */
-class Trips extends Model implements Statusable
+class Trip extends Model implements Statusable
 {
     use HasStatus, HasFactory;
+
+    /** @var array Attributes casting. */
+    protected $casts = [
+        'start_at' => 'datetime',
+        'end_at' => 'datetime',
+        'tickets_count' => 'int',
+        'cancellation_time' => 'int',
+    ];
+
+    /** @var array Default attributes. */
+    // TODO get default cancellation time from system settings
+    protected $attributes = [
+        'status_id' => TripStatus::default,
+        'sale_status_id' => TripSaleStatus::default,
+        'discount_status_id' => TripDiscountStatus::default,
+        'cancellation_time' => null,
+    ];
+
+    /**
+     * Accessor for name generation.
+     *
+     * @return  string|null
+     */
+    public function getNameAttribute(): ?string
+    {
+        return $this->exists ? 'Рейс №' . $this->id : null;
+    }
 
     /**
      * Ship status.
@@ -123,7 +151,7 @@ class Trips extends Model implements Statusable
      */
     public function startPier(): HasOne
     {
-        return $this->hasOne(Pier::class, 'id', 'start_pier');
+        return $this->hasOne(Pier::class, 'id', 'start_pier_id');
     }
 
     /**
@@ -133,7 +161,7 @@ class Trips extends Model implements Statusable
      */
     public function endPier(): HasOne
     {
-        return $this->hasOne(Pier::class, 'id', 'end_pier');
+        return $this->hasOne(Pier::class, 'id', 'end_pier_id');
     }
 
     /**
