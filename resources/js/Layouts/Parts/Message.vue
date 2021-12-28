@@ -1,11 +1,18 @@
 <template>
-    <div class="page__message" :class="{'page__message-error': error}"><slot/></div>
+    <div class="page__message" :class="classFromAttributes">
+        <slot/>
+    </div>
 </template>
 
 <script>
+
+import AttributeKeysToClass from "../../Mixins/AttributeKeysToClass";
+
 export default {
-    props: {
-        error: {type: Boolean, default: false},
-    }
+    mixins: [AttributeKeysToClass],
+
+    data: () => ({
+        attributesClassPrefix: 'page__message-',
+    }),
 }
 </script>
