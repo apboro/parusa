@@ -28,6 +28,8 @@
         color: $base_color;
         padding: 0 10px;
         flex-grow: 1;
+        flex-shrink: 1;
+        width: 100%;
         background-color: transparent;
 
         &-no-left {
