@@ -20,7 +20,7 @@ export default [
         'items': [
             {'title': 'Сотрудники', 'route': 'staff-list'},
             {'title': 'Каталог экскурсий', 'route': 'excursion-list'},
-            {'title': 'Настройки', 'route': ''},
+            {'title': 'Настройки', 'route': 'settings'},
             {'title': 'Справочники', 'route': 'dictionaries'},
         ]
     },

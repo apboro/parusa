@@ -1,5 +1,8 @@
 import HomePage from "../../Pages/Admin/HomePage";
 import NotFound from "../../Pages/NotFound";
+
+import SettingsPage from "../../Pages/Admin/Settings/SettingsPage";
+
 import TicketRefundsListPage from "../../Pages/Admin/TicketRefundsListPage";
 import MobileSalesListPage from "../../Pages/Admin/MobileSalesListPage";
 
@@ -32,6 +35,8 @@ import TripEditPage from "../../Pages/Admin/Sails/Trips/TripEditPage";
 
 export default [
     {path: '/', name: 'home', component: HomePage},
+
+    {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки'}},
 
     {path: '/staff', name: 'staff-list', component: StaffListPage, meta: {title: 'Сотрудники'}},
     {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника'}},

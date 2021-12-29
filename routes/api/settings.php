@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\API\Settings\SettingsController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -11,8 +14,5 @@
 |
 */
 
-require base_path('routes/api/company.php');
-require base_path('routes/api/settings.php');
-require base_path('routes/api/partners.php');
-require base_path('routes/api/dictionaries.php');
-require base_path('routes/api/sails.php');
+Route::post('/settings/general/get', [SettingsController::class, 'getGeneral'])->middleware('auth:sanctum');
+Route::post('/settings/general/set', [SettingsController::class, 'setGeneral'])->middleware('auth:sanctum');
