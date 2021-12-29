@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Company;
 
 use App\Http\APIResponse;
+use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\PositionStatus;
@@ -21,7 +22,7 @@ class StaffListController extends ApiController
         'position_status_id',
     ];
 
-    protected string $rememberKey = 'staff_list';
+    protected string $rememberKey = CookieKeys::staff_list;
 
     /**
      * Get staff list.

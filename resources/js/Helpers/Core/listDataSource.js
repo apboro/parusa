@@ -18,6 +18,7 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
         payload: null,
 
         loading: false,
+        loaded: false,
         has_error: false,
         error_message: null,
 
@@ -49,6 +50,7 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
                         delete payload['filters_original'];
                     }
                     this.payload = payload;
+                    this.loaded = true;
                 })
                 .catch(error => {
                     console.log(error);

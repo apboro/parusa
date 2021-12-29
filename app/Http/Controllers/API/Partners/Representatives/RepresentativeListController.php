@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Partners\Representatives;
 
 use App\Http\APIResponse;
+use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\PositionAccessStatus;
@@ -15,7 +16,7 @@ use Illuminate\Support\Collection;
 
 class RepresentativeListController extends ApiController
 {
-    protected string $rememberKey = 'representatives_list';
+    protected string $rememberKey = CookieKeys::representatives_list;
 
     /**
      * Get representatives list.

@@ -109,12 +109,17 @@ export default {
                 return this.modelValue;
             },
             set(key) {
-                let value = this.options[key];
+                let value;
 
-                if (typeof value === "object" && value !== null &&
-                    this.keyBy !== null && this.valueBy !== null &&
-                    typeof value[this.keyBy] !== "undefined") {
-                    value = value[this.keyBy];
+                if (key === null) {
+                    value = null;
+                } else {
+                    value = this.options[key];
+                    if (typeof value === "object" && value !== null &&
+                        this.keyBy !== null && this.valueBy !== null &&
+                        typeof value[this.keyBy] !== "undefined") {
+                        value = value[this.keyBy];
+                    }
                 }
 
                 this.$emit('update:modelValue', value);

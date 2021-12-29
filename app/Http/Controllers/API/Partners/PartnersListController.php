@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Partners;
 
 use App\Http\APIResponse;
+use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\PartnerStatus;
@@ -25,7 +26,7 @@ class PartnersListController extends ApiController
         'partner_status_id',
     ];
 
-    protected string $rememberKey = 'partners_list';
+    protected string $rememberKey = CookieKeys::partners_list;
 
     /**
      * Get partners list.

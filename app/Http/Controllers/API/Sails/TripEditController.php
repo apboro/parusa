@@ -59,8 +59,8 @@ class TripEditController extends ApiEditController
         // send response
         return APIResponse::form(
             [
-                'start_at' => $trip->start_at->format('d.m.Y H:i'),
-                'end_at' => $trip->end_at->format('d.m.Y H:i'),
+                'start_at' => $trip->start_at ? $trip->start_at->format('d.m.Y H:i') : null,
+                'end_at' => $trip->end_at ? $trip->end_at->format('d.m.Y H:i') : null,
                 'start_pier_id' => $trip->start_pier_id,
                 'end_pier_id' => $trip->end_pier_id,
                 'ship_id' => $trip->ship_id,

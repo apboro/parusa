@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Sails;
 
 use App\Http\APIResponse;
+use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\ExcursionStatus;
@@ -20,7 +21,7 @@ class ExcursionsListController extends ApiController
         'status_id',
     ];
 
-    protected string $rememberKey = 'excursions_list';
+    protected string $rememberKey = CookieKeys::excursions_list;
 
     /**
      * Get excursions list.

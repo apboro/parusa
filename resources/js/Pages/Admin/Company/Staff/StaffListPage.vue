@@ -12,11 +12,11 @@
         <template v-slot:filters>
             <page-bar-item :title="'Статус сотрудника'">
                 <dictionary-drop-down
-                    :dictionary="'user_statuses'"
+                    :dictionary="'position_statuses'"
                     :placeholder="'Все'"
                     :has-null="true"
-                    :original="list.filters_original.position_status_id"
-                    v-model="list.filters.position_status_id"
+                    :original="list.filters_original['position_status_id']"
+                    v-model="list.filters['position_status_id']"
                     @changed="reload"
                 />
             </page-bar-item>

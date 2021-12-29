@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Sails;
 
 use App\Http\APIResponse;
+use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\PiersStatus;
@@ -20,7 +21,7 @@ class PiersListController extends ApiController
         'status_id',
     ];
 
-    protected string $rememberKey = 'pier_list';
+    protected string $rememberKey = CookieKeys::pier_list;
 
     /**
      * Get piers list.

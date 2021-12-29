@@ -10,6 +10,7 @@ use App\Models\Dictionaries\TripDiscountStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Model;
+use App\Settings;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -51,13 +52,24 @@ class Trip extends Model implements Statusable
     ];
 
     /** @var array Default attributes. */
-    // TODO get default cancellation time from system settings
     protected $attributes = [
         'status_id' => TripStatus::default,
         'sale_status_id' => TripSaleStatus::default,
         'discount_status_id' => TripDiscountStatus::default,
         'cancellation_time' => null,
     ];
+
+    /**
+     * Cancellation time mutator. Returns default system value if tip is not exists.
+     *
+     * @param $value
+     *
+     * @return  int
+     */
+    public function getCancellationTimeAttribute($value): int
+    {
+        return $this->exists ? $value : Settings::get('default_cancellation_time', Settings::int);
+    }
 
     /**
      * Accessor for name generation.

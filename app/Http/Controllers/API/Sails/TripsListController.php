@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Sails;
 
 use App\Http\APIResponse;
+use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Sails\Trip;
@@ -26,7 +27,7 @@ class TripsListController extends ApiController
         'start_pier_id',
     ];
 
-    protected string $rememberKey = 'trips_list';
+    protected string $rememberKey = CookieKeys::trips_list;
 
     /**
      * Get staff list.

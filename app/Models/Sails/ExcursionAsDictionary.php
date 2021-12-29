@@ -12,7 +12,7 @@ trait ExcursionAsDictionary
             ->select([
                 'id',
                 'name',
-                'enabled', // TODO sub select status_id === ExcursionStatus::active
+                'status_id as enabled', // TODO sub select status_id === ExcursionStatus::active
                 'name as order',
                 'created_at',
                 'updated_at',

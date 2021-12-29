@@ -18,6 +18,18 @@
         flex-shrink: 0;
     }
 
+    &__w50 &__title {
+        width: 50%;
+    }
+
+    &__col {
+        flex-direction: column
+    }
+
+    &__col &__title {
+        width: 100%;
+    }
+
     &__required &__title:after {
         content: '*';
         color: $base_required_color;

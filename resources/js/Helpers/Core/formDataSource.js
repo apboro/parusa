@@ -3,7 +3,7 @@ import {getMessage} from "./validator/messages";
 import clone from "../Lib/clone";
 import empty from "../Lib/empty";
 
-const formDataSource = function (dataSourceUrl, dataTargetUrl, options) {
+const formDataSource = function (dataSourceUrl, dataTargetUrl, options = {}) {
     let form = {
         dataSourceUrl: null,
         dataTargetUrl: null,
