@@ -2,13 +2,18 @@
     <label class="base-input" :class="{'base-input__differs': isDirty, 'base-input__not-valid': !valid}">
         <input
             class="base-input__input"
-            v-model="maskedValue"
+            style="opacity: 0; width: 0; padding: 0"
+            v-model="proxyValue"
             :type="type"
             :required="required"
             :disabled="disabled"
             :autocomplete="autocomplete"
-            :placeholder="mask"
+            :placeholder="placeholder"
+            @keydown="updateDisplayCursorPosition"
+            @keyup="updateDisplayCursorPosition"
+            @blur="blur"
             ref="input">
+        <span class="base-input__input" v-html="display" @mousedown="setCursor" ref="fake"></span>
     </label>
 </template>
 
@@ -39,81 +44,257 @@ export default {
         placeholder: {type: String, default: null},
 
         mask: {type: String, default: null},
+        maskHint: {type: String, default: null},
     },
 
     emits: ['update:modelValue', 'changed'],
 
     computed: {
         isDirty() {
-            return empty(this.original) ? !empty(this.modelValue) : this.original !== this.modelValue;
+            return empty(this.innerOriginal) ? !empty(this.innerValue) : this.innerOriginal !== this.innerValue;
         },
 
-        maskedValue: {
-            get () {
-                // fix removing mask character at the end.
-                // Pressing backspace after 1.2.3 result in 1.2. instead of 1.2
-                return this.modelValue === this.currentValue ? this.currentMask
-                    : (this.currentMask = this.applyMask(this.modelValue, this.mask, true))
+        proxyValue: {
+            get() {
+                return this.innerValue;
             },
+            set(value) {
+                // first get value filtered with mask rules
+                let newValue = this.filterValue(value);
 
-            set (newValue) {
-                let currentPosition = this.$refs.input.selectionEnd
-                let lastMask = this.currentMask
-                // update the input before restoring the cursor position
-                this.$refs.input.value = this.currentMask = this.applyMask(newValue, this.mask)
+                // remember current cursor position
+                let cursor = this.$refs.input.selectionEnd;
 
-                if (this.currentMask.length <= lastMask.length) { // BACKSPACE
-                    // when chars are removed, the cursor position is already right
-                    this.$refs.input.setSelectionRange(currentPosition, currentPosition)
-                } else { // inserting characters
-                    // if the substring till the cursor position is the same, don't change position
-                    if (newValue.substring(0, currentPosition) == this.currentMask.substring(0, currentPosition)) {
-                        this.$refs.input.setSelectionRange(currentPosition, currentPosition)
-                    } else { // increment 1 fixed position, but will not work if the mask has 2+ placeholders, like: ##//##
-                        this.$refs.input.setSelectionRange(currentPosition+1, currentPosition+1)
+                if (this.innerValue === newValue) {
+                    // disabled symbol
+                    this.$refs.input.value = this.innerValue;
+                    this.$refs.input.setSelectionRange(cursor - 1, cursor - 1);
+                    this.updateDisplayCursorPosition();
+                    return;
+                }
+
+                this.innerValue = newValue;
+                this.$refs.input.value = this.innerValue;
+                if (value.length > this.maskCount) {
+                    // enabled symbol with value overflow
+                    this.$refs.input.setSelectionRange(cursor, cursor);
+                }
+                this.updateDisplayCursorPosition();
+
+                // update model value if mask correctly filled
+                if (this.innerValue.length === this.maskCount) {
+                    this.update(this.applyMask(this.innerValue));
+                } else {
+                    this.update(null);
+                }
+            }
+        },
+
+        display() {
+            if (!this.focused && empty(this.innerValue) && this.placeholder) {
+                return '<span class="base-input__input-placeholder">' + this.placeholder + '</span>';
+            }
+            let out = '';
+            for (let i = 0; i <= this.maskObject.length; i++) {
+                if (i === this.displayCursorPosition) {
+                    out += '<span class="base-input__input-mask-cursor"></span>';
+                }
+                if (i < this.maskObject.length) {
+                    if (this.maskObject[i].editable) {
+                        // insert value
+                        if (empty(this.innerValue) || String(this.innerValue).length <= this.maskObject[i].inputCursor) {
+                            if (this.maskHint !== null && this.maskHint[i]) {
+                                // insert placeholder hint
+                                out += '<span class="base-input__input-mask-placeholder" data-position="' + this.maskObject[i].inputCursor + '">' + this.maskHint[i] + '</span>';
+                            } else {
+                                // or generic placeholder
+                                out += '<span class="base-input__input-mask-placeholder base-input__input-mask-placeholder-generic" data-position="' + this.maskObject[i].inputCursor + '">#</span>';
+                            }
+                        } else {
+                            out += '<span class="base-input__input-mask-value" data-position="' + this.maskObject[i].inputCursor + '">' + String(this.innerValue)[this.maskObject[i].inputCursor] + '</span>';
+                        }
+                    } else {
+                        // insert mask placeholder
+                        out += '<span class="base-input__input-mask" data-position="' + this.maskObject[i].inputCursor + '">' + this.maskObject[i].char + '</span>';
                     }
                 }
-                this.currentValue = this.applyMask(newValue, this.mask, this.masked)
-                this.update(this.currentValue)
             }
-        }
+
+            return out;
+        },
+
+        maskCount() {
+            if (this.mask === null) {
+                return 0;
+            }
+            let tokenSet = Object.keys(tokens);
+            let count = 0;
+            for (let i = 0; i < this.mask.length; i++) {
+                if (tokenSet.indexOf(this.mask[i]) !== -1) {
+                    count++;
+                }
+            }
+            return count;
+        },
     },
 
     data: () => ({
-        currentValue: '',
-        currentMask: '',
+        innerOriginal: null,
+        innerValue: null,
+        maskObject: [],
+        displayCursorPosition: null,
+        focused: false,
     }),
 
+    mounted() {
+        this.initMask();
+        this.innerValue = this.unMask(this.modelValue);
+        this.innerOriginal = this.unMask(this.original);
+    },
+
+    watch: {
+        mask() {
+            this.initMask();
+            this.innerValue = this.unMask(this.modelValue);
+        },
+        modelValue(value) {
+            if (value !== null) {
+                this.innerValue = this.unMask(value);
+            }
+        },
+        original(value) {
+            if (value !== null) {
+                this.innerOriginal = this.unMask(value);
+            }
+        },
+    },
+
     methods: {
+        initMask() {
+            let inputCursor = 0;
+            let displayCursor = 0;
+            let tokenSet = Object.keys(tokens);
+            for (let i = 0; i < this.mask.length; i++) {
+                if (tokenSet.indexOf(this.mask[i]) !== -1) {
+                    // if token exists, current position is editable
+                    this.maskObject.push({
+                        editable: true,
+                        token: this.mask[i],
+                        inputCursor: inputCursor++,
+                        displayCursor: displayCursor++,
+                    });
+                } else {
+                    // otherwise, position is mask placeholder
+                    this.maskObject.push({
+                        editable: false,
+                        char: this.mask[i],
+                        inputCursor: inputCursor,
+                        displayCursor: displayCursor++,
+                    });
+                }
+            }
+        },
+
+        unMask(value) {
+            if (empty(value) || this.mask === null) {
+                return value;
+            }
+            let tokenSet = Object.keys(tokens);
+            let unmasked = '';
+            for (let i = 0; i < this.mask.length; i++) {
+                if (tokenSet.indexOf(this.mask[i]) !== -1 && value[i]) {
+                    unmasked += value[i];
+                }
+            }
+            return unmasked;
+        },
+
+        filterValue(value) {
+            if (empty(value) || this.mask === null) {
+                return value;
+            }
+            let out = '';
+            let maskIndex = 0;
+            let index = 0;
+            let tokenSet = Object.keys(tokens);
+            while (maskIndex < this.mask.length && index < value.length) {
+                if (tokenSet.indexOf(this.mask[maskIndex]) !== -1) {
+                    const rule = tokens[this.mask[maskIndex]];
+                    if (value[index] && rule.pattern.test(value[index])) {
+                        out += rule.transform ? rule.transform(value[index]) : value[index];
+                        maskIndex++;
+                    }
+                    index++;
+                } else {
+                    maskIndex++;
+                }
+            }
+            return out;
+        },
+
         update(value) {
-            value = String(value).trim();
+            if (value !== null) {
+                value = String(value).trim();
+            }
             this.$emit('update:modelValue', value);
             this.$emit('changed', this.name, value);
         },
 
-        applyMask(value, mask, masked = true) {
-            value = value || ""
-            let iMask = 0
-            let iValue = 0
-            let output = ''
-            while (iMask < mask.length && iValue < value.length) {
-                let cMask = mask[iMask]
-                let masker = tokens[cMask]
-                let cValue = value[iValue]
-                if (masker) {
-                    if (masker.pattern.test(cValue)) {
-                        output += masker.transform ? masker.transform(cValue) : cValue
-                        iMask++
-                    }
-                    iValue++
+
+        applyMask(value) {
+            if (empty(value) || this.mask === null) {
+                return value;
+            }
+            let out = '';
+            let maskIndex = 0;
+            let index = 0;
+            let tokenSet = Object.keys(tokens);
+            while (maskIndex < this.mask.length && index < value.length) {
+                if (tokenSet.indexOf(this.mask[maskIndex]) !== -1) {
+                    out += value[index];
+                    maskIndex++;
+                    index++;
                 } else {
-                    if (masked) output += cMask
-                    if (cValue === cMask) iValue++
-                    iMask++
+                    out += this.mask[maskIndex];
+                    maskIndex++;
                 }
             }
-            return output
+            return out;
         },
+
+        updateDisplayCursorPosition() {
+            let cursor = this.$refs.input.selectionEnd;
+            let displayCursor = null;
+            let displayCursorLast = null;
+            this.maskObject.map(item => {
+                if (item.inputCursor === cursor) {
+                    displayCursor = item.displayCursor;
+                }
+                displayCursorLast = item.displayCursor;
+            });
+
+            this.displayCursorPosition = displayCursor !== null ? displayCursor : displayCursorLast + 1;
+        },
+
+        setCursor(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            let position = Number(event.target.dataset.position);
+            if (isNaN(position)) {
+                position = this.maskCount;
+            }
+            this.$refs.input.focus();
+            this.focused = true;
+            this.$nextTick(() => {
+                this.$refs.input.setSelectionRange(position, position);
+                this.updateDisplayCursorPosition();
+            });
+        },
+
+        blur() {
+            this.displayCursorPosition = null;
+            this.focused = false;
+        }
     }
 }
 </script>

@@ -8,6 +8,7 @@
     border: 1px solid $base_border_color;
     border-radius: 2px;
     box-sizing: border-box;
+    cursor: text;
 
     &__not-valid {
         border-color: $base_error_color;
@@ -49,6 +50,38 @@
 
         &[type=number] {
             -moz-appearance: textfield; /* Firefox */
+        }
+
+        &-mask {
+            color: $base_mask_color;
+        }
+
+        &-mask-placeholder {
+            color: $base_mask_placeholder_color;
+            border-bottom: 1px solid transparentize($base_mask_placeholder_color, 0.5);
+
+            &-generic {
+                color: transparent;
+            }
+        }
+
+        &-mask-cursor {
+            border-left: 1px solid $base_color;
+            margin-left: -1px;
+            animation: 1.2s base-input__input-mask-cursor step-end infinite;
+            transition: none;
+        }
+
+        &-placeholder {
+            color: $base_mask_placeholder_color;
+        }
+        @keyframes base-input__input-mask-cursor {
+            from, to {
+                border-color: $base_color;
+            }
+            50% {
+                border-color: transparent;
+            }
         }
     }
 

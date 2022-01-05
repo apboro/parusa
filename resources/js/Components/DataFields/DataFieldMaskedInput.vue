@@ -11,6 +11,7 @@
         :disabled="disabled"
         :required="required"
         :mask="mask"
+        :mask-hint="maskHint"
         :placeholder-char="placeholderChar"
         @changed="changed"
     />
@@ -28,6 +29,7 @@ export default {
         type: {type: String, default: 'text'},
         autocomplete: {type: String, default: 'off'},
         mask: {type: String, default: null},
+        maskHint: {type: String, default: null},
         placeholderChar: {type: String, default: '_'},
     },
 

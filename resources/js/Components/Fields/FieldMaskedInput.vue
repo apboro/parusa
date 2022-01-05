@@ -11,6 +11,7 @@
                 :type="type"
                 :autocomplete="autocomplete"
                 :mask="mask"
+                :mask-hint="maskHint"
                 :placeholder="title"
                 v-model="proxyValue"
                 @changed="changed"
@@ -42,6 +43,7 @@ export default {
         errors: {type: Array, default: () => ([])},
 
         mask: {type: String, default: null},
+        maskHint: {type: String, default: null},
     },
 
     emits: ['update:modelValue', 'changed'],
