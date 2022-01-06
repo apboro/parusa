@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Partners;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Common\File;
 use App\Models\Partner\Partner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -52,7 +53,9 @@ class PartnerEditController extends ApiEditController
                 'status_id' => $partner->status_id,
                 'tickets_for_guides' => $partner->profile->tickets_for_guides,
                 'can_reserve_tickets' => $partner->profile->can_reserve_tickets ? 1 : 0,
-                'documents' => [],
+                'documents' => $partner->files->map(function (File $file) {
+                    return ['id' => $file->id, 'name' => $file->original_filename, 'url' => $file->url, 'type' => $file->mime, 'size' => $file->size];
+                }),
                 'notes' => $partner->profile->notes,
             ],
             $this->rules,
@@ -97,7 +100,10 @@ class PartnerEditController extends ApiEditController
         $profile->notes = $data['notes'];
         $profile->save();
 
-        // TODO sync documents - $data['documents'];
+        // documents
+        $files = File::createFromMany($data['documents'], 'partner_files');
+        $fileIds = $files->pluck('id')->toArray();
+        $partner->files()->sync($fileIds);
 
         return APIResponse::formSuccess('Данные партнёра обновлены', [
             'id' => $partner->id,

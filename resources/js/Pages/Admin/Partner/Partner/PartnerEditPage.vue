@@ -21,7 +21,9 @@
             ]" :placeholder="'Бронирование билетов'"/>
         </container>
 
-        <message>documents</message>
+        <container mt-30>
+            <data-field-files :datasource="form" :name="'documents'"/>
+        </container>
 
         <container mt-30>
             <data-field-text-area :datasource="form" :name="'notes'"/>
@@ -47,9 +49,11 @@ import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextAr
 import BaseButton from "../../../../Components/Base/BaseButton";
 
 import Message from "../../../../Layouts/Parts/Message";
+import DataFieldFiles from "../../../../Components/DataFields/DataFieldFiles";
 
 export default {
     components: {
+        DataFieldFiles,
         Page,
         PageTitleBar,
         Container,

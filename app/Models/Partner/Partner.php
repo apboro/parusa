@@ -7,6 +7,7 @@ use App\Exceptions\Partner\WrongPartnerTypeException;
 use App\Interfaces\Statusable;
 use App\Interfaces\Typeable;
 use App\Models\Account\Account;
+use App\Models\Common\File;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
@@ -17,6 +18,7 @@ use App\Traits\HasType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Sanctum\HasApiTokens;
@@ -33,6 +35,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property PartnerProfile $profile
  * @property Account $account
  * @property Collection $positions
+ * @property Collection $files
  */
 class Partner extends Model implements Statusable, Typeable, AsDictionary
 {
@@ -114,13 +117,13 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
     }
 
     /**
-     * Loaded partner's documents.
+     * Loaded partner's files.
      *
-     * @return  HasMany
+     * @return  BelongsToMany
      */
-    public function documents(): HasMany
+    public function files(): BelongsToMany
     {
-        return $this->hasMany(PartnerDocuments::class);
+        return $this->belongsToMany(File::class, 'partner_has_file', 'partner_id', 'file_id');
     }
 
     /**

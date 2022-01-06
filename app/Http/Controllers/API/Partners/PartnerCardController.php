@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Partners;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Common\File;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Partner\Partner;
@@ -20,7 +21,7 @@ class PartnerCardController extends ApiController
         if ($id === null ||
             null === ($partner = Partner::query()
                 ->with([
-                    'status', 'type', 'account', 'profile', 'documents',
+                    'status', 'type', 'account', 'profile', 'files',
                     'positions', 'positions.info', 'positions.accessStatus', 'positions.user', 'positions.user.profile',
                 ])
                 ->where('id', $id)->first())
@@ -42,7 +43,9 @@ class PartnerCardController extends ApiController
             'tickets_for_guides' => $profile->tickets_for_guides ?? 0,
             'can_reserve_tickets' => $profile->can_reserve_tickets ? 1 : 0,
             'notes' => $profile->notes,
-            'documents' => [],
+            'documents' => $partner->files->map(function (File $file) {
+                return ['id' => $file->id, 'name' => $file->original_filename, 'url' => $file->url, 'type' => $file->mime];
+            }),
             'positions' => $partner->positions->map(function (Position $position) {
                 return [
                     'position_id' => $position->id,

@@ -16,3 +16,4 @@ require base_path('routes/api/settings.php');
 require base_path('routes/api/partners.php');
 require base_path('routes/api/dictionaries.php');
 require base_path('routes/api/sails.php');
+require base_path('routes/api/registries.php');

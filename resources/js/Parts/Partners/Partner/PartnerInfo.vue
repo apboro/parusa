@@ -25,7 +25,9 @@
         </container>
 
         <container w-100 mt-50>
-            <value-area :title="'Документы'"/>
+            <value-area :title="'Документы'">
+                <files-list :files="datasource.data['documents']"/>
+            </value-area>
         </container>
 
         <container w-100 mt-50>
@@ -85,6 +87,7 @@ import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
 import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
 import BaseDropDown from "../../../Components/Base/BaseDropDown";
+import FilesList from "../../../Components/GUI/FilesList";
 
 export default {
     props: {
@@ -94,6 +97,7 @@ export default {
     },
 
     components: {
+        FilesList,
         Container,
         Value,
         Activity,
