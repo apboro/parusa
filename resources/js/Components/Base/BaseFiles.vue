@@ -3,21 +3,21 @@
          :class="{'base-files__not-valid': !valid, 'base-files__differs': changed}"
     >
         <div class="base-files__container">
-            <base-images-image v-for="(image, key) in modelValue"
-                               :key="key"
-                               :index="key"
-                               :image="image"
-                               @discard="discard"
-            ></base-images-image>
+            <base-files-file v-for="(file, key) in modelValue"
+                             :key="key"
+                             :index="key"
+                             :type="file.type"
+                             :name="file.name"
+                             :size="file.size"
+                             @discard="discard"
+            ></base-files-file>
             <label class="base-files__add" v-if="canAdd">
                 <icon-plus :class="'base-files__add-icon'"/>
                 <template v-if="canAddCount === 1">
-                    <input class="base-files__add-input" type="file" accept="image/*"
-                           @change="handleFile">
+                    <input class="base-files__add-input" type="file" accept="*" @change="handleFile">
                 </template>
                 <template v-else>
-                    <input class="base-files__add-input" type="file" accept="image/*" multiple
-                           @change="handleFile">
+                    <input class="base-files__add-input" type="file" accept="*" multiple @change="handleFile">
                 </template>
             </label>
         </div>
@@ -26,11 +26,14 @@
 
 <script>
 import clone from "../../Helpers/Lib/clone";
-import BaseImagesImage from "./Parts/BaseImagesImage";
 import IconPlus from "../Icons/IconPlus";
+import BaseFilesFile from "./Parts/BaseFilesFile";
 
 export default {
-    components: {IconPlus, BaseImagesImage},
+    components: {
+        BaseFilesFile,
+        IconPlus,
+    },
     props: {
         modelValue: {type: Array, default: () => ([])},
         name: String,
@@ -40,24 +43,44 @@ export default {
         disabled: {type: Boolean, default: false},
         valid: {type: Boolean, default: true},
 
-        maxImages: {type: Number, default: 0},
+        maxFiles: {type: Number, default: 0},
     },
 
     emits: ['update:modelValue', 'changed'],
 
     computed: {
-        imagesCount() {
+        filesCount() {
             return this.modelValue.length;
         },
         canAdd() {
-            return this.maxImages === 0 || this.imagesCount < this.maxImages;
+            return this.maxFiles === 0 || this.filesCount < this.maxFiles;
         },
         canAddCount() {
-            return this.maxImages === 0 ? 0 : this.maxImages - this.imagesCount;
+            return this.maxFiles === 0 ? 0 : this.maxFiles - this.filesCount;
         },
         changed() {
             return JSON.stringify(this.original) !== JSON.stringify(this.modelValue);
         },
+        acceptable() {
+            return [
+                'text/plain',
+                '.txt',
+                'application/pdf',
+                '.pdf',
+                'application/msword',
+                '.doc',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                '.docx',
+                'application/vnd.oasis.opendocument.text',
+                '.odt',
+                'application/vnd.oasis.opendocument.spreadsheet',
+                '.ods',
+                'application/vnd.ms-excel',
+                '.xls',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                '.xlsx',
+            ];
+        }
     },
 
     methods: {
@@ -69,9 +92,18 @@ export default {
         processFiles(files) {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                if (!file.type.startsWith('image/')) {
+                if (this.acceptable.indexOf(file.type) === -1) {
+                    let extension = file.name.split('.');
+                    extension = typeof extension[1] !== "undefined" ? '"' + extension[1] + '" ' : null;
+                    this.$toast.error('Тип файла ' + extension + 'нельзя загрузить');
                     continue;
                 }
+                if(file.size > 10000000) {
+                    console.log(file.size);
+                    this.$toast.error('Файл "' + file.name + '" слишком большой. Можно загрузить файлы не больше 10Мб');
+                    continue;
+                }
+
                 let val = {
                     name: file.name,
                     type: file.type,
