@@ -11,10 +11,10 @@
                  :key="key"
                  :class="{'drag-item__dragging': dragging !== null && item.id === dragging.id}"
                  draggable="true"
-                 @dragstart="dragstart($event, item)"
-                 @drop="drop($event, item)"
-                 @dragenter="dragenter($event, item)"
-                 @dragend="dragend($event, item)"
+                 @dragstart="(event) => dragstart(event, item)"
+                 @drop="(event) => drop(event, item)"
+                 @dragenter="(event) => dragenter(event, item)"
+                 @dragend="(event) => dragend(event, item)"
             >
                 <div class="drag-item__head">
                     <icon-grip-vertical/>
@@ -50,7 +50,7 @@
                     <icon-grip-vertical/>
                 </div>
                 <div class="drag-item__body">
-                        <span class="drag-item__body-value" :class="'same-width-' + name" v-for="name in displayableFields">{{ item[name] }}</span>
+                    <span class="drag-item__body-value" :class="'same-width-' + name" v-for="name in displayableFields">{{ item[name] }}</span>
                 </div>
                 <div class="drag-item__actions">
                     <span class="drag-item__actions-button drag-item__actions-button-off" title="Включить" @click="switchOn(item)">
@@ -223,21 +223,26 @@ export default {
         switchOff(item) {
             item['enabled'] = false;
             this.sync();
+            this.$nextTick(() => {
+                this.sameWidths();
+            })
         },
 
         switchOn(item) {
             item['enabled'] = true;
             this.sync();
+            this.$nextTick(() => {
+                this.sameWidths();
+            })
         },
 
         dragstart(event, item) {
             this.dragging = item;
-            event.dataTransfer.setData('text/plain', null);
+            event.dataTransfer.setData('text/plain', item['id']);
             event.dataTransfer.effectAllowed = "move";
         },
 
         dragenter(event, item) {
-            console.log(item);
             if (this.dragging === null) {
                 return true;
             }
