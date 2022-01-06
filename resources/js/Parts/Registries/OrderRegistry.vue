@@ -11,7 +11,7 @@
         <!--                />-->
         <!--            </page-bar-item>-->
 
-        <base-table v-if="!empty(list.data)">
+        <base-table v-if="!empty(list.data)" :highlight="false">
             <template v-slot:header>
                 <base-table-head :has-actions="true" :header="['№ заказа', 'Дата оплаты заказа', 'Информация о заказе', 'Билетов в заказе', 'Сумма заказа, руб.']"/>
             </template>
@@ -29,28 +29,34 @@
                 <base-table-row v-if="order['show_tickets']" :class="'base-table__row-skip-hl'">
                     <base-table-cell colspan="6" class="p-0">
                         <loading-progress :loading="order['loading_tickets']">
-                            <base-table v-if="!empty(order['tickets'])" :highlight="false" :borders="false">
-                                <template v-slot:header>
-                                    <base-table-head :header="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость, руб.', 'Статус билета']"/>
-                                </template>
-                                <base-table-row v-for="(ticket, key) in order['tickets']" :key="key">
-                                    <base-table-cell>{{ ticket['id'] }}</base-table-cell>
-                                    <base-table-cell>
-                                        <base-table-cell-item>{{ ticket['trip_date'] }}</base-table-cell-item>
-                                        <base-table-cell-item>{{ ticket['trip_time'] }}</base-table-cell-item>
-                                    </base-table-cell>
-                                    <base-table-cell>
-                                        <base-table-cell-item>{{ ticket['excursion'] }}</base-table-cell-item>
-                                        <base-table-cell-item>{{ ticket['pier'] }}</base-table-cell-item>
-                                    </base-table-cell>
-                                    <base-table-cell>{{ ticket['type'] }}</base-table-cell>
-                                    <base-table-cell>{{ ticket['amount'] }}</base-table-cell>
-                                    <base-table-cell>
-                                        <base-table-cell-item>{{ ticket['status'] }}</base-table-cell-item>
-                                        <base-table-cell-item v-if="ticket['used']">Использован {{ ticket['used'] }}</base-table-cell-item>
-                                    </base-table-cell>
-                                </base-table-row>
-                            </base-table>
+
+                            <table class="details-table" v-if="!empty(order['tickets'])">
+                                <thead>
+                                <tr>
+                                    <td v-for="(cell, key) in ['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость, руб.', 'Статус билета']" :key="key"
+                                    >{{ cell }}
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tr v-for="(ticket, key) in order['tickets']" :key="key">
+                                    <td class="p-5">{{ ticket['id'] }}</td>
+                                    <td class="p-5">
+                                        <div>{{ ticket['trip_date'] }}</div>
+                                        <div>{{ ticket['trip_time'] }}</div>
+                                    </td>
+                                    <td class="p-5">
+                                        <div>{{ ticket['excursion'] }}</div>
+                                        <div>{{ ticket['pier'] }}</div>
+                                    </td>
+                                    <td class="p-5">{{ ticket['type'] }}</td>
+                                    <td class="p-5">{{ ticket['amount'] }}</td>
+                                    <td class="p-5">
+                                        <div>{{ ticket['status'] }}</div>
+                                        <div v-if="ticket['used']">Использован {{ ticket['used'] }}</div>
+                                    </td>
+                                </tr>
+                            </table>
+
                         </loading-progress>
                     </base-table-cell>
                 </base-table-row>

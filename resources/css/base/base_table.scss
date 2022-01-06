@@ -41,7 +41,7 @@
         }
     }
 
-    &__highlight &__row {
+    &__highlight > &__body > &__row {
         &:nth-child(odd) {
             background-color: $base_table_odd_background_color;
         }
@@ -51,17 +51,21 @@
         }
     }
 
-    &__hover &__row:hover {
+    &__hover > &__body > &__row:not(&__row-skip-hl):hover {
         background-color: $base_table_hover_background_color;
     }
 
-    &__borders &__row {
+    &__borders > &__body > &__row {
         border-bottom: 1px solid $base_table_border_color;
+    }
+
+    &__row-highlighted {
+        background-color: $base_table_highlight_background_color;
     }
 
     &__cell {
         box-sizing: border-box;
-        padding: 15px 15px;
+        padding: 13px 15px;
         min-height: 60px;
         font-size: 14px;
         vertical-align: top;
