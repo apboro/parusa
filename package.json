@@ -31,6 +31,7 @@
     },
     "dependencies": {
         "vuex": "^4.0.2",
-        "resize-observer-polyfill": "^1.5.1"
+        "resize-observer-polyfill": "^1.5.1",
+        "moment": "^2.29.1"
     }
 }
