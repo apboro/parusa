@@ -1,17 +1,19 @@
 <template>
-    <input
-        style="opacity: 0; width: 0; padding: 0"
-        v-model="proxyValue"
-        :type="type"
-        :required="required"
-        :disabled="disabled"
-        :autocomplete="autocomplete"
-        :placeholder="placeholder"
-        @keydown="updateDisplayCursorPosition"
-        @keyup="updateDisplayCursorPosition"
-        @blur="blur"
-        ref="input">
-    <span class="base-input__input" v-html="display" @mousedown="setCursor" ref="fake"></span>
+    <span>
+        <input
+            style="opacity: 0; width: 0; padding: 0; border: none; outline: none; margin: 0"
+            v-model="proxyValue"
+            :type="type"
+            :required="required"
+            :disabled="disabled"
+            :autocomplete="autocomplete"
+            :placeholder="placeholder"
+            @keydown="updateDisplayCursorPosition"
+            @keyup="updateDisplayCursorPosition"
+            @blur="blur"
+            ref="input">
+        <span class="base-input__input" :class="classes" v-html="display" @mousedown="setCursor" ref="fake"></span>
+    </span>
 </template>
 
 <script>
@@ -41,6 +43,8 @@ export default {
 
         mask: {type: String, default: null},
         maskHint: {type: String, default: null},
+
+        classes: {type: [String, Array, Object], default: null},
     },
 
     emits: ['update:modelValue', 'changed'],
@@ -79,9 +83,9 @@ export default {
 
                 // update model value if mask correctly filled
                 if (this.innerValue.length === this.maskCount) {
-                    this.update(this.applyMask(this.innerValue));
+                    this.update(this.applyMask(this.innerValue), this.isDirty);
                 } else {
-                    this.update(null);
+                    this.update(null, this.isDirty);
                 }
             }
         },
@@ -228,12 +232,12 @@ export default {
             return out;
         },
 
-        update(value) {
+        update(value, dirty) {
             if (value !== null) {
                 value = String(value).trim();
             }
             this.$emit('update:modelValue', value);
-            this.$emit('changed', this.name, value);
+            this.$emit('changed', this.name, value, dirty);
         },
 
 

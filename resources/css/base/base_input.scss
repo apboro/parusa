@@ -1,5 +1,6 @@
 @import "../variables";
 @import "../colors";
+@import "../shadows";
 
 .base-input {
     display: flex;
@@ -9,6 +10,7 @@
     border-radius: 2px;
     box-sizing: border-box;
     cursor: text;
+    position: relative;
 
     &__not-valid {
         border-color: $base_error_color;
@@ -16,6 +18,12 @@
 
     &__differs {
         background-color: $base_background_changed_color;
+    }
+
+    &__nested {
+        border: none !important;
+        width: auto;
+
     }
 
     &__input {
@@ -75,6 +83,7 @@
         &-placeholder {
             color: $base_mask_placeholder_color;
         }
+
         @keyframes base-input__input-mask-cursor {
             from, to {
                 border-color: $base_color;
@@ -92,11 +101,26 @@
         flex-shrink: 0;
         box-sizing: border-box;
         padding: $base_base_unit / 5;
+
+        & > svg {
+            width: 100%;
+            height: 100%;
+        }
     }
 
     &__icon {
         margin-right: 2px;
         color: $base_icon_color;
+
+        &-clickable {
+            cursor: pointer;
+            color: $base_link_color;
+            transition: color $animation $animation_time;
+
+            &:hover {
+                color: $base_link_hover_color;
+            }
+        }
     }
 
     &__clear {
@@ -113,6 +137,42 @@
             display: block;
             width: 100%;
             height: 100%;
+        }
+    }
+
+    &__popup {
+        position: absolute;
+        left: -1px;
+        bottom: -6px;
+        transform: translateY(100%);
+        box-sizing: border-box;
+        padding: 12px 20px;
+        border-radius: 2px;
+        z-index: 50;
+        background-color: $base_background_color;
+        box-shadow: $shadow_2;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity $animation $animation_time, visibility $animation $animation_time;
+
+        &:before {
+            content: '';
+            display: block;
+            background-color: $base_background_color;
+            width: 6px;
+            height: 6px;
+            position: absolute;
+            left: 14px;
+            top: -4px;
+            transform: rotate(45deg);
+            border-color: #e9e9e9;
+            border-style: solid;
+            border-width: 1px 0 0 1px;
+        }
+
+        &-shown {
+            opacity: 1;
+            visibility: visible;
         }
     }
 }

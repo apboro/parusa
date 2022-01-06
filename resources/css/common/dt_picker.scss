@@ -1,0 +1,131 @@
+@import "../variables";
+@import "../colors";
+
+.dt-picker {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+
+    &__controls {
+        font-family: $project_font;
+        font-size: 14px;
+        color: $dt_color;
+        padding: 5px 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+
+        &-previous, &-next {
+            width: 35px;
+            height: 35px;
+            box-sizing: border-box;
+            padding: 10px;
+            cursor: pointer;
+            transition: color $animation $animation_time;
+
+            &:hover {
+                color: $dt_link_hover_color;
+            }
+
+            & > svg {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        &-display {
+            cursor: default;
+
+            &-item {
+                cursor: pointer;
+                margin: 0 5px;
+                transition: color $animation $animation_time;
+
+                &:hover {
+                    color: $dt_link_hover_color;
+                }
+            }
+        }
+    }
+
+    &__calendar {
+        display: flex;
+        flex-wrap: wrap;
+
+        &-date &-item:nth-child(7n):not(&-item-disabled), &-date &-item:nth-child(7n-1):not(&-item-disabled) {
+            color: $dt_week_end_color;
+        }
+
+        &-item {
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: $project_font;
+            font-size: 14px;
+            cursor: pointer;
+            color: $dt_color;
+            border: 1px solid transparent;
+            background-color: transparent;
+            border-radius: 2px;
+
+            &-disabled {
+                color: $dt_disabled_color;
+                cursor: default;
+            }
+
+            &-current {
+                color: $dt_current_color;
+                background-color: $dt_current_background_color;
+                border: 1px solid $dt_current_border_color;
+            }
+
+            &-selected {
+                color: $dt_selected_color !important;
+                background-color: $dt_selected_background_color;
+                border: 1px solid $dt_selected_border_color;
+            }
+
+            &-preselected {
+
+            }
+        }
+
+        &-date &-item {
+            width: calc(100% / 7);
+            height: calc(200px / 6);
+        }
+
+        &-month &-item {
+            width: calc(100% / 3);
+            height: calc(200px / 4);
+        }
+
+        &-year &-item {
+            width: calc(100% / 5);
+            height: calc(200px / 4);
+        }
+    }
+
+    &__current {
+        font-family: $project_font;
+        font-size: 14px;
+        color: $dt_color;
+        display: block;
+        text-align: center;
+        padding: 10px 0 5px;
+        cursor: default;
+
+        &-link {
+            cursor: pointer;
+            transition: color $animation $animation_time;
+            color: $dt_link_color;
+
+            &:hover {
+                color: $dt_link_hover_color;
+            }
+        }
+    }
+}
