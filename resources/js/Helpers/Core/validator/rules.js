@@ -1,4 +1,5 @@
 import {GetSize, GetType, CheckAttributesCount} from "./helpers"
+import moment from "moment";
 
 const getSize = GetSize;
 const getType = GetType;
@@ -27,6 +28,9 @@ const Rules = function() {
         // Instead of passing a date, you may specify another field to compare against the date.
         // after:date
         after: (value, attributes, name, fields, nullable) => {
+            let field = moment(value, 'DD.MM.YYYY HH:mm');
+            let another = moment(fields[attributes], 'DD.MM.YYYY HH:mm');
+            return field.isValid() && another.isValid() && (field > another);
         },
 
         // The field under validation must be a value after or equal to the given date. For more information, see the after rule.
@@ -96,6 +100,8 @@ const Rules = function() {
 
         // The field under validation must be a valid date according to the strtotime PHP function.
         date: (value, attributes, name, fields, nullable) => {
+            if(nullable && isValueNull(value)) return true;
+            return moment(value, 'DD.MM.YYYY').isValid();
         },
 
         // The field under validation must be equal to the given date. The dates will be passed into the PHP strtotime function.

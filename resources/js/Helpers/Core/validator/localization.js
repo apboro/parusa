@@ -19,7 +19,7 @@ export default {
     boolean: 'Поле :attribute должно иметь значение логического типа.',
     confirmed: 'Поле :attribute не совпадает с подтверждением.',
     current_password: 'Пароль неверный.',
-    date: 'Поле :attribute не является датой.',
+    date: 'Поле :attribute не является верной датой.',
     date_equals: 'Поле :attribute должно быть датой равной :date.',
     date_format: 'Поле :attribute не соответствует формату :format.',
     different: 'Поля :attribute и :other должны различаться.',
