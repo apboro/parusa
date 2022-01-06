@@ -1,22 +1,22 @@
 <template>
-    <div class="base-images"
-         :class="{'base-images__not-valid': !valid, 'base-images__differs': changed}"
+    <div class="base-files"
+         :class="{'base-files__not-valid': !valid, 'base-files__differs': changed}"
     >
-        <div class="base-images__container">
+        <div class="base-files__container">
             <base-images-image v-for="(image, key) in modelValue"
                                :key="key"
                                :index="key"
                                :image="image"
                                @discard="discard"
             ></base-images-image>
-            <label class="base-images__add" v-if="canAdd">
-                <icon-plus :class="'base-images__add-icon'"/>
+            <label class="base-files__add" v-if="canAdd">
+                <icon-plus :class="'base-files__add-icon'"/>
                 <template v-if="canAddCount === 1">
-                    <input class="base-images__add-input" type="file" accept="image/*"
+                    <input class="base-files__add-input" type="file" accept="image/*"
                            @change="handleFile">
                 </template>
                 <template v-else>
-                    <input class="base-images__add-input" type="file" accept="image/*" multiple
+                    <input class="base-files__add-input" type="file" accept="image/*" multiple
                            @change="handleFile">
                 </template>
             </label>

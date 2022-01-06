@@ -2,7 +2,7 @@
 @import "../colors";
 @import "../shadows";
 
-.base-images {
+.base-files {
     width: 100%;
     border: 1px solid $base_border_color;
     border-radius: 2px;
@@ -22,7 +22,7 @@
         min-height: calc(#{$base_base_unit * 4} + 20px);
     }
 
-    &__image {
+    &__file {
         display: inline-flex;
         position: relative;
         vertical-align: top;
@@ -37,7 +37,7 @@
         background-color: $base_image_background_color;
         border-radius: 2px;
 
-        &-src {
+        &-img {
             max-width: 100%;
             max-height: 100%;
         }
