@@ -16,6 +16,7 @@ class RepresentativeEditController extends ApiEditController
         'first_name' => 'required',
         'email' => 'required|email|bail',
         'gender' => 'required',
+        'birthdate' => 'date|nullable',
     ];
 
     protected array $titles = [

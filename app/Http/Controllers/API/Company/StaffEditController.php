@@ -17,6 +17,7 @@ class StaffEditController extends ApiEditController
         'status_id' => 'required',
         'email' => 'required|email|bail',
         'gender' => 'required',
+        'birthdate' => 'date|nullable',
     ];
 
     protected array $titles = [
@@ -118,7 +119,7 @@ class StaffEditController extends ApiEditController
         $profile->lastname = $data['last_name'];
         $profile->firstname = $data['first_name'];
         $profile->patronymic = $data['patronymic'];
-        $profile->birthdate = Carbon::parse($data['birthdate'])->toDate();
+        $profile->birthdate = $data['birthdate'] === null ? null : Carbon::parse($data['birthdate'])->toDate();
         $profile->gender = $data['gender'];
         $profile->save();
 

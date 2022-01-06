@@ -7,8 +7,8 @@
         </template>
 
         <container mt-30>
-            <data-field-input :datasource="form" :name="'start_at'" :type="'datetime'"/>
-            <data-field-input :datasource="form" :name="'end_at'" :type="'datetime'"/>
+            <data-field-date-time :datasource="form" :name="'start_at'"/>
+            <data-field-date-time :datasource="form" :name="'end_at'"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'piers'" :name="'start_pier_id'" :search="true"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'piers'" :name="'end_pier_id'" :search="true"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'ships'" :name="'ship_id'" :search="true" @changed="shipSelected"/>
@@ -37,9 +37,11 @@ import Container from "../../../../Components/GUI/Container";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
 import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataFieldDictionaryDropdown";
 import BaseButton from "../../../../Components/Base/BaseButton";
+import DataFieldDateTime from "../../../../Components/DataFields/DataFieldDateTime";
 
 export default {
     components: {
+        DataFieldDateTime,
         Page,
         PageTitleBar,
         Container,

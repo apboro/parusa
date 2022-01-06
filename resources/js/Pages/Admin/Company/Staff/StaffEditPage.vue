@@ -18,7 +18,7 @@
             <data-field-input :datasource="form" :name="'position_title'"/>
         </container>
         <container mt-30>
-            <data-field-input :datasource="form" :name="'birthdate'"/>
+            <data-field-date :datasource="form" :name="'birthdate'"/>
             <data-field-dropdown :datasource="form" :name="'gender'" :key-by="'id'" :value-by="'name'" :options="[
                 {id: 'male', name: 'Мужской'},
                 {id: 'female', name: 'Женский'},
@@ -26,9 +26,9 @@
         </container>
         <container mt-30>
             <data-field-input :datasource="form" :name="'email'"/>
-            <data-field-input :class="'w-50 inline-flex'" :datasource="form" :name="'work_phone'"/>
+            <data-field-masked-input :class="'w-50 inline-flex'" :datasource="form" :name="'work_phone'" :mask="'+7 (###) ###-##-##'"/>
             <data-field-input :class="'w-50 pl-20 inline-flex'" :datasource="form" :name="'work_phone_additional'"/>
-            <data-field-masked-input :datasource="form" :name="'mobile_phone'" :mask="'+7(###)###-##-##'"/>
+            <data-field-masked-input :datasource="form" :name="'mobile_phone'" :mask="'+7 (###) ###-##-##'"/>
             <data-field-input :datasource="form" :name="'vkontakte'"/>
             <data-field-input :datasource="form" :name="'facebook'"/>
             <data-field-input :datasource="form" :name="'telegram'"/>
@@ -61,9 +61,11 @@ import DataFieldMaskedInput from "../../../../Components/DataFields/DataFieldMas
 import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
 import DataFieldDropdown from "../../../../Components/DataFields/DataFieldDropdown";
 import BaseButton from "../../../../Components/Base/BaseButton";
+import DataFieldDate from "../../../../Components/DataFields/DataFieldDate";
 
 export default {
     components: {
+        DataFieldDate,
         Page,
         PageTitleBar,
         Container,

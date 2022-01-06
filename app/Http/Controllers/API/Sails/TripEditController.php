@@ -12,8 +12,8 @@ use Illuminate\Http\Request;
 class TripEditController extends ApiEditController
 {
     protected array $rules = [
-        'start_at' => 'required',
-        'end_at' => 'required',
+        'start_at' => 'date|required|bail',
+        'end_at' => 'date|required|after:start_at|bail',
         'start_pier_id' => 'required',
         'end_pier_id' => 'required',
         'ship_id' => 'required',

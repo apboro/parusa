@@ -2,7 +2,7 @@
     <list-page :loading="list.loading">
 
         <template v-slot:header>
-            <page-title-bar :title="$route.meta['title']">
+            <page-title-bar :title="title">
                 <actions-menu>
                     <router-link :to="{ name: 'trip-edit', params: { id: 0 }, query: linkQuery}">Добавить рейс</router-link>
                 </actions-menu>
@@ -11,10 +11,10 @@
 
         <template v-slot:filters>
             <page-bar-item :class="'w-250px'" :title="'Дата'">
-                <base-input
+                <base-date-input
                     :original="list.filters_original['date']"
                     v-model="list.filters['date']"
-                    @changed="reload"
+                    @changed="dateChanged"
                 />
             </page-bar-item>
             <page-bar-item :class="'w-250px'" :title="'Статус движения'">
@@ -109,9 +109,11 @@ import BasePagination from "../../../../Components/Base/BasePagination";
 
 import BaseInput from "../../../../Components/Base/BaseInput";
 import PopUp from "../../../../Components/PopUp";
+import BaseDateInput from "../../../../Components/Base/BaseDateInput";
 
 export default {
     components: {
+        BaseDateInput,
         PopUp,
         ListPage,
         PageTitleBar,
@@ -152,7 +154,10 @@ export default {
              * }
              */
             return query;
-        }
+        },
+        title() {
+            return this.$route.meta['title'] + (this.list.filters['date'] ? ' на ' + this.list.filters['date'] : '');
+        },
     },
 
     methods: {
@@ -161,6 +166,11 @@ export default {
         },
         reload() {
             this.list.load();
+        },
+        dateChanged(name, value) {
+            if (value !== null) {
+                this.list.load();
+            }
         },
 
         statusChange(trip) {

@@ -21,7 +21,6 @@ class TripsListController extends ApiController
     ];
 
     protected array $rememberFilters = [
-        'date',
         'status_id',
         'excursion_id',
         'start_pier_id',
@@ -38,6 +37,8 @@ class TripsListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
+        $this->defaultFilters['date'] = Carbon::now()->format('d.m.Y');
+
         $query = Trip::query()
             ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus'])
             ->orderBy('start_at', 'asc');
@@ -47,6 +48,9 @@ class TripsListController extends ApiController
             if (!empty($filters['date'])) {
                 $date = Carbon::parse($filters['date']);
                 $query->whereDate('start_at', $date);
+            } else {
+                $filters['date'] = Carbon::now()->format('d.m.Y');
+                $query->whereDate('start_at', Carbon::now());
             }
             if (!empty($filters['status_id'])) {
                 $query->where('status_id', $filters['status_id']);

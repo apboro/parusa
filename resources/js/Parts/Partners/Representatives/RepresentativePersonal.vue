@@ -85,7 +85,7 @@
                                                 :search="true"
                 />
                 <data-field-input :datasource="form" :name="'title'"/>
-                <data-field-input :datasource="form" :name="'work_phone'"/>
+                <data-field-masked-input :datasource="form" :name="'work_phone'" :mask="'+7 (###) ###-##-##'"/>
                 <data-field-input :datasource="form" :name="'work_phone_additional'"/>
                 <data-field-input :datasource="form" :name="'email'"/>
             </container>
@@ -111,6 +111,7 @@ import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
 import DataFieldDictionaryDropdown from "../../../Components/DataFields/DataFieldDictionaryDropdown";
 import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
+import DataFieldMaskedInput from "../../../Components/DataFields/DataFieldMaskedInput";
 
 export default {
     props: {
@@ -120,6 +121,7 @@ export default {
     },
 
     components: {
+        DataFieldMaskedInput,
         Container,
         Value,
         Heading,
