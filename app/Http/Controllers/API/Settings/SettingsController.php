@@ -27,7 +27,7 @@ class SettingsController extends ApiEditController
             'rules' => [
                 'default_cancellation_time' => 'required|integer|min:0',
                 'cancellation_notify_time' => 'required|integer|min:0',
-                'tickets_limit_by_capacity' => '',
+                'tickets_limit_by_capacity' => 'required',
                 'buyer_email_welcome' => '',
             ],
         ],
