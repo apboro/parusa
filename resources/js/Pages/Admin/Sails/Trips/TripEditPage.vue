@@ -7,8 +7,8 @@
         </template>
 
         <container mt-30>
-            <data-field-date-time :datasource="form" :name="'start_at'"/>
-            <data-field-date-time :datasource="form" :name="'end_at'"/>
+            <data-field-date-time :datasource="form" :name="'start_at'" @changed="dateChanged"/>
+            <data-field-date-time :datasource="form" :name="'end_at'" @changed="dateChanged"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'piers'" :name="'start_pier_id'" :search="true"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'piers'" :name="'end_pier_id'" :search="true"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'ships'" :name="'ship_id'" :search="true" @changed="shipSelected"/>
@@ -115,7 +115,12 @@ export default {
                 return;
             }
             this.$store.getters['dictionary/dictionary']('ships').some(ship => (ship['id'] === value) && (this.form.values['tickets_count'] = ship['capacity']));
+            this.form.validate('tickets_count', this.form.values['tickets_count']);
         },
+        dateChanged() {
+            this.form.validate('start_at', this.form.values['start_at']);
+            this.form.validate('end_at', this.form.values['end_at']);
+        }
     }
 }
 </script>

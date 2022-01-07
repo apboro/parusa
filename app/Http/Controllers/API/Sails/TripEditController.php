@@ -20,7 +20,7 @@ class TripEditController extends ApiEditController
         'excursion_id' => 'required',
         'status_id' => 'required',
         'sale_status_id' => 'required',
-        'tickets_count' => 'required|integer|min:1',
+        'tickets_count' => 'required|integer|min:1|bail',
         'discount_status_id' => 'required',
         'cancellation_time' => 'required|integer|min:0',
     ];

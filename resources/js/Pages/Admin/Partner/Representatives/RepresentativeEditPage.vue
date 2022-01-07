@@ -1,5 +1,5 @@
 <template>
-    <page :loading="form.loading">
+    <page :loading="processing">
         <template v-slot:header>
             <page-title-bar
                 :title="form.payload['title']"

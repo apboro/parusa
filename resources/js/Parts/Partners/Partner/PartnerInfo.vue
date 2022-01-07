@@ -24,13 +24,13 @@
             </value>
         </container>
 
-        <container w-100 mt-50>
+        <container w-100 mt-30>
             <value-area :title="'Документы'">
                 <files-list :files="datasource.data['documents']"/>
             </value-area>
         </container>
 
-        <container w-100 mt-50>
+        <container w-100 mt-20>
             <value-area :title="'Заметки'" v-text="datasource.data['notes']"/>
         </container>
 
