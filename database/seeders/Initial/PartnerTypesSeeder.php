@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders\Dictionaries;
+namespace Database\Seeders\Initial;
 
 use App\Models\Dictionaries\PartnerType;
 use Database\Seeders\GenericSeeder;

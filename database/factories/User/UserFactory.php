@@ -10,6 +10,8 @@ class UserFactory extends Factory
 {
     protected $model = User::class;
 
+    protected static array $used = [];
+
     /**
      * Define the model's default state.
      *
@@ -19,9 +21,11 @@ class UserFactory extends Factory
     {
         $login = $this->faker->userName;
 
-        while (User::query()->where('login', $login)->count() > 0) {
+        while (in_array($login, self::$used, true)) {
             $login = $this->faker->userName;
         }
+
+        self::$used[] = $login;
 
         return [
             'login' => $login,

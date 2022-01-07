@@ -14,13 +14,13 @@ class PierFactory extends Factory
     /**
      * Define the model's default state.
      *
-     * @return array
+     * @return  array
+     *
      * @throws Exception
      */
     public function definition(): array
     {
         return [
-            'name' => $this->faker->word,
             'status_id' => PiersStatus::default,
         ];
     }

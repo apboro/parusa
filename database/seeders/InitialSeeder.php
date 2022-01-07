@@ -2,20 +2,18 @@
 
 namespace Database\Seeders;
 
-use Database\Seeders\Dictionaries\AccountTransactionTypesSeeder;
-use Database\Seeders\Dictionaries\ContactTypesSeeder;
-use Database\Seeders\Dictionaries\StatusesSeeder;
-use Database\Seeders\Dictionaries\UserRolesSeeder;
+use Database\Seeders\Initial\PartnerTypesSeeder;
+use Database\Seeders\Initial\ExcursionProgramsSeeder;
+use Database\Seeders\Initial\TicketGradesSeeder;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class InitialSeeder extends Seeder
 {
     protected array $seeders = [
-        UserRolesSeeder::class,
-        StatusesSeeder::class,
-        ContactTypesSeeder::class,
-        AccountTransactionTypesSeeder::class,
+        PartnerTypesSeeder::class,
+        ExcursionProgramsSeeder::class,
+        TicketGradesSeeder::class,
     ];
 
     /**
