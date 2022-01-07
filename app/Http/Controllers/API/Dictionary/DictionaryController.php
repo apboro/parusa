@@ -13,6 +13,7 @@ use App\Models\Dictionaries\PiersStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\ShipStatus;
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TripDiscountStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
@@ -58,6 +59,8 @@ class DictionaryController extends ApiController
         'trip_statuses' => TripStatus::class,
         'trip_sale_statuses' => TripSaleStatus::class,
         'trip_discount_statuses' => TripDiscountStatus::class,
+
+        'ticket_grades' => TicketGrade::class,
     ];
 
     /**

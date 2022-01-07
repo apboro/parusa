@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Dictionary;
 
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\PartnerType;
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Sails\Ship;
 
 trait EditableDictionaries
@@ -31,6 +32,14 @@ trait EditableDictionaries
                 'description' => 'text',
             ],
             'hide' => ['description'],
+        ],
+        'ticket_grades' => [
+            'name' => 'Типы билетов',
+            'class' => TicketGrade::class,
+            'item_name' => 'тип билета',
+            'validation' => ['name' => 'required'],
+            'titles' => ['name' => 'Тип билета'],
+            'fields' => ['name' => 'string'],
         ],
         'excursion_programs' => [
             'name' => 'Типы программ',
