@@ -1,11 +1,14 @@
 <template>
     <div class="base-dropdown">
         <div class="base-dropdown__display" :class="{'base-dropdown__display-differs': isDirty}" @click="toggle">
-            <span class="base-dropdown__display-value" :class="{'base-dropdown__display-value-placeholder': value === null}">{{ value }}</span>
+            <span class="base-dropdown__display-value" :class="{'base-dropdown__display-value-placeholder': value === null}" :title="value">{{ value }}</span>
             <span class="base-dropdown__display-icon" :class="{'base-dropdown__display-icon-dropped':dropped}"><icon-dropdown/></span>
         </div>
 
-        <div class="base-dropdown__list" :class="{'base-dropdown__list-shown': dropped, 'base-dropdown__list-top': toTop}">
+        <div class="base-dropdown__list"
+             :class="{'base-dropdown__list-shown': dropped, 'base-dropdown__list-top': toTop}"
+             @click.stop.prevent="false"
+        >
             <div class="base-dropdown__list-search" v-if="search">
                 <base-icon-input v-model="terms" ref="search">
                     <icon-search/>
@@ -169,8 +172,11 @@ export default {
             this.$nextTick(() => {
                 const el = this.$el.querySelector('.base-dropdown__list');
                 el.style.height = null;
+                el.style.width = null;
                 const height = el.clientHeight + 1;
+                const width = el.clientWidth + 1;
                 el.style.height = height + 'px';
+                el.style.width = width + 'px';
             });
         },
 

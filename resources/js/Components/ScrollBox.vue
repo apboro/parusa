@@ -285,6 +285,7 @@
                     this.scrollable.top = this.scrollable.top + this.container.height;
                     this.updateGeometry();
                 }
+                return false;
             },
 
             onHorizontalRailClick(e) {
@@ -297,6 +298,7 @@
                     this.scrollable.left = this.scrollable.left + this.container.width;
                     this.updateGeometry();
                 }
+                return false;
             },
 
             onTouchStart(e) {
