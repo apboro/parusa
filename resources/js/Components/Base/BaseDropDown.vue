@@ -14,7 +14,7 @@
                     <icon-search/>
                 </base-icon-input>
             </div>
-            <scroll-box :mode="'vertical'" :scrollable-class="'base-dropdown__list-wrapper'">
+            <scroll-box :mode="'vertical'" :scrollable-class="'base-dropdown__list-wrapper'" v-if="dropped">
                 <span class="base-dropdown__list-item" v-if="hasNull" :class="{'base-dropdown__list-item-current' : modelValue === null}"
                       @click="value = null">{{ placeholder }}</span>
                 <span class="base-dropdown__list-item" v-for="(val, key) in displayableOptions"

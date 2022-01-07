@@ -14,7 +14,7 @@
             :autocomplete="autocomplete"
             :placeholder="placeholder"
             :mask="'##.##.####'"
-            :maskHint="'ДД.ММ.ГГГГ'"
+            :maskHint="'дд.мм.гггг'"
             @changed="changed"
             ref="input"
         />

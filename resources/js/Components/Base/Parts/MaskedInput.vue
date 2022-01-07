@@ -1,7 +1,7 @@
 <template>
-    <span>
+    <span class="w-100">
         <input
-            style="opacity: 0; width: 0; padding: 0; border: none; outline: none; margin: 0"
+            style="position: absolute; opacity: 0; width: 0; height: 0; padding: 0; border: none; outline: none; margin: 0"
             v-model="proxyValue"
             :type="type"
             :required="required"

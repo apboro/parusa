@@ -19,8 +19,8 @@ class PositionInfoFactory extends Factory
 
         return [
             'email' => $this->faker->email,
-            'work_phone' => $this->faker->phoneNumber,
-            'mobile_phone' => $this->faker->phoneNumber,
+            'work_phone' => $this->faker->numerify('+7 (###) ###-##-##'),
+            'mobile_phone' => $this->faker->numerify('+7 (###) ###-##-##'),
         ];
     }
 }

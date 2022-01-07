@@ -28,14 +28,14 @@ class UserProfileFactory extends Factory
             'birthdate' => $this->faker->date('Y-m-d', '-20 years'),
             'default_position_title' => $this->faker->jobTitle,
             'email' => $this->faker->email,
-            'work_phone' => $this->faker->phoneNumber,
+            'work_phone' => $this->faker->numerify('+7 (###) ###-##-##'),
             'work_phone_additional' => random_int(0, 1) === 1 ? $this->faker->numberBetween(100, 999) : null,
-            'mobile_phone' => $this->faker->phoneNumber,
+            'mobile_phone' => $this->faker->numerify('+7 (###) ###-##-##'),
             'vkontakte' => $this->faker->url,
             'facebook' => $this->faker->url,
             'telegram' => '@' . $this->faker->word,
             'skype' => $this->faker->word,
-            'whatsapp' => $this->faker->phoneNumber,
+            'whatsapp' => $this->faker->numerify('+7 (###) ###-##-##'),
             'notes' => $this->faker->text,
         ];
     }
