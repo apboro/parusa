@@ -115,6 +115,8 @@ class StaffEditController extends ApiEditController
             return APIResponse::notFound('Сотрудник не найен');
         }
 
+        $user->save();
+
         $profile = $user->profile;
         $profile->lastname = $data['last_name'];
         $profile->firstname = $data['first_name'];
@@ -126,6 +128,7 @@ class StaffEditController extends ApiEditController
         $position = $user->staffPosition;
         $position->setStatus($data['status_id']);
         $position->title = $data['position_title'];
+        $position->is_staff = true;
         $position->save();
 
         $info = $position->staffInfo;
