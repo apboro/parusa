@@ -26,8 +26,6 @@ use Laravel\Sanctum\HasApiTokens;
  *
  * @property UserStatus $status
  * @property UserProfile $profile
- * @property Collection $roles
- * @property Collection $contacts
  *
  * @property Collection $positions
  * @property Position $staffPosition
@@ -89,16 +87,6 @@ class User extends Authenticatable implements Statusable, AsDictionary
     public function profile(): HasOne
     {
         return $this->hasOne(UserProfile::class, 'user_id', 'id')->withDefault();
-    }
-
-    /**
-     * User related contacts.
-     *
-     * @return  HasMany
-     */
-    public function contacts(): HasMany
-    {
-        return $this->hasMany(UserContact::class);
     }
 
     /**
