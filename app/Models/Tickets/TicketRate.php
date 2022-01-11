@@ -1,0 +1,131 @@
+<?php
+
+namespace App\Models\Tickets;
+
+use App\Helpers\PriceConverter;
+use App\Models\Model;
+use Carbon\Carbon;
+
+/**
+ * @property int $id
+ * @property int $rate_id
+ * @property int $grade_id
+ * @property int $base_price
+ * @property int $min_price
+ * @property int $max_price
+ * @property string $commission_type
+ * @property int $commission_value
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ */
+class TicketRate extends Model
+{
+    /** @var string Referenced table name. */
+    protected $table = 'ticket_rates';
+
+    /** @var string[] Fillable attributes. */
+    protected $fillable = [
+        'grade_id',
+        'base_price',
+        'min_price',
+        'max_price',
+        'commission_type',
+        'commission_value',
+    ];
+
+    /**
+     * Convert base_price from store value to real price.
+     *
+     * @param int $value
+     *
+     * @return  float
+     */
+    public function getBasePriceAttribute(int $value): float
+    {
+        return PriceConverter::storeToPrice($value);
+    }
+
+    /**
+     * Convert base_price to store value.
+     *
+     * @param float $value
+     *
+     * @return  void
+     */
+    public function setBasePriceAttribute(float $value): void
+    {
+        $this->attributes['base_price'] = PriceConverter::priceToStore($value);
+    }
+
+    /**
+     * Convert min_price from store value to real price.
+     *
+     * @param int $value
+     *
+     * @return  float
+     */
+    public function getMinPriceAttribute(int $value): float
+    {
+        return PriceConverter::storeToPrice($value);
+    }
+
+    /**
+     * Convert min_price to store value.
+     *
+     * @param float $value
+     *
+     * @return  void
+     */
+    public function setMinPriceAttribute(float $value): void
+    {
+        $this->attributes['min_price'] = PriceConverter::priceToStore($value);
+    }
+
+    /**
+     * Convert max_price from store value to real price.
+     *
+     * @param int $value
+     *
+     * @return  float
+     */
+    public function getMaxPriceAttribute(int $value): float
+    {
+        return PriceConverter::storeToPrice($value);
+    }
+
+    /**
+     * Convert max_price to store value.
+     *
+     * @param float $value
+     *
+     * @return  void
+     */
+    public function setMaxPriceAttribute(float $value): void
+    {
+        $this->attributes['max_price'] = PriceConverter::priceToStore($value);
+    }
+
+    /**
+     * Convert commission_value from store value to real price.
+     *
+     * @param int $value
+     *
+     * @return  float
+     */
+    public function getCommissionValueAttribute(int $value): float
+    {
+        return PriceConverter::storeToPrice($value);
+    }
+
+    /**
+     * Convert commission_value to store value.
+     *
+     * @param float $value
+     *
+     * @return  void
+     */
+    public function setCommissionValueAttribute(float $value): void
+    {
+        $this->attributes['commission_value'] = PriceConverter::priceToStore($value);
+    }
+}

@@ -13,12 +13,13 @@
             </page-title-bar>
         </template>
 
-        <layout-routed-tabs :tabs="{description: 'Описание экскурсии',rates: 'Тарифы на билеты',schedule: 'Расписание'}" @change="tab = $event"/>
+        <template v-if="data.loaded">
+            <layout-routed-tabs :tabs="{description: 'Описание экскурсии',rates: 'Тарифы на билеты',schedule: 'Расписание'}" @change="tab = $event"/>
 
-        <excursion-info v-if="tab === 'description'" :excursion-id="excursionId" :datasource="data" :editable="true"/>
-
-        <message v-if="tab === 'rates'">Здесь будут тарифы для данной экскурсии</message>
-        <message v-if="tab === 'schedule'">Здесь будет расписание рейсов для данной экскурсии</message>
+            <excursion-info v-if="tab === 'description'" :excursion-id="excursionId" :datasource="data" :editable="true"/>
+            <excursion-ticket-rates v-if="tab === 'rates'" :excursion-id="excursionId" :editable="true"/>
+            <message v-if="tab === 'schedule'">Здесь будет расписание рейсов для данной экскурсии</message>
+        </template>
     </page>
 </template>
 
@@ -32,9 +33,11 @@ import ActionsMenu from "../../../../Components/ActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import ExcursionInfo from "../../../../Parts/Sails/Excursions/ExcursionInfo";
 import Message from "../../../../Layouts/Parts/Message";
+import ExcursionTicketRates from "../../../../Parts/Sails/Excursions/ExcursionTicketRates";
 
 export default {
     components: {
+        ExcursionTicketRates,
         Page,
         PageTitleBar,
         ActionsMenu,

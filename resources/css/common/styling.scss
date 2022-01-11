@@ -1,5 +1,9 @@
 @import "../colors";
 
+.bold {
+    font-weight: bold;
+}
+
 .text-gray {
     color: $color_gray;
 }
@@ -19,6 +23,22 @@
 .inline {
     display: inline-block;
     vertical-align: top;
+}
+
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.self-end {
+    justify-self: flex-end;
+}
+
+.grow {
+    flex-grow: 1;
 }
 
 .inline-flex {
@@ -69,6 +89,18 @@
     }
     .mr-#{$i * 5} {
         margin-right: $i * 5px;
+    }
+
+    .mx-#{$i * 5} {
+        margin-left: $i * 5px;
+        margin-right: $i * 5px;
+    }
+    .my-#{$i * 5} {
+        margin-top: $i * 5px;
+        margin-bottom: $i * 5px;
+    }
+    .m-#{$i * 5} {
+        margin: $i * 5px;
     }
 }
 

@@ -1,0 +1,78 @@
+@import "../variables";
+@import "../colors";
+
+.details-table {
+    width: calc(100% - 40px);
+    margin: 0 0 20px 40px;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    & > thead {
+        & > tr {
+            & > td {
+                padding: 10px;
+                font-family: $project_font;
+                color: #727272;
+            }
+        }
+    }
+
+    & > tr {
+        border-top: 1px solid #e3e3e3;
+
+        &:hover {
+            background-color: #f7f7f7;
+        }
+
+        & > td {
+            padding: 10px;
+            color: #3e3e3e;
+
+            & > *:not(:last-child) {
+                margin-bottom: 5px;
+            }
+        }
+    }
+}
+
+.rates-table {
+    font-size: 14px;
+    font-family: $project_font;
+    border-collapse: collapse;
+
+    & thead {
+        color: #424242;
+        & td {
+            vertical-align: middle;
+        }
+    }
+
+    & td {
+        vertical-align: top;
+        color: $base_table_cell_color;
+    }
+
+    & .field {
+        width: 200px;
+
+        &__title {
+            display: none;
+        }
+    }
+
+    &__decorated > tr:nth-child(odd) {
+        background-color: $base_table_odd_background_color;
+    }
+
+    &__decorated > tr:nth-child(even) {
+        background-color: $base_table_even_background_color;
+    }
+
+    &__decorated > tr:hover {
+        background-color: $base_table_hover_background_color;
+    }
+
+    &__decorated tr{
+        border-top: 1px dashed $gui_value_dots_color;
+    }
+}
