@@ -9,10 +9,12 @@ use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Model;
+use App\Models\Tickets\TicketsRatesList;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -24,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection $programs
  * @property ExcursionInfo $info
  * @property Collection $images
+ * @property Collection $ratesLists
  */
 class Excursion extends Model implements Statusable, AsDictionary
 {
@@ -87,5 +90,15 @@ class Excursion extends Model implements Statusable, AsDictionary
     public function images(): BelongsToMany
     {
         return $this->belongsToMany(Image::class, 'excursion_has_image', 'excursion_id', 'image_id');
+    }
+
+    /**
+     * Excursion ticket rates.
+     *
+     * @return  HasMany
+     */
+    public function ratesLists(): HasMany
+    {
+        return $this->hasMany(TicketsRatesList::class, 'excursion_id', 'id');
     }
 }
