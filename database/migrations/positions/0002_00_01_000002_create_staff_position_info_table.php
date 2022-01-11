@@ -11,9 +11,9 @@ class CreateStaffPositionInfoTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('staff_position_info', function (Blueprint $table) {
+        Schema::create('staff_position_info', static function (Blueprint $table) {
             $table->unsignedBigInteger('position_id')->unique()->primary();
 
             $table->string('email');
@@ -39,7 +39,7 @@ class CreateStaffPositionInfoTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('staff_position_info');
     }

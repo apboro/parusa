@@ -4,7 +4,7 @@
         <template v-slot:header>
             <page-title-bar :title="$route.meta['title']">
                 <actions-menu>
-                    <router-link :to="{ name: 'representatives-edit', params: { id: 0 }}">Добавить партнёра
+                    <router-link :to="{ name: 'partners-edit', params: { id: 0 }}">Добавить партнёра
                     </router-link>
                 </actions-menu>
             </page-title-bar>

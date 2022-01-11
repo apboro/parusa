@@ -13,7 +13,7 @@ class CreatePositionHasRoleTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('position_has_role', function (Blueprint $table) {
+        Schema::create('position_has_role', static function (Blueprint $table) {
             $table->unsignedBigInteger('position_id')->index();
             $table->unsignedInteger('role_id')->index();
 

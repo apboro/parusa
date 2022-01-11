@@ -13,9 +13,9 @@ class CreatePositionsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('positions', function (Blueprint $table) {
+        Schema::create('positions', static function (Blueprint $table) {
             $table->id();
 
             $table->unsignedInteger('status_id')->default(PositionStatus::default);
@@ -41,7 +41,7 @@ class CreatePositionsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('positions');
     }

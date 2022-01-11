@@ -13,7 +13,7 @@ class CreatePositionHasContactsTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('position_has_contacts', function (Blueprint $table) {
+        Schema::create('position_has_contacts', static function (Blueprint $table) {
             $table->unsignedBigInteger('position_id')->index();
             $table->unsignedBigInteger('contact_id')->index();
 

@@ -60,7 +60,7 @@ class ApiEditController extends ApiController
      */
     protected function validate(array $data, array $rules, array $titles): ?array
     {
-        $validator = Validator::make($data, $rules, [], array_map(function ($title) {
+        $validator = Validator::make($data, $rules, [], array_map(static function ($title) {
             return '"' . strtolower($title) . '"';
         }, $titles));
 

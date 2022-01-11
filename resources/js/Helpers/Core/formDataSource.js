@@ -27,6 +27,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options = {}) {
         toaster: null,
         onLoad: null,
         afterSave: null,
+        failedSave: null,
 
         load() {
             this.loading = true;
@@ -89,6 +90,9 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options = {}) {
                         this.toaster.error(error.response.data.message, 5000);
                     } else {
                         console.log(error.response.data.message);
+                    }
+                    if (typeof this.failedSave === "function") {
+                        this.failedSave(error.response);
                     }
                 })
                 .finally(() => {

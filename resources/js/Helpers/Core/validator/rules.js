@@ -36,6 +36,9 @@ const Rules = function() {
         // The field under validation must be a value after or equal to the given date. For more information, see the after rule.
         // after_or_equal:date
         after_or_equal: (value, attributes, name, fields, nullable) => {
+            let field = moment(value, 'DD.MM.YYYY HH:mm');
+            let another = moment(attributes, 'DD.MM.YYYY HH:mm');
+            return field.isValid() && another.isValid() && (field >= another);
         },
 
         // The field under validation must be entirely alphabetic characters.

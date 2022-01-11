@@ -48,7 +48,7 @@ export default {
         update(event) {
             let value;
             if (this.type === 'number') {
-                value = Number(event.target.value);
+                value = event.target.value === '' ? null : Number(event.target.value);
             } else {
                 value = String(event.target.value);
             }

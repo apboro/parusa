@@ -11,11 +11,18 @@ use App\Models\Sails\Pier;
 use App\Models\Sails\Ship;
 use App\Models\User\User;
 use App\Models\User\UserProfile;
+use Database\Seeders\Initial\ExcursionProgramsSeeder;
+use Database\Seeders\Initial\PartnerTypesSeeder;
 use Exception;
 use Illuminate\Database\Seeder;
 
 class TestDataSeeder extends Seeder
 {
+    protected array $seeders = [
+        PartnerTypesSeeder::class,
+        ExcursionProgramsSeeder::class,
+    ];
+
     /**
      * Run the database seeds.
      *
@@ -25,6 +32,14 @@ class TestDataSeeder extends Seeder
      */
     public function run(): void
     {
+        foreach ($this->seeders as $seederClass) {
+
+            /** @var GenericSeeder $seeder */
+            $seeder = $this->container->make($seederClass);
+
+            $seeder->run();
+        }
+
         // Create staff users
         User::factory(30)
             ->afterCreating(function (User $user) {

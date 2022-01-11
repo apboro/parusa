@@ -10,6 +10,10 @@
     border-radius: 2px;
     box-sizing: border-box;
 
+    &__not-valid {
+        border-color: $base_error_color;
+    }
+
     &__display {
         padding: 0 0 0 $base_base_unit / 4;
         display: flex;
@@ -31,6 +35,7 @@
             overflow: hidden;
 
             &-placeholder {
+                color: $base_placeholder_color;
             }
         }
 

@@ -3,6 +3,10 @@ import NotFound from "../../Pages/NotFound";
 
 import SettingsPage from "../../Pages/Admin/Settings/SettingsPage";
 
+import OrdersRegistryPage from "../../Pages/Admin/Registries/OrdersRegistryPage";
+import TicketsRegistryPage from "../../Pages/Admin/Registries/TicketsRegistryPage";
+import ReservesRegistryPage from "../../Pages/Admin/Registries/ReservesRegistryPage";
+
 import TicketRefundsListPage from "../../Pages/Admin/TicketRefundsListPage";
 import MobileSalesListPage from "../../Pages/Admin/MobileSalesListPage";
 
@@ -37,6 +41,11 @@ export default [
     {path: '/', name: 'home', component: HomePage},
 
     {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки'}},
+
+    {path: '/registry/orders', name: 'orders-registry', component: OrdersRegistryPage, meta: {title: 'Реестр заказов'}},
+    {path: '/registry/tickets', name: 'tickets-registry', component: TicketsRegistryPage, meta: {title: 'Реестр билетов'}},
+    {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней'}},
+
 
     {path: '/staff', name: 'staff-list', component: StaffListPage, meta: {title: 'Сотрудники'}},
     {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника'}},

@@ -1,7 +1,9 @@
 <template>
-    <div class="base-dropdown">
+    <div class="base-dropdown" :class="{'base-dropdown__not-valid': !valid}">
         <div class="base-dropdown__display" :class="{'base-dropdown__display-differs': isDirty}" @click="toggle">
-            <span class="base-dropdown__display-value" :class="{'base-dropdown__display-value-placeholder': value === null}" :title="value">{{ value }}</span>
+            <span class="base-dropdown__display-value"
+                  :class="{'base-dropdown__display-value-placeholder': modelValue === null && !hasNull}"
+                  :title="value">{{ value }}</span>
             <span class="base-dropdown__display-icon" :class="{'base-dropdown__display-icon-dropped':dropped}"><icon-dropdown/></span>
         </div>
 
@@ -37,6 +39,7 @@ export default {
         modelValue: {type: [Boolean, String, Number, Object], default: null},
         name: String,
         original: {type: [Boolean, String, Number, Object], default: null},
+        valid: {type: Boolean, default: true},
 
         placeholder: {type: String, default: null},
         hasNull: {type: Boolean, default: false},

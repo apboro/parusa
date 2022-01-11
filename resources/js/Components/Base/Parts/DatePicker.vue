@@ -217,6 +217,11 @@ export default {
             dateObj[key] = value;
 
             const date = new Date(dateObj.year, dateObj.month, dateObj.date, dateObj.hour, dateObj.minute);
+            // fix absent dates in month
+            if(date.getDate() !== dateObj.date && date.getMonth() !== dateObj.month) {
+                date.setMonth(dateObj.month + 1);
+                date.setDate(0);
+            }
 
             this.selected.year = date.getFullYear();
             this.selected.month = date.getMonth();

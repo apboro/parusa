@@ -11,8 +11,6 @@ use Illuminate\Database\Seeder;
 class InitialSeeder extends Seeder
 {
     protected array $seeders = [
-        PartnerTypesSeeder::class,
-        ExcursionProgramsSeeder::class,
         TicketGradesSeeder::class,
     ];
 
