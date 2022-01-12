@@ -27,6 +27,11 @@
             background-color: $base_background_changed_color;
         }
 
+        &-disabled {
+            cursor: not-allowed;
+            background-color: $base_disabled_background_color;
+        }
+
         &-value {
             color: $base_color;
             font-family: $project_font;
