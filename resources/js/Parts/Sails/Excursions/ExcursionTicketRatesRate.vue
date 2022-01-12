@@ -2,7 +2,7 @@
     <container p-20 mt-15 border>
         <heading flex items-center mb-15>
             <span class="bold grow"><activity v-if="today" :active="active"/>{{ rate['start_at'] }} - {{ rate['end_at'] }}</span>
-            <actions-menu :title="null">
+            <actions-menu :title="null" v-if="editable">
                 <span @click="$emit('edit', rate)">Редактировать</span>
                 <span @click="$emit('createFrom', rate)">Копировать тариф</span>
                 <span @click="$emit('delete', rate)">Удалить</span>
@@ -45,6 +45,7 @@ export default {
     props: {
         rate: {type: Object, required: true},
         today: {type: [Object, String], default: null},
+        editable: {type: Boolean, default: false},
     },
 
     computed: {

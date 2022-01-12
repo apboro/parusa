@@ -12,6 +12,7 @@
         <excursion-ticket-rates-rate v-else
                                      :rate="currentRate"
                                      :today="today"
+                                     :editable="editable"
                                      @edit="editRate"
                                      @createFrom="createNewRateFrom"
                                      @delete="deleteRate"
@@ -28,6 +29,7 @@
         <excursion-ticket-rates-rate v-else v-for="rate in allRates"
                                      :rate="rate"
                                      :today="today"
+                                     :editable="editable"
                                      @edit="editRate"
                                      @createFrom="createNewRateFrom"
                                      @delete="deleteRate"
@@ -39,6 +41,7 @@
                 <excursion-ticket-rates-rate v-else v-for="rate in comingRates"
                                              :rate="rate"
                                              :today="today"
+                                             :editable=editable
                                              @edit="editRate"
                                              @createFrom="createNewRateFrom"
                                              @delete="deleteRate"
@@ -49,6 +52,7 @@
                 <excursion-ticket-rates-rate v-else v-for="rate in archivedRates"
                                              :rate="rate"
                                              :today="today"
+                                             :editable=editable
                                              @edit="editRate"
                                              @createFrom="createNewRateFrom"
                                              @delete="deleteRate"
