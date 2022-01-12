@@ -1,10 +1,10 @@
 <template>
     <div class="base-dropdown" :class="{'base-dropdown__not-valid': !valid}">
-        <div class="base-dropdown__display" :class="{'base-dropdown__display-differs': isDirty}" @click="toggle">
+        <div class="base-dropdown__display" :class="{'base-dropdown__display-differs': isDirty, 'base-dropdown__display-disabled': disabled}" @click="toggle">
             <span class="base-dropdown__display-value"
                   :class="{'base-dropdown__display-value-placeholder': modelValue === null && !hasNull}"
                   :title="value">{{ value }}</span>
-            <span class="base-dropdown__display-icon" :class="{'base-dropdown__display-icon-dropped':dropped}"><icon-dropdown/></span>
+            <span class="base-dropdown__display-icon" v-if="!disabled" :class="{'base-dropdown__display-icon-dropped':dropped}"><icon-dropdown/></span>
         </div>
 
         <div class="base-dropdown__list"
@@ -40,6 +40,7 @@ export default {
         name: String,
         original: {type: [Boolean, String, Number, Object], default: null},
         valid: {type: Boolean, default: true},
+        disabled: {type: Boolean, default: false},
 
         placeholder: {type: String, default: null},
         hasNull: {type: Boolean, default: false},
@@ -151,6 +152,8 @@ export default {
 
     methods: {
         toggle() {
+            if(this.disabled) return;
+
             if (this.dropped === true) {
                 this.dropped = false;
                 setTimeout(() => {
