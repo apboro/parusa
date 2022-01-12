@@ -13,35 +13,37 @@
             </page-title-bar>
         </template>
 
-        <layout-routed-tabs
-            :tabs="{
+        <template v-if="data.loaded">
+            <layout-routed-tabs
+                :tabs="{
                 details: 'Карточка партнёра',
                 representatives: 'Представители',
                 account: 'Лицевой счёт',
                 rates: 'Тарифы',
                 sale_registry: 'Реестр продаж',
             }"
-            @change="tab = $event"
-        />
+                @change="tab = $event"
+            />
 
-        <partner-info v-if="tab === 'details'" :datasource="data" :partner-id="partnerId" :editable="true"/>
-        <partner-representatives v-if="tab === 'representatives'" :datasource="data" :partner-id="partnerId" :editable="true"/>
-        <message v-if="tab === 'account'">Здесь будет лицевой счёт</message>
-        <message v-if="tab === 'rates'">Здесь будет тарифы</message>
-        <container v-if="tab === 'sale_registry'">
-            <layout-tabs
-                :initial="'sales'"
-                :tabs="{
+            <partner-info v-if="tab === 'details'" :datasource="data" :partner-id="partnerId" :editable="true"/>
+            <partner-representatives v-if="tab === 'representatives'" :datasource="data" :partner-id="partnerId" :editable="true"/>
+            <message v-if="tab === 'account'">Здесь будет лицевой счёт</message>
+            <partner-ticket-rates v-if="tab === 'rates'" :partner-id="partnerId" :editable="true"/>
+            <container v-if="tab === 'sale_registry'">
+                <layout-tabs
+                    :initial="'sales'"
+                    :tabs="{
                 sales: 'Реестр заказов',
                 tickets: 'Реестр билетов',
                 reserves: 'Реестр броней',
             }"
-                @change="sub_tab = $event"
-            />
-            <order-registry v-if="sub_tab === 'sales'"/>
-            <tickets-registry v-if="sub_tab === 'tickets'"/>
-            <reserves-registry v-if="sub_tab === 'reserves'"/>
-        </container>
+                    @change="sub_tab = $event"
+                />
+                <order-registry v-if="sub_tab === 'sales'"/>
+                <tickets-registry v-if="sub_tab === 'tickets'"/>
+                <reserves-registry v-if="sub_tab === 'reserves'"/>
+            </container>
+        </template>
     </page>
 </template>
 
@@ -61,9 +63,11 @@ import Container from "../../../../Components/GUI/Container";
 import TicketsRegistry from "../../../../Parts/Registries/TicketsRegistry";
 import ReservesRegistry from "../../../../Parts/Registries/ReservesRegistry";
 import LayoutTabs from "../../../../Components/Layout/LayoutTabs";
+import PartnerTicketRates from "../../../../Parts/Partners/Partner/PartnerTicketRates";
 
 export default {
     components: {
+        PartnerTicketRates,
         LayoutTabs,
         ReservesRegistry,
         TicketsRegistry,

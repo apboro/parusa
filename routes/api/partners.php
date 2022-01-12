@@ -14,6 +14,7 @@ use App\Http\Controllers\API\Partners\Representatives\RepresentativeEditControll
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeListController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativePositionsController;
 use App\Http\Controllers\API\Partners\Representatives\RepresentativeStatusController;
+use App\Http\Controllers\API\Tickets\PartnerRatesController;
 use App\Http\Controllers\Storage\PartnerDocumentController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,8 @@ Route::post('/partners/representative/status', [PartnerRepresentativeStatusContr
 Route::post('/partners/representative/details', [PartnerRepresentativePositionsController::class, 'details'])->middleware('auth:sanctum');
 Route::post('/partners/representative/attach', [PartnerRepresentativePositionsController::class, 'attach'])->middleware('auth:sanctum');
 Route::post('/partners/representative/detach', [PartnerRepresentativePositionsController::class, 'detach'])->middleware('auth:sanctum');
+Route::post('/partners/rates', [PartnerRatesController::class, 'get'])->middleware('auth:sanctum');
+Route::post('/partners/rates/update', [PartnerRatesController::class, 'update'])->middleware('auth:sanctum');
 
 Route::get('/partners/files/{file}', [PartnerDocumentController::class, 'get'])->middleware('auth:sanctum');
 

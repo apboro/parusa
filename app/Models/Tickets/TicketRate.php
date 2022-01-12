@@ -5,6 +5,8 @@ namespace App\Models\Tickets;
 use App\Helpers\PriceConverter;
 use App\Models\Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -17,6 +19,7 @@ use Carbon\Carbon;
  * @property int $commission_value
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property Collection $partnerRates
  */
 class TicketRate extends Model
 {
@@ -32,6 +35,16 @@ class TicketRate extends Model
         'commission_type',
         'commission_value',
     ];
+
+    /**
+     * Rate overrides for partners.
+     *
+     * @return  HasMany
+     */
+    public function partnerRates(): HasMany
+    {
+        return $this->hasMany(TicketPartnerRate::class, 'rate_id', 'id');
+    }
 
     /**
      * Convert base_price from store value to real price.
