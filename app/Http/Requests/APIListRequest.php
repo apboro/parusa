@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Exception;
+use JsonException;
 
 class APIListRequest extends APIRequest
 {
@@ -127,17 +128,19 @@ class APIListRequest extends APIRequest
      * Get values to remember in response cookies.
      *
      * @return  string|null
+     *
+     * @throws JsonException
      */
     public function getToRemember(): ?string
     {
-        return empty($this->toRemember) ? null : json_encode($this->toRemember);
+        return empty($this->toRemember) ? null : json_encode($this->toRemember, JSON_THROW_ON_ERROR);
     }
 
     /**
      * Get filters from cookies.
      *
      * @param string|null $key
-     * @param array|bool $remember
+     * @param array $remember
      * @param mixed $default
      *
      * @return  array
@@ -146,7 +149,7 @@ class APIListRequest extends APIRequest
     {
         if ($key !== null && !empty($remember) && $this->hasCookie($key)) {
             try {
-                $filters = json_decode($this->cookie($key), true);
+                $filters = json_decode($this->cookie($key), true, 512, JSON_THROW_ON_ERROR);
                 $filters = array_intersect_key($filters["{$key}_filter"], array_flip($remember));
             } catch (Exception $exception) {
                 $filters = $default;

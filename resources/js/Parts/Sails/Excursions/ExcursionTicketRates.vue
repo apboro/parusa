@@ -24,6 +24,8 @@
             2. Указанное комиссионное вознаграждение назначается партнёрам вне зависимости от способа продаж. Если для партнёра не прописаны специальные условия, расчёт
             вознаграждения ведётся по этой колонке.
         </hint>
+
+        <!--
         <heading bold mt-30>Будущие и прошлые тарифы</heading>
         <message v-if="allRates.length === 0">Будущих и прошлых тарифов нет</message>
         <excursion-ticket-rates-rate v-else v-for="rate in allRates"
@@ -34,30 +36,30 @@
                                      @createFrom="createNewRateFrom"
                                      @delete="deleteRate"
         />
-
-        <!--
-                <heading bold mt-30>Будущие тарифы</heading>
-                <message error v-if="comingRates.length === 0">Будущих тарифов нет</message>
-                <excursion-ticket-rates-rate v-else v-for="rate in comingRates"
-                                             :rate="rate"
-                                             :today="today"
-                                             :editable=editable
-                                             @edit="editRate"
-                                             @createFrom="createNewRateFrom"
-                                             @delete="deleteRate"
-                />
-
-                <heading bold mt-30>Прошлые тарифы</heading>
-                <message v-if="archivedRates.length === 0">Прошлых тарифов нет</message>
-                <excursion-ticket-rates-rate v-else v-for="rate in archivedRates"
-                                             :rate="rate"
-                                             :today="today"
-                                             :editable=editable
-                                             @edit="editRate"
-                                             @createFrom="createNewRateFrom"
-                                             @delete="deleteRate"
-                />
         -->
+
+        <heading bold mt-30>Будущие тарифы</heading>
+        <message error v-if="comingRates.length === 0">Будущих тарифов нет</message>
+        <excursion-ticket-rates-rate v-else v-for="rate in comingRates"
+                                     :rate="rate"
+                                     :today="today"
+                                     :editable=editable
+                                     @edit="editRate"
+                                     @createFrom="createNewRateFrom"
+                                     @delete="deleteRate"
+        />
+
+        <heading bold mt-30>Прошлые тарифы</heading>
+        <message v-if="archivedRates.length === 0">Прошлых тарифов нет</message>
+        <excursion-ticket-rates-rate v-else v-for="rate in archivedRates"
+                                     :rate="rate"
+                                     :today="today"
+                                     :editable=editable
+                                     @edit="editRate"
+                                     @createFrom="createNewRateFrom"
+                                     @delete="deleteRate"
+        />
+
         <pop-up ref="popup" v-if="editable" :title="popup_title"
                 :buttons="[{result: 'no', caption: 'Отмена', color: 'white'}, {result: 'yes', caption: 'OK', color: 'green'}]"
                 :resolving="formResolving"
@@ -126,31 +128,31 @@ export default {
             return current;
         },
 
-        allRates() {
-            return this.data.data
-                .filter(rate => !(moment(rate['start_at'], 'DD.MM.YYYY') <= this.today && this.today <= moment(rate['end_at'], 'DD.MM.YYYY')))
-                .sort((a, b) => moment(a['start_at'], 'DD.MM.YYYY') - moment(b['start_at'], 'DD.MM.YYYY'));
+        // allRates() {
+        //     return this.data.data
+        //         .filter(rate => !(moment(rate['start_at'], 'DD.MM.YYYY') <= this.today && this.today <= moment(rate['end_at'], 'DD.MM.YYYY')))
+        //         .sort((a, b) => moment(a['start_at'], 'DD.MM.YYYY') - moment(b['start_at'], 'DD.MM.YYYY'));
+        // },
+
+        comingRates() {
+            let rates = [];
+            this.data.data.map(rate => {
+                if (moment(rate['start_at'], 'DD.MM.YYYY') > this.today) {
+                    rates.push(rate);
+                }
+            });
+            return rates.sort((a, b) => moment(a['start_at'], 'DD.MM.YYYY') - moment(b['start_at'], 'DD.MM.YYYY'));
         },
 
-        // comingRates() {
-        //     let rates = [];
-        //     this.data.data.map(rate => {
-        //         if (moment(rate['start_at'], 'DD.MM.YYYY') > this.today) {
-        //             rates.push(rate);
-        //         }
-        //     });
-        //     return rates.sort((a, b) => moment(a['start_at'], 'DD.MM.YYYY') - moment(b['start_at'], 'DD.MM.YYYY'));
-        // },
-
-        // archivedRates() {
-        //     let rates = [];
-        //     this.data.data.map(rate => {
-        //         if (moment(rate['end_at'], 'DD.MM.YYYY') < this.today) {
-        //             rates.push(rate);
-        //         }
-        //     });
-        //     return rates.sort((a, b) => moment(b['start_at'], 'DD.MM.YYYY') - moment(a['start_at'], 'DD.MM.YYYY'));
-        // },
+        archivedRates() {
+            let rates = [];
+            this.data.data.map(rate => {
+                if (moment(rate['end_at'], 'DD.MM.YYYY') < this.today) {
+                    rates.push(rate);
+                }
+            });
+            return rates.sort((a, b) => moment(b['start_at'], 'DD.MM.YYYY') - moment(a['start_at'], 'DD.MM.YYYY'));
+        },
 
         today() {
             return moment(this.data.payload['today'], 'DD.MM.YYYY');
