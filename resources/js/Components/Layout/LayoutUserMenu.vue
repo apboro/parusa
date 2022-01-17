@@ -1,7 +1,7 @@
 <template>
     <div class="application__user-menu" @click="toggle">
         <div class="application__user-menu-icon">
-            <icon-user v-if="user.avatar === null"/>
+            <icon-user v-if="!user.avatar"/>
         </div>
         <div class="application__user-menu-info">
             <span class="application__user-menu-info-name">{{ user.name }}</span>

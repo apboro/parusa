@@ -30,10 +30,11 @@ class FrontendController extends Controller
 
         $current = $user->current($request);
 
-        if ($current->position() === null) {
-            $positions = $this->getUserActivePositions($user);
+        $positions = $this->getUserActivePositions($user);
+        $positionsCount = $positions->count();
 
-            if ($positions->count() === 0) {
+        if ($current->position() === null) {
+            if ($positionsCount === 0) {
                 // has no access to any organizations
                 Auth::guard('web')->logout();
                 $request->session()->invalidate();
@@ -41,7 +42,7 @@ class FrontendController extends Controller
                 return response()->redirectToRoute('login')->withErrors(['message' => __('No access to any organizations')]);
             }
 
-            if ($positions->count() === 1) {
+            if ($positionsCount === 1) {
                 $current->setPosition($positions->first());
             } else {
                 $current->setPosition(null);
@@ -49,8 +50,9 @@ class FrontendController extends Controller
                     'positions' => $positions->map(static function (Position $position) {
                         return [
                             'id' => $position->id,
+                            'is_staff' => $position->is_staff,
                             'title' => $position->title,
-                            'partner' => $position->partner ? $position->partner->name : null,
+                            'partner' => $position->is_staff ? __('common.root organization') : $position->partner->name,
                             'roles' => $position->roles->map(static function (Role $role) {
                                 return [
                                     'id' => $role->id,
@@ -64,10 +66,22 @@ class FrontendController extends Controller
         }
 
         if ($current->position()->is_staff) {
-            return response()->view('admin')->withCookie($current->positionToCookie());
+            return response()->view('admin', [
+                'user' => [
+                    'name' => $user->profile->compactName,
+                    'organization' => __('common.root organization'),
+                    'positions' => $positionsCount > 1,
+                ],
+            ])->withCookie($current->positionToCookie());
         }
 
-        return response()->view('partner')->withCookie($current->positionToCookie());
+        return response()->view('partner', [
+            'user' => [
+                'name' => $user->profile->compactName,
+                'organization' => $current->position()->partner->name,
+                'positions' => $positionsCount > 1,
+            ],
+        ])->withCookie($current->positionToCookie());
     }
 
     /**
@@ -88,6 +102,23 @@ class FrontendController extends Controller
         $user = $request->user();
 
         $user->current($request)->setPosition($position);
+
+        return redirect()->back()->withCookies([$user->current()->positionToCookie()]);
+    }
+
+    /**
+     * Handle position change request.
+     *
+     * @param Request $request
+     *
+     * @return  RedirectResponse
+     */
+    public function change(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $user->current($request)->setPosition(null);
 
         return redirect()->back()->withCookies([$user->current()->positionToCookie()]);
     }

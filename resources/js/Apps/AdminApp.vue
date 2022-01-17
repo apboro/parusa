@@ -5,8 +5,9 @@
                 <layout-menu :menu="menu"/>
             </template>
             <template v-slot:personal>
-                <layout-user-menu>
+                <layout-user-menu :user="user">
                     <span class="link">Профиль</span>
+                    <span class="link" v-if="user.positions" @click="change">Сменить компанию</span>
                     <span class="link" @click="logout">Выход</span>
                 </layout-user-menu>
             </template>
@@ -25,6 +26,7 @@ import LayoutUserMenu from "../Components/Layout/LayoutUserMenu";
 export default {
     props: {
         menu: Array,
+        user: Object,
     },
 
     components: {
@@ -44,6 +46,13 @@ export default {
                 window.location.href = '/';
             });
         },
+
+        change() {
+            axios.post('/login/change', {})
+            .then(() => {
+                window.location.href = '/';
+            })
+        }
     },
 }
 </script>

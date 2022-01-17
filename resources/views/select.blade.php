@@ -15,21 +15,21 @@
 <div class="card">
     <h1 class="card__title">Выберите компанию</h1>
     <p class="card__sub-title">Вы являетесь представителем нескольких компаний. Выберите компанию, от которой хотите работать.</p>
-    @foreach($positions as $position)
-        <div class="card__item">
-            <div class="card__item-head">
-                <p class="card__item-head-title">{{ $position['partner'] }}</p>
-                <p class="card__item-head-sub-title">{{ $position['title'] }}</p>
-            </div>
-            <div class="card__item-body">
-                <form action="/login/select" method="post">
-                    <input type="hidden" name="position" value="{{ $position['id'] }}">
-                    @csrf
-                    <button class="button" type="submit">Войти в кабинет</button>
-                </form>
-            </div>
+    <?php foreach ($positions as $position): ?>
+    <div class="card__item<?php echo $position['is_staff'] ? ' card__item-highlighted' : ''?>">
+        <div class="card__item-head">
+            <p class="card__item-head-title"><?php echo !$position['is_staff'] ? '<span class="card__item-head-title-hint">партнёр:</span>' : ''?>{{ $position['partner'] }}</p>
+            <p class="card__item-head-sub-title">должность: {{ $position['title'] }}</p>
         </div>
-    @endforeach
+        <div class="card__item-body">
+            <form action="/login/select" method="post">
+                <input type="hidden" name="position" value="{{ $position['id'] }}">
+                @csrf
+                <button class="button" type="submit">Войти в кабинет</button>
+            </form>
+        </div>
+    </div>
+    <?php endforeach; ?>
 </div>
 </body>
 </html>

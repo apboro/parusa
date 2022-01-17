@@ -21,6 +21,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 Route::get('/login/token', [AuthController::class, 'token'])->name('login.token.refresh');
 
 Route::post('/login/select', [FrontendController::class, 'select'])->middleware('auth');
+Route::post('/login/change', [FrontendController::class, 'change'])->middleware('auth');
 Route::name('frontend')
     ->any('/{query?}', [FrontendController::class, 'frontend'])
     ->where('query', '[\/\w\.-]*')

@@ -24,7 +24,7 @@ body {
     padding: 30px;
     font-family: $project_font;
     color: $color_text;
-    max-width: 600px;
+    max-width: 650px;
     box-shadow: $shadow_1;
 
     &__title {
@@ -50,7 +50,7 @@ body {
         background-color: $page_background_color;
 
         &:hover {
-            background-color: #e9eeff;
+            background-color: #f0f3ff;
         }
 
         &-head {
@@ -59,6 +59,12 @@ body {
             &-title {
                 margin: 8px;
                 font-weight: bold;
+                &-hint{
+                    font-weight: normal;
+                    font-size: 14px;
+                    color: $page_title_color;
+                    margin-right: 8px;
+                }
             }
 
             &-sub-title {
@@ -76,6 +82,10 @@ body {
             align-items: center;
             box-sizing: border-box;
             padding-right: 10px;
+        }
+
+        &-highlighted {
+            border-color: #adc8ed;
         }
     }
 }

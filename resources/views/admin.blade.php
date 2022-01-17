@@ -7,6 +7,9 @@
     <title>{{ config('app.name') }}</title>
 
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
+    <script>
+        window.user = '{!! json_encode($user) !!}';
+    </script>
 </head>
 <body>
 <div id="app"></div>
