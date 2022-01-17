@@ -14,6 +14,8 @@ mix.js('resources/js/login.js', 'js')
 
     .js('resources/js/admin.js', 'js')
     .vue()
+    .js('resources/js/partner.js', 'js')
+    .vue()
     .sass('resources/css/app.scss', 'css')
 
     .webpackConfig(require('./webpack.config'));
