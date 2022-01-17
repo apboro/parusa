@@ -20,7 +20,7 @@ class RepresentativeCardController extends ApiController
             null === ($user = User::query()
                 ->with(['profile', 'positions', 'positions.accessStatus', 'positions.info', 'positions.partner'])
                 ->where('id', $id)
-                ->doesntHave('staffPosition')->first())
+                ->first())
         ) {
             return APIResponse::notFound('Представитель не найден');
         }

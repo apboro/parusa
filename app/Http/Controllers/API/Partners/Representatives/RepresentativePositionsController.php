@@ -45,7 +45,7 @@ class RepresentativePositionsController extends ApiEditController
             return APIResponse::formError($data, $this->rules, $this->titles, $errors);
         }
 
-        if (($userId = $request->input('representative_id')) === null || null === ($user = User::query()->where('id', $userId)->doesntHave('staffPosition')->first())) {
+        if (($userId = $request->input('representative_id')) === null || null === ($user = User::query()->where('id', $userId)->first())) {
             return APIResponse::notFound('Представитель не найден');
         }
 
@@ -109,7 +109,7 @@ class RepresentativePositionsController extends ApiEditController
         if ($id === null || null === ($user = User::query()
                 ->with(['positions'])
                 ->where('id', $id)
-                ->doesntHave('staffPosition')->first())
+                ->first())
         ) {
             return APIResponse::notFound('Представитель не найден');
         }

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
+use JsonException;
 
 class RepresentativeListController extends ApiController
 {
@@ -24,6 +25,8 @@ class RepresentativeListController extends ApiController
      * @param ApiListRequest $request
      *
      * @return  JsonResponse
+     *
+     * @throws JsonException
      */
     public function list(ApiListRequest $request): JsonResponse
     {
@@ -32,7 +35,7 @@ class RepresentativeListController extends ApiController
             ->with('positions.partner', function (HasOne $query) {
                 $query->orderBy('name');
             })
-            ->doesntHave('staffPosition')
+            ->with('staffPosition')
             ->leftJoin('user_profiles', 'users.id', '=', 'user_profiles.user_id')
             ->select('users.*')
             ->orderBy('user_profiles.lastname', 'asc')
@@ -89,6 +92,7 @@ class RepresentativeListController extends ApiController
                 'id' => $user->id,
                 'name' => $profile ? $profile->fullName : null,
                 'positions' => $positions,
+                'is_staff' => $user->staffPosition->exists,
                 'email' => $profile->email,
                 'work_phone' => $profile->work_phone,
                 'work_phone_additional' => $profile->work_phone_additional,

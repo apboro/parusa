@@ -172,7 +172,6 @@ class RepresentativeEditController extends ApiEditController
         $user = User::query()
             ->where('id', $id)
             ->with($with)
-            ->doesntHave('staffPosition')
             ->first();
 
         return $user ?? null;

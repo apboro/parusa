@@ -26,7 +26,7 @@ class RepresentativeStatusController extends ApiController
 
         if ($id === null || null === ($user = User::query()
                 ->where('id', $id)
-                ->doesntHave('staffPosition')->first())
+                ->first())
         ) {
             return APIResponse::notFound('Представитель не найден');
         }

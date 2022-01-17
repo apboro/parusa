@@ -96,7 +96,7 @@ class RepresentativeAccessController extends ApiEditController
 
         if ($id === null || null === ($user = User::query()
                 ->where('id', $id)
-                ->doesntHave('staffPosition')->first())
+                ->first())
         ) {
             return null;
         }

@@ -23,12 +23,16 @@ class RepresentativeDeleteController extends ApiController
     {
         $id = $request->input('id');
 
-        if ($id === null || null === ($user = User::query()->where('id', $id)->doesntHave('staffPosition')->first())) {
+        if ($id === null || null === ($user = User::query()->where('id', $id)->first())) {
             return APIResponse::notFound('Представитель не найден');
+        }
+        /** @var User $user */
+
+        if ($user->staffPosition->exists) {
+            return APIResponse::error('Невозможно удалить сотрудника головной организации.');
         }
 
         try {
-            /** @var User $user */
             $user->delete();
         } catch (QueryException $exception) {
             return APIResponse::error('Невозможно удалить представителя. Есть блокирующие связи.');
