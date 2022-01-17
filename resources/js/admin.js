@@ -18,7 +18,9 @@ const router = createRouter({
     routes: routes,
 })
 
-const app = createApp(App, {menu: menu});
+let user = typeof window.user === "undefined" ? null : JSON.parse(window.user);
+
+const app = createApp(App, {menu: menu, user: user});
 
 app.use(router);
 app.use(store);
