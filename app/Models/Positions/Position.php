@@ -13,6 +13,7 @@ use App\Models\Partner\Partner;
 use App\Models\User\User;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -32,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property PositionAccessStatus $accessStatus
  * @property User $user
  * @property Partner $partner
+ * @property Collection $roles
  * @property PositionInfo $info
  * @property StaffPositionInfo $staffInfo
  */

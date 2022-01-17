@@ -20,6 +20,7 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 Route::get('/login/token', [AuthController::class, 'token'])->name('login.token.refresh');
 
+Route::post('/login/select', [FrontendController::class, 'select'])->middleware('auth');
 Route::name('frontend')
     ->any('/{query?}', [FrontendController::class, 'frontend'])
     ->where('query', '[\/\w\.-]*')

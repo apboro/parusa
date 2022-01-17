@@ -8,6 +8,7 @@ use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\UserStatus;
 use App\Models\Positions\Position;
+use App\Models\User\Helpers\Currents;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,7 +16,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Request;
 use Laravel\Sanctum\HasApiTokens;
+use RuntimeException;
 
 /**
  * @property int $id
@@ -53,6 +56,9 @@ class User extends Authenticatable implements Statusable, AsDictionary
     protected $attributes = [
         'status_id' => UserStatus::default,
     ];
+
+    /** @var Currents Current user position and role resolver */
+    protected Currents $currents;
 
     /**
      * User's status.
@@ -107,5 +113,24 @@ class User extends Authenticatable implements Statusable, AsDictionary
     public function staffPosition(): HasOne
     {
         return $this->hasOne(Position::class, 'user_id', 'id')->where('is_staff', true)->withDefault();
+    }
+
+    /**
+     * Get user position and role store helper.
+     *
+     * @param Request|null $request
+     *
+     * @return  Currents
+     */
+    public function current(?Request $request = null): Currents
+    {
+        if (!isset($this->currents)) {
+            if ($request === null) {
+                throw new RuntimeException('Error initializing user currents. Request must be provided.');
+            }
+            $this->currents = new Currents($request, $this);
+        }
+
+        return $this->currents;
     }
 }
