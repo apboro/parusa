@@ -35,7 +35,7 @@
                     <base-table-cell-item :class="'mt-5 mb-5'">
                         <router-link class="link" :to="{ name: 'representatives-view', params: { id: representative['id'] }}" v-html="highlight(representative['name'])"/>
                     </base-table-cell-item>
-                    <base-table-cell-item :class="'mt-5 mb-5'" v-if="representative['is_staff'] === true">
+                    <base-table-cell-item :class="'mt-5 mb-5 text-sm'" v-if="representative['is_staff'] === true">
                         Сотрудник
                     </base-table-cell-item>
                 </base-table-cell>

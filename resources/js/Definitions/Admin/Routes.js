@@ -1,4 +1,3 @@
-import HomePage from "../../Pages/Admin/HomePage";
 import NotFound from "../../Pages/NotFound";
 
 import SettingsPage from "../../Pages/Admin/Settings/SettingsPage";
@@ -35,10 +34,8 @@ import TripsListPage from "../../Pages/Admin/Sails/Trips/TripsListPage";
 import TripCardPage from "../../Pages/Admin/Sails/Trips/TripCardPage";
 import TripEditPage from "../../Pages/Admin/Sails/Trips/TripEditPage";
 
-// import TestPage from "../../Pages/Admin/TestPage";
-
 export default [
-    {path: '/', name: 'home', component: HomePage},
+    {path: '/', name: 'home', component: TripsListPage, meta: {title: 'Список рейсов'}},
 
     {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки'}},
 

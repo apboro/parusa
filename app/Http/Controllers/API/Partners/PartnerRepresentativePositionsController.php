@@ -45,7 +45,7 @@ class PartnerRepresentativePositionsController extends ApiEditController
             return APIResponse::formError($data, $this->rules, $this->titles, $errors);
         }
 
-        if (null === ($user = User::query()->where('id', $data['representative_id'])->doesntHave('staffPosition')->first())) {
+        if (null === ($user = User::query()->where('id', $data['representative_id'])->first())) {
             return APIResponse::notFound('Представитель не найден');
         }
 
@@ -141,7 +141,7 @@ class PartnerRepresentativePositionsController extends ApiEditController
      */
     public function details(Request $request): JsonResponse
     {
-        if (($id = $request->input('id')) === null || null === ($user = User::query()->where('id', $id)->doesntHave('staffPosition')->first())) {
+        if (($id = $request->input('id')) === null || null === ($user = User::query()->where('id', $id)->first())) {
             return APIResponse::notFound('Такой представитель не найден');
         }
         /** @var User $user */

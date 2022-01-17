@@ -10,7 +10,8 @@
                 </template>
                 <base-table-row v-for="(position, key) in datasource.data.positions" v-if="datasource.data.positions" :key="key">
                     <base-table-cell>
-                        <router-link :class="'link'" :to="{name: 'representatives-view', params: {id: position['user_id']}}">{{ position['user'] }}</router-link>
+                        <router-link v-if="links" :class="'link'" :to="{name: 'representatives-view', params: {id: position['user_id']}}">{{ position['user'] }}</router-link>
+                        <span v-else>{{ position['user'] }}</span>
                     </base-table-cell>
                     <base-table-cell>{{ position['title'] }}</base-table-cell>
                     <base-table-cell>
@@ -87,6 +88,7 @@ export default {
         partnerId: {type: Number, required: true},
         datasource: {type: Object},
         editable: {type: Boolean, default: false},
+        links: {type: Boolean, default: true},
     },
 
     components: {

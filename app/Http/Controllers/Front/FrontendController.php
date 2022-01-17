@@ -70,6 +70,7 @@ class FrontendController extends Controller
                 'user' => [
                     'name' => $user->profile->compactName,
                     'organization' => __('common.root organization'),
+                    'position' => $current->position()->title,
                     'positions' => $positionsCount > 1,
                 ],
             ])->withCookie($current->positionToCookie());
@@ -79,6 +80,7 @@ class FrontendController extends Controller
             'user' => [
                 'name' => $user->profile->compactName,
                 'organization' => $current->position()->partner->name,
+                'position' => $current->position()->title,
                 'positions' => $positionsCount > 1,
             ],
         ])->withCookie($current->positionToCookie());

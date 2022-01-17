@@ -15,7 +15,7 @@ trait UserAsRepresentativesDictionary
             $name = DB::raw('CONCAT_WS(\' \', user_profiles.lastname, user_profiles.firstname, user_profiles.patronymic) as name');
         }
 
-        return self::query()->doesntHave('staffPosition')
+        return self::query()
             ->leftJoin('user_profiles', 'users.id', '=', 'user_profiles.user_id')
             ->select([
                 'id',

@@ -5,7 +5,7 @@
         </div>
         <div class="application__user-menu-info">
             <span class="application__user-menu-info-name">{{ user.name }}</span>
-            <span class="application__user-menu-info-org">{{ user.organization }}</span>
+            <span class="application__user-menu-info-org">{{ user.position }}</span>
         </div>
         <icon-dropdown class="application__user-menu-drop" :class="{'application__user-menu-drop-dropped': show_menu}"/>
         <div class="application__user-menu-actions" :class="{'application__user-menu-actions-shown': show_menu}">
@@ -24,8 +24,9 @@ export default {
         user: {
             type: Object,
             default: () => ({
-                name: 'Администратор',
-                organization: 'Алые Паруса',
+                name: null,
+                organization: null,
+                position: null,
                 avatar: null,
             })
         },

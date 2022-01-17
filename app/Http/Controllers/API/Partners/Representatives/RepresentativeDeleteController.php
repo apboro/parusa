@@ -29,7 +29,7 @@ class RepresentativeDeleteController extends ApiController
         /** @var User $user */
 
         if ($user->staffPosition->exists) {
-            return APIResponse::error('Невозможно удалить сотрудника головной организации.');
+            return APIResponse::error('Невозможно удалить сотрудника головной организации как представителя.');
         }
 
         try {

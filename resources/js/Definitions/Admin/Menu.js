@@ -32,5 +32,4 @@ export default [
             {'title': 'Реестр броней', 'route': 'reserves-registry'},
         ]
     },
-    // {'title': 'test', 'route': 'test'}
 ];

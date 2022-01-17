@@ -9,11 +9,17 @@
 use App\Http\Controllers\API\NotFoundController;
 use Illuminate\Support\Facades\Route;
 
-require base_path('routes/api/company.php');
-require base_path('routes/api/settings.php');
-require base_path('routes/api/partners.php');
-require base_path('routes/api/dictionaries.php');
-require base_path('routes/api/sails.php');
-require base_path('routes/api/registries.php');
+Route::middleware(['auth'])->group(function () {
+    require base_path('routes/api/staff_company.php');
+    require base_path('routes/api/staff_settings.php');
+    require base_path('routes/api/staff_partners.php');
+    require base_path('routes/api/staff_dictionaries.php');
+    require base_path('routes/api/staff_sails.php');
+    require base_path('routes/api/staff_registries.php');
+});
+
+Route::prefix('partner')->middleware(['auth'])->group(function () {
+    require base_path('routes/api/partner_partners.php');
+});
 
 Route::any('{any}', [NotFoundController::class, 'notFound'])->where('any', '.*');

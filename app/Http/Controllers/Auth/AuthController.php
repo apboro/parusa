@@ -61,13 +61,19 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
+        /** @var User $user */
+        $user = $request->user();
+
+        $current = $user->current($request);
+        $current->setPosition(null);
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        return Response::response('OK');
+        return Response::response('OK')->withCookie($current->positionToCookie());
     }
 
     /**
