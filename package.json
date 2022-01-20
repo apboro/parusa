@@ -27,11 +27,11 @@
         "vue": "^3.2.23",
         "vue-loader": "^16.8.3",
         "vue-router": "^4.0.12",
-        "xregexp": "^5.1.0"
-    },
-    "dependencies": {
+        "xregexp": "^5.1.0",
         "vuex": "^4.0.2",
         "resize-observer-polyfill": "^1.5.1",
         "moment": "^2.29.1"
+    },
+    "dependencies": {
     }
 }

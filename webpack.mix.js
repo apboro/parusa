@@ -18,7 +18,7 @@ mix.js('resources/js/login.js', 'js')
     .vue()
     .sass('resources/css/app.scss', 'css')
 
-    .webpackConfig(require('./webpack.config'));
+    .webpackConfig(require('./webpack.config.js'));
 
 if (mix.inProduction()) {
     mix.version();
