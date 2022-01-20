@@ -143,18 +143,35 @@ class Account extends Model
      * Recalculate amount for this account.
      *
      * @param Carbon|null $upToDate
+     * @param Carbon|null $fromDate
+     * @param array|null $transactionTypes
      *
      * @return  int
      */
-    public function calcAmount(Carbon $upToDate = null): int
+    public function calcAmount(Carbon $upToDate = null, Carbon $fromDate = null, ?array $transactionTypes = null): int
     {
-        $refill = AccountTransactionType::query()->where('sign', 1)->pluck('id')->toArray();
-        $withdrawal = AccountTransactionType::query()->where('sign', -1)->pluck('id')->toArray();
+        $refill = AccountTransactionType::query()
+            ->where('sign', 1)
+            ->when($transactionTypes, function (Builder $query) use ($transactionTypes) {
+                $query->whereIn('id', $transactionTypes);
+            })
+            ->pluck('id')
+            ->toArray();
+        $withdrawal = AccountTransactionType::query()
+            ->where('sign', -1)
+            ->when($transactionTypes, function (Builder $query) use ($transactionTypes) {
+                $query->whereIn('id', $transactionTypes);
+            })
+            ->pluck('id')
+            ->toArray();
 
         $total = $this->transactions()
             ->whereIn('type_id', $refill)
             ->when($upToDate, function (Builder $query) use ($upToDate) {
                 $query->where('created_at', '<=', $upToDate);
+            })
+            ->when($fromDate, function (Builder $query) use ($fromDate) {
+                $query->where('created_at', '>=', $fromDate);
             })
             ->sum('amount');
 
@@ -162,6 +179,9 @@ class Account extends Model
             ->whereIn('type_id', $withdrawal)
             ->when($upToDate, function (Builder $query) use ($upToDate) {
                 $query->where('created_at', '<=', $upToDate);
+            })
+            ->when($fromDate, function (Builder $query) use ($fromDate) {
+                $query->where('created_at', '>=', $fromDate);
             })
             ->sum('amount');
 

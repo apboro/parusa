@@ -64,17 +64,21 @@
             <base-pagination :pagination="list.pagination" @pagination="setPagination"/>
         </container>
 
-        <container mt-50>
+        <container mt-30>
+            <value :class="'w-300px'" :title="'Сумма по выборке'">{{ list.payload['selected_total'] }} руб.</value>
+            <value :class="'w-300px'" :title="'Сумма на странице'">{{ list.payload['selected_page_total'] }} руб.</value>
+        </container>
+        <container mt-30>
             <heading text-lg>Статистика по счёту за период <span class="bold">{{ list.filters['date_from'] }} - {{ list.filters['date_to'] }}</span></heading>
             <heading text-md mt-20>Состояние лицевого счёта:</heading>
             <container inline pr-40 pt-15>
-                <value :class="'w-300px'" :title="'На начало периода'">{{ list.payload['period_start_amount'] }} руб</value>
-                <value :class="'w-300px'" :title="'На конец периода'">{{ list.payload['period_end_amount'] }} руб</value>
-                <value :class="'w-300px'" :title="'Сальдо'">{{ list.payload['period_income_amount'] }} руб</value>
+                <value :class="'w-300px'" :title="'На начало периода'">{{ list.payload['period_start_amount'] }} руб.</value>
+                <value :class="'w-300px'" :title="'На конец периода'">{{ list.payload['period_end_amount'] }} руб.</value>
+                <value :class="'w-300px'" :title="'Сальдо'">{{ list.payload['period_income_amount'] }} руб.</value>
             </container>
             <container inline pr-40 pt-15>
-                <value :class="'w-300px'" :title="'Сумма продаж'">{{ list.payload['period_sell_amount'] }} руб</value>
-                <value :class="'w-300px'" :title="'Начислено комиссионных'">{{ list.payload['period_commission_amount'] }} руб</value>
+                <value :class="'w-300px'" :title="'Сумма продаж'">{{ list.payload['period_sell_amount'] }} руб.</value>
+                <value :class="'w-300px'" :title="'Начислено комиссионных'">{{ list.payload['period_commission_amount'] }} руб.</value>
                 <value :class="'w-300px'" :title="'Состав продаж, заказы/билеты'">{{ list.payload['period_sell_orders'] }} / {{ list.payload['period_sell_tickets'] }}</value>
             </container>
         </container>

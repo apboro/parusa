@@ -55,33 +55,39 @@ class TransactionsListController extends ApiController
         $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('d.m.Y');
         $this->defaultFilters['date_to'] = Carbon::now()->format('d.m.Y');
 
+        $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
+
         // apply filters
-        if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
-            if (!empty($filters['date_from'])) {
-                $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
+        if (!empty($filters['date_from'])) {
+            $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
+        }
+        if (!empty($filters['date_to'])) {
+            $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+        }
+        $transactionTypes = null;
+        if (!empty($filters['transaction_type_id'])) {
+            if (null === ($transactionType = AccountTransactionType::get($filters['transaction_type_id']))) {
+                return APIResponse::notFound('Неверный тип транзакции');
             }
-            if (!empty($filters['date_to'])) {
-                $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
-            }
-            if (!empty($filters['transaction_type_id'])) {
-                if (null === ($transactionType = AccountTransactionType::get($filters['transaction_type_id']))) {
-                    return APIResponse::notFound('Неверный тип транзакции');
-                }
-                /** @var AccountTransactionType $transactionType */
-                if ($transactionType->final) {
-                    $query->where('type_id', $transactionType->id);
-                } else {
-                    $ids = AccountTransactionType::query()->where('parent_type_id', $transactionType->id)->pluck('id')->toArray();
-                    $query->whereIn('type_id', $ids);
-                }
+            /** @var AccountTransactionType $transactionType */
+            if ($transactionType->final) {
+                $query->where('type_id', $transactionType->id);
+                $transactionTypes = [$transactionType->id];
+            } else {
+                $ids = AccountTransactionType::query()->where('parent_type_id', $transactionType->id)->pluck('id')->toArray();
+                $query->whereIn('type_id', $ids);
+                $transactionTypes = $ids;
             }
         }
 
         // current page automatically resolved from request via `page` parameter
         $transactions = $query->orderBy('created_at', 'desc')->orderBy('id', 'desc')->paginate($request->perPage(10, $this->rememberKey));
 
+        $pageTotal = 0;
+
         /** @var Collection $transactions */
-        $transactions->transform(function (AccountTransaction $transaction) {
+        $transactions->transform(function (AccountTransaction $transaction) use (&$pageTotal) {
+            $pageTotal += $transaction->type->sign * $transaction->amount;
             return [
                 'id' => $transaction->id,
                 'sign' => $transaction->type->sign,
@@ -94,8 +100,13 @@ class TransactionsListController extends ApiController
             ];
         });
 
-        $periodStartAmount = $account->calcAmount(Carbon::parse($filters['date_from'])->hour(0)->minute(0)->second(-1));
-        $periodEndAmount = $account->calcAmount(Carbon::parse($filters['date_to'])->hour(23)->minute(59)->second(59));
+        $fromDate = Carbon::parse($filters['date_from'])->hour(0)->minute(0)->second(-1);
+        $toDate = Carbon::parse($filters['date_to'])->hour(23)->minute(59)->second(59);
+
+        $periodStartAmount = $account->calcAmount($fromDate);
+        $periodEndAmount = $account->calcAmount($toDate);
+
+        $total = $account->calcAmount($toDate, $fromDate, $transactionTypes);
 
         return APIResponse::paginationList($transactions, [
             'date' => 'Дата и время операции',
@@ -106,6 +117,8 @@ class TransactionsListController extends ApiController
         ], [
             'filters' => $filters,
             'filters_original' => $this->defaultFilters,
+            'selected_page_total' => $pageTotal,
+            'selected_total' => $total,
             'balance' => $account->amount,
             'limit' => $account->limit,
             'period_start_amount' => $periodStartAmount,
