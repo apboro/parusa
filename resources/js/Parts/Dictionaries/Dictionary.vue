@@ -29,7 +29,11 @@
                     <div class="drag-item__actions-button drag-item__actions-button-edit" title="Редактировать" @click="editItem(item)">
                         <icon-edit/>
                     </div>
-                    <div class="drag-item__actions-button drag-item__actions-button-remove" title="Удалить" @click="deleteItem(item)">
+                    <div  v-if="item.locked === true" class="drag-item__actions-button drag-item__actions-button-system"
+                         title="Системная запись">
+                        <icon-lock/>
+                    </div>
+                    <div v-else class="drag-item__actions-button drag-item__actions-button-remove" title="Удалить" @click="deleteItem(item)">
                         <icon-cross/>
                     </div>
                 </div>
@@ -99,11 +103,13 @@ import DeleteEntry from "../../Mixins/DeleteEntry";
 import PopUp from "../../Components/PopUp";
 import DataFieldInput from "../../Components/DataFields/DataFieldInput";
 import formDataSource from "../../Helpers/Core/formDataSource";
-import {parseRules} from "../../Helpers/Core/validator/validator";
+import {parseRules} from "@/Helpers/Core/validator/validator";
 import DataFieldTextArea from "../../Components/DataFields/DataFieldTextArea";
+import IconLock from "../../Components/Icons/IconLock";
 
 export default {
     components: {
+        IconLock,
         DataFieldTextArea,
         DataFieldInput,
         PopUp,

@@ -12,4 +12,9 @@ class TicketGrade extends AbstractDictionary
 {
     /** @var string Referenced table */
     protected $table = 'dictionary_ticket_grades';
+
+    /** @var string[] Attributes casting */
+    protected $casts = [
+        'locked' => 'bool',
+    ];
 }

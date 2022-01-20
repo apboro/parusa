@@ -42,6 +42,10 @@ class DictionaryDeleteController extends ApiController
 
         $name = $item->name;
 
+        if($item->getAttribute('locked') === true) {
+            return APIResponse::error("Запись \"{$name}\" в словаре \"{$title}\" является системной.");
+        }
+
         try {
             $class::query()->where('id', $id)->delete();
         } catch (QueryException $exception) {
