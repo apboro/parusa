@@ -6,7 +6,7 @@
             </template>
             <template v-slot:personal>
                 <layout-user-menu :user="user">
-                    <span class="link">Профиль</span>
+<!--                    <span class="link">Профиль</span>-->
                     <span class="link" v-if="user.positions" @click="change">Сменить компанию</span>
                     <span class="link" @click="logout">Выход</span>
                 </layout-user-menu>

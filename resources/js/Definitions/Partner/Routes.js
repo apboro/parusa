@@ -5,6 +5,7 @@ import Account from "../../Pages/Partner/Account";
 import OrdersRegistryPage from "../../Pages/Partner/Registries/OrdersRegistryPage";
 import TicketsRegistryPage from "../../Pages/Partner/Registries/TicketsRegistryPage";
 import ReservesRegistryPage from "../../Pages/Partner/Registries/ReservesRegistryPage";
+import Rates from "../../Pages/Partner/Rates";
 
 export default [
     {path: '/', name: 'home', component: TicketsSelect},
@@ -17,6 +18,7 @@ export default [
 
     {path: '/company/info', name: 'company-info', component: PartnerSelfPage},
     {path: '/company/account', name: 'company-account', component: Account},
+    {path: '/company/rates', name: 'company-rates', component: Rates},
 
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 ];

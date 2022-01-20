@@ -1,7 +1,8 @@
 <template>
     <container mt-20 mb-20>
-            <message>Здесь будет баланс лицевого счёта</message>
-    </container>    <page :loading="processing">
+        <message>Здесь будет баланс лицевого счёта</message>
+    </container>
+    <page :loading="processing">
         <template v-slot:header>
             <page-title-bar
                 :title="'Карточка партнёра ' + data.data['name']"

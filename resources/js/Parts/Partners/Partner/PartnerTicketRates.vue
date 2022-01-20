@@ -1,6 +1,6 @@
 <template>
     <loading-progress :loading="processing">
-        <hint mx-10 my-15>Тарифы и комисионное вознаграждение партнёра за продажу услуг компании</hint>
+        <hint mx-10 my-15>Тарифы и комисионное вознаграждение партнёра за продажу услуг компании "Алые Паруса"</hint>
         <hint mx-10 mb-15 mt-25>1. Параметр применяется только на мобильных кассах.</hint>
         <hint mx-10 my-15>
             2. Указанное комиссионное вознаграждение назначается партнёрам вне зависимости от способа продаж. Если для партнёра не прописаны специальные условия, расчёт
@@ -17,7 +17,6 @@
                                        :editable="editable"
                                        @edit="editRate"
             />
-<!--                                       @delete="deleteRate"-->
         </template>
 
         <pop-up ref="popup" v-if="editable" :title="'Установить специальные условия для партнёра'"
@@ -32,7 +31,7 @@
 
 <script>
 import genericDataSource from "../../../Helpers/Core/genericDataSource";
-import {parseRules} from "../../../Helpers/Core/validator/validator";
+import {parseRules} from "@/Helpers/Core/validator/validator";
 import formDataSource from "../../../Helpers/Core/formDataSource";
 import LoadingProgress from "../../../Components/LoadingProgress";
 import Hint from "../../../Components/GUI/Hint";

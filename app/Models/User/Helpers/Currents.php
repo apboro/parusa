@@ -27,6 +27,21 @@ class Currents
     protected ?Role $role = null;
 
     /**
+     * Factory.
+     *
+     * @param Request $request
+     *
+     * @return  Currents
+     */
+    public static function get(Request $request): Currents
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        return $user->current($request);
+    }
+
+    /**
      * Create user current state.
      *
      * @param Request $request
@@ -109,5 +124,25 @@ class Currents
     public function positionToCookie(): Cookie
     {
         return cookie(self::POSITION_COOKIE_NAME, $this->position() ? $this->position()->id : null);
+    }
+
+    /**
+     * Whether is staff position.
+     *
+     * @return  bool
+     */
+    public function isStaff(): bool
+    {
+        return $this->position() && $this->position()->is_staff;
+    }
+
+    /**
+     * Get position id.
+     *
+     * @return  int|null
+     */
+    public function positionId(): ?int
+    {
+        return $this->position() ? $this->position()->id : null;
     }
 }

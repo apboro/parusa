@@ -9,6 +9,7 @@ use App\Models\Sails\Excursion;
 use App\Models\Tickets\TicketPartnerRate;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
+use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
@@ -26,7 +27,17 @@ class PartnerRatesController extends ApiEditController
      */
     public function get(Request $request): JsonResponse
     {
-        if (null === ($id = $request->input('id')) || null === ($partner = Partner::query()->where('id', $id)->first())) {
+        /** @var User $user */
+        $user = $request->user();
+        $current = $user->current($request);
+
+        if (($position = $current->position()) && $position->is_staff) {
+            $id = $request->input('id');
+        } else {
+            $id = $position->partner_id;
+        }
+
+        if (!isset($id) || null === ($partner = Partner::query()->where('id', $id)->first())) {
             return APIResponse::notFound('Партнёр не найден');
         }
         /** @var Partner $partner */

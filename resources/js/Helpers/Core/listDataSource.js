@@ -1,8 +1,10 @@
 import initialPagination from "./initialPagination";
+import clone from "@/Helpers/Lib/clone";
 
-const listDataSource = function (dataSourceUrl, usePagination = true) {
+const listDataSource = function (dataSourceUrl, usePagination = true, options = {}) {
     let list = {
         dataSourceUrl: null,
+        options: {},
 
         titles: [],
         data: [],
@@ -15,7 +17,7 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
         order_by: null,
         pagination: usePagination ? initialPagination : null,
 
-        payload: null,
+        payload: {},
 
         loading: false,
         loaded: false,
@@ -25,15 +27,15 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
         load(page = 1, perPage = null, initial = false) {
             this.loading = true;
 
-            const options = {
-                filters: this.filters,
-                search: this.search,
-                order: this.order,
-                order_by: this.order_by,
-                page: page,
-                per_page: perPage === null ? this.pagination.per_page : perPage,
-                initial: initial,
-            }
+            let options = clone(this.options);
+
+            options['filters'] = this.filters;
+            options['search'] = this.search;
+            options['order'] = this.order;
+            options['order_by'] = this.order_by;
+            options['page'] = page;
+            options['per_page'] = perPage === null ? this.pagination.per_page : perPage;
+            options['initial'] = initial;
 
             axios.post(this.dataSourceUrl, options)
                 .then(response => {
@@ -62,6 +64,7 @@ const listDataSource = function (dataSourceUrl, usePagination = true) {
     };
 
     list.dataSourceUrl = dataSourceUrl;
+    list.options = options;
 
     return list;
 }

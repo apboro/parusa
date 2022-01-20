@@ -14,7 +14,7 @@
                 <span class="link" v-if="editable" @click="ticketsChange">{{ datasource.data['tickets_for_guides'] }}</span>
                 <span v-else>{{ datasource.data['tickets_for_guides'] }}</span>
             </value>
-            <hint mt-5 mb-10>
+            <hint mt-5 mb-10 v-if="editable">
                 При значении "0" партнер не может включать в заказ бесплатные билеты для гидов. Любое положительное число разрешает данную возможность и определяет
                 максимальное количество таких билетов для одного заказа. Например, при значении "1" к заказу можно будет добавить 1 билет для гида.
             </hint>
@@ -75,7 +75,7 @@
 
 <script>
 import formDataSource from "../../../Helpers/Core/formDataSource";
-import {parseRules} from "../../../Helpers/Core/validator/validator";
+import {parseRules} from "@/Helpers/Core/validator/validator";
 
 import Container from "../../../Components/GUI/Container";
 import Value from "../../../Components/GUI/Value";

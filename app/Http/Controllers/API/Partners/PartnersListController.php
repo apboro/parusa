@@ -104,8 +104,8 @@ class PartnersListController extends ApiController
                 'name' => $partner->name,
                 'representatives' => $representatives,
                 'type' => $partner->type->name,
-                'balance' => null,
-                'limit' => null,
+                'balance' => $partner->account->amount,
+                'limit' => $partner->account->limit,
             ];
         });
 
