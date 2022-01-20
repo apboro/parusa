@@ -56,8 +56,8 @@
                     </base-table-cell-item>
                 </base-table-cell>
                 <base-table-cell>{{ partner['type'] }}</base-table-cell>
-                <base-table-cell>{{ partner['balance'] }}</base-table-cell>
-                <base-table-cell>{{ partner['limit'] }}</base-table-cell>
+                <base-table-cell>{{ partner['balance'] }} руб.</base-table-cell>
+                <base-table-cell>{{ partner['limit'] }} руб.</base-table-cell>
             </base-table-row>
         </base-table>
         <message v-else-if="list.loaded">Ничего не найдено</message>

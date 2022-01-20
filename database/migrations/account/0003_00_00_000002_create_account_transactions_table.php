@@ -12,9 +12,9 @@ class CreateAccountTransactionsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('account_transactions', function (Blueprint $table) {
+        Schema::create('account_transactions', static function (Blueprint $table) {
 
             $table->id();
 
@@ -26,9 +26,9 @@ class CreateAccountTransactionsTable extends Migration
             $table->unsignedBigInteger('amount');
 
             $table->string('reason')->nullable();
-            $table->timestamp('reason_date')->nullable();
+            $table->date('reason_date')->nullable();
 
-            $table->unsignedBigInteger('committer_id')->nullable();
+            $table->unsignedBigInteger('committer_id');
 
             $table->text('comments')->nullable();
 
@@ -46,7 +46,7 @@ class CreateAccountTransactionsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('account_transactions');
     }

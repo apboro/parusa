@@ -10,4 +10,5 @@ class CookieKeys
     public const pier_list = 'pier_list';
     public const representatives_list = 'representatives_list';
     public const partners_list = 'partners_list';
+    public const transactions_list = 'transactions_list';
 }

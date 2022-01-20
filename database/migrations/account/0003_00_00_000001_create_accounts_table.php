@@ -11,9 +11,9 @@ class CreateAccountsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('accounts', function (Blueprint $table) {
+        Schema::create('accounts', static function (Blueprint $table) {
 
             $table->id();
 
@@ -33,7 +33,7 @@ class CreateAccountsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('accounts');
     }

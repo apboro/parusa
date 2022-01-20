@@ -32,6 +32,14 @@ class AccountTransactionTypesSeeder extends GenericSeeder
                 'has_reason_date' => true,
                 'reason_date' => 'Дата счёта',
             ],
+            AccountTransactionType::account_refill_cash => [
+                'name' => 'Наличными',
+                'sign' => 1,
+                'parent_type_id' => AccountTransactionType::account_refill,
+                'final' => true,
+                'has_reason' => false,
+                'has_reason_date' => false,
+            ],
             AccountTransactionType::tickets_buy => [
                 'name' => 'Покупка билетов',
                 'sign' => -1,

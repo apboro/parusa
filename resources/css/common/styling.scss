@@ -18,6 +18,14 @@
     color: $color_gray;
 }
 
+.text-dark-green {
+    color: $color_dark_green;
+}
+
+.text-dark-red {
+    color: $color_dark_red;
+}
+
 .text-orange {
     color: $color_orange;
 }
@@ -57,6 +65,10 @@
 
 .self-end {
     justify-self: flex-end;
+}
+
+.self-align-end {
+    align-self: flex-end;
 }
 
 .grow {

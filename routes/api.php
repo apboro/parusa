@@ -10,6 +10,7 @@ use App\Http\Controllers\API\NotFoundController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
+    require base_path('routes/api/account.php');
     require base_path('routes/api/staff_company.php');
     require base_path('routes/api/staff_settings.php');
     require base_path('routes/api/staff_partners.php');

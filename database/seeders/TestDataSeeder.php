@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Account\AccountTransaction;
+use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Partner\Partner;
 use App\Models\Positions\Position;
 use App\Models\Positions\PositionInfo;
@@ -11,6 +13,7 @@ use App\Models\Sails\Pier;
 use App\Models\Sails\Ship;
 use App\Models\User\User;
 use App\Models\User\UserProfile;
+use Carbon\Carbon;
 use Database\Seeders\Initial\ExcursionProgramsSeeder;
 use Database\Seeders\Initial\PartnerTypesSeeder;
 use Exception;
@@ -41,7 +44,7 @@ class TestDataSeeder extends Seeder
         }
 
         // Create staff users
-        User::factory(30)
+        $staff = User::factory(30)
             ->afterCreating(function (User $user) {
                 UserProfile::factory()->create(['user_id' => $user->id]);
                 /** @var Position $position */
@@ -50,8 +53,35 @@ class TestDataSeeder extends Seeder
             })
             ->create();
 
-        // Create partners
-        Partner::factory(50)->create();
+        // Create partners with accounts
+        $typeIds = AccountTransactionType::query()->where('final', 1)->pluck('id')->toArray();
+        $staffIds = $staff->pluck('id')->toArray();
+
+        $partners = Partner::factory(50)->afterCreating(function (Partner $partner) use ($typeIds, $staffIds) {
+            $partner->account->save();
+            $date = Carbon::today()->subDays(40);
+            $partner->account->attachTransaction(new AccountTransaction([
+                'type_id' => AccountTransactionType::account_refill_invoice,
+                'amount' => 1000,
+                'reason' => 'Оплата по счёту №1',
+                'reason_date' => Carbon::now(),
+                'committer_id' => $staffIds[random_int(0, count($staffIds) - 1)],
+                'comments' => 'Начальное пополнение',
+                'created_at' => $date,
+            ]));
+            for ($i = 1; $i <= 30; $i++) {
+                $date->addDay();
+                $partner->account->attachTransaction(new AccountTransaction([
+                    'type_id' => $typeIds[random_int(0, count($typeIds) - 1)],
+                    'amount' => 10,
+                    'reason' => "Тестовая операция №$i",
+                    'reason_date' => $date,
+                    'committer_id' => $staffIds[random_int(0, count($staffIds) - 1)],
+                    'comments' => 'Тестовая операция',
+                    'created_at' => $date,
+                ]));
+            }
+        })->create();
 
         // Create users
         User::factory(200)->afterCreating(function (User $user) {

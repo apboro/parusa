@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\Dictionary;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\AbstractDictionary;
+use App\Models\Dictionaries\AccountTransactionPrimaryType;
+use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\PartnerStatus;
@@ -61,6 +63,9 @@ class DictionaryController extends ApiController
         'trip_discount_statuses' => TripDiscountStatus::class,
 
         'ticket_grades' => TicketGrade::class,
+
+        'transaction_primary_types' => AccountTransactionPrimaryType::class,
+        'transaction_types' => AccountTransactionType::class,
     ];
 
     /**

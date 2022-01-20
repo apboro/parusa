@@ -27,7 +27,7 @@
 
             <partner-info v-if="tab === 'details'" :datasource="data" :partner-id="partnerId" :editable="true"/>
             <partner-representatives v-if="tab === 'representatives'" :datasource="data" :partner-id="partnerId" :editable="true"/>
-            <message v-if="tab === 'account'">Здесь будет лицевой счёт</message>
+            <partner-account v-if="tab === 'account'" :partner-id="partnerId" :editable="true"/>
             <partner-ticket-rates v-if="tab === 'rates'" :partner-id="partnerId" :editable="true"/>
             <container v-if="tab === 'sale_registry'">
                 <layout-tabs
@@ -57,16 +57,17 @@ import ActionsMenu from "../../../../Components/ActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import PartnerInfo from "../../../../Parts/Partners/Partner/PartnerInfo";
 import PartnerRepresentatives from "../../../../Parts/Partners/Partner/PartnerRepresentatives";
-import Message from "../../../../Layouts/Parts/Message";
 import OrderRegistry from "../../../../Parts/Registries/OrderRegistry";
 import Container from "../../../../Components/GUI/Container";
 import TicketsRegistry from "../../../../Parts/Registries/TicketsRegistry";
 import ReservesRegistry from "../../../../Parts/Registries/ReservesRegistry";
 import LayoutTabs from "../../../../Components/Layout/LayoutTabs";
 import PartnerTicketRates from "../../../../Parts/Partners/Partner/PartnerTicketRates";
+import PartnerAccount from "../../../../Parts/Partners/Partner/PartnerAccount";
 
 export default {
     components: {
+        PartnerAccount,
         PartnerTicketRates,
         LayoutTabs,
         ReservesRegistry,
@@ -79,7 +80,6 @@ export default {
         LayoutRoutedTabs,
         PartnerInfo,
         PartnerRepresentatives,
-        Message,
     },
 
     mixins: [DeleteEntry],

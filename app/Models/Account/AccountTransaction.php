@@ -4,6 +4,7 @@ namespace App\Models\Account;
 
 use App\Exceptions\Account\WrongAccountTransactionStatusException;
 use App\Exceptions\Account\WrongAccountTransactionTypeException;
+use App\Helpers\PriceConverter;
 use App\Interfaces\Statusable;
 use App\Interfaces\Typeable;
 use App\Models\Dictionaries\AccountTransactionStatus;
@@ -26,6 +27,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Carbon $reason_date
  * @property int $committer_id
  * @property string $comments
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  *
  * @property Account $account
  * @property AccountTransactionType $type
@@ -42,6 +45,22 @@ class AccountTransaction extends Model implements Statusable, Typeable
     /** @var array Default attributes. */
     protected $attributes = [
         'status_id' => AccountTransactionStatus::default,
+    ];
+
+    /** @var array Attribute casting */
+    protected $casts = [
+        'reason_date' => 'date',
+    ];
+
+    /** @var array Fillable attributes. */
+    protected $fillable = [
+        'type_id',
+        'status_id',
+        'amount',
+        'reason',
+        'reason_date',
+        'committer_id',
+        'comments',
     ];
 
     /**
@@ -99,7 +118,7 @@ class AccountTransaction extends Model implements Statusable, Typeable
      *
      * @return  BelongsTo
      */
-    public function account():BelongsTo
+    public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'account_id', 'id');
     }
@@ -112,5 +131,29 @@ class AccountTransaction extends Model implements Statusable, Typeable
     public function committer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'committer_id', 'id');
+    }
+
+    /**
+     * Convert amount to store value.
+     *
+     * @param float $value
+     *
+     * @return  void
+     */
+    public function setAmountAttribute(float $value): void
+    {
+        $this->attributes['amount'] = PriceConverter::priceToStore($value);
+    }
+
+    /**
+     * Convert amount from store value to real currency.
+     *
+     * @param int $value
+     *
+     * @return  float
+     */
+    public function getAmountAttribute(int $value): float
+    {
+        return PriceConverter::storeToPrice($value);
     }
 }
