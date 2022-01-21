@@ -24,6 +24,10 @@ const listDataSource = function (dataSourceUrl, usePagination = true, options = 
         has_error: false,
         error_message: null,
 
+        reload() {
+            this.load(this.pagination.current_page, this.pagination.per_page);
+        },
+
         load(page = 1, perPage = null, initial = false) {
             this.loading = true;
 

@@ -29,7 +29,10 @@ class CreateDictionaryAccountTransactionTypesTable extends Migration
             $table->boolean('has_reason')->nullable()->default(false);
             $table->string('reason_title')->nullable()->default(null);
             $table->boolean('has_reason_date')->nullable()->default(false);
-            $table->timestamp('reason_date')->nullable()->default(null);
+            $table->string('reason_date_title')->nullable()->default(null);
+
+            $table->boolean('editable')->nullable()->default(false);
+            $table->boolean('deletable')->nullable()->default(false);
 
             $table->timestamps();
         });

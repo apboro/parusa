@@ -67,7 +67,7 @@ class TestDataSeeder extends Seeder
                 'reason_date' => Carbon::now(),
                 'committer_id' => $staffIds[random_int(0, count($staffIds) - 1)],
                 'comments' => 'Начальное пополнение',
-                'created_at' => $date,
+                'timestamp' => $date,
             ]));
             for ($i = 1; $i <= 30; $i++) {
                 $date->addDay();
@@ -78,7 +78,7 @@ class TestDataSeeder extends Seeder
                     'reason_date' => $date,
                     'committer_id' => $staffIds[random_int(0, count($staffIds) - 1)],
                     'comments' => 'Тестовая операция',
-                    'created_at' => $date,
+                    'timestamp' => $date,
                 ]));
             }
         })->create();

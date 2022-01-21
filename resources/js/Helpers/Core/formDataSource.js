@@ -138,6 +138,23 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options = {}) {
             return false;
         },
 
+        setField(name, value, rules = undefined, title = null, initial = false) {
+            this.values[name] = value;
+            if (rules !== "undefined" || typeof this.validation_rules[name] === "undefined") {
+                if (empty(rules)) {
+                    this.validation_rules[name] = {};
+                } else {
+                    this.validation_rules[name] = parseRules(rules);
+                }
+            }
+            if(title !== null || typeof this.titles[name] === "undefined") {
+                this.titles[name] = title;
+            }
+            if (initial) {
+                this.originals[name] = value;
+            }
+        },
+
         toast(message, delay = null, type = null) {
             if (this.toaster !== null) {
                 this.toaster.show(message, delay, type);

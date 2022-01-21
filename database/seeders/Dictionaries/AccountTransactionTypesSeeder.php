@@ -30,7 +30,9 @@ class AccountTransactionTypesSeeder extends GenericSeeder
                 'has_reason' => true,
                 'reason_title' => 'Номер счёта',
                 'has_reason_date' => true,
-                'reason_date' => 'Дата счёта',
+                'reason_date_title' => 'Дата счёта',
+                'editable' => true,
+                'deletable' => true,
             ],
             AccountTransactionType::account_refill_cash => [
                 'name' => 'Наличными',
@@ -39,6 +41,8 @@ class AccountTransactionTypesSeeder extends GenericSeeder
                 'final' => true,
                 'has_reason' => false,
                 'has_reason_date' => false,
+                'editable' => true,
+                'deletable' => true,
             ],
             AccountTransactionType::tickets_buy => [
                 'name' => 'Покупка билетов',

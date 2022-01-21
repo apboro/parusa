@@ -41,7 +41,7 @@ class TransactionsListController extends ApiController
     {
         $current = Currents::get($request);
 
-        $id = $current->isStaff() ? $request->input('id') : $current->positionId();
+        $id = $current->isStaff() ? $request->input('id') : $current->position()->partner_id;
 
         /** @var Partner $partner */
         if (null === ($partner = Partner::query()->with(['account'])->where('id', $id)->first())) {
@@ -59,10 +59,10 @@ class TransactionsListController extends ApiController
 
         // apply filters
         if (!empty($filters['date_from'])) {
-            $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
+            $query->whereDate('timestamp', '>=', Carbon::parse($filters['date_from']));
         }
         if (!empty($filters['date_to'])) {
-            $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+            $query->whereDate('timestamp', '<=', Carbon::parse($filters['date_to']));
         }
         $transactionTypes = null;
         if (!empty($filters['transaction_type_id'])) {
@@ -81,7 +81,7 @@ class TransactionsListController extends ApiController
         }
 
         // current page automatically resolved from request via `page` parameter
-        $transactions = $query->orderBy('created_at', 'desc')->orderBy('id', 'desc')->paginate($request->perPage(10, $this->rememberKey));
+        $transactions = $query->orderBy('timestamp', 'desc')->orderBy('id', 'desc')->paginate($request->perPage(10, $this->rememberKey));
 
         $pageTotal = 0;
 
@@ -91,12 +91,17 @@ class TransactionsListController extends ApiController
             return [
                 'id' => $transaction->id,
                 'sign' => $transaction->type->sign,
-                'date' => $transaction->created_at->format('d.m.Y H:i'),
+                'date' => $transaction->timestamp->format('d.m.Y H:i'),
                 'type_id' => $transaction->type_id,
                 'type' => $transaction->type->name,
                 'amount' => $transaction->amount,
                 'reason' => $transaction->reason,
+                'reason_date' => $transaction->reason_date ? $transaction->reason_date->format('d.m.Y H:i') : null,
+                'reason_title' => $transaction->reasonTitle,
+                'comments' => $transaction->comments,
                 'operator' => $transaction->committer->profile->compactName,
+                'editable' => $transaction->type->editable,
+                'deletable' => $transaction->type->deletable,
             ];
         });
 

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property int $order
  * @property int $sign
  */
-class AccountTransactionPrimaryType extends AccountTransactionType implements AsDictionary
+class AccountTransactionTypeRefill extends AccountTransactionType implements AsDictionary
 {
     /**
      * Make dictionary query.
@@ -21,6 +21,18 @@ class AccountTransactionPrimaryType extends AccountTransactionType implements As
      */
     public static function asDictionary(): Builder
     {
-        return self::query()->whereNull('parent_type_id');
+        return self::query()->where('parent_type_id', self::account_refill);
+    }
+
+    /**
+     * Name attribute mutator.
+     *
+     * @param $value
+     *
+     * @return  string|null
+     */
+    public function getNameAttribute($value): ?string
+    {
+        return $value;
     }
 }

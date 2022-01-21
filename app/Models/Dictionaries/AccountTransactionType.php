@@ -2,7 +2,6 @@
 
 namespace App\Models\Dictionaries;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -17,7 +16,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property bool $has_reason
  * @property string $reason_title
  * @property bool $has_reason_date
- * @property Carbon $reason_date
+ * @property string $reason_date_title
+ * @property bool $editable
+ * @property bool $deletable
  *
  * @property AccountTransactionType $parent
  */
@@ -47,6 +48,12 @@ class AccountTransactionType extends AbstractDictionary
 
     /** @var string Referenced table name. */
     protected $table = 'dictionary_account_transaction_types';
+
+    /** @var string[] Attributes casting. */
+    protected $casts = [
+        'editable' => 'bool',
+        'deletable' => 'bool',
+    ];
 
     /**
      * Name attribute mutator.

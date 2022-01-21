@@ -146,17 +146,6 @@ export default {
                 });
         },
 
-        // deleteRate(rate, excursion) {
-            //     const message = 'Удаление тарифа приведет к остановке продаж билетов на рейсы в диапазоне дат ' + rate['start_at'] + ' - ' + rate['end_at'] + '. Продолжить?';
-            //     const id = rate['id'];
-            //
-            //     this.deleteEntry(message, '/api/excursions/rates/delete', {id: id})
-            //         .then(() => {
-            //             this.data.data = this.data.data.filter(rate => rate['id'] !== id);
-            //         });
-        //     console.log(rate, excursion);
-        // },
-
         formResolving(result) {
             if (result !== 'yes') {
                 return true;

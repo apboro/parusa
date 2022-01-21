@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $account_id
  * @property int $type_id
  * @property int $status_id
+ * @property Carbon $timestamp
  * @property int $amount
  * @property string $reason
  * @property Carbon $reason_date
@@ -34,6 +35,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property AccountTransactionType $type
  * @property AccountTransactionStatus $status
  * @property User $committer
+ *
+ * @property-read string $reasonTitle
  */
 class AccountTransaction extends Model implements Statusable, Typeable
 {
@@ -49,6 +52,7 @@ class AccountTransaction extends Model implements Statusable, Typeable
 
     /** @var array Attribute casting */
     protected $casts = [
+        'timestamp' => 'datetime',
         'reason_date' => 'date',
     ];
 
@@ -56,11 +60,17 @@ class AccountTransaction extends Model implements Statusable, Typeable
     protected $fillable = [
         'type_id',
         'status_id',
+        'timestamp',
         'amount',
         'reason',
         'reason_date',
         'committer_id',
         'comments',
+    ];
+
+    /** @var array Append attributes */
+    protected $appends = [
+        'reasonTitle',
     ];
 
     /**
@@ -155,5 +165,32 @@ class AccountTransaction extends Model implements Statusable, Typeable
     public function getAmountAttribute(int $value): float
     {
         return PriceConverter::storeToPrice($value);
+    }
+
+    /**
+     * Get reason full title.
+     *
+     * @param $value
+     *
+     * @return  string|null
+     */
+    public function getReasonTitleAttribute($value): ?string
+    {
+        switch ($this->type_id) {
+            case AccountTransactionType::account_refill_invoice:
+                return "Пополнение лицевого счёта банковским переводом по счёту №{$this->reason} от " . $this->reason_date->format('d.m.Y');
+            case AccountTransactionType::account_refill_cash:
+                return 'Пополнение лицевого счёта наличными';
+            case AccountTransactionType::tickets_buy:
+                return '';
+            case AccountTransactionType::tickets_buy_return:
+                return '';
+            case AccountTransactionType::tickets_sell_commission:
+                return '';
+            case AccountTransactionType::tickets_sell_commission_return:
+                return '';
+        }
+
+        return null;
     }
 }
