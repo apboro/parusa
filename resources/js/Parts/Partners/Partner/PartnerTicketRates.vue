@@ -38,7 +38,7 @@ import Hint from "../../../Components/GUI/Hint";
 import Heading from "../../../Components/GUI/Heading";
 import PopUp from "../../../Components/PopUp";
 import moment from "moment";
-import Message from "../../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 import PartnerTicketRatesRate from "./PartnerTicketRatesRate";
 import PartnerTicketRatesForm from "./PartnerTicketRatesForm";
 

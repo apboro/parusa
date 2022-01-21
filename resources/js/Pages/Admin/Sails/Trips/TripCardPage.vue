@@ -24,7 +24,7 @@ import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import ActionsMenu from "../../../../Components/ActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
-import Message from "../../../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 import TripInfo from "../../../../Parts/Sails/Trips/TripInfo";
 
 export default {

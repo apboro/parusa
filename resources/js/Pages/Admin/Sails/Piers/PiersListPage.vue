@@ -51,7 +51,7 @@ import ActionsMenu from "../../../../Components/ActionsMenu";
 import PageBarItem from "../../../../Layouts/Parts/PageBarItem";
 import DictionaryDropDown from "../../../../Components/Dictionary/DictionaryDropDown";
 import Activity from "../../../../Components/Activity";
-import Message from "../../../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 import BasePagination from "../../../../Components/Base/BasePagination";
 
 export default {

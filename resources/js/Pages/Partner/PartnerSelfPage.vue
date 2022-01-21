@@ -26,7 +26,7 @@ import Page from "../../Layouts/Page";
 import PageTitleBar from "../../Layouts/Parts/PageTitleBar";
 import PartnerInfo from "../../Parts/Partners/Partner/PartnerInfo";
 import PartnerRepresentatives from "../../Parts/Partners/Partner/PartnerRepresentatives";
-import Message from "../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 import Container from "../../Components/GUI/Container";
 import Heading from "../../Components/GUI/Heading";
 

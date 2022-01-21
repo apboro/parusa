@@ -76,7 +76,7 @@ import DeleteEntry from "../../../Mixins/DeleteEntry";
 import Container from "../../../Components/GUI/Container";
 import AccessLocked from "../../../Components/AccessLocked";
 import ActionsMenu from "../../../Components/ActionsMenu";
-import Message from "../../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
 import DataFieldDictionaryDropdown from "../../../Components/DataFields/DataFieldDictionaryDropdown";

@@ -25,7 +25,7 @@ import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import ActionsMenu from "../../../../Components/ActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import PierInfo from "../../../../Parts/Sails/Piers/PierInfo";
-import Message from "../../../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 
 export default {
     components: {

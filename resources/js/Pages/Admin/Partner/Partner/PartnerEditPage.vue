@@ -47,8 +47,6 @@ import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataF
 import DataFieldDropdown from "../../../../Components/DataFields/DataFieldDropdown";
 import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
 import BaseButton from "../../../../Components/Base/BaseButton";
-
-import Message from "../../../../Layouts/Parts/Message";
 import DataFieldFiles from "../../../../Components/DataFields/DataFieldFiles";
 
 export default {
@@ -62,8 +60,6 @@ export default {
         DataFieldDropdown,
         DataFieldTextArea,
         BaseButton,
-
-        Message,
     },
 
     data: () => ({

@@ -104,7 +104,7 @@ import Value from "../../../Components/GUI/Value";
 import Heading from "../../../Components/GUI/Heading";
 import AccessLocked from "../../../Components/AccessLocked";
 import ActionsMenu from "../../../Components/ActionsMenu";
-import Message from "../../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 import ValueArea from "../../../Components/GUI/ValueArea";
 import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
 import PopUp from "../../../Components/PopUp";

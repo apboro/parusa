@@ -83,7 +83,7 @@ import BaseIconInput from "../../../../Components/Base/BaseIconInput";
 import IconSearch from "../../../../Components/Icons/IconSearch";
 import DictionaryDropDown from "../../../../Components/Dictionary/DictionaryDropDown";
 import Activity from "../../../../Components/Activity";
-import Message from "../../../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 import BasePagination from "../../../../Components/Base/BasePagination";
 
 export default {

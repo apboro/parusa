@@ -104,7 +104,7 @@ import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
 import ActionsMenu from "../../../../Components/ActionsMenu";
 import PageBarItem from "../../../../Layouts/Parts/PageBarItem";
 import DictionaryDropDown from "../../../../Components/Dictionary/DictionaryDropDown";
-import Message from "../../../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 import BasePagination from "../../../../Components/Base/BasePagination";
 
 import BaseInput from "../../../../Components/Base/BaseInput";

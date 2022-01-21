@@ -48,7 +48,7 @@ import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import StaffPersonal from "../../../../Parts/Company/Staff/StaffPersonal";
 import Container from "../../../../Components/GUI/Container";
 import LoadingProgress from "../../../../Components/LoadingProgress";
-import Message from "../../../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 import Value from "../../../../Components/GUI/Value";
 import BaseButton from "../../../../Components/Base/BaseButton";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";

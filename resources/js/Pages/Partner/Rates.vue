@@ -15,7 +15,7 @@
 
 <script>
 import Page from "../../Layouts/Page";
-import Message from "../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 import PartnerTicketRates from "../../Parts/Partners/Partner/PartnerTicketRates";
 import Container from "../../Components/GUI/Container";
 import Heading from "../../Components/GUI/Heading";

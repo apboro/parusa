@@ -10,7 +10,6 @@
 
 <script>
 import Page from "../../Layouts/Page";
-import Message from "../../Layouts/Parts/Message";
 import PartnerAccount from "@/Parts/Partners/Partner/PartnerAccount";
 import PageTitleBar from "@/Layouts/Parts/PageTitleBar";
 
@@ -18,7 +17,6 @@ export default {
     components: {
         PageTitleBar,
         PartnerAccount,
-        Message,
         Page,
     }
 }

@@ -6,7 +6,7 @@
 
 <script>
 import Page from "../../Layouts/Page";
-import Message from "../../Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 
 export default {
     components: {

@@ -8,7 +8,7 @@
         </div>
 
         <heading bold>Действующий тариф</heading>
-        <message error v-if="currentRate === null">Действующий тариф не задан</message>
+        <message text-red border mt-15 v-if="currentRate === null">Действующий тариф не задан</message>
         <excursion-ticket-rates-rate v-else
                                      :rate="currentRate"
                                      :today="today"
@@ -25,21 +25,8 @@
             вознаграждения ведётся по этой колонке.
         </hint>
 
-        <!--
-        <heading bold mt-30>Будущие и прошлые тарифы</heading>
-        <message v-if="allRates.length === 0">Будущих и прошлых тарифов нет</message>
-        <excursion-ticket-rates-rate v-else v-for="rate in allRates"
-                                     :rate="rate"
-                                     :today="today"
-                                     :editable="editable"
-                                     @edit="editRate"
-                                     @createFrom="createNewRateFrom"
-                                     @delete="deleteRate"
-        />
-        -->
-
         <heading bold mt-30>Будущие тарифы</heading>
-        <message error v-if="comingRates.length === 0">Будущих тарифов нет</message>
+        <message text-red border mt-15 v-if="comingRates.length === 0">Будущих тарифов нет</message>
         <excursion-ticket-rates-rate v-else v-for="rate in comingRates"
                                      :rate="rate"
                                      :today="today"
@@ -50,7 +37,7 @@
         />
 
         <heading bold mt-30>Прошлые тарифы</heading>
-        <message v-if="archivedRates.length === 0">Прошлых тарифов нет</message>
+        <message border mt-15 v-if="archivedRates.length === 0">Прошлых тарифов нет</message>
         <excursion-ticket-rates-rate v-else v-for="rate in archivedRates"
                                      :rate="rate"
                                      :today="today"
@@ -71,19 +58,20 @@
 </template>
 
 <script>
-import Container from "../../../Components/GUI/Container";
-import Hint from "../../../Components/GUI/Hint";
-import LoadingProgress from "../../../Components/LoadingProgress";
-import genericDataSource from "../../../Helpers/Core/genericDataSource";
-import PopUp from "../../../Components/PopUp";
-import {parseRules} from "../../../Helpers/Core/validator/validator";
-import formDataSource from "../../../Helpers/Core/formDataSource";
-import ExcursionTicketRatesForm from "./ExcursionTicketRatesForm";
-import Heading from "../../../Components/GUI/Heading";
+import genericDataSource from "@/Helpers/Core/genericDataSource";
+import {parseRules} from "@/Helpers/Core/validator/validator";
+import formDataSource from "@/Helpers/Core/formDataSource";
 import moment from "moment";
-import Message from "../../../Layouts/Parts/Message";
-import ExcursionTicketRatesRate from "./ExcursionTicketRatesRate";
-import DeleteEntry from "../../../Mixins/DeleteEntry";
+import DeleteEntry from "@/Mixins/DeleteEntry";
+
+import LoadingProgress from "@/Components/LoadingProgress";
+import Container from "@/Components/GUI/Container";
+import Hint from "@/Components/GUI/Hint";
+import Heading from "@/Components/GUI/Heading";
+import Message from "@/Components/GUI/Message";
+import PopUp from "@/Components/PopUp";
+import ExcursionTicketRatesRate from "@/Parts/Sails/Excursions/ExcursionTicketRatesRate";
+import ExcursionTicketRatesForm from "./ExcursionTicketRatesForm";
 
 export default {
     props: {
@@ -127,12 +115,6 @@ export default {
             });
             return current;
         },
-
-        // allRates() {
-        //     return this.data.data
-        //         .filter(rate => !(moment(rate['start_at'], 'DD.MM.YYYY') <= this.today && this.today <= moment(rate['end_at'], 'DD.MM.YYYY')))
-        //         .sort((a, b) => moment(a['start_at'], 'DD.MM.YYYY') - moment(b['start_at'], 'DD.MM.YYYY'));
-        // },
 
         comingRates() {
             let rates = [];

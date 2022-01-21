@@ -54,13 +54,13 @@
 </template>
 
 <script>
-import UseBaseTableBundle from "../../Mixins/UseBaseTableBundle";
-import empty from "../../Mixins/empty";
-import listDataSource from "../../Helpers/Core/listDataSource";
+import UseBaseTableBundle from "@/Mixins/UseBaseTableBundle";
+import empty from "@/Mixins/empty";
+import listDataSource from "@/Helpers/Core/listDataSource";
 
-import LoadingProgress from "../../Components/LoadingProgress";
-import Message from "../../Layouts/Parts/Message";
-import BasePagination from "../../Components/Base/BasePagination";
+import LoadingProgress from "@/Components/LoadingProgress";
+import Message from "@/Components/GUI/Message";
+import BasePagination from "@/Components/Base/BasePagination";
 
 export default {
     components: {

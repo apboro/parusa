@@ -134,7 +134,7 @@ import DictionaryDropDown from "@/Components/Dictionary/DictionaryDropDown";
 import listDataSource from "@/Helpers/Core/listDataSource";
 import UseBaseTableBundle from "@/Mixins/UseBaseTableBundle";
 import empty from "@/Mixins/empty";
-import Message from "@/Layouts/Parts/Message";
+import Message from "@/Components/GUI/Message";
 import BasePagination from "@/Components/Base/BasePagination";
 import PopUp from "@/Components/PopUp";
 import DataFieldInput from "@/Components/DataFields/DataFieldInput";
