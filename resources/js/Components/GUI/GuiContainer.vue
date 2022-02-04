@@ -5,10 +5,17 @@
 </template>
 
 <script>
-import AttributeKeysToClass from "../../Mixins/AttributeKeysToClass";
+import AttributeKeysToClass from "@/Components/Helpers/AttributeKeysToClass";
 
 export default {
     inheritAttrs: false,
     mixins: [AttributeKeysToClass],
 }
 </script>
+
+<style>
+.container {
+    vertical-align: top;
+    box-sizing: border-box;
+}
+</style>
