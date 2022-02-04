@@ -98,7 +98,7 @@ $input_remove_color: #e71c1c !default;
         border: none !important;
         outline: none !important;
         box-sizing: border-box;
-        height: $base_size_unit;
+        height: 100%;
         line-height: $base_size_unit;
         font-family: $project_font;
         font-size: 16px;
@@ -116,7 +116,7 @@ $input_remove_color: #e71c1c !default;
     }
 
     &__icon, &__clear {
-        height: $base_size_unit;
+        height: 100%;
         width: $base_size_unit;
         flex-grow: 0;
         flex-shrink: 0;
