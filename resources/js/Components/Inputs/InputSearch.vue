@@ -1,5 +1,5 @@
 <template>
-    <label class="input-search" :class="{'base-input__differs': isDirty}">
+    <label class="input-search" :class="{'input-search__dirty': isDirty}">
         <span class="input-search__icon">
             <IconSearch/>
         </span>
@@ -53,7 +53,7 @@ export default {
             this.$emit(this.modelValue);
         },
         clear() {
-            if(this.clearable) {
+            if (this.clearable) {
                 this.set(null);
             } else {
                 this.focus();
@@ -72,6 +72,7 @@ export default {
 
 <style lang="scss">
 @use "sass:math";
+@import "../variables";
 
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
 $base_size_unit: 35px !default;
@@ -79,6 +80,7 @@ $animation_time: 150ms !default;
 $animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
 $input_color: #1e1e1e !default;
 $input_border_color: #b7b7b7 !default;
+$input_dirty_color: #f1f7ff !default;
 $input_icon_color: #ababab !default;
 $input_remove_color: #e71c1c !default;
 
@@ -107,6 +109,10 @@ $input_remove_color: #e71c1c !default;
         width: 100%;
         background-color: transparent;
         display: block;
+    }
+
+    &__dirty {
+        background-color: $input_dirty_color;
     }
 
     &__icon, &__clear {
