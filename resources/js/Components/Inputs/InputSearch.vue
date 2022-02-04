@@ -1,5 +1,5 @@
 <template>
-    <label class="input-search" :class="{'input-search__dirty': isDirty}">
+    <label class="input-search" :class="{'input-search__dirty': isDirty, 'input-search__disabled': disabled}">
         <span class="input-search__icon">
             <IconSearch/>
         </span>
@@ -12,7 +12,7 @@
             @keyup.enter="search"
             ref="input"
         >
-        <span class="input-search__clear" :class="{'input-search__clear-enabled': clearable}" @click.stop.prevent="clear"><IconCross/></span>
+        <span class="input-search__clear" :class="{'input-search__clear-enabled': clearable && !disabled}" @click.stop.prevent="clear"><IconCross/></span>
     </label>
 </template>
 
@@ -53,7 +53,7 @@ export default {
             this.$emit(this.modelValue);
         },
         clear() {
-            if (this.clearable) {
+            if (this.clearable && !this.disabled) {
                 this.set(null);
             } else {
                 this.focus();
@@ -81,6 +81,8 @@ $animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
 $input_color: #1e1e1e !default;
 $input_border_color: #b7b7b7 !default;
 $input_dirty_color: #f1f7ff !default;
+$input_disabled_color: #626262 !default;
+$input_disabled_background_color: #e5e5e5 !default;
 $input_icon_color: #ababab !default;
 $input_remove_color: #e71c1c !default;
 
@@ -93,6 +95,7 @@ $input_remove_color: #e71c1c !default;
     height: $base_size_unit;
     border: 1px solid $input_border_color;
     border-radius: 2px;
+    color: $input_color;
 
     &__input {
         border: none !important;
@@ -102,13 +105,14 @@ $input_remove_color: #e71c1c !default;
         line-height: $base_size_unit;
         font-family: $project_font;
         font-size: 16px;
-        color: $input_color;
+        color: inherit;
         padding: 0;
         flex-grow: 1;
         flex-shrink: 1;
         width: 100%;
         background-color: transparent;
         display: block;
+        cursor: inherit;
     }
 
     &__dirty {
@@ -147,6 +151,12 @@ $input_remove_color: #e71c1c !default;
                 opacity: 1;
             }
         }
+    }
+
+    &__disabled {
+        cursor: not-allowed;
+        color: $input_disabled_color;
+        background-color: $input_disabled_background_color;
     }
 }
 </style>
