@@ -12,7 +12,9 @@
             @keyup.enter="search"
             ref="input"
         >
-        <span class="input-search__clear" :class="{'input-search__clear-enabled': clearable && !disabled}" @click.stop.prevent="clear"><IconCross/></span>
+        <span class="input-search__clear" :class="{'input-search__clear-enabled': clearable && !disabled}" @click.stop.prevent="clear">
+            <IconCross/>
+        </span>
     </label>
 </template>
 
