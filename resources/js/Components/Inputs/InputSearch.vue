@@ -86,35 +86,35 @@ $input_dirty_color: #f1f7ff !default;
 $input_disabled_color: #626262 !default;
 $input_disabled_background_color: #e5e5e5 !default;
 $input_icon_color: #ababab !default;
-$input_remove_color: #e71c1c !default;
+$input_remove_color: #FF1E00 !default;
 
 .input-search {
+    border-radius: 2px;
+    border: 1px solid $input_border_color;
+    box-sizing: border-box;
+    color: $input_color;
+    cursor: text;
     display: flex;
     flex-direction: row;
-    width: 100%;
-    box-sizing: border-box;
-    cursor: text;
     height: $base_size_unit;
-    border: 1px solid $input_border_color;
-    border-radius: 2px;
-    color: $input_color;
+    width: 100%;
 
     &__input {
+        background-color: transparent;
         border: none !important;
-        outline: none !important;
         box-sizing: border-box;
-        height: 100%;
-        line-height: $base_size_unit;
-        font-family: $project_font;
-        font-size: 16px;
         color: inherit;
-        padding: 0;
+        cursor: inherit;
+        display: block;
         flex-grow: 1;
         flex-shrink: 1;
+        font-family: $project_font;
+        font-size: 16px;
+        height: 100%;
+        line-height: $base_size_unit;
+        outline: none !important;
+        padding: 0;
         width: 100%;
-        background-color: transparent;
-        display: block;
-        cursor: inherit;
     }
 
     &__dirty {
@@ -122,28 +122,28 @@ $input_remove_color: #e71c1c !default;
     }
 
     &__icon, &__clear {
-        height: 100%;
-        width: $base_size_unit;
+        box-sizing: border-box;
         flex-grow: 0;
         flex-shrink: 0;
-        box-sizing: border-box;
+        height: 100%;
         padding: math.div($base_size_unit, 5);
+        width: $base_size_unit;
 
         & > svg {
-            width: 100%;
             height: 100%;
+            width: 100%;
         }
     }
 
     &__icon {
-        margin-right: 2px;
         color: $input_icon_color;
+        margin-right: 2px;
     }
 
     &__clear {
         color: $input_remove_color;
-        transition: opacity $animation $animation_time;
         opacity: 0;
+        transition: opacity $animation $animation_time;
 
         &-enabled {
             cursor: pointer;
@@ -156,9 +156,9 @@ $input_remove_color: #e71c1c !default;
     }
 
     &__disabled {
-        cursor: not-allowed;
-        color: $input_disabled_color;
         background-color: $input_disabled_background_color;
+        color: $input_disabled_color;
+        cursor: not-allowed;
     }
 }
 </style>
