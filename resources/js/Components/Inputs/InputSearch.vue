@@ -57,9 +57,8 @@ export default {
         clear() {
             if (this.clearable && !this.disabled) {
                 this.set(null);
-            } else {
-                this.focus();
             }
+            this.focus();
         },
         set(value) {
             if (empty(value)) {
