@@ -5,11 +5,11 @@
 
         <div class="pagination__per-page">
             <div class="pagination__per-page-select">
-                <BaseDropDown
+                <InputDropDown
                     :options="options"
                     v-model="perPage"
                     :original="10"
-                    :to-top="true"
+                    :top="true"
                 />
             </div>
             <span class="pagination__per-page-text">на страницу</span>
@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import BaseDropDown from "@/Components/Base/BaseDropDown";
+import InputDropDown from "@/Components/Inputs/InputDropDown";
 import IconBackwardFast from "@/Components/Icons/IconBackwardFast";
 import IconBackward from "@/Components/Icons/IconBackward";
 import IconForward from "@/Components/Icons/IconForward";
@@ -76,11 +76,11 @@ export default {
     },
 
     components: {
+        InputDropDown,
         IconBackward,
         IconBackwardFast,
         IconForward,
         IconForwardFast,
-        BaseDropDown,
     },
 
     data: () => ({
