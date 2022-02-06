@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Company;
+namespace App\Http\Controllers\API\Staff;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
@@ -10,7 +10,8 @@ use App\Models\Dictionaries\PositionStatus;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use JsonException;
 
 class StaffListController extends ApiController
 {
@@ -30,11 +31,13 @@ class StaffListController extends ApiController
      * @param ApiListRequest $request
      *
      * @return  JsonResponse
+     *
+     * @throws JsonException
      */
     public function list(ApiListRequest $request): JsonResponse
     {
         $query = User::query()
-            ->with(['profile', 'staffPosition'])
+            ->with(['profile', 'staffPosition', 'staffPosition.staffInfo'])
             ->has('staffPosition')
             ->leftJoin('user_profiles', 'users.id', '=', 'user_profiles.user_id')
             ->select('users.*')
@@ -43,12 +46,10 @@ class StaffListController extends ApiController
             ->orderBy('user_profiles.patronymic', 'asc');
 
         // apply filters
-        if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
-            if (!empty($filters['position_status_id'])) {
-                $query->whereHas('staffPosition', function (Builder $query) use ($filters) {
-                    $query->where('status_id', $filters['position_status_id']);
-                });
-            }
+        if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey)) && !empty($filters['position_status_id'])) {
+            $query->whereHas('staffPosition', function (Builder $query) use ($filters) {
+                $query->where('status_id', $filters['position_status_id']);
+            });
         }
 
         // apply search
@@ -67,7 +68,7 @@ class StaffListController extends ApiController
         // current page automatically resolved from request via `page` parameter
         $users = $query->paginate($request->perPage(10, $this->rememberKey));
 
-        /** @var Collection $users */
+        /** @var LengthAwarePaginator $users */
         $users->transform(function (User $user) {
             $profile = $user->profile;
             $position = $user->staffPosition;
@@ -90,14 +91,17 @@ class StaffListController extends ApiController
             ];
         });
 
-        return APIResponse::paginationList($users, [
-            'name' => 'ФИО сотрудника',
-            'position' => 'Должность',
-            'contacts' => 'Контакты',
-            'access' => 'Доступ в систему',
-        ], [
-            'filters' => $filters,
-            'filters_original' => $this->defaultFilters,
-        ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
+        return APIResponse::list(
+            $users,
+            [
+                'name' => 'ФИО сотрудника',
+                'position' => 'Должность',
+                'contacts' => 'Контакты',
+                'access' => 'Доступ в систему',
+            ],
+            $filters,
+            $this->defaultFilters,
+            []
+        )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }

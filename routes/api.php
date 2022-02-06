@@ -9,7 +9,8 @@
 use App\Http\Controllers\API\NotFoundController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
+    require base_path('routes/api/staff.php');
     require base_path('routes/api/account.php');
     require base_path('routes/api/staff_company.php');
     require base_path('routes/api/staff_settings.php');
