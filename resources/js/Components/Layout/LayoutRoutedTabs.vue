@@ -1,5 +1,5 @@
 <template>
-    <layout-tabs
+    <GuiTabs
         :tabs="tabs"
         :initial="current"
         @change="change"
@@ -7,10 +7,10 @@
 </template>
 
 <script>
-import LayoutTabs from "./LayoutTabs";
+import GuiTabs from "@/Components/GUI/GuiTabs";
 
 export default {
-    components: {LayoutTabs},
+    components: {GuiTabs},
     props: {
         tabs: {type: Object, default: null},
         initial: {type: String, default: null},
