@@ -9,7 +9,6 @@ import ReservesRegistryPage from "../../Pages/Admin/Registries/ReservesRegistryP
 import TicketRefundsListPage from "../../Pages/Admin/TicketRefundsListPage";
 import MobileSalesListPage from "../../Pages/Admin/MobileSalesListPage";
 
-import StaffListPage from "../../Pages/Admin/Company/Staff/StaffListPage";
 import StaffViewPage from "../../Pages/Admin/Company/Staff/StaffCardPage";
 import StaffEditPage from "../../Pages/Admin/Company/Staff/StaffEditPage";
 
@@ -43,8 +42,7 @@ export default [
     {path: '/registry/tickets', name: 'tickets-registry', component: TicketsRegistryPage, meta: {title: 'Реестр билетов'}},
     {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней'}},
 
-
-    {path: '/staff', name: 'staff-list', component: StaffListPage, meta: {title: 'Сотрудники'}},
+    {path: '/staff', name: 'staff-list', component: () => import('@/Pages/Admin/Staff/StaffListPage'), meta: {title: 'Сотрудники'}},
     {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника'}},
     {path: '/staff/:id/edit', name: 'staff-edit', component: StaffEditPage, meta: {title: 'Редактирование сотрудника'}},
 
