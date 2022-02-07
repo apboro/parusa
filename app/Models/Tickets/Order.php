@@ -130,6 +130,32 @@ class Order extends Model implements Statusable, Typeable
     }
 
     /**
+     *
+     * @return  Carbon|null
+     */
+    public function reserveValidUntil(): ?Carbon
+    {
+        if (!in_array($this->status_id, OrderStatus::order_reserved_statuses)) {
+            return null;
+        }
+
+        $this->loadMissing(['tickets' => function (Builder $query) {
+            $query->with('trip');
+        }]);
+
+        $closest = null;
+
+        $this->tickets->map(function (Ticket $ticket) use (&$closest) {
+            $validUntil = $ticket->trip->start_at->clone()->subMinutes($ticket->trip->cancellation_time);
+            if ($closest === null || $validUntil < $closest) {
+                $closest = $validUntil;
+            }
+        });
+
+        return $closest;
+    }
+
+    /**
      * @param int $typeId
      * @param Ticket[] $tickets
      * @param int $statusId

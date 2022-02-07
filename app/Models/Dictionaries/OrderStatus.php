@@ -37,4 +37,8 @@ class OrderStatus extends AbstractDictionary
         self::partner_paid,
         self::partner_returned,
     ];
+
+    public const order_reserved_statuses = [
+        self::partner_reserve,
+    ];
 }
