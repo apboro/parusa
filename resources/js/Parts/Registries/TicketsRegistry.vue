@@ -39,7 +39,9 @@
                     <div>{{ ticket['time'] }}</div>
                 </ListTableCell>
                 <ListTableCell>
-                    <div v-html="highlight(ticket['order_id'])"></div>
+                    <div>
+                        <router-link class="link" :to="{name: 'order-info', params: {id: ticket['order_id']}}" v-html="highlight(ticket['order_id'])"/>
+                    </div>
                     <div v-html="highlight(ticket['id'])"></div>
                 </ListTableCell>
                 <ListTableCell>

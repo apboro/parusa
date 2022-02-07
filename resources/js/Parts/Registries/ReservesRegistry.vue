@@ -25,7 +25,7 @@
             <template v-for="order in list.list">
                 <ListTableRow :no-odd-even="true">
                     <ListTableCell>
-                        <span class="link" v-html="highlight(order['id'])"></span>
+                        <router-link class="link" :to="{name: 'order-info', params: {id: order['id']}}" v-html="highlight(order['id'])"/>
                     </ListTableCell>
                     <ListTableCell>
                         {{ order['date'] }}
