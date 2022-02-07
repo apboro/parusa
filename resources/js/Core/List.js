@@ -55,14 +55,15 @@ const list = function (url, options = {}, pagination = true) {
                         this.list = response.data.list;
                         this.titles = typeof response.data.titles !== "undefined" ? response.data.titles : {};
                         this.pagination = typeof response.data.pagination !== "undefined" ? response.data.pagination : null;
-                        this.filters = typeof response.data.filters !== "undefined" ? response.data.filters : {};
-                        this.filters_original = typeof response.data.filters_original !== "undefined" ? response.data.filters_original : {};
+                        this.filters = typeof response.data.filters !== "undefined" && response.data.filters !== null ? response.data.filters : {};
+                        this.filters_original = typeof response.data.filters_original !== "undefined" && response.data.filters_original !== null ? response.data.filters_original : {};
                         this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
                         this.is_loaded = true;
                         resolve(this.list);
                     })
                     .catch(error => {
                         this.notify(error.response.message, 0, 'error');
+                        reject(error.response.status, error.response.data);
                     })
                     .finally(() => {
                         this.is_loading = false;
