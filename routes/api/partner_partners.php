@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PartnerAPI\PartnerInfoController;
 use App\Http\Controllers\PartnerAPI\PartnerSelfController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,4 +16,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/partners/view', [PartnerSelfController::class, 'get'])->middleware('auth:sanctum');
-
+Route::post('/info', [PartnerInfoController::class, 'get'])->middleware('auth:sanctum');

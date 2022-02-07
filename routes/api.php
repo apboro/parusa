@@ -17,7 +17,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     require base_path('routes/api/staff_partners.php');
     require base_path('routes/api/staff_dictionaries.php');
     require base_path('routes/api/staff_sails.php');
-    require base_path('routes/api/staff_registries.php');
+    require base_path('routes/api/registries.php');
 });
 
 Route::prefix('partner')->middleware(['auth'])->group(function () {

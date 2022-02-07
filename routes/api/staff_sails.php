@@ -14,10 +14,13 @@ use App\Http\Controllers\API\Sails\TripCardController;
 use App\Http\Controllers\API\Sails\TripDeleteController;
 use App\Http\Controllers\API\Sails\TripDetailController;
 use App\Http\Controllers\API\Sails\TripEditController;
+use App\Http\Controllers\API\Sails\TripInfoController;
 use App\Http\Controllers\API\Sails\TripsListController;
+use App\Http\Controllers\API\Sails\TripsSelectListController;
 use App\Http\Controllers\API\Sails\TripStatusController;
 use App\Http\Controllers\API\Tickets\ExcursionRatesController;
 use App\Http\Controllers\API\Tickets\ExcursionRatesDeleteController;
+use App\Http\Controllers\API\Tickets\TripTicketsAddController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,6 +52,7 @@ Route::post('/excursions/rates/update', [ExcursionRatesController::class, 'updat
 Route::post('/excursions/rates/delete', [ExcursionRatesDeleteController::class, 'delete'])->middleware('auth:sanctum');
 
 Route::post('/trips', [TripsListController::class, 'list'])->middleware('auth:sanctum');
+Route::post('/trips/info', [TripInfoController::class, 'info'])->middleware('auth:sanctum');
 Route::post('/trips/view', [TripCardController::class, 'get'])->middleware('auth:sanctum');
 Route::post('/trips/get', [TripEditController::class, 'get'])->middleware('auth:sanctum');
 Route::post('/trips/update', [TripEditController::class, 'update'])->middleware('auth:sanctum');
@@ -59,3 +63,5 @@ Route::post('/trips/discount-status', [TripStatusController::class, 'setDiscount
 Route::post('/trips/tickets-count', [TripDetailController::class, 'setTicketsCount'])->middleware('auth:sanctum');
 Route::post('/trips/cancellation-time', [TripDetailController::class, 'setCancellationTime'])->middleware('auth:sanctum');
 
+Route::post('/trips/select', [TripsSelectListController::class, 'list'])->middleware('auth:sanctum');
+Route::post('/trips/add_tickets_to_cart', [TripTicketsAddController::class, 'add'])->middleware('auth:sanctum');

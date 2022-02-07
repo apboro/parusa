@@ -16,8 +16,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/registries/orders', [OrdersRegistry::class, 'list'])->middleware('auth:sanctum');
-Route::post('/registries/orders/tickets', [OrdersRegistry::class, 'tickets'])->middleware('auth:sanctum');
-Route::post('/registries/reserves', [ReservesRegistry::class, 'list'])->middleware('auth:sanctum');
-Route::post('/registries/reserves/tickets', [ReservesRegistry::class, 'tickets'])->middleware('auth:sanctum');
-Route::post('/registries/tickets', [TicketsRegistry::class, 'list'])->middleware('auth:sanctum');
+Route::post('/registries/orders', [OrdersRegistry::class, 'list']);
+
+Route::post('/registries/orders/tickets', [OrdersRegistry::class, 'tickets']);
+Route::post('/registries/reserves', [ReservesRegistry::class, 'list']);
+Route::post('/registries/reserves/tickets', [ReservesRegistry::class, 'tickets']);
+Route::post('/registries/tickets', [TicketsRegistry::class, 'list']);
