@@ -6,7 +6,7 @@ import {createRouter, createWebHistory} from 'vue-router';
 import App from './Apps/PartnerApp.vue';
 import menu from './Definitions/Partner/Menu';
 import routes from './Definitions/Partner/Routes';
-import store from './Stores/store';
+import store from './Stores/partnerStore';
 
 import Toast from "./Plugins/Toast/toaster";
 import Dialog from "./Plugins/Dialog/dialog";

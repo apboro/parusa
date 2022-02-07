@@ -16,6 +16,32 @@ window.axios = require('axios');
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
+// Add a response interceptor
+window.axios.interceptors.response.use(
+    response => {
+        return response;
+    },
+    (error) => {
+        if (error.response.status === 419 && error.response.config && !error.response.config['__isRetryRequest']) {
+            return new Promise((resolve) => {
+                axios.get('/sanctum/csrf-cookie')
+                    .then(() => {
+                        error.response.config['__isRetryRequest'] = true;
+                        resolve(axios(error.response.config));
+                        console.log('New token retrieved.');
+                    })
+                    .catch((err) => {
+                        console.log('Can not retrieve new token', err);
+                    });
+            });
+        } else if(error.response.status === 401) {
+            window.location.reload();
+        }
+
+        return Promise.reject(error);
+    },
+);
+
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting

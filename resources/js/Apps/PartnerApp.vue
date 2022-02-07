@@ -12,6 +12,9 @@
                 </layout-user-menu>
             </template>
         </layout-header>
+        <container mt-20 mb-20>
+            <balance-widget/>
+        </container>
         <router-view/>
     </div>
     <div id="toaster" class="toaster"></div>
@@ -19,9 +22,11 @@
 </template>
 
 <script>
-import LayoutHeader from "../Components/Layout/LayoutHeader";
-import LayoutMenu from "../Components/Layout/LayoutMenu";
-import LayoutUserMenu from "../Components/Layout/LayoutUserMenu";
+import LayoutHeader from "@/Components/Layout/LayoutHeader";
+import LayoutMenu from "@/Components/Layout/LayoutMenu";
+import LayoutUserMenu from "@/Components/Layout/LayoutUserMenu";
+import BalanceWidget from "@/Parts/BalanceWidget";
+import Container from "@/Components/GUI/GuiContainer";
 
 export default {
     props: {
@@ -30,6 +35,8 @@ export default {
     },
 
     components: {
+        Container,
+        BalanceWidget,
         LayoutUserMenu,
         LayoutHeader,
         LayoutMenu,

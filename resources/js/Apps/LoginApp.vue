@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import BaseButton from "../Components/Base/BaseButton";
+import BaseButton from "../Components/GUI/GuiButton";
 import FieldString from "../Components/Fields/FieldString";
-import empty from "../Helpers/Lib/empty";
+import empty from "@/Core/Helpers/Empty";
 import validation from "../Helpers/validation";
 
 import axios from "axios";
