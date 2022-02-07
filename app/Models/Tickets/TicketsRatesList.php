@@ -35,6 +35,6 @@ class TicketsRatesList extends Model
      */
     public function rates(): HasMany
     {
-        return $this->hasMany(TicketRate::class, 'rate_id', 'id');
+        return $this->hasMany(TicketRate::class, 'rate_id', 'id')->with('grade');
     }
 }

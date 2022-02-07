@@ -34,7 +34,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Account $account
  * @property AccountTransactionType $type
  * @property AccountTransactionStatus $status
- * @property User $committer
+ * @property User|null $committer
  *
  * @property-read string $reasonTitle
  */

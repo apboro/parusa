@@ -11,6 +11,7 @@ use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Model;
 use App\Models\Tickets\TicketsRatesList;
 use App\Traits\HasStatus;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -100,5 +101,45 @@ class Excursion extends Model implements Statusable, AsDictionary
     public function ratesLists(): HasMany
     {
         return $this->hasMany(TicketsRatesList::class, 'excursion_id', 'id');
+    }
+
+    /**
+     * Check if excursion has tickets rates for given date or today if no date given.
+     *
+     * @param Carbon|null $date
+     *
+     * @return  bool
+     */
+    public function hasRateForDate(?Carbon $date): bool
+    {
+        $date = $date ?? new Carbon();
+
+        $count = $this->ratesLists()
+            ->whereDate('start_at', '<=', $date)
+            ->whereDate('end_at', '>=', $date)
+            ->count();
+
+        return $count > 0;
+    }
+
+    /**
+     * Get tickets rates for given date or today if no date given.
+     * P.S. Only one (or null) rate list exists for any date (software controlled).
+     *
+     * @param Carbon|null $date
+     *
+     * @return  TicketsRatesList|null
+     */
+    public function rateForDate(?Carbon $date): ?TicketsRatesList
+    {
+        $date = $date ?? new Carbon();
+
+        /** @var TicketsRatesList $rate */
+        $rate = $this->ratesLists()
+            ->whereDate('start_at', '<=', $date)
+            ->whereDate('end_at', '>=', $date)
+            ->first();
+
+        return $rate ?? null;
     }
 }

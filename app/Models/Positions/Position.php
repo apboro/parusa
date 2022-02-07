@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -36,6 +37,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection $roles
  * @property PositionInfo $info
  * @property StaffPositionInfo $staffInfo
+ *
+ * @property Collection $ordering
  */
 class Position extends Model implements Statusable
 {
@@ -177,6 +180,16 @@ class Position extends Model implements Statusable
      */
     public function staffInfo(): HasOne
     {
-        return$this->hasOne(StaffPositionInfo::class, 'position_id', 'id')->withDefault();
+        return $this->hasOne(StaffPositionInfo::class, 'position_id', 'id')->withDefault();
+    }
+
+    /**
+     * Tickets this position now ordering.
+     *
+     * @return  HasMany
+     */
+    public function ordering(): HasMany
+    {
+        return $this->hasMany(PositionOrderingTicket::class, 'position_id', 'id');
     }
 }

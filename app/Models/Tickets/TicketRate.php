@@ -3,10 +3,12 @@
 namespace App\Models\Tickets;
 
 use App\Helpers\PriceConverter;
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Model;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
@@ -19,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $commission_value
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property TicketGrade $grade
  * @property Collection $partnerRates
  */
 class TicketRate extends Model
@@ -35,6 +38,16 @@ class TicketRate extends Model
         'commission_type',
         'commission_value',
     ];
+
+    /**
+     * Ticket rate grade.
+     *
+     * @return  HasOne
+     */
+    public function grade(): HasOne
+    {
+        return $this->hasOne(TicketGrade::class, 'id', 'grade_id');
+    }
 
     /**
      * Rate overrides for partners.

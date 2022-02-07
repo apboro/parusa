@@ -7,6 +7,7 @@ use App\Exceptions\User\BadUserRoleException;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\Role;
+use App\Models\Partner\Partner;
 use App\Models\Positions\Position;
 use App\Models\User\User;
 use Illuminate\Http\Request;
@@ -144,5 +145,45 @@ class Currents
     public function positionId(): ?int
     {
         return $this->position() ? $this->position()->id : null;
+    }
+
+    /**
+     * Get user id.
+     *
+     * @return  int|null
+     */
+    public function userId(): ?int
+    {
+        return $this->position() ? $this->position()->user_id : null;
+    }
+
+    /**
+     * Get user.
+     *
+     * @return  User |null
+     */
+    public function user(): ?User
+    {
+        return $this->user ?? null;
+    }
+
+    /**
+     * Get partner id.
+     *
+     * @return  int|null
+     */
+    public function partnerId(): ?int
+    {
+        return $this->position() ? $this->position()->partner_id : null;
+    }
+
+    /**
+     * Get partner.
+     *
+     * @return  Partner|null
+     */
+    public function partner(): ?Partner
+    {
+        return $this->position() ? $this->position()->partner : null;
     }
 }

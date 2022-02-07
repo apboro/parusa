@@ -10,10 +10,14 @@ use App\Models\Dictionaries\TripDiscountStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Model;
+use App\Models\Tickets\Ticket;
+use App\Models\Tickets\TicketsRatesList;
 use App\Settings;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -27,7 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $excursion_id
  * @property int $status_id
  * @property int $sale_status_id
- * @property int $tickets_count
+ * @property int $tickets_total
  * @property int $discount_status_id
  * @property int $cancellation_time
  *
@@ -47,7 +51,7 @@ class Trip extends Model implements Statusable
     protected $casts = [
         'start_at' => 'datetime',
         'end_at' => 'datetime',
-        'tickets_count' => 'int',
+        'tickets_total' => 'int',
         'cancellation_time' => 'int',
     ];
 
@@ -194,5 +198,49 @@ class Trip extends Model implements Statusable
     public function excursion(): HasOne
     {
         return $this->hasOne(Excursion::class, 'id', 'excursion_id');
+    }
+
+    /**
+     * Tickets for this trip.
+     *
+     * @return  HasMany
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    /**
+     * Check if this trip has rate.
+     *
+     * @return bool
+     */
+    public function hasRate(): bool
+    {
+        $this->loadMissing('excursion');
+
+        return $this->excursion->hasRateForDate($this->start_at);
+    }
+
+    /**
+     * Get rate list for this trip.
+     *
+     * @return TicketsRatesList|null
+     */
+    public function getRate(): ?TicketsRatesList
+    {
+        $this->loadMissing('excursion');
+
+        return $this->excursion->rateForDate($this->start_at);
+    }
+
+    /**
+     * Chained trips.
+     *
+     * @return  BelongsToMany
+     */
+    public function chains(): BelongsToMany
+    {
+        return $this->belongsToMany(TripChain::class, 'trip_chain_has_trip', 'trip_id', 'chain_id');
     }
 }

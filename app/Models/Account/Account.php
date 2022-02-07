@@ -110,7 +110,7 @@ class Account extends Model
      */
     public function attachTransaction(AccountTransaction $transaction): AccountTransaction
     {
-        if (!$this->exists) {
+        if (!$this->exists && (!$this->partner_id || !$this->save())) {
             throw new AccountException('Лицевой счёт не присоединен к партнёру. Невозможно добавить операцию.');
         }
         if ($transaction->exists) {
@@ -127,12 +127,13 @@ class Account extends Model
             throw new AccountException('Недостаточно средств на счетё для совершения операции.');
         }
 
+        $transaction->account_id = $this->id;
+        $this->amount += $type->sign * $transaction->amount;
+
         $account = $this;
 
-        DB::transaction(static function () use (&$account, &$transaction, $type) {
-            $transaction->account_id = $account->id;
+        DB::transaction(static function () use ($account, $transaction) {
             $transaction->save();
-            $account->amount += $type->sign * $transaction->amount;
             $account->save();
         });
 
