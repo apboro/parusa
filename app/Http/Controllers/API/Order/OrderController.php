@@ -233,6 +233,6 @@ class OrderController extends ApiEditController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::formSuccess($successMessage);
+        return APIResponse::formSuccess($successMessage, ['order_id' => $order->id]);
     }
 }

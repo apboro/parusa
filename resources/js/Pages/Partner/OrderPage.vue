@@ -108,7 +108,7 @@ export default {
         },
 
         total() {
-            if (!this.data.loaded || !this.data.data['tickets'] || this.data.data['tickets'].length === 0) {
+            if (!this.data.is_loaded || !this.data.data['tickets'] || this.data.data['tickets'].length === 0) {
                 return '—';
             }
             let total = 0;
@@ -172,8 +172,9 @@ export default {
                         this.form.options['mode'] = 'reserve';
                         this.form.save()
                             .then((values, payload) => {
+                                console.log(values, payload);
                                 this.$store.dispatch('partner/refresh');
-                                this.load();
+                                this.$router.push({name: 'order-info', params: {id: this.form.payload['order_id']}});
                             });
                     }
                 });
@@ -192,8 +193,9 @@ export default {
                         this.form.options['mode'] = 'order';
                         this.form.save()
                             .then((values, payload) => {
+                                console.log(values, payload);
                                 this.$store.dispatch('partner/refresh');
-                                this.load();
+                                this.$router.push({name: 'order-info', params: {id: this.form.payload['order_id']}});
                             });
                     }
                 });
