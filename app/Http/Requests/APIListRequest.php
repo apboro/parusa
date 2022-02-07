@@ -47,7 +47,7 @@ class APIListRequest extends APIRequest
     {
         $search = $this->input('search');
 
-        if(empty($search)) {
+        if (empty($search)) {
             return [];
         }
 
@@ -128,12 +128,14 @@ class APIListRequest extends APIRequest
      * Get values to remember in response cookies.
      *
      * @return  string|null
-     *
-     * @throws JsonException
      */
     public function getToRemember(): ?string
     {
-        return empty($this->toRemember) ? null : json_encode($this->toRemember, JSON_THROW_ON_ERROR);
+        try {
+            return empty($this->toRemember) ? null : json_encode($this->toRemember, JSON_THROW_ON_ERROR);
+        } catch (Exception $exception) {
+            return null;
+        }
     }
 
     /**
@@ -157,7 +159,7 @@ class APIListRequest extends APIRequest
 
             $this->toRemember["{$key}_filter"] = $filters;
 
-            return $filters;
+            return array_merge($default, $filters);
         }
 
         return $default;

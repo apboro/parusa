@@ -4,6 +4,7 @@ namespace App\Http;
 
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class APIResponse
 {
@@ -95,7 +96,7 @@ class APIResponse
      *
      * @return  JsonResponse
      */
-    public static function list($list, ?array $titles = null, ?array $payload = null, ?Carbon $lastModified = null): JsonResponse
+    public static function listOld($list, ?array $titles = null, ?array $payload = null, ?Carbon $lastModified = null): JsonResponse
     {
         return response()->json([
             'status' => 'OK',
@@ -116,7 +117,7 @@ class APIResponse
      *
      * @return  JsonResponse
      */
-    public static function paginationList($list, ?array $titles = null, ?array $payload = null, ?Carbon $lastModified = null): JsonResponse
+    public static function paginationListOld($list, ?array $titles = null, ?array $payload = null, ?Carbon $lastModified = null): JsonResponse
     {
         if (!is_array($list) && method_exists($list, 'toArray')) {
             $list = $list->toArray();
@@ -136,6 +137,44 @@ class APIResponse
                 'to' => $list['to'] ?? 0,
                 'total' => $list['total'],
                 'per_page' => $list['per_page'],
+            ],
+        ], 200, self::lastModHeaders($lastModified));
+    }
+
+    /**
+     * Make list response.
+     *
+     * @param LengthAwarePaginator $list
+     * @param array|null $titles
+     * @param array|null $filters
+     * @param array|null $filtersOriginal
+     * @param array|null $payload
+     * @param Carbon|null $lastModified
+     *
+     * @return  JsonResponse
+     */
+    public static function list(
+        LengthAwarePaginator $list,
+        ?array $titles = null,
+        ?array $filters = null,
+        ?array $filtersOriginal = null,
+        ?array $payload = null,
+        ?Carbon $lastModified = null): JsonResponse
+    {
+        return response()->json([
+            'message' => 'OK',
+            'list' => $list->items(),
+            'filters' => $filters,
+            'filters_original' => $filtersOriginal,
+            'titles' => $titles,
+            'payload' => $payload,
+            'pagination' => [
+                'current_page' => $list->currentPage(),
+                'last_page' => $list->lastPage(),
+                'from' => $list->firstItem(),
+                'to' => $list->lastItem(),
+                'total' => $list->total(),
+                'per_page' => $list->perPage(),
             ],
         ], 200, self::lastModHeaders($lastModified));
     }
