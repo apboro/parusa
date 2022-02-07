@@ -28,6 +28,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Carbon $reason_date
  * @property int $committer_id
  * @property string $comments
+ * @property int $order_id
+ * @property int $ticket_id
+ * @property string $commission_type
+ * @property int $commission_value
  * @property Carbon $created_at
  * @property Carbon $updated_at
  *
@@ -66,6 +70,10 @@ class AccountTransaction extends Model implements Statusable, Typeable
         'reason_date',
         'committer_id',
         'comments',
+        'order_id',
+        'ticket_id',
+        'commission_type',
+        'commission_value',
     ];
 
     /** @var array Append attributes */
@@ -182,11 +190,11 @@ class AccountTransaction extends Model implements Statusable, Typeable
             case AccountTransactionType::account_refill_cash:
                 return 'Пополнение лицевого счёта наличными';
             case AccountTransactionType::tickets_buy:
-                return '';
+                return 'Оплата заказа №' . $this->order_id;
             case AccountTransactionType::tickets_buy_return:
                 return '';
             case AccountTransactionType::tickets_sell_commission:
-                return '';
+                return 'Начисление комисионных за продажу билета №' . $this->ticket_id;
             case AccountTransactionType::tickets_sell_commission_return:
                 return '';
         }

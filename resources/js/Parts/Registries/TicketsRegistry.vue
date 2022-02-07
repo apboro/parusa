@@ -1,92 +1,131 @@
 <template>
-    <loading-progress :loading="list.loading">
-        <!--            <page-bar-item :title="'Статус причала'">-->
-        <!--                <dictionary-drop-down-->
-        <!--                    :dictionary="'pier_statuses'"-->
-        <!--                    :placeholder="'Все'"-->
-        <!--                    :has-null="true"-->
-        <!--                    :original="list.filters_original.status_id"-->
-        <!--                    v-model="list.filters.status_id"-->
-        <!--                    @changed="reload"-->
-        <!--                />-->
-        <!--            </page-bar-item>-->
+    <LoadingProgress :loading="list.is_loading">
 
-        <base-table v-if="!empty(list.data)">
-            <template v-slot:header>
-                <base-table-head
-                    :header="['Дата и время продажи', '№ заказа, билета', 'Тип билета, стоимость', 'Комиссия, руб.', 'Рейс', 'Способ продажи', 'Продавец', 'Возврат']"/>
+        <LayoutFilters>
+            <LayoutFiltersItem :title="'Период'">
+                <base-date-input
+                    v-model="list.filters['date_from']"
+                    :original="list.filters_original['date_from']"
+                    @changed="list.load()"
+                />
+                <base-date-input
+                    v-model="list.filters['date_to']"
+                    :original="list.filters_original['date_to']"
+                    @changed="list.load()"
+                />
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :title="'Способ продажи'">
+                <DictionaryDropDown
+                    :dictionary="'order_types'"
+                    v-model="list.filters['order_type_id']"
+                    :original="list.filters_original['order_type_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
+            <template #search>
+                <LayoutFiltersItem :title="'Поиск по номеру заказа, билета'">
+                    <InputSearch v-model="list.search" @change="list.load()"/>
+                </LayoutFiltersItem>
             </template>
-            <base-table-row v-for="(ticket, key) in list.data" :key="key">
-                <base-table-cell>
-                    <base-table-cell-item>{{ ticket['date'] }}</base-table-cell-item>
-                    <base-table-cell-item>{{ ticket['time'] }}</base-table-cell-item>
-                </base-table-cell>
-                <base-table-cell>
-                    <base-table-cell-item><span class="link">{{ ticket['order_number'] }}</span></base-table-cell-item>
-                    <base-table-cell-item>{{ ticket['number'] }}</base-table-cell-item>
-                </base-table-cell>
-                <base-table-cell>
-                    <base-table-cell-item>{{ ticket['type'] }}</base-table-cell-item>
-                    <base-table-cell-item>{{ ticket['amount'] }}</base-table-cell-item>
-                </base-table-cell>
-                <base-table-cell>
-                    <base-table-cell-item>{{ ticket['commission'] }}</base-table-cell-item>
-                    <base-table-cell-item>{{ ticket['commission_amount'] }}</base-table-cell-item>
-                </base-table-cell>
-                <base-table-cell>
-                    <base-table-cell-item>{{ ticket['trip_date'] }} (№{{ ticket['trip_number'] }})</base-table-cell-item>
-                    <base-table-cell-item>{{ ticket['trip_time'] }}, {{ ticket['pier'] }}, {{ ticket['excursion'] }}</base-table-cell-item>
-                </base-table-cell>
-                <base-table-cell>{{ ticket['sale_way'] }}</base-table-cell>
-                <base-table-cell>{{ ticket['sale_by'] }}</base-table-cell>
-                <base-table-cell>
-                    <template v-if="ticket['return_up_to']">
-                        <base-table-cell-item><span class="link">Оформить возврат</span></base-table-cell-item>
-                        <base-table-cell-item>до {{ ticket['return_up_to'] }}</base-table-cell-item>
+        </LayoutFilters>
+
+        <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
+            <ListTableRow v-for="ticket in list.list">
+                <ListTableCell>
+                    <div>{{ ticket['date'] }}</div>
+                    <div>{{ ticket['time'] }}</div>
+                </ListTableCell>
+                <ListTableCell>
+                    <div v-html="highlight(ticket['order_id'])"></div>
+                    <div v-html="highlight(ticket['id'])"></div>
+                </ListTableCell>
+                <ListTableCell>
+                    <div>{{ ticket['type'] }}</div>
+                    <div>{{ ticket['amount'] }} руб.</div>
+                </ListTableCell>
+                <ListTableCell>
+                    <template v-if="ticket['commission_amount']">
+                        <div>{{ ticket['commission_type'] }}</div>
+                        <div>{{ ticket['commission_amount'] }} руб.</div>
                     </template>
                     <span v-else>—</span>
-                </base-table-cell>
-            </base-table-row>
-        </base-table>
-        <message v-else-if="list.loaded">Ничего не найдено</message>
-    </loading-progress>
-    <base-pagination :pagination="list.pagination" @pagination="setPagination"/>
+                </ListTableCell>
+                <ListTableCell>
+                    <div><b>№{{ ticket['trip_id'] }}</b> {{ ticket['trip_date'] }} {{ ticket['trip_time'] }}</div>
+                    <div>{{ ticket['excursion'] }} {{ ticket['pier'] }}</div>
+                </ListTableCell>
+                <ListTableCell>
+                    {{ ticket['order_type'] }}
+                </ListTableCell>
+                <ListTableCell>
+                    <div>{{ ticket['partner'] }}</div>
+                    <div>{{ ticket['sale_by'] }}</div>
+                </ListTableCell>
+                <ListTableCell>
+                    {{ ticket['status'] }}
+                </ListTableCell>
+                <ListTableCell>
+                    <span v-if="ticket['return_up_to'] === null">—</span>
+                    <template v-else>
+                        <div>Оформить возврат</div>
+                        <div></div>
+                    </template>
+                </ListTableCell>
+            </ListTableRow>
+        </ListTable>
+
+        <GuiMessage v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
+
+        <GuiPagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
+
+    </LoadingProgress>
 </template>
 
 <script>
-import UseBaseTableBundle from "@/Mixins/UseBaseTableBundle";
-import listDataSource from "@/Helpers/Core/listDataSource";
-import empty from "@/Mixins/empty";
+import list from "@/Core/List";
 import LoadingProgress from "@/Components/LoadingProgress";
-import Message from "@/Components/GUI/GuiMessage";
-import BasePagination from "@/Components/GUI/GuiPagination";
+import LayoutFilters from "@/Components/Layout/LayoutFilters";
+import LayoutFiltersItem from "@/Components/Layout/LayoutFiltersItem";
+import BaseDateInput from "@/Components/Base/BaseDateInput";
+import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown";
+import InputSearch from "@/Components/Inputs/InputSearch";
+import ListTable from "@/Components/ListTable/ListTable";
+import ListTableRow from "@/Components/ListTable/ListTableRow";
+import ListTableCell from "@/Components/ListTable/ListTableCell";
+import GuiMessage from "@/Components/GUI/GuiMessage";
+import GuiPagination from "@/Components/GUI/GuiPagination";
 
 export default {
     components: {
-        BasePagination,
-        Message,
-        LoadingProgress,
+        GuiPagination,
+        GuiMessage,
+        ListTableCell,
+        ListTableRow,
+        ListTable,
+        InputSearch,
+        DictionaryDropDown,
+        BaseDateInput,
+        LayoutFiltersItem,
+        LayoutFilters,
+        LoadingProgress
 
     },
 
-    mixins: [UseBaseTableBundle, empty],
-
     data: () => ({
-        list: null,
+        list: list('/api/registries/tickets'),
     }),
 
     created() {
-        this.list = listDataSource('/api/registries/tickets');
-        this.list.load(1, null, true);
+        this.list.initial();
     },
 
     methods: {
-        setPagination(page, perPage) {
-            this.list.load(page, perPage);
+        highlight(text) {
+            return this.$highlight(String(text), String(this.list.search), true);
         },
-        reload() {
-            this.list.load();
-        },
-    },
+    }
 }
 </script>

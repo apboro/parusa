@@ -3,14 +3,31 @@
 namespace App\Http\Controllers\API\Registries;
 
 use App\Http\APIResponse;
+use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Tickets\Ticket;
+use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Crypt;
 
 class TicketsRegistry extends ApiController
 {
+    protected array $defaultFilters = [
+        'date_from' => null,
+        'date_to' => null,
+        'order_type_id' => null,
+    ];
+
+    protected array $rememberFilters = [
+    ];
+
+    protected string $rememberKey = CookieKeys::ticket_registry_list;
+
     /**
      * Get tickets list.
      *
@@ -20,37 +37,79 @@ class TicketsRegistry extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
-        $tickets = [
-            'data' => [],
-            'current_page' => 1,
-            'last_page' => 1,
-            'from' => 1,
-            'to' => 20,
-            'total' => 20,
-            'per_page' => 20,
-        ];
+        $current = Currents::get($request);
 
-        for ($i = 100; $i < 120; $i++) {
-            $tickets['data'][] = [
-                'date' => Carbon::now()->format('d.m.Y'),
-                'time' => Carbon::now()->format('H:i'),
-                'order_number' => rand(100, 700),
-                'number' => $i,
-                'type' => ['Взрослый', 'Детский', 'Пенсионный'][rand(0, 2)],
-                'amount' => number_format(rand(100, 700), 2, ',', ''),
-                'commission' => rand(0, 1) === 0 ? 'фикс.' : rand(5, 15) . '%',
-                'commission_amount' => number_format(rand(10, 60), 2, ',', ''),
-                'trip_date' => Carbon::now()->format('d.m.Y'),
-                'trip_time' => Carbon::now()->format('H:i'),
-                'trip_number' => rand(100, 1000),
-                'pier' => 'Адмиралтейский, 10',
-                'excursion' => 'Медный всадник',
-                'sale_way' => ['Партнёрский кабинет', 'Витрина на сайте', 'QR-код'][$way = rand(0, 2)],
-                'sale_by' => $way !== 2 ? 'Удалов С.А.' : '—',
-                'return_up_to' => rand(0, 1) === 1 ? Carbon::now()->addHours(rand(10, 60))->format('d.m.Y H:i') : null,
-            ];
+        $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('d.m.Y');
+        $this->defaultFilters['date_to'] = Carbon::now()->format('d.m.Y');
+        $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
+
+        $query = Ticket::query()
+            ->with(['status', 'order', 'order.type', 'order.partner', 'order.position', 'order.position.user.profile', 'transaction', 'grade', 'trip', 'trip.startPier', 'trip.excursion'])
+            ->when(!$current->isStaff(), function (Builder $query) use ($current) {
+                $query->whereHas('order', function (Builder $query) use ($current) {
+                    $query->where('partner_id', $current->partnerId());
+                });
+            });
+
+        // apply filters
+        if (!empty($filters['date_from'])) {
+            $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
+        }
+        if (!empty($filters['date_to'])) {
+            $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+        }
+        if (!empty($filters['order_type_id'])) {
+            $query->whereHas('order', function (Builder $query) use ($filters) {
+                $query->where('type_id', $filters['order_type_id']);
+            });
         }
 
-        return APIResponse::paginationListOld($tickets);
+        // apply search
+        if ($terms = $request->search()) {
+            $query->where(function (Builder $query) use ($terms) {
+                $query
+                    ->whereIn('id', $terms)
+                    ->orWhereHas('order', function (Builder $query) use ($terms) {
+                        $query->whereIn('id', $terms);
+                    });
+            });
+        }
+
+        $tickets = $query->paginate($request->perPage(10));
+
+        /** @var LengthAwarePaginator $tickets */
+        $tickets->transform(function (Ticket $ticket) {
+            if ($ticket->transaction) {
+                $commissionType = $ticket->transaction->commission_type === 'fixed' ? 'фикс.' : $ticket->transaction->commission_value . '%';
+            }
+            return [
+                'date' => $ticket->created_at->format('d.m.Y'),
+                'time' => $ticket->created_at->format('H:i'),
+                'order_id' => $ticket->order_id,
+                'id' => $ticket->id,
+                'type' => $ticket->grade->name,
+                'amount' => $ticket->base_price,
+                'status' => $ticket->status->name,
+                'commission_type' => $commissionType ?? null,
+                'commission_amount' => $ticket->transaction !== null ? $ticket->transaction->amount : null,
+                'trip_date' => $ticket->trip->start_at->format('d.m.Y'),
+                'trip_time' => $ticket->trip->start_at->format('H:i'),
+                'trip_id' => $ticket->trip_id,
+                'excursion' => $ticket->trip->excursion->name,
+                'pier' => $ticket->trip->startPier->name,
+                'order_type' => $ticket->order->type->name,
+                'partner' => $ticket->order->partner->name,
+                'sale_by' => $ticket->order->position ? $ticket->order->position->user->profile->compactName : null,
+                'return_up_to' => null,
+            ];
+        });
+
+        return APIResponse::list(
+            $tickets,
+            ['Дата и время продажи', '№ заказа, билета', 'Тип билета, стоимость', 'Комиссия, руб.', 'Рейс', 'Способ продажи', 'Продавец', 'Статус', 'Возврат'],
+            $filters,
+            $this->defaultFilters,
+            []
+        );
     }
 }

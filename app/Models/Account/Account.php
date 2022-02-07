@@ -165,12 +165,12 @@ class Account extends Model
         DB::transaction(static function () use (&$account, &$transaction, $type, $attributes) {
             // update account amount
             /** @var AccountTransactionType $newType */
-            $newType = $attributes['type_id'] ? AccountTransactionType::get($attributes['type_id']) : null;
+            $newType = isset($attributes['type_id']) ? AccountTransactionType::get($attributes['type_id']) : null;
             $account->amount -= $type->sign * $transaction->amount;
             if ($newType) {
-                $account->amount += $newType->sign * $attributes['amount'] ?? $transaction->amount;
+                $account->amount += $newType->sign * (isset($attributes['amount']) ? $attributes['amount'] : $transaction->amount);
             } else {
-                $account->amount += $type->sign * $attributes['amount'] ?? $transaction->amount;
+                $account->amount += $type->sign * (isset($attributes['amount']) ? $attributes['amount'] : $transaction->amount);
             }
             // update transaction attributes
             foreach ($attributes as $key => $value) {

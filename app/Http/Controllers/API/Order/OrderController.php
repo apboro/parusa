@@ -217,6 +217,10 @@ class OrderController extends ApiEditController
             }
             // create order
             $order = Order::make(OrderType::partner_sale, $tickets, $status_id, $partner->id, $position->id, $data['email'] ?? null, $data['name'] ?? null, $data['phone'] ?? null);
+            // attach order_id to transaction
+            if ($status_id === OrderStatus::partner_paid) {
+                $partner->account->updateTransaction($transaction, ['order_id' => $order->id]);
+            }
             // pay commissions
             $order->payCommissions();
             // clear cart
