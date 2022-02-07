@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Order $order
  * @property Trip $trip
  * @property TicketGrade $grade
+ * @property AccountTransaction $transaction
  */
 class Ticket extends Model implements Statusable
 {
@@ -97,6 +98,16 @@ class Ticket extends Model implements Statusable
     }
 
     /**
+     * Relater transaction.
+     *
+     * @return  HasOne
+     */
+    public function transaction(): HasOne
+    {
+        return $this->hasOne(AccountTransaction::class, 'ticket_id', 'id');
+    }
+
+    /**
      * Convert base_price from store value to real price.
      *
      * @param int $value
@@ -149,20 +160,16 @@ class Ticket extends Model implements Statusable
             return;
         }
 
-        /** @var TicketPartnerRate|null $rateSpecial */
-        $rateSpecial = $rate->partnerRates()->where('partner_id', $partner->id)->first();
-
-        if ($rateSpecial) {
-            $amount = $rateSpecial->commission_value * ($rateSpecial->commission_type === 'fixed' ? 1 : $this->base_price / 100);
-        } else {
-            $amount = $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100);
-        }
+        $rate = $rate->partnerRates()->where('partner_id', $partner->id)->first() ?? $rate;
 
         $partner->account->attachTransaction(new AccountTransaction([
             'type_id' => AccountTransactionType::tickets_sell_commission,
             'status_id' => AccountTransactionStatus::accepted,
             'timestamp' => Carbon::now(),
-            'amount' => $amount,
+            'amount' => $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100),
+            'ticket_id' => $this->id,
+            'commission_type' => $rate->commission_type,
+            'commission_value' => $rate->commission_value,
         ]));
     }
 }
