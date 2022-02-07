@@ -23,7 +23,7 @@ class FrontendController extends Controller
      *
      * @return Response|RedirectResponse
      */
-    public function frontend(Request $request): Response|RedirectResponse
+    public function frontend(Request $request)
     {
         /** @var User $user */
         $user = $request->user();
@@ -72,6 +72,7 @@ class FrontendController extends Controller
                     'organization' => __('common.root organization'),
                     'position' => $current->position()->title,
                     'positions' => $positionsCount > 1,
+                    'can_reserve' => false,
                 ],
             ])->withCookie($current->positionToCookie());
         }
@@ -82,6 +83,7 @@ class FrontendController extends Controller
                 'organization' => $current->position()->partner->name,
                 'position' => $current->position()->title,
                 'positions' => $positionsCount > 1,
+                'can_reserve' => $current->partner()->profile->can_reserve_tickets,
             ],
         ])->withCookie($current->positionToCookie());
     }
