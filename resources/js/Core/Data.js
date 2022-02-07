@@ -30,7 +30,7 @@ const data = function (url) {
                         if (typeof this.loaded_callback === "function") {
                             this.loaded_callback(this.data, this.payload);
                         }
-                        this.loaded = true;
+                        this.is_loaded = true;
                         resolve(this.data, this.payload);
                     })
                     .catch(error => {

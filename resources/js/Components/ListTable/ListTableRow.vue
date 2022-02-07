@@ -17,9 +17,9 @@ export default {
 @import "../variables";
 
 $list_table_border_color: #e3e3e3 !default;
-$list_table_hover_background_color: #f5faff !default;
+$list_table_hover_background_color: #eaf5ff !default;
 $list_table_odd_background_color: #ffffff !default;
-$list_table_even_background_color: #fbfbfb !default;
+$list_table_even_background_color: #f9f8f8 !default;
 
 .list-table__row {
     border-bottom: 1px solid $list_table_border_color;
