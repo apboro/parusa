@@ -74,7 +74,7 @@ class PartnerRepresentativePositionsController extends ApiEditController
         $position->info->save();
 
         return APIResponse::formSuccess(
-            $position->wasRecentlyCreated ? 'Представитель прикреплйм' : 'Запись обновлена',
+            $position->wasRecentlyCreated ? 'Представитель прикреплён' : 'Запись обновлена',
             [
                 'id' => $partner->id,
                 'positions' => $partner->positions->map(function (Position $position) {

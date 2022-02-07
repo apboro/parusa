@@ -50,7 +50,7 @@ class TransactionsListController extends ApiController
 
         $account = $partner->account;
 
-        $query = $account->transactions();
+        $query = $account->transactions()->with(['committer', 'committer.profile']);
 
         $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('d.m.Y');
         $this->defaultFilters['date_to'] = Carbon::now()->format('d.m.Y');
@@ -99,7 +99,7 @@ class TransactionsListController extends ApiController
                 'reason_date' => $transaction->reason_date ? $transaction->reason_date->format('d.m.Y H:i') : null,
                 'reason_title' => $transaction->reasonTitle,
                 'comments' => $transaction->comments,
-                'operator' => $transaction->committer->profile->compactName,
+                'operator' => $transaction->committer ? $transaction->committer->profile->compactName : null,
                 'editable' => $transaction->type->editable,
                 'deletable' => $transaction->type->deletable,
             ];
@@ -113,7 +113,7 @@ class TransactionsListController extends ApiController
 
         $total = $account->calcAmount($toDate, $fromDate, $transactionTypes);
 
-        return APIResponse::paginationList($transactions, [
+        return APIResponse::paginationListOld($transactions, [
             'date' => 'Дата и время операции',
             'type' => 'Тип операции',
             'amount' => 'Сумма, руб.',

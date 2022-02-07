@@ -58,7 +58,7 @@ class PiersListController extends ApiController
             ];
         });
 
-        return APIResponse::paginationList($piers, [
+        return APIResponse::paginationListOld($piers, [
             'name' => 'Название',
             'status' => 'Статус',
         ], [

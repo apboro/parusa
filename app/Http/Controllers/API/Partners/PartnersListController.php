@@ -112,7 +112,7 @@ class PartnersListController extends ApiController
         // available types ids
         $types = Partner::query()->select('type_id')->distinct()->pluck('type_id')->toArray();
 
-        return APIResponse::paginationList($partners, [
+        return APIResponse::paginationListOld($partners, [
             'name' => 'Название партнера',
             'representatives' => 'Представители партнера',
             'type' => 'Тип партнера',

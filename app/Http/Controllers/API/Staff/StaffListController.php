@@ -11,7 +11,6 @@ use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
-use JsonException;
 
 class StaffListController extends ApiController
 {
@@ -31,8 +30,6 @@ class StaffListController extends ApiController
      * @param ApiListRequest $request
      *
      * @return  JsonResponse
-     *
-     * @throws JsonException
      */
     public function list(ApiListRequest $request): JsonResponse
     {
@@ -41,9 +38,9 @@ class StaffListController extends ApiController
             ->has('staffPosition')
             ->leftJoin('user_profiles', 'users.id', '=', 'user_profiles.user_id')
             ->select('users.*')
-            ->orderBy('user_profiles.lastname', 'asc')
-            ->orderBy('user_profiles.firstname', 'asc')
-            ->orderBy('user_profiles.patronymic', 'asc');
+            ->orderBy('user_profiles.lastname')
+            ->orderBy('user_profiles.firstname')
+            ->orderBy('user_profiles.patronymic');
 
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey)) && !empty($filters['position_status_id'])) {

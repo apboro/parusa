@@ -101,7 +101,7 @@ class RepresentativeListController extends ApiController
             ];
         });
 
-        return APIResponse::paginationList($users, [
+        return APIResponse::paginationListOld($users, [
             'name' => 'ФИО представителя',
             'position' => 'Компания-партнер, должность',
             'contacts' => 'Контакты',

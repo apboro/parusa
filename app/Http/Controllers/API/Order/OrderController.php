@@ -1,0 +1,234 @@
+<?php
+
+namespace App\Http\Controllers\API\Order;
+
+use App\Exceptions\Account\AccountException;
+use App\Http\APIResponse;
+use App\Http\Controllers\ApiEditController;
+use App\Models\Account\AccountTransaction;
+use App\Models\Dictionaries\AccountTransactionStatus;
+use App\Models\Dictionaries\AccountTransactionType;
+use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\TicketStatus;
+use App\Models\Dictionaries\TripSaleStatus;
+use App\Models\Positions\PositionOrderingTicket;
+use App\Models\Tickets\Order;
+use App\Models\Tickets\Ticket;
+use App\Models\User\Helpers\Currents;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+
+class OrderController extends ApiEditController
+{
+    /**
+     * Get current order.
+     *
+     * @param Request $request
+     *
+     * @return  JsonResponse
+     */
+    public function get(Request $request): JsonResponse
+    {
+        $current = Currents::get($request);
+
+        if ($current->isStaff()) {
+            return APIResponse::error('Сотрудники не могут оформлять заказы.');
+        }
+
+        if (($position = $current->position()) === null || $current->partner() === null) {
+            return APIResponse::error('Вы не являетесь представителем компании-партнёра.');
+        }
+
+        $tickets = $position->ordering()
+            ->with(['grade', 'trip', 'trip.excursion', 'trip.startPier'])
+            ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
+            ->leftJoin('dictionary_ticket_grades', 'dictionary_ticket_grades.id', '=', 'position_ordering_tickets.grade_id')
+            ->orderBy('trips.start_at')
+            ->orderBy('dictionary_ticket_grades.order')
+            ->select('position_ordering_tickets.*')
+            ->get();
+        $limits = [];
+
+        $tickets = $tickets->map(function (PositionOrderingTicket $ticket) use (&$limits) {
+            $trip = $ticket->trip;
+            if (!isset($limits[$trip->id])) {
+                $limits[$trip->id] = [
+                    'count' => $trip->tickets()->count(),
+                    'total' => $trip->tickets_total,
+                ];
+            }
+            return [
+                'id' => $ticket->id,
+                'trip_id' => $trip->id,
+                'trip_start_date' => $trip->start_at->format('d.m.Y'),
+                'trip_start_time' => $trip->start_at->format('H:i'),
+                'excursion' => $trip->excursion->name,
+                'pier' => $trip->startPier->name,
+                'grade' => $ticket->grade->name,
+                'base_price' => $price = $ticket->getPrice(),
+                'quantity' => $ticket->quantity,
+                'available' => ($price !== null) && $trip->hasStatus(TripSaleStatus::selling, 'sale_status_id') && ($trip->start_at > Carbon::now()),
+            ];
+        });
+
+        return APIResponse::response([
+            'tickets' => $tickets,
+            'limits' => $limits,
+            'can_reserve' => $current->partner()->profile->can_reserve_tickets,
+        ], []);
+    }
+
+    /**
+     * Remove ticket from current order.
+     *
+     * @param Request $request
+     *
+     * @return  JsonResponse
+     */
+    public function remove(Request $request): JsonResponse
+    {
+        $current = Currents::get($request);
+
+        if ($current->isStaff()) {
+            return APIResponse::error('Сотрудники не могут оформлять заказы.');
+        }
+
+        if (($position = $current->position()) === null || $current->partner() === null) {
+            return APIResponse::error('Вы не являетесь представителем компании-партнёра.');
+        }
+
+        $id = $request->input('ticket_id');
+
+        PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id])->delete();
+
+        return APIResponse::formSuccess('Билет удалён из заказа.');
+    }
+
+    /**
+     * Make order.
+     *
+     * @param Request $request
+     *
+     * @return  JsonResponse
+     *
+     * @throws AccountException
+     */
+    public function make(Request $request): JsonResponse
+    {
+        $current = Currents::get($request);
+
+        if ($current->isStaff()) {
+            return APIResponse::error('Сотрудники не могут оформлять заказы.');
+        }
+
+        if (($position = $current->position()) === null || ($partner = $current->partner()) === null) {
+            return APIResponse::error('Вы не являетесь представителем компании-партнёра.');
+        }
+
+        $mode = $request->input('mode');
+        switch ($mode) {
+            case 'reserve':
+                if (!$partner->profile->can_reserve_tickets) {
+                    return APIResponse::error('Ошибка. Неверное действие.');
+                }
+                $status_id = OrderStatus::partner_reserve;
+                $successMessage = 'Бронь оформлена';
+                break;
+            case 'order':
+                $status_id = OrderStatus::partner_paid;
+                $successMessage = 'Заказ оформлен';
+                break;
+            default:
+                return APIResponse::error('Ошибка. Неверное действие.');
+        }
+
+        $flat = $request->input('data');
+        $data = Arr::undot($flat);
+
+        $count = count($data['tickets'] ?? []);
+
+        if ($count === 0) {
+            return APIResponse::error('Нельзя оформить заказ без билетов.');
+        }
+
+        $rules = ['email' => 'email|nullable'];
+        $titles = ['email' => 'Email'];
+        for ($i = 0; $i < $count; $i++) {
+            $rules["tickets.$i.quantity"] = 'nullable|integer|min:0|bail';
+            $titles["tickets.$i.quantity"] = 'Количество';
+        }
+
+        if ($errors = $this->validate($data, $rules, $titles)) {
+            return APIResponse::formError($flat, $rules, $titles, $errors);
+        }
+
+        $totalAmount = 0;
+        $tickets = [];
+
+        foreach ($data['tickets'] as $id => $quantity) {
+            if ($quantity['quantity'] > 0) {
+                if (null === ($ordering = PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id])->first())) {
+                    return APIResponse::error('Ошибка. Неверные данные билета.');
+                }
+                switch ($status_id) {
+                    case OrderStatus::partner_reserve:
+                        $ticketStatus = TicketStatus::partner_reserved;
+                        break;
+                    case OrderStatus::partner_paid:
+                        $ticketStatus = TicketStatus::partner_payed;
+                        break;
+                    default:
+                        return APIResponse::error('Ошибка. Неверные данные заказа.');
+                }
+                for ($i = 1; $i <= $quantity['quantity']; $i++) {
+                    /** @var PositionOrderingTicket $ordering */
+                    $ticket = new Ticket([
+                        'trip_id' => $ordering->trip_id,
+                        'grade_id' => $ordering->grade_id,
+                        'status_id' => $ticketStatus,
+                    ]);
+                    $totalAmount += $ordering->getPrice();
+                    $tickets[] = $ticket;
+                }
+            }
+        }
+
+        if (count($tickets) === 0) {
+            return APIResponse::error('Нельзя оформить заказ без билетов.');
+        }
+
+        if (($status_id === OrderStatus::partner_paid) && ($partner->account->amount - $partner->account->limit < $totalAmount)) {
+            return APIResponse::error('Недостаточно средств на лицевом счёте для оформления заказа.');
+        }
+
+        try {
+            // add transaction first
+            if ($status_id === OrderStatus::partner_paid) {
+                $transaction = $partner->account->attachTransaction(new AccountTransaction([
+                    'type_id' => AccountTransactionType::tickets_buy,
+                    'status_id' => AccountTransactionStatus::accepted,
+                    'timestamp' => Carbon::now(),
+                    'amount' => $totalAmount,
+                ]));
+            }
+            // create order
+            $order = Order::make(OrderType::partner_sale, $tickets, $status_id, $partner->id, $position->id, $data['email'] ?? null, $data['name'] ?? null, $data['phone'] ?? null);
+            // pay commissions
+            $order->payCommissions();
+            // clear cart
+            PositionOrderingTicket::query()->where('position_id', $position->id)->delete();
+        } catch (Exception $exception) {
+            // remove transaction on error
+            if (isset($transaction)) {
+                $partner->account->detachTransaction($transaction);
+            }
+            return APIResponse::error($exception->getMessage());
+        }
+
+        return APIResponse::formSuccess($successMessage);
+    }
+}

@@ -51,6 +51,6 @@ class TicketsRegistry extends ApiController
             ];
         }
 
-        return APIResponse::paginationList($tickets);
+        return APIResponse::paginationListOld($tickets);
     }
 }

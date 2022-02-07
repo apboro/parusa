@@ -33,13 +33,13 @@ class ReservesRegistry extends ApiController
             $reserves['data'][] = [
                 'id' => $i,
                 'seller' => [],
-                'tickets_count' => rand(1, 10),
+                'tickets_total' => rand(1, 10),
                 'amount' => number_format(rand(500, 2700), 2, ',', ''),
                 'date_up_to' => Carbon::now()->format('d.m.Y, H:i'),
             ];
         }
 
-        return APIResponse::paginationList($reserves);
+        return APIResponse::paginationListOld($reserves);
     }
 
 
@@ -68,6 +68,6 @@ class ReservesRegistry extends ApiController
             ];
         }
 
-        return APIResponse::list($tickets);
+        return APIResponse::listOld($tickets);
     }
 }

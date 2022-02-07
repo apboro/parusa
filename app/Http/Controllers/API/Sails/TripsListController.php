@@ -8,8 +8,11 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Sails\Trip;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use JsonException;
 
 class TripsListController extends ApiController
 {
@@ -34,6 +37,8 @@ class TripsListController extends ApiController
      * @param ApiListRequest $request
      *
      * @return  JsonResponse
+     *
+     * @throws JsonException
      */
     public function list(ApiListRequest $request): JsonResponse
     {
@@ -41,6 +46,7 @@ class TripsListController extends ApiController
 
         $query = Trip::query()
             ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus'])
+            ->withCount(['chains', 'tickets'])
             ->orderBy('start_at', 'asc');
 
         // apply filters
@@ -75,15 +81,18 @@ class TripsListController extends ApiController
                 'excursion' => $trip->excursion->name,
                 'pier' => $trip->startPier->name,
                 'ship' => $trip->ship->name,
-                'tickets' => [],
+                'tickets_count' => $trip->getAttribute('tickets_count'),
+                'tickets_total' => $trip->tickets_total,
                 'status' => $trip->status->name,
                 'status_id' => $trip->status_id,
                 'sale_status' => $trip->saleStatus->name,
+                'has_rate' => $trip->hasRate(),
                 'sale_status_id' => $trip->sale_status_id,
+                'chained' => $trip->getAttribute('chains_count') > 0,
             ];
         });
 
-        return APIResponse::paginationList($trips, [
+        return APIResponse::paginationListOld($trips, [
             'start_at' => 'Отправление',
             'trip_id' => '№ рейса',
             'excursion' => 'Экскурсия',

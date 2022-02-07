@@ -3,12 +3,31 @@
 namespace App\Http\Controllers\API\Registries;
 
 use App\Http\APIResponse;
+use App\Http\Controllers\API\CookieKeys;
+use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\OrderStatus;
+use App\Models\Tickets\Order;
+use App\Models\Tickets\Ticket;
+use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 
-class OrdersRegistry extends \App\Http\Controllers\ApiController
+class OrdersRegistry extends ApiController
 {
+    protected array $defaultFilters = [
+        'date_from' => null,
+        'date_to' => null,
+        'order_type_id' => null,
+    ];
+
+    protected array $rememberFilters = [
+    ];
+
+    protected string $rememberKey = CookieKeys::order_registry_list;
+
     /**
      * Get orders list.
      *
@@ -18,54 +37,83 @@ class OrdersRegistry extends \App\Http\Controllers\ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
-        $orders = [
-            'data' => [],
-            'current_page' => 1,
-            'last_page' => 1,
-            'from' => 1,
-            'to' => 20,
-            'total' => 20,
-            'per_page' => 20,
-        ];
+        $current = Currents::get($request);
 
-        for ($i = 100; $i < 120; $i++) {
-            $orders['data'][] = [
-                'id' => $i,
-                'date' => Carbon::now()->format('d.m.Y, H:i'),
-                'info' => [],
-                'tickets_count' => rand(1, 10),
-                'amount' => number_format(rand(500, 2700), 2, ',', ''),
-            ];
+        $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('d.m.Y');
+        $this->defaultFilters['date_to'] = Carbon::now()->format('d.m.Y');
+        $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
+
+        $query = Order::query()
+            ->with(['type', 'status', 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade', 'partner', 'position', 'position.user', 'position.user.profile'])
+            ->withCount(['tickets'])
+            ->when(!$current->isStaff(), function (Builder $query) use ($current) {
+                $query->where('partner_id', $current->partnerId());
+            })
+            ->whereIn('status_id', OrderStatus::order_paid_statuses);
+
+        // apply filters
+        if (!empty($filters['date_from'])) {
+            $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
+        }
+        if (!empty($filters['date_to'])) {
+            $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+        }
+        if (!empty($filters['order_type_id'])) {
+            $query->where('type_id', $filters['order_type_id']);
         }
 
-        return APIResponse::paginationList($orders);
-    }
-
-    /**
-     * Get tickets list for order.
-     *
-     * @param ApiListRequest $request
-     *
-     * @return  JsonResponse
-     */
-    public function tickets(ApiListRequest $request): JsonResponse
-    {
-        $tickets = [];
-
-        for ($i = 100; $i < 105; $i++) {
-            $tickets[] = [
-                'id' => $i,
-                'trip_date' => Carbon::now()->format('d.m.Y'),
-                'trip_time' => Carbon::now()->format('H:i'),
-                'excursion' => 'Медный всадник',
-                'pier' => 'Адмиралтейский, 10',
-                'type' => ['Взрослый', 'Детский', 'Пенсионный'][rand(0, 2)],
-                'amount' => number_format(rand(100, 700), 2, ',', ''),
-                'status' => 'Оплачен',
-                'used' => rand(0, 1) === 1 ? Carbon::now()->addHours(-rand(10, 60))->format('d.m.Y H:i') : null,
-            ];
+        // apply search
+        if ($terms = $request->search()) {
+            $query->where(function (Builder $query) use ($terms) {
+                $query
+                    ->whereIn('id', $terms)
+                    ->orWhereHas('tickets', function (Builder $query) use ($terms) {
+                        $query->whereIn('id', $terms);
+                    });
+            });
         }
 
-        return APIResponse::list($tickets);
+        $orders = $query->paginate($request->perPage(10));
+
+        /** @var LengthAwarePaginator $orders */
+        $orders->transform(function (Order $order) {
+            return
+                [
+                    'id' => $order->id,
+                    'date' => $order->created_at->format('d.m.Y, H:i'),
+                    'tickets_total' => $order->getAttribute('tickets_count'),
+                    'amount' => $order->tickets->sum('base_price'),
+                    'info' => [
+                        'buyer_name' => $order->name,
+                        'buyer_email' => $order->email,
+                        'buyer_phone' => $order->phone,
+                        'order_type' => $order->type->name,
+                        'partner_id' => $order->partner_id,
+                        'partner' => $order->partner->name,
+                        'position_id' => $order->position_id,
+                        'position_name' => $order->position ? $order->position->user->profile->compactName : null,
+                    ],
+                    'tickets' => $order->tickets->map(function (Ticket $ticket) {
+                        return [
+                            'id' => $ticket->id,
+                            'trip_date' => $ticket->trip->start_at->format('d.m.Y'),
+                            'trip_time' => $ticket->trip->start_at->format('H:i'),
+                            'excursion' => $ticket->trip->excursion->name,
+                            'pier' => $ticket->trip->startPier->name,
+                            'type' => $ticket->grade->name,
+                            'amount' => $ticket->base_price,
+                            'status' => $ticket->status->name,
+                        ];
+                    }),
+                ];
+        });
+
+        return APIResponse::list(
+            $orders,
+            ['№ заказа', 'Дата оплаты заказа', 'Информация о заказе', 'Билетов в заказе', 'Стоимость заказа'],
+            $filters,
+            $this->defaultFilters,
+            []
+        );
     }
 }

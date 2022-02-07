@@ -58,7 +58,7 @@ class ExcursionsListController extends ApiController
             ];
         });
 
-        return APIResponse::paginationList($excursions, [
+        return APIResponse::paginationListOld($excursions, [
             'name' => 'Название',
             'status' => 'Статус',
         ], [

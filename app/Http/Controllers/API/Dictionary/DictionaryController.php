@@ -10,6 +10,7 @@ use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\AccountTransactionTypeRefill;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\PiersStatus;
@@ -68,6 +69,8 @@ class DictionaryController extends ApiController
         'transaction_types' => AccountTransactionType::class,
         'transaction_primary_types' => AccountTransactionTypePrimary::class,
         'transaction_refill_types' => AccountTransactionTypeRefill::class,
+
+        'order_types' => OrderType::class,
     ];
 
     /**
@@ -106,6 +109,6 @@ class DictionaryController extends ApiController
 
         $dictionary = $query->orderBy('order')->orderBy('name')->get();
 
-        return APIResponse::list($dictionary, null, null, $actual);
+        return APIResponse::listOld($dictionary, null, null, $actual);
     }
 }
