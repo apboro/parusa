@@ -10,7 +10,9 @@
 
         <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']">
             <ListTableRow v-for="ticket in info.data['tickets']">
-                <ListTableCell>{{ ticket['id'] }}</ListTableCell>
+                <ListTableCell>
+                    <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
+                </ListTableCell>
                 <ListTableCell>
                     <div>{{ ticket['trip_start_date'] }}</div>
                     <div>{{ ticket['trip_start_time'] }}</div>
@@ -42,18 +44,18 @@
         <template v-if="info.is_loaded">
             <template v-if="!isReserve">
                 <GuiContainer w-70 inline>
-                    <GuiButton>Скачать заказ в PDF</GuiButton>
-                    <GuiButton>Отправить клиенту на почту</GuiButton>
-                    <GuiButton>Распечатать</GuiButton>
+                    <GuiButton @click="in_dew">Скачать заказ в PDF</GuiButton>
+                    <GuiButton @click="in_dew">Отправить клиенту на почту</GuiButton>
+                    <GuiButton @click="in_dew">Распечатать</GuiButton>
                 </GuiContainer>
                 <GuiContainer w-30 inline text-right>
-                    <GuiButton :color="'red'">Оформить возврат</GuiButton>
+                    <GuiButton @click="in_dew" :color="'red'">Оформить возврат</GuiButton>
                 </GuiContainer>
             </template>
             <template v-else>
                 <GuiContainer text-right>
-                    <GuiButton :color="'green'" v-if="info.data['can_buy']">Выкупить бронь</GuiButton>
-                    <GuiButton :color="'red'">Аннулировать бронь</GuiButton>
+                    <GuiButton @click="in_dew" :color="'green'" v-if="info.data['can_buy']">Выкупить бронь</GuiButton>
+                    <GuiButton @click="in_dew" :color="'red'">Аннулировать бронь</GuiButton>
                 </GuiContainer>
             </template>
         </template>
@@ -61,7 +63,6 @@
 </template>
 
 <script>
-import LoadingProgress from "@/Components/LoadingProgress";
 import data from "@/Core/Data";
 import LayoutPage from "@/Components/Layout/LayoutPage";
 import GuiContainer from "@/Components/GUI/GuiContainer";
@@ -82,7 +83,6 @@ export default {
         GuiValue,
         GuiContainer,
         LayoutPage,
-        LoadingProgress,
     },
 
     props: {
@@ -105,5 +105,11 @@ export default {
     created() {
         this.info.load({id: this.orderId})
     },
+
+    methods: {
+        in_dew() {
+            this.$toast.info('Функционал находится в разработке');
+        },
+    }
 }
 </script>

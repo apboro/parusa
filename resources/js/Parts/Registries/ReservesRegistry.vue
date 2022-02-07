@@ -57,7 +57,9 @@
                             </tr>
                             </thead>
                             <tr v-for="(ticket, key) in order['tickets']" :key="key">
-                                <td class="p-5" v-html="highlight(ticket['id'])"></td>
+                                <td class="p-5">
+                                    <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}" v-html="highlight(ticket['id'])"/>
+                                </td>
                                 <td class="p-5">
                                     <div>{{ ticket['trip_date'] }}</div>
                                     <div>{{ ticket['trip_time'] }}</div>
@@ -84,12 +86,14 @@
         <GuiPagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
         <PopUp :title="'Информация о брони'" ref="info" :close-on-overlay="true">
-            <GuiValue :title="'Имя'">{{ info['buyer_name'] }}</GuiValue>
-            <GuiValue :title="'Email'">{{ info['buyer_email'] }}</GuiValue>
-            <GuiValue :title="'Телефон'">{{ info['buyer_phone'] }}</GuiValue>
-            <GuiValue :title="'Способ продажи'">{{ info['order_type'] }}</GuiValue>
-            <GuiValue :dots="info['position_name'] !== null" :title="'Партнёр'">{{ info['partner'] }}</GuiValue>
-            <GuiValue v-if="info['position_name'] !== null" :dots="false" :title="'Продавец'">{{ info['position_name'] }}</GuiValue>
+            <template v-if="info">
+                <GuiValue :title="'Имя'">{{ info['buyer_name'] }}</GuiValue>
+                <GuiValue :title="'Email'">{{ info['buyer_email'] }}</GuiValue>
+                <GuiValue :title="'Телефон'">{{ info['buyer_phone'] }}</GuiValue>
+                <GuiValue :title="'Способ продажи'">{{ info['order_type'] }}</GuiValue>
+                <GuiValue :dots="info['position_name'] !== null" :title="'Партнёр'">{{ info['partner'] }}</GuiValue>
+                <GuiValue v-if="info['position_name'] !== null" :dots="false" :title="'Продавец'">{{ info['position_name'] }}</GuiValue>
+            </template>
         </PopUp>
     </LoadingProgress>
 </template>

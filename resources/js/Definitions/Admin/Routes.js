@@ -82,6 +82,7 @@ export default [
      * Order
      */
     {path: '/order-info/:id', name: 'order-info', component: () => import("@/Pages/Admin/Order/OrderInfoPage"), meta: {title: 'Заказ'}},
+    {path: '/ticket-info/:id', name: 'ticket-info', component: () => import("@/Pages/Admin/Order/TicketInfoPage"), meta: {title: 'Билет'}},
 
     // {path: '/test', name: 'test', component: TestPage, meta: {title: 'Страница для тестов'}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},

@@ -22,6 +22,7 @@ export default [
 
     {path: '/order', name: 'order', component: OrderPage, meta: {title: 'Оформление заказа'}},
     {path: '/order-info/:id', name: 'order-info', component: () => import("@/Pages/Partner/OrderInfoPage"), meta: {title: 'Заказ'}},
+    {path: '/ticket-info/:id', name: 'ticket-info', component: () => import("@/Pages/Partner/TicketInfoPage"), meta: {title: 'Билет'}},
 
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 ];
