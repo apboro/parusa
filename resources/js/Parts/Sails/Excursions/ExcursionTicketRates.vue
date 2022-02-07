@@ -65,10 +65,10 @@ import moment from "moment";
 import DeleteEntry from "@/Mixins/DeleteEntry";
 
 import LoadingProgress from "@/Components/LoadingProgress";
-import Container from "@/Components/GUI/Container";
-import Hint from "@/Components/GUI/Hint";
-import Heading from "@/Components/GUI/Heading";
-import Message from "@/Components/GUI/Message";
+import Container from "@/Components/GUI/GuiContainer";
+import Hint from "@/Components/GUI/GuiHint";
+import Heading from "@/Components/GUI/GuiHeading";
+import Message from "@/Components/GUI/GuiMessage";
 import PopUp from "@/Components/PopUp";
 import ExcursionTicketRatesRate from "@/Parts/Sails/Excursions/ExcursionTicketRatesRate";
 import ExcursionTicketRatesForm from "./ExcursionTicketRatesForm";

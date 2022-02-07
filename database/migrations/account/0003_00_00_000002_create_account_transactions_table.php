@@ -23,13 +23,14 @@ class CreateAccountTransactionsTable extends Migration
             $table->unsignedInteger('type_id');
             $table->unsignedInteger('status_id')->default(AccountTransactionStatus::default);
 
-            $table->timestamp('timestamp');
             $table->unsignedBigInteger('amount');
+
+            $table->timestamp('timestamp');
 
             $table->string('reason')->nullable();
             $table->date('reason_date')->nullable();
 
-            $table->unsignedBigInteger('committer_id');
+            $table->unsignedBigInteger('committer_id')->nullable();
 
             $table->text('comments')->nullable();
 

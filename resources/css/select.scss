@@ -1,8 +1,15 @@
+@use "sass:math";
+
 @import "normalize";
 @import "variables";
 @import "colors";
 @import "shadows";
-@import "base/base_button";
+@import "mixins/no-selection";
+
+$base_size_unit: 35px !default;
+$base_white_color: #ffffff !default;
+$base_primary_color: #0D74D7 !default;
+$base_primary_hover_color: lighten(#0D74D7, 10%) !default;
 
 body, html {
     width: 100%;
@@ -88,5 +95,37 @@ body {
         &-highlighted {
             border-color: #adc8ed;
         }
+    }
+}
+
+.button {
+    display: inline-block;
+    text-decoration: none;
+    height: $base_size_unit;
+    line-height: $base_size_unit;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 2px;
+    box-sizing: border-box;
+    padding: 0 math.div($base_size_unit, 2);
+    letter-spacing: 0.03rem;
+    color: $base_white_color;
+    border: 1px solid $base_primary_color;
+    background-color: $base_primary_color;
+    transition: background-color $animation $animation_time, border-color $animation $animation_time, box-shadow $animation $animation_time;
+    font-family: $project_font;
+    font-size: 14px;
+    box-shadow: $shadow_1;
+    text-transform: uppercase;
+    @include noSelection;
+
+    &:not(:last-child) {
+        margin-right: 20px;
+    }
+
+    &:hover {
+        box-shadow: $shadow_hover;
+        background-color: $base_primary_hover_color;
+        border-color: $base_primary_hover_color;
     }
 }

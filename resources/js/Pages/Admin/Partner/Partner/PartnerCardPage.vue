@@ -8,7 +8,7 @@
                 :link-title="'К списку партнёров'"
             >
                 <actions-menu>
-                    <span @click="deletePartner">Удалить партнёра</span>
+                    <span class="link" @click="deletePartner">Удалить партнёра</span>
                 </actions-menu>
             </page-title-bar>
         </template>
@@ -53,15 +53,15 @@ import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActionsMenu from "../../../../Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import PartnerInfo from "../../../../Parts/Partners/Partner/PartnerInfo";
 import PartnerRepresentatives from "../../../../Parts/Partners/Partner/PartnerRepresentatives";
 import OrderRegistry from "../../../../Parts/Registries/OrderRegistry";
-import Container from "../../../../Components/GUI/Container";
+import Container from "../../../../Components/GUI/GuiContainer";
 import TicketsRegistry from "../../../../Parts/Registries/TicketsRegistry";
 import ReservesRegistry from "../../../../Parts/Registries/ReservesRegistry";
-import LayoutTabs from "../../../../Components/Layout/LayoutTabs";
+import LayoutTabs from "../../../../Components/GUI/GuiTabs";
 import PartnerTicketRates from "../../../../Parts/Partners/Partner/PartnerTicketRates";
 import PartnerAccount from "../../../../Parts/Partners/Partner/PartnerAccount";
 

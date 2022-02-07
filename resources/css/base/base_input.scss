@@ -176,4 +176,25 @@
             visibility: visible;
         }
     }
+
+    &__days {
+        cursor: default;
+        &-label {
+            line-height: $base_base_unit;
+            font-family: $project_font;
+            box-sizing: border-box;
+            margin: 0 2px;
+            cursor: pointer;
+            padding: 0 5px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        &-check {
+            width: $base_base_unit * 0.5;
+            height: $base_base_unit * 0.5;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+    }
 }

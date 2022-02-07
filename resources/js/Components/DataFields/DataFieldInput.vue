@@ -16,7 +16,7 @@
 
 <script>
 import FieldInput from "../Fields/FieldInput";
-import empty from "../../Helpers/Lib/empty";
+import empty from "@/Core/Helpers/Empty";
 
 export default {
     props: {

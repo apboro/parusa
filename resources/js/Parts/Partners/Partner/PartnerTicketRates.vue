@@ -9,7 +9,7 @@
 
         <template v-for="excursion in data.data">
             <heading bold mt-30>{{ excursion['name'] }}</heading>
-            <message v-if="excursion['rates'].length === 0">Тарифы не заданы</message>
+            <message border mt-15 v-if="excursion['rates'].length === 0">Тарифы не заданы</message>
             <partner-ticket-rates-rate v-else v-for="rate in excursion['rates']"
                                        :rate="rate"
                                        :excursion="{id: excursion['id'], name: excursion['name']}"
@@ -34,11 +34,11 @@ import genericDataSource from "../../../Helpers/Core/genericDataSource";
 import {parseRules} from "@/Helpers/Core/validator/validator";
 import formDataSource from "../../../Helpers/Core/formDataSource";
 import LoadingProgress from "../../../Components/LoadingProgress";
-import Hint from "../../../Components/GUI/Hint";
-import Heading from "../../../Components/GUI/Heading";
+import Hint from "../../../Components/GUI/GuiHint";
+import Heading from "../../../Components/GUI/GuiHeading";
 import PopUp from "../../../Components/PopUp";
 import moment from "moment";
-import Message from "@/Components/GUI/Message";
+import Message from "@/Components/GUI/GuiMessage";
 import PartnerTicketRatesRate from "./PartnerTicketRatesRate";
 import PartnerTicketRatesForm from "./PartnerTicketRatesForm";
 

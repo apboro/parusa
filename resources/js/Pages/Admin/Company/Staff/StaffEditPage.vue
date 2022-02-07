@@ -54,13 +54,13 @@ import formDataSource from "../../../../Helpers/Core/formDataSource";
 
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import Container from "../../../../Components/GUI/Container";
+import Container from "../../../../Components/GUI/GuiContainer";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
 import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataFieldDictionaryDropdown";
 import DataFieldMaskedInput from "../../../../Components/DataFields/DataFieldMaskedInput";
 import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
 import DataFieldDropdown from "../../../../Components/DataFields/DataFieldDropdown";
-import BaseButton from "../../../../Components/Base/BaseButton";
+import BaseButton from "../../../../Components/GUI/GuiButton";
 import DataFieldDate from "../../../../Components/DataFields/DataFieldDate";
 
 export default {

@@ -29,7 +29,7 @@
 
 <script>
 import IconDropdown from "../Icons/IconDropdown";
-import empty from "../../Helpers/Lib/empty";
+import empty from "@/Core/Helpers/Empty";
 import ScrollBox from "../ScrollBox";
 import BaseIconInput from "./BaseIconInput";
 import IconSearch from "../Icons/IconSearch";

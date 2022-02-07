@@ -19,7 +19,7 @@
                 <base-table-row>
                     <base-table-cell><span class="link">{{ reserve['id'] }}</span></base-table-cell>
                     <base-table-cell><span class="link">Продавец</span></base-table-cell>
-                    <base-table-cell>{{ reserve['tickets_count'] }}</base-table-cell>
+                    <base-table-cell>{{ reserve['tickets_total'] }}</base-table-cell>
                     <base-table-cell>{{ reserve['amount'] }}</base-table-cell>
                     <base-table-cell>{{ reserve['date_up_to'] }}</base-table-cell>
                     <base-table-cell :class="'pv-5'">
@@ -73,9 +73,9 @@ import empty from "@/Mixins/empty";
 import listDataSource from "@/Helpers/Core/listDataSource";
 
 import LoadingProgress from "@/Components/LoadingProgress";
-import Message from "@/Components/GUI/Message";
-import BasePagination from "@/Components/Base/BasePagination";
-import Expand from "@/Components/Expand";
+import Message from "@/Components/GUI/GuiMessage";
+import BasePagination from "@/Components/GUI/GuiPagination";
+import Expand from "@/Components/GUI/GuiExpand";
 
 export default {
     components: {

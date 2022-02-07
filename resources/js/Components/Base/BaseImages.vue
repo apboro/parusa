@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import clone from "../../Helpers/Lib/clone";
+import clone from "@/Core/Helpers/Clone";
 import BaseImagesImage from "./Parts/BaseImagesImage";
 import IconPlus from "../Icons/IconPlus";
 

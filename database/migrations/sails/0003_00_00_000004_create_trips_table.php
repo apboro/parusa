@@ -31,7 +31,7 @@ class CreateTripsTable extends Migration
             $table->unsignedInteger('status_id')->default(TripStatus::default);
             $table->unsignedInteger('sale_status_id')->default(TripSaleStatus::default);
 
-            $table->unsignedInteger('tickets_count');
+            $table->unsignedInteger('tickets_total');
 
             $table->unsignedInteger('discount_status_id')->default(TripDiscountStatus::default);
 

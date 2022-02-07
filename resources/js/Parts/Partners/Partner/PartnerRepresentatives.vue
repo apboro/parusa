@@ -73,10 +73,10 @@ import {parseRules} from "../../../Helpers/Core/validator/validator";
 import UseBaseTableBundle from "../../../Mixins/UseBaseTableBundle";
 import DeleteEntry from "../../../Mixins/DeleteEntry";
 
-import Container from "../../../Components/GUI/Container";
-import AccessLocked from "../../../Components/AccessLocked";
-import ActionsMenu from "../../../Components/ActionsMenu";
-import Message from "@/Components/GUI/Message";
+import Container from "../../../Components/GUI/GuiContainer";
+import AccessLocked from "../../../Components/GUI/GuiAccessIndicator";
+import ActionsMenu from "../../../Components/GUI/GuiActionsMenu";
+import Message from "@/Components/GUI/GuiMessage";
 import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
 import DataFieldDictionaryDropdown from "../../../Components/DataFields/DataFieldDictionaryDropdown";

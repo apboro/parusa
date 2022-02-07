@@ -8,7 +8,7 @@
                 :link-title="'К списку представителей'"
             >
                 <actions-menu>
-                    <span @click="deleteRepresentative">Удалить представителя</span>
+                    <span class="link" @click="deleteRepresentative">Удалить представителя</span>
                 </actions-menu>
             </page-title-bar>
         </template>
@@ -43,13 +43,13 @@ import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActionsMenu from "../../../../Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import RepresentativePersonal from "../../../../Parts/Partners/Representatives/RepresentativePersonal";
-import Container from "../../../../Components/GUI/Container";
+import Container from "../../../../Components/GUI/GuiContainer";
 import LoadingProgress from "../../../../Components/LoadingProgress";
-import Value from "../../../../Components/GUI/Value";
-import BaseButton from "../../../../Components/Base/BaseButton";
+import Value from "../../../../Components/GUI/GuiValue";
+import BaseButton from "../../../../Components/GUI/GuiButton";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
 
 export default {

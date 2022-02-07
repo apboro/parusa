@@ -47,6 +47,10 @@
         }
     }
 
+    & th {
+        text-align: left;
+    }
+
     & td {
         vertical-align: top;
         color: $base_table_cell_color;
@@ -74,5 +78,9 @@
 
     &__decorated tr{
         border-top: 1px dashed $gui_value_dots_color;
+    }
+
+    &__border tr{
+        border-bottom: 1px dashed $gui_value_dots_color;
     }
 }

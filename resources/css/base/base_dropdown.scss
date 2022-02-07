@@ -52,6 +52,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-grow: 0;
+            flex-shrink: 0;
 
             & > svg {
                 transition: transform $animation $animation_time;
@@ -113,6 +115,7 @@
             height: $base_base_unit * 0.8;
             line-height: $base_base_unit * 0.8;
             white-space: nowrap;
+            display: block;
 
             &-current {
                 color: $base_active_color;

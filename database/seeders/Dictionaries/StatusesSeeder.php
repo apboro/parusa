@@ -4,11 +4,13 @@ namespace Database\Seeders\Dictionaries;
 
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PiersStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\ShipStatus;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripDiscountStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
@@ -56,7 +58,7 @@ class StatusesSeeder extends GenericSeeder
         TripSaleStatus::class => [
             TripSaleStatus::selling => ['name' => 'Идет продажа'],
             TripSaleStatus::closed_manually => ['name' => 'Продажа закрыта (вручную)'],
-            TripSaleStatus::closed_automatically => ['name' => 'Продажа закрыта (автоматически)'],
+            TripSaleStatus::closed_automatically => ['name' => 'Продажа закрыта (автоматически)', 'enabled' => false],
         ],
         TripDiscountStatus::class => [
             TripDiscountStatus::enabled => ['name' => 'Разрешены'],
@@ -65,6 +67,22 @@ class StatusesSeeder extends GenericSeeder
 
         AccountTransactionStatus::class => [
             AccountTransactionStatus::accepted => ['name' => 'Принято'],
-        ]
+        ],
+
+        TicketStatus::class => [
+            TicketStatus::creating => ['name' => 'Оформляется'],
+            TicketStatus::partner_reserved => ['name' => 'Забронирован'],
+            TicketStatus::partner_payed => ['name' => 'Оплачен'],
+            TicketStatus::partner_returned => ['name' => 'Оформлен возврат'],
+            TicketStatus::expired => ['name' => 'Просрочен'],
+            // использован после просрочки
+        ],
+
+        OrderStatus::class => [
+            OrderStatus::partner_reserve => ['name' => 'Бронь'],
+            OrderStatus::partner_paid => ['name' => 'Оплачен'],
+            OrderStatus::partner_returned => ['name' => 'Оформлен возврат'],
+            OrderStatus::creating => ['name' => 'Создаётся'],
+        ],
     ];
 }

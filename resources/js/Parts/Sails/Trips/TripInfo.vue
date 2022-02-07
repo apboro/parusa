@@ -27,12 +27,12 @@
 
         <container w-50 mt-30>
             <value :title="'Общее количество билетов'">
-                <span class="link" v-if="editable" @click="ticketsCountChange">{{ datasource.data['tickets_count'] }}</span>
-                <span v-else>{{ datasource.data['tickets_count'] }}</span>
+                <span class="link" v-if="editable" @click="ticketsCountChange">{{ datasource.data['tickets_total'] }}</span>
+                <span v-else>{{ datasource.data['tickets_total'] }}</span>
             </value>
-            <value :title="'Выкуплено'">0</value>
-            <value :title="'Забронировано'">0</value>
-            <value :title="'Свободно'">{{ datasource.data['tickets_count'] }}</value>
+            <value :title="'Выкуплено'">{{ datasource.data['tickets_sold'] }}</value>
+            <value :title="'Забронировано'">{{ datasource.data['tickets_reserved'] }}</value>
+            <value :title="'Свободно'">{{ datasource.data['tickets_total'] - datasource.data['tickets_sold'] - datasource.data['tickets_reserved'] }}</value>
         </container>
 
         <container w-50 mt-30>
@@ -69,14 +69,14 @@
 </template>
 
 <script>
-import Container from "../../../Components/GUI/Container";
-import Value from "../../../Components/GUI/Value";
-import Activity from "../../../Components/Activity";
-import ValueArea from "../../../Components/GUI/ValueArea";
+import Container from "../../../Components/GUI/GuiContainer";
+import Value from "../../../Components/GUI/GuiValue";
+import Activity from "../../../Components/GUI/GuiActivityIndicator";
+import ValueArea from "../../../Components/GUI/GuiValueArea";
 import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
 import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
-import Hint from "../../../Components/GUI/Hint";
+import Hint from "../../../Components/GUI/GuiHint";
 import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
 import formDataSource from "../../../Helpers/Core/formDataSource";
 import {parseRules} from "../../../Helpers/Core/validator/validator";
@@ -147,7 +147,7 @@ export default {
         },
 
         ticketsAfterSave(payload) {
-            this.datasource.data['tickets_count'] = payload['tickets_count'];
+            this.datasource.data['tickets_total'] = payload['tickets_total'];
             this.form.loaded = false;
             this.$refs.form_popup.hide();
         },
@@ -161,7 +161,7 @@ export default {
         ticketsCountChange() {
             this.form_popup_title = 'Общее количество билетов';
             this.form = formDataSource(null, '/api/trips/tickets-count', {id: this.tripId});
-            const input = Number(this.datasource.data['tickets_count']);
+            const input = Number(this.datasource.data['tickets_total']);
             this.form.titles = {input: 'Общее количество билетов'};
             this.form.values = {input: input};
             this.form.originals = {input: input};

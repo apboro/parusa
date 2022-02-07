@@ -8,7 +8,7 @@
                 :link-title="'К списку экскурсий'"
             >
                 <actions-menu>
-                    <span @click="deleteExcursion">Удалить экскурсию</span>
+                    <span class="link" @click="deleteExcursion">Удалить экскурсию</span>
                 </actions-menu>
             </page-title-bar>
         </template>
@@ -29,10 +29,10 @@ import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActionsMenu from "../../../../Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import ExcursionInfo from "../../../../Parts/Sails/Excursions/ExcursionInfo";
-import Message from "@/Components/GUI/Message";
+import Message from "@/Components/GUI/GuiMessage";
 import ExcursionTicketRates from "../../../../Parts/Sails/Excursions/ExcursionTicketRates";
 
 export default {

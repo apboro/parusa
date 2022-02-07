@@ -14,7 +14,7 @@ class CreateDictionaryTicketGradesTable extends Migration
     public function up(): void
     {
         Schema::create('dictionary_ticket_grades', static function (Blueprint $table) {
-            $table->increments('id')->from(1000);
+            $table->unsignedSmallInteger('id', true)->from(1000);
             $table->string('name');
             $table->boolean('enabled')->nullable()->default(true);
             $table->integer('order')->nullable()->default(0);

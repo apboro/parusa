@@ -1,7 +1,7 @@
 import {parseRules, validate} from "./validator/validator"
 import {getMessage} from "./validator/messages";
-import clone from "../Lib/clone";
-import empty from "../Lib/empty";
+import clone from "@/Core/Helpers/Clone";
+import empty from "@/Core/Helpers/Empty";
 
 const formDataSource = function (dataSourceUrl, dataTargetUrl, options = {}) {
     let form = {
@@ -59,45 +59,49 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options = {}) {
         },
 
         save() {
-            this.saving = true;
+            return new Promise((resolve, reject) => {
+                this.saving = true;
 
-            let options = clone(this.options);
-            options['data'] = this.values;
+                let options = clone(this.options);
+                options['data'] = this.values;
 
-            axios.post(this.dataTargetUrl, options)
-                .then(response => {
-                    if (this.toaster !== null) {
-                        this.toaster.success(response.data.message, 3000);
-                    } else {
-                        console.log(response.data.message);
-                    }
-                    this.originals = clone(this.values);
-                    this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
-                    if (typeof this.afterSave === "function") {
-                        this.afterSave(response.data.payload);
-                    }
-                })
-                .catch(error => {
-                    if (error.response.status === 422) {
-                        if (typeof error.response.data.errors !== "undefined") {
-                            this.validation_errors = error.response.data.errors;
-                            Object.keys(this.validation_errors).map(key => {
-                                this.valid[key] = false;
-                            });
+                axios.post(this.dataTargetUrl, options)
+                    .then(response => {
+                        if (this.toaster !== null) {
+                            this.toaster.success(response.data.message, 3000);
+                        } else {
+                            console.log(response.data.message);
                         }
-                    }
-                    if (this.toaster !== null) {
-                        this.toaster.error(error.response.data.message, 5000);
-                    } else {
-                        console.log(error.response.data.message);
-                    }
-                    if (typeof this.failedSave === "function") {
-                        this.failedSave(error.response);
-                    }
-                })
-                .finally(() => {
-                    this.saving = false;
-                });
+                        this.originals = clone(this.values);
+                        this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
+                        if (typeof this.afterSave === "function") {
+                            this.afterSave(this.payload);
+                        }
+                        resolve(this.values, this.payload);
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            if (typeof error.response.data.errors !== "undefined") {
+                                this.validation_errors = error.response.data.errors;
+                                Object.keys(this.validation_errors).map(key => {
+                                    this.valid[key] = false;
+                                });
+                            }
+                        }
+                        if (this.toaster !== null) {
+                            this.toaster.error(error.response.data.message, 5000);
+                        } else {
+                            console.log(error.response.data.message);
+                        }
+                        if (typeof this.failedSave === "function") {
+                            this.failedSave(error.response);
+                        }
+                        reject(error.response);
+                    })
+                    .finally(() => {
+                        this.saving = false;
+                    });
+            });
         },
 
         validateAll() {
@@ -147,7 +151,7 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options = {}) {
                     this.validation_rules[name] = parseRules(rules);
                 }
             }
-            if(title !== null || typeof this.titles[name] === "undefined") {
+            if (title !== null || typeof this.titles[name] === "undefined") {
                 this.titles[name] = title;
             }
             if (initial) {
@@ -161,6 +165,29 @@ const formDataSource = function (dataSourceUrl, dataTargetUrl, options = {}) {
             } else {
                 console.log(type + ' ' + message);
             }
+        },
+
+        reset() {
+            this.originals = {};
+            this.values = {};
+            this.titles = {};
+            this.validation_rules = {};
+            this.payload = {};
+            this.valid = {};
+            this.valid_all = false;
+            this.validation_errors = {};
+            this.loaded = false;
+            this.loading = false;
+            this.saving = false;
+        },
+
+        unset(name) {
+            delete this.originals[name];
+            delete this.values[name];
+            delete this.titles[name];
+            delete this.validation_rules[name];
+            delete this.valid[name];
+            delete this.validation_errors[name];
         },
     }
 

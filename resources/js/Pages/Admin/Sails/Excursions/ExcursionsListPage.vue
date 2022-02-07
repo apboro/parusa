@@ -4,7 +4,7 @@
         <template v-slot:header>
             <page-title-bar :title="$route.meta['title']">
                 <actions-menu>
-                    <router-link :to="{ name: 'excursion-edit', params: { id: 0 }}">Добавить экскурсию</router-link>
+                    <router-link class="link" :to="{ name: 'excursion-edit', params: { id: 0 }}">Добавить экскурсию</router-link>
                 </actions-menu>
             </page-title-bar>
         </template>
@@ -47,12 +47,12 @@ import empty from "../../../../Mixins/empty";
 
 import ListPage from "../../../../Layouts/ListPage";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActionsMenu from "../../../../Components/GUI/GuiActionsMenu";
 import PageBarItem from "../../../../Layouts/Parts/PageBarItem";
 import DictionaryDropDown from "../../../../Components/Dictionary/DictionaryDropDown";
-import Activity from "../../../../Components/Activity";
-import Message from "@/Components/GUI/Message";
-import BasePagination from "../../../../Components/Base/BasePagination";
+import Activity from "../../../../Components/GUI/GuiActivityIndicator";
+import Message from "@/Components/GUI/GuiMessage";
+import BasePagination from "../../../../Components/GUI/GuiPagination";
 
 export default {
     components: {

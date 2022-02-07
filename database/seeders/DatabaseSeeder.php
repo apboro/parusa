@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Database\Seeders\Dictionaries\AccountTransactionTypesSeeder;
 use Database\Seeders\Dictionaries\ContactTypesSeeder;
+use Database\Seeders\Dictionaries\OrderTypesSeeder;
 use Database\Seeders\Dictionaries\StatusesSeeder;
 use Database\Seeders\Dictionaries\UserRolesSeeder;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -16,6 +17,7 @@ class DatabaseSeeder extends Seeder
         StatusesSeeder::class,
         ContactTypesSeeder::class,
         AccountTransactionTypesSeeder::class,
+        OrderTypesSeeder::class
     ];
 
     /**

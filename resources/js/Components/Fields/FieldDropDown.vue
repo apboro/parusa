@@ -14,6 +14,7 @@
                 :has-null="hasNull"
                 :valid="valid"
                 :search="search"
+                :to-top="toTop"
                 v-model="proxyValue"
                 @changed="changed"
             />
@@ -44,6 +45,8 @@ export default {
         required: {type: Boolean, default: false},
         disabled: {type: Boolean, default: false},
         valid: {type: Boolean, default: true},
+
+        toTop: {type: Boolean, default: false},
 
         errors: {type: Array, default: () => ([])},
     },

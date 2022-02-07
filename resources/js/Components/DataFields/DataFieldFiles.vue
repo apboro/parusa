@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import empty from "../../Helpers/Lib/empty";
+import empty from "@/Core/Helpers/Empty";
 import FieldFiles from "../Fields/FieldFiles";
 
 export default {

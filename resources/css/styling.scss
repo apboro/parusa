@@ -67,8 +67,16 @@
     align-items: center;
 }
 
+.left {
+    text-align: left;
+}
+
 .center {
     text-align: center;
+}
+
+.right {
+    text-align: right;
 }
 
 .self-end {
@@ -106,6 +114,18 @@
 
 .line-through {
     text-decoration: line-through;
+}
+
+.h-1em {
+    height: 1em;
+}
+
+.no-wrap {
+    white-space: nowrap;
+}
+
+.va-middle {
+    vertical-align: middle !important;
 }
 
 /** Widths in %, from 5% to 100%, step by 5% */

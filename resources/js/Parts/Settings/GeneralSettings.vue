@@ -18,8 +18,8 @@
 
 <script>
 import formDataSource from "../../Helpers/Core/formDataSource";
-import Container from "../../Components/GUI/Container";
-import BaseButton from "../../Components/Base/BaseButton";
+import Container from "../../Components/GUI/GuiContainer";
+import BaseButton from "../../Components/GUI/GuiButton";
 import LoadingProgress from "../../Components/LoadingProgress";
 import DataFieldInput from "../../Components/DataFields/DataFieldInput";
 import DataFieldDropdown from "../../Components/DataFields/DataFieldDropdown";

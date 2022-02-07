@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import empty from "../../Helpers/Lib/empty";
+import empty from "@/Core/Helpers/Empty";
 import FieldMaskedInput from "../Fields/FieldMaskedInput";
 
 export default {

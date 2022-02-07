@@ -77,17 +77,17 @@
 import formDataSource from "../../../Helpers/Core/formDataSource";
 import {parseRules} from "@/Helpers/Core/validator/validator";
 
-import Container from "../../../Components/GUI/Container";
-import Value from "../../../Components/GUI/Value";
-import Activity from "../../../Components/Activity";
-import Hint from "../../../Components/GUI/Hint";
-import ValueArea from "../../../Components/GUI/ValueArea";
+import Container from "../../../Components/GUI/GuiContainer";
+import Value from "../../../Components/GUI/GuiValue";
+import Activity from "../../../Components/GUI/GuiActivityIndicator";
+import Hint from "../../../Components/GUI/GuiHint";
+import ValueArea from "../../../Components/GUI/GuiValueArea";
 import BaseLinkButton from "../../../Components/Base/BaseLinkButton";
 import PopUp from "../../../Components/PopUp";
 import DictionaryDropDown from "../../../Components/Dictionary/DictionaryDropDown";
 import DataFieldInput from "../../../Components/DataFields/DataFieldInput";
 import BaseDropDown from "../../../Components/Base/BaseDropDown";
-import FilesList from "../../../Components/GUI/FilesList";
+import FilesList from "../../../Components/GUI/GuiFilesList";
 
 export default {
     props: {

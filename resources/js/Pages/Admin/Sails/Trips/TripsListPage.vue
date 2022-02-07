@@ -4,56 +4,66 @@
         <template v-slot:header>
             <page-title-bar :title="title">
                 <actions-menu>
-                    <router-link :to="{ name: 'trip-edit', params: { id: 0 }, query: linkQuery}">Добавить рейс</router-link>
+                    <router-link class="link" :to="{ name: 'trip-edit', params: { id: 0 }, query: linkQuery}">Добавить рейс</router-link>
                 </actions-menu>
             </page-title-bar>
         </template>
 
         <template v-slot:filters>
-            <page-bar-item :class="'w-250px'" :title="'Дата'">
+            <page-bar-item :class="'w-25'" :title="'Дата'">
+                <ButtonIcon :class="'mr-5'" :border="false" @click="setDay(-1)">
+                    <IconBackward/>
+                </ButtonIcon>
                 <base-date-input
                     :original="list.filters_original['date']"
                     v-model="list.filters['date']"
                     @changed="dateChanged"
                 />
+                <ButtonIcon :class="'ml-5'" :border="false" @click="setDay(1)">
+                    <IconForward/>
+                </ButtonIcon>
             </page-bar-item>
-            <page-bar-item :class="'w-250px'" :title="'Статус движения'">
-                <dictionary-drop-down
+            <page-bar-item :class="'w-25'" :title="'Статус движения'">
+                <DictionaryDropDown
                     :dictionary="'trip_statuses'"
-                    :placeholder="'Все'"
-                    :has-null="true"
-                    :original="list.filters_original['status_id']"
                     v-model="list.filters['status_id']"
-                    @changed="reload"
+                    :original="list.filters_original['status_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="reload"
                 />
             </page-bar-item>
-            <page-bar-item :class="'w-250px'" :title="'Экскурсия'">
-                <dictionary-drop-down
+            <page-bar-item :class="'w-25'" :title="'Экскурсия'">
+                <DictionaryDropDown
                     :dictionary="'excursions'"
+                    v-model="list.filters['excursion_id']"
+                    :original="list.filters_original['excursion_id']"
                     :placeholder="'Все'"
                     :has-null="true"
-                    :original="list.filters_original['excursion_id']"
                     :search="true"
-                    v-model="list.filters['excursion_id']"
-                    @changed="reload"
+                    :small="true"
+                    @change="reload"
                 />
             </page-bar-item>
-            <page-bar-item :class="'w-250px'" :title="'Причал отправления'">
-                <dictionary-drop-down
+            <page-bar-item :class="'w-25'" :title="'Причал отправления'">
+                <DictionaryDropDown
                     :dictionary="'piers'"
+                    v-model="list.filters['start_pier_id']"
+                    :original="list.filters_original['start_pier_id']"
                     :placeholder="'Все'"
                     :has-null="true"
-                    :original="list.filters_original['start_pier_id']"
                     :search="true"
-                    v-model="list.filters['start_pier_id']"
-                    @changed="reload"
+                    :right="true"
+                    :small="true"
+                    @change="reload"
                 />
             </page-bar-item>
         </template>
 
         <base-table v-if="!empty(list.data)">
             <template v-slot:header>
-                <base-table-head :header="list.titles"/>
+                <base-table-head :header="list.titles" :has-actions="true"/>
             </template>
             <base-table-row v-for="(trip, key) in list.data" :key="key">
                 <base-table-cell>
@@ -70,14 +80,25 @@
                     <base-table-cell-item>{{ trip['pier'] }}</base-table-cell-item>
                     <base-table-cell-item>{{ trip['ship'] }}</base-table-cell-item>
                 </base-table-cell>
-                <base-table-cell>0 (50)</base-table-cell>
+                <base-table-cell>{{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})</base-table-cell>
                 <base-table-cell>
                     <base-table-cell-item>
                         <span class="link" @click="statusChange(trip)">{{ trip['status'] }}</span>
                     </base-table-cell-item>
                     <base-table-cell-item>
-                        <span class="link" @click="saleStatusChange(trip)">{{ trip['sale_status'] }}</span>
+                        <span class="link" v-if="trip['has_rate']" @click="saleStatusChange(trip)">{{ trip['sale_status'] }}</span>
+                        <span class="text-red" v-else><IconExclamation :class="'h-1em inline'"/> Тариф не задан</span>
                     </base-table-cell-item>
+                </base-table-cell>
+                <base-table-cell :nowrap="true" :class="'right'">
+                    <button-icon v-if="trip['chained']" :class="'mr-5'" :color="'blue'" @click="chainInfo(trip)">
+                        <icon-link/>
+                    </button-icon>
+                    <actions-menu :title="null">
+                        <span class="link">Редактировать</span>
+                        <span class="link">Копировать рейс</span>
+                        <span class="link">Удалить</span>
+                    </actions-menu>
                 </base-table-cell>
             </base-table-row>
         </base-table>
@@ -99,20 +120,32 @@ import listDataSource from "../../../../Helpers/Core/listDataSource";
 import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
 import empty from "../../../../Mixins/empty";
 
+import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown";
+
 import ListPage from "../../../../Layouts/ListPage";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActionsMenu from "../../../../Components/GUI/GuiActionsMenu";
 import PageBarItem from "../../../../Layouts/Parts/PageBarItem";
-import DictionaryDropDown from "../../../../Components/Dictionary/DictionaryDropDown";
-import Message from "@/Components/GUI/Message";
-import BasePagination from "../../../../Components/Base/BasePagination";
+import Message from "@/Components/GUI/GuiMessage";
+import BasePagination from "../../../../Components/GUI/GuiPagination";
 
 import BaseInput from "../../../../Components/Base/BaseInput";
 import PopUp from "../../../../Components/PopUp";
 import BaseDateInput from "../../../../Components/Base/BaseDateInput";
+import IconBackward from "@/Components/Icons/IconBackward";
+import IconForward from "@/Components/Icons/IconForward";
+import ButtonIcon from "@/Components/GUI/GuiIconButton";
+import moment from "moment";
+import IconLink from "@/Components/Icons/IconLink";
+import IconExclamation from "@/Components/Icons/IconExclamation";
 
 export default {
     components: {
+        IconExclamation,
+        IconLink,
+        ButtonIcon,
+        IconForward,
+        IconBackward,
         BaseDateInput,
         PopUp,
         ListPage,
@@ -171,6 +204,27 @@ export default {
             if (value !== null) {
                 this.list.load();
             }
+        },
+        setDay(increment) {
+            let date = moment(this.list.filters['date'], 'DD.MM.YYYY');
+            this.list.filters['date'] = date.date(date.date() + increment).format('DD.MM.YYYY');
+            this.reload();
+        },
+        chainInfo(trip) {
+            axios.post('/api/trips/info', {id: trip['id']})
+                .then(response => {
+                    let date_from = response.data.data['date_from'];
+                    let date_to = response.data.data['date_to'];
+                    let count = response.data.data['count'];
+                    let message = 'Рейс имеет связанные рейсы с аналогичными параметрами в диапазоне: <b>' + date_from + ' - ' + date_to + '</b>';
+                    message += '<br/>';
+                    message += '<br/>';
+                    message += 'Количество связанных рейсов: <b>' + count + '</b>';
+                    this.$dialog.show(message, 'info', 'green', [this.$dialog.button('ok', 'ok', 'green')], 'center');
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data.message, 5000);
+                })
         },
 
         statusChange(trip) {

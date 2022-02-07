@@ -19,7 +19,7 @@ class CreateTicketRatesTable extends Migration
 
             $table->unsignedBigInteger('rate_id');
 
-            $table->unsignedInteger('grade_id');
+            $table->unsignedSmallInteger('grade_id');
 
             $table->unsignedInteger('base_price');
             $table->unsignedInteger('min_price');

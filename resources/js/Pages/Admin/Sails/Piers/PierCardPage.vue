@@ -3,7 +3,7 @@
         <template v-slot:header>
             <page-title-bar :title="title" :breadcrumbs="[{caption: 'Причалы', to: {name: 'pier-list'}}]">
                 <actions-menu>
-                    <span @click="deletePier">Удалить причал</span>
+                    <span class="link" @click="deletePier">Удалить причал</span>
                 </actions-menu>
             </page-title-bar>
         </template>
@@ -22,10 +22,10 @@ import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActionsMenu from "../../../../Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import PierInfo from "../../../../Parts/Sails/Piers/PierInfo";
-import Message from "@/Components/GUI/Message";
+import Message from "@/Components/GUI/GuiMessage";
 
 export default {
     components: {

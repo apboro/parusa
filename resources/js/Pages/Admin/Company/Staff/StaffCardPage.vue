@@ -7,7 +7,7 @@
                             :link-title="'К списку сотрудников'"
             >
                 <actions-menu>
-                    <span @click="deleteStaff">Удалить сотрудника</span>
+                    <span class="link" @click="deleteStaff">Удалить сотрудника</span>
                 </actions-menu>
             </page-title-bar>
         </template>
@@ -43,14 +43,14 @@ import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActionsMenu from "../../../../Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import StaffPersonal from "../../../../Parts/Company/Staff/StaffPersonal";
-import Container from "../../../../Components/GUI/Container";
+import Container from "../../../../Components/GUI/GuiContainer";
 import LoadingProgress from "../../../../Components/LoadingProgress";
-import Message from "@/Components/GUI/Message";
-import Value from "../../../../Components/GUI/Value";
-import BaseButton from "../../../../Components/Base/BaseButton";
+import Message from "@/Components/GUI/GuiMessage";
+import Value from "../../../../Components/GUI/GuiValue";
+import BaseButton from "../../../../Components/GUI/GuiButton";
 import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
 
 export default {

@@ -58,7 +58,7 @@
                     >{{ transaction['sign'] === -1 ? '-' : '+' }} {{ transaction['amount'] }} руб.
                     </base-table-cell>
                     <base-table-cell>
-                        <div :class="{'mb-10': transaction['comments']}">{{ transaction['reason_title'] }}</div>
+                        <div :class="{'mb-10': transaction['comments']}" v-if="transaction['reason_title']">{{ transaction['reason_title'] }}</div>
                         <hint v-if="transaction['comments']">{{ transaction['comments'] }}</hint>
                     </base-table-cell>
                     <base-table-cell :nowrap="true">{{ transaction['operator'] }}</base-table-cell>
@@ -123,19 +123,19 @@
 
 <script>
 import LoadingProgress from "@/Components/LoadingProgress";
-import Container from "@/Components/GUI/Container";
-import ActionsMenu from "@/Components/ActionsMenu";
+import Container from "@/Components/GUI/GuiContainer";
+import ActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import PageBarItem from "@/Layouts/Parts/PageBarItem";
-import Heading from "@/Components/GUI/Heading";
+import Heading from "@/Components/GUI/GuiHeading";
 import BaseDateInput from "@/Components/Base/BaseDateInput";
-import ValueArea from "@/Components/GUI/ValueArea";
-import Value from "@/Components/GUI/Value";
+import ValueArea from "@/Components/GUI/GuiValueArea";
+import Value from "@/Components/GUI/GuiValue";
 import DictionaryDropDown from "@/Components/Dictionary/DictionaryDropDown";
 import listDataSource from "@/Helpers/Core/listDataSource";
 import UseBaseTableBundle from "@/Mixins/UseBaseTableBundle";
 import empty from "@/Mixins/empty";
-import Message from "@/Components/GUI/Message";
-import BasePagination from "@/Components/Base/BasePagination";
+import Message from "@/Components/GUI/GuiMessage";
+import BasePagination from "@/Components/GUI/GuiPagination";
 import PopUp from "@/Components/PopUp";
 import DataFieldInput from "@/Components/DataFields/DataFieldInput";
 import formDataSource from "@/Helpers/Core/formDataSource";
@@ -144,7 +144,7 @@ import DataFieldTextArea from "@/Components/DataFields/DataFieldTextArea";
 import DataFieldDate from "@/Components/DataFields/DataFieldDate";
 import DataFieldDateTime from "@/Components/DataFields/DataFieldDateTime";
 import deleteEntry from "@/Mixins/DeleteEntry";
-import Hint from "@/Components/GUI/Hint";
+import Hint from "@/Components/GUI/GuiHint";
 
 export default {
     props: {

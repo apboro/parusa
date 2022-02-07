@@ -3,9 +3,9 @@
         <heading flex items-center mb-15>
             <span class="bold grow"><activity v-if="today" :active="active"/>{{ rate['start_at'] }} - {{ rate['end_at'] }}</span>
             <actions-menu :title="null" v-if="editable">
-                <span @click="$emit('edit', rate)">Редактировать</span>
-                <span @click="$emit('createFrom', rate)">Копировать тариф</span>
-                <span @click="$emit('delete', rate)">Удалить</span>
+                <span class="link" @click="$emit('edit', rate)">Редактировать</span>
+                <span class="link" @click="$emit('createFrom', rate)">Копировать тариф</span>
+                <span class="link" @click="$emit('delete', rate)">Удалить</span>
             </actions-menu>
         </heading>
         <table class="rates-table rates-table__decorated mt-10">
@@ -31,10 +31,10 @@
 </template>
 
 <script>
-import Container from "../../../Components/GUI/Container";
-import Heading from "../../../Components/GUI/Heading";
-import ActionsMenu from "../../../Components/ActionsMenu";
-import Activity from "../../../Components/Activity";
+import Container from "../../../Components/GUI/GuiContainer";
+import Heading from "../../../Components/GUI/GuiHeading";
+import ActionsMenu from "../../../Components/GUI/GuiActionsMenu";
+import Activity from "../../../Components/GUI/GuiActivityIndicator";
 import moment from "moment";
 
 export default {

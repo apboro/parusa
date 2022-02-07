@@ -26,8 +26,8 @@
 
 <script>
 import IconDropdown from "../Icons/IconDropdown";
-import empty from "../../Helpers/Lib/empty";
-import clone from "../../Helpers/Lib/clone";
+import empty from "@/Core/Helpers/Empty";
+import clone from "@/Core/Helpers/Clone";
 
 export default {
     props: {

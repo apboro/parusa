@@ -3,7 +3,7 @@
         <template v-slot:header>
             <page-title-bar :title="title" :breadcrumbs="[{caption: 'Рейсы', to: {name: 'trip-list'}}]">
                 <actions-menu>
-                    <span @click="deleteTrip">Удалить рейс</span>
+                    <span class="link" @click="deleteTrip">Удалить рейс</span>
                 </actions-menu>
             </page-title-bar>
         </template>
@@ -22,9 +22,9 @@ import DeleteEntry from "../../../../Mixins/DeleteEntry";
 
 import Page from "../../../../Layouts/Page";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActionsMenu from "../../../../Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
-import Message from "@/Components/GUI/Message";
+import Message from "@/Components/GUI/GuiMessage";
 import TripInfo from "../../../../Parts/Sails/Trips/TripInfo";
 
 export default {

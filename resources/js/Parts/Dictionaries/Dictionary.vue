@@ -90,15 +90,15 @@
 
 <script>
 import genericDataSource from "../../Helpers/Core/genericDataSource";
-import Container from "../../Components/GUI/Container";
+import Container from "../../Components/GUI/GuiContainer";
 import LoadingProgress from "../../Components/LoadingProgress";
-import Heading from "../../Components/GUI/Heading";
+import Heading from "../../Components/GUI/GuiHeading";
 import IconGripVertical from "../../Components/Icons/IconGripVertical";
 import IconEdit from "../../Components/Icons/IconEdit";
 import IconCross from "../../Components/Icons/IconCross";
 import IconToggleOn from "../../Components/Icons/IconToggleOn";
 import IconToggleOff from "../../Components/Icons/IconToggleOff";
-import Message from "@/Components/GUI/Message";
+import Message from "@/Components/GUI/GuiMessage";
 import DeleteEntry from "../../Mixins/DeleteEntry";
 import PopUp from "../../Components/PopUp";
 import DataFieldInput from "../../Components/DataFields/DataFieldInput";

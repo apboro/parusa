@@ -9,7 +9,7 @@
                 <span v-if="overridden" class="ml-15 text-lg flex items-center"><icon-exclamation :class="'w-20px h-20px mr-10 text-orange'"/>Действуют индивидуальные условия</span>
             </div>
             <actions-menu :title="null" v-if="editable">
-                <span @click="$emit('edit', rate, excursion)">Установить спец. условия</span>
+                <span class="link" @click="$emit('edit', rate, excursion)">Установить спец. условия</span>
 <!--                <span @click="$emit('delete', rate, excursion)">Сбросить</span>-->
             </actions-menu>
         </heading>
@@ -50,10 +50,10 @@
 </template>
 
 <script>
-import Container from "../../../Components/GUI/Container";
-import Heading from "../../../Components/GUI/Heading";
-import ActionsMenu from "../../../Components/ActionsMenu";
-import Activity from "../../../Components/Activity";
+import Container from "../../../Components/GUI/GuiContainer";
+import Heading from "../../../Components/GUI/GuiHeading";
+import ActionsMenu from "../../../Components/GUI/GuiActionsMenu";
+import Activity from "../../../Components/GUI/GuiActivityIndicator";
 import moment from "moment";
 import IconExclamation from "../../../Components/Icons/IconExclamation";
 

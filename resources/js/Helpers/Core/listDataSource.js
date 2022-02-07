@@ -1,5 +1,5 @@
 import initialPagination from "./initialPagination";
-import clone from "@/Helpers/Lib/clone";
+import clone from "@/Core/Helpers/Clone";
 
 const listDataSource = function (dataSourceUrl, usePagination = true, options = {}) {
     let list = {

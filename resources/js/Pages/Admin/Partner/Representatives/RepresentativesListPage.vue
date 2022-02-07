@@ -4,16 +4,14 @@
         <template v-slot:header>
             <page-title-bar :title="$route.meta['title']">
                 <actions-menu>
-                    <router-link :to="{ name: 'representatives-edit', params: { id: 0 }}">Добавить представителя</router-link>
+                    <router-link class="link" :to="{ name: 'representatives-edit', params: { id: 0 }}">Добавить представителя</router-link>
                 </actions-menu>
             </page-title-bar>
         </template>
 
         <template v-slot:search>
             <page-bar-item :title="'Поиск по ФИО, названию компании'">
-                <base-icon-input v-model="list.search" @changed="reload">
-                    <icon-search/>
-                </base-icon-input>
+                <InputSearch v-model="list.search" @change="reload"/>
             </page-bar-item>
         </template>
 
@@ -103,17 +101,19 @@ import empty from "../../../../Mixins/empty";
 
 import ListPage from "../../../../Layouts/ListPage";
 import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import ActionsMenu from "../../../../Components/ActionsMenu";
+import ActionsMenu from "../../../../Components/GUI/GuiActionsMenu";
 import PageBarItem from "../../../../Layouts/Parts/PageBarItem";
 import BaseIconInput from "../../../../Components/Base/BaseIconInput";
 import IconSearch from "../../../../Components/Icons/IconSearch";
-import AccessLocked from "../../../../Components/AccessLocked";
-import Activity from "../../../../Components/Activity";
-import Message from "@/Components/GUI/Message";
-import BasePagination from "../../../../Components/Base/BasePagination";
+import AccessLocked from "../../../../Components/GUI/GuiAccessIndicator";
+import Activity from "../../../../Components/GUI/GuiActivityIndicator";
+import Message from "@/Components/GUI/GuiMessage";
+import BasePagination from "../../../../Components/GUI/GuiPagination";
+import InputSearch from "@/Components/Inputs/InputSearch";
 
 export default {
     components: {
+        InputSearch,
         ListPage,
         PageTitleBar,
         ActionsMenu,

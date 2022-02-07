@@ -41,10 +41,7 @@ export default {
     props: {
         title: {type: String, default: null},
         message: {type: String, default: null},
-        buttons: {
-            type: Array,
-            default: () => ([{result: 'ok', caption: 'OK', color: 'white'}])
-        },
+        buttons: {type: Array, default: () => ([{result: 'ok', caption: 'OK'}])},
         align: {type: String, default: 'center'},
         manual: {type: Boolean, default: false},
         resolving: {type: Function, default: null},

@@ -18,7 +18,7 @@
 
 <script>
 // https://codepen.io/neves/pen/BWjorq
-import empty from "../../../Helpers/Lib/empty";
+import empty from "@/Core/Helpers/Empty";
 
 const tokens = {
     '#': {pattern: /\d/},

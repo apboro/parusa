@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import empty from "../../Helpers/Lib/empty";
+import empty from "@/Core/Helpers/Empty";
 import FieldDateTime from "../Fields/FieldDateTime";
 
 export default {

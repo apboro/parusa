@@ -76,6 +76,7 @@
             &-filters {
                 display: flex;
                 flex-direction: row;
+                flex-grow: 1;
 
                 & > * {
                     margin-right: 20px;
@@ -90,7 +91,7 @@
             &-search {
                 display: flex;
                 flex-direction: row;
-                flex-grow: 1;
+                flex-grow: 0;
                 justify-content: right;
 
                 & > * {

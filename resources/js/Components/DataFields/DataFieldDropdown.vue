@@ -13,12 +13,13 @@
         :required="required"
         :placeholder="placeholder"
         :has-null="hasNull"
+        :to-top="toTop"
         @changed="changed"
     />
 </template>
 
 <script>
-import empty from "../../Helpers/Lib/empty";
+import empty from "@/Core/Helpers/Empty";
 import FieldDropDown from "../Fields/FieldDropDown";
 
 export default {
@@ -32,6 +33,7 @@ export default {
         valueBy: {type: String, default: null},
         placeholder: {type: String, default: null},
         hasNull: {type: Boolean, default: false},
+        toTop: {type: Boolean, default: false},
     },
 
     components: {

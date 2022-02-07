@@ -55,12 +55,11 @@
 
 <script>
 import UseBaseTableBundle from "@/Mixins/UseBaseTableBundle";
-import empty from "@/Mixins/empty";
 import listDataSource from "@/Helpers/Core/listDataSource";
-
+import empty from "@/Mixins/empty";
 import LoadingProgress from "@/Components/LoadingProgress";
-import Message from "@/Components/GUI/Message";
-import BasePagination from "@/Components/Base/BasePagination";
+import Message from "@/Components/GUI/GuiMessage";
+import BasePagination from "@/Components/GUI/GuiPagination";
 
 export default {
     components: {
