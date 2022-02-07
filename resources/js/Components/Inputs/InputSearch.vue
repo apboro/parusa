@@ -52,11 +52,12 @@ export default {
             this.set(event.target.value);
         },
         search() {
-            this.$emit(this.modelValue);
+            this.$emit('search', this.modelValue);
         },
         clear() {
             if (this.clearable && !this.disabled) {
                 this.set(null);
+                this.search();
             }
             this.focus();
         },
