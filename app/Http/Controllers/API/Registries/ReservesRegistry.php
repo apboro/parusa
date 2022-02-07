@@ -48,6 +48,9 @@ class ReservesRegistry extends ApiController
             ->when(!$current->isStaff(), function (Builder $query) use ($current) {
                 $query->where('partner_id', $current->partnerId());
             })
+            ->when($current->isStaff() && ($request->input('partner_id')), function (Builder $query) use ($request) {
+                $query->where('partner_id', $request->input('partner_id'));
+            })
             ->whereIn('status_id', OrderStatus::order_reserved_statuses);
 
         // apply filters

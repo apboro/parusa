@@ -39,9 +39,9 @@
             }"
                     @change="sub_tab = $event"
                 />
-                <order-registry v-if="sub_tab === 'sales'"/>
-                <tickets-registry v-if="sub_tab === 'tickets'"/>
-                <reserves-registry v-if="sub_tab === 'reserves'"/>
+                <order-registry v-if="sub_tab === 'sales'" :partner-id="partnerId"/>
+                <tickets-registry v-if="sub_tab === 'tickets'" :partner-id="partnerId"/>
+                <reserves-registry v-if="sub_tab === 'reserves'" :partner-id="partnerId"/>
             </container>
         </template>
     </page>

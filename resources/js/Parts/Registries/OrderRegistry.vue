@@ -120,6 +120,10 @@ import GuiValue from "@/Components/GUI/GuiValue";
 import BaseDateInput from "@/Components/Base/BaseDateInput";
 
 export default {
+    props: {
+        partnerId: {type: Number, default: null},
+    },
+
     components: {
         BaseDateInput,
         LoadingProgress,
@@ -138,11 +142,12 @@ export default {
     },
 
     data: () => ({
-        list: list('/api/registries/orders'),
+        list: null,
         info: null,
     }),
 
     created() {
+        this.list = list('/api/registries/orders', {partner_id: this.partnerId});
         this.list.initial();
     },
 

@@ -99,6 +99,10 @@ import GuiMessage from "@/Components/GUI/GuiMessage";
 import GuiPagination from "@/Components/GUI/GuiPagination";
 
 export default {
+    props: {
+        partnerId: {type: Number, default: null},
+    },
+
     components: {
         GuiPagination,
         GuiMessage,
@@ -115,10 +119,11 @@ export default {
     },
 
     data: () => ({
-        list: list('/api/registries/tickets'),
+        list: null,
     }),
 
     created() {
+        this.list = list('/api/registries/tickets', {partner_id: this.partnerId});
         this.list.initial();
     },
 

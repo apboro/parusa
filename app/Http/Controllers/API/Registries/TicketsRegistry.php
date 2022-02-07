@@ -49,6 +49,11 @@ class TicketsRegistry extends ApiController
                 $query->whereHas('order', function (Builder $query) use ($current) {
                     $query->where('partner_id', $current->partnerId());
                 });
+            })
+            ->when($current->isStaff() && ($request->input('partner_id')), function (Builder $query) use ($request) {
+                $query->whereHas('order', function (Builder $query) use ($request) {
+                    $query->where('partner_id', $request->input('partner_id'));
+                });
             });
 
         // apply filters
