@@ -19,7 +19,7 @@ export default [
         'items': [
             {'title': 'Карточка партнера', 'route': 'company-info'},
             {'title': 'Лицевой счет', 'route': 'company-account'},
-            {'title': 'Настройки и коды', 'route': ''},
+            {'title': 'Настройки и коды', 'route': 'settings'},
             {'title': 'Тарифы и вознаграждение', 'route': 'company-rates'},
         ]
     },

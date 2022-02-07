@@ -12,6 +12,8 @@ export default [
     {path: '/', name: 'home', component: TicketsSelect, meta: {title: 'Подбор билетов'}},
     {path: '/', name: 'tickets-select', component: TicketsSelect, meta: {title: 'Подбор билетов'}},
 
+    {path: '/settings', name: 'settings', component: () => import('@/Pages/Partner/SettingsPage'), meta: {title: 'Настройки'}},
+
     {path: '/registry/orders', name: 'orders-registry', component: OrdersRegistryPage, meta: {title: 'Реестр заказов'}},
     {path: '/registry/tickets', name: 'tickets-registry', component: TicketsRegistryPage, meta: {title: 'Реестр билетов'}},
     {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней'}},
