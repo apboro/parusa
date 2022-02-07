@@ -1,11 +1,16 @@
 <template>
-    <tr class="list-table__row">
+    <tr class="list-table__row" :class="{'list-table__row-no-highlight': noHighlight, 'list-table__row-no-even-odd': noOddEven}">
         <slot/>
     </tr>
 </template>
 
 <script>
-export default {}
+export default {
+    props: {
+        noHighlight: {type: Boolean, default: false},
+        noOddEven: {type: Boolean, default: false},
+    }
+}
 </script>
 
 <style lang="scss">
@@ -19,15 +24,15 @@ $list_table_even_background_color: #fbfbfb !default;
 .list-table__row {
     border-bottom: 1px solid $list_table_border_color;
 
-    &:nth-child(odd) {
+    &:not(&-no-even-odd):nth-child(odd) {
         background-color: $list_table_odd_background_color;
     }
 
-    &:nth-child(even) {
+    &:not(&-no-even-odd):nth-child(even) {
         background-color: $list_table_even_background_color;
     }
 
-    &:hover {
+    &:not(&-no-highlight):hover {
         background-color: $list_table_hover_background_color;
     }
 }

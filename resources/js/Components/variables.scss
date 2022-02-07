@@ -40,6 +40,8 @@ $shadow_hover: 0 2px 4px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.22);
 
 $base_size_unit: 35px;
 
+$page_max_width: 1200px;
+
 $base_white_color: #ffffff;
 $base_black_color: #1e1e1e;
 $base_text_gray_color: #3f3f3f;
@@ -71,6 +73,14 @@ $input_disabled_background_color: #f3f3f3;
 $input_icon_color: #ababab;
 $input_remove_color: $color-secondary-1-0;
 $input_error_color: $color-secondary-1-0;
+
+$list_table_header_color: #1e1e1e;
+$list_table_header_background_color: #e3ecf7;
+$list_table_border_color: #e3e3e3;
+$list_table_odd_background_color: #ffffff;
+$list_table_even_background_color: #fbfbfb;
+$list_table_hover_background_color: #f5faff;
+$list_table_cell_color: #1e1e1e;
 
 /**
     Disable selection
