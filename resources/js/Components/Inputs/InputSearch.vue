@@ -8,6 +8,7 @@
             :autocomplete="'off'"
             :value="modelValue"
             :disabled="disabled"
+            :placeholder="placeholder"
             @input="change"
             @keyup.enter="search"
             ref="input"
@@ -31,6 +32,7 @@ export default {
         original: {type: String, default: null},
 
         disabled: {type: Boolean, default: false},
+        placeholder: {type: String, default: null},
     },
 
     emits: ['update:modelValue', 'change', 'search'],
@@ -82,6 +84,7 @@ $animation_time: 150ms !default;
 $animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
 $input_color: #1e1e1e !default;
 $input_border_color: #b7b7b7 !default;
+$input_placeholder_color: #757575 !default;
 $input_dirty_color: #f1f7ff !default;
 $input_disabled_color: #626262 !default;
 $input_disabled_background_color: #e5e5e5 !default;
@@ -115,6 +118,19 @@ $input_remove_color: #FF1E00 !default;
         outline: none !important;
         padding: 0;
         width: 100%;
+
+        &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+            color: $input_placeholder_color;
+            opacity: 1; /* Firefox */
+        }
+
+        &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+            color: $input_placeholder_color;
+        }
+
+        &::-ms-input-placeholder { /* Microsoft Edge */
+            color: $input_placeholder_color;
+        }
     }
 
     &__dirty {
