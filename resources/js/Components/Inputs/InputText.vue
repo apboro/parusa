@@ -1,17 +1,14 @@
 <template>
-    <label class="input-string" :class="{'input-string__dirty': isDirty, 'input-string__disabled': disabled, 'input-string__error': !valid}">
-        <input
-            class="input-string__input"
-            :class="{'input-string__input-small': small}"
+    <label class="input-text" :class="{'input-text__dirty': isDirty, 'input-text__disabled': disabled, 'input-text__error': !valid}">
+        <textarea
+            class="input-text__input"
+            :class="{'input-text__input-small': small}"
             :value="modelValue"
-            :type="type"
             :disabled="disabled"
-            :autocomplete="autocomplete"
             :placeholder="placeholder"
             @input="update"
             @click.stop.prevent="focus"
-            ref="input"
-        />
+            ref="input"/>
     </label>
 </template>
 
@@ -25,8 +22,6 @@ export default {
         valid: {type: Boolean, default: true},
         disabled: {type: Boolean, default: false},
 
-        type: {type: String, default: 'text', validation: (value) => ['text', 'password'].indexOf(value) !== -1},
-        autocomplete: {type: String, default: 'off'},
         placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
     },
@@ -71,10 +66,9 @@ $input_background_color: #ffffff !default;
 $input_hover_color: #6fb4f7 !default;
 $input_active_color: #0f82f1 !default;
 
-.input-string {
+.input-text {
     display: flex;
     width: 100%;
-    height: $base_size_unit;
     border: 1px solid $input_border_color;
     border-radius: 2px;
     box-sizing: border-box;
@@ -110,8 +104,8 @@ $input_active_color: #0f82f1 !default;
         border: none !important;
         outline: none !important;
         box-sizing: border-box;
-        height: $base_size_unit;
-        line-height: $base_size_unit;
+        min-height: $base_size_unit * 3;
+        line-height: $base_size_unit * 0.75;
         font-family: $project_font;
         font-size: 16px;
         color: inherit;
@@ -122,6 +116,7 @@ $input_active_color: #0f82f1 !default;
         background-color: transparent;
         display: block;
         cursor: inherit;
+        resize: vertical;
 
         &-small {
             font-size: 14px;

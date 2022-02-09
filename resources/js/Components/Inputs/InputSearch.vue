@@ -1,10 +1,11 @@
 <template>
-    <label class="input-search" :class="{'input-search__dirty': isDirty, 'input-search__disabled': disabled}">
+    <label class="input-search" :class="{'input-search__dirty': isDirty, 'input-search__disabled': disabled, 'input-search__error': !valid}">
         <span class="input-search__icon">
             <IconSearch/>
         </span>
         <input
             class="input-search__input"
+            :class="{'input-search__input-small': small}"
             :autocomplete="'off'"
             :value="modelValue"
             :disabled="disabled"
@@ -12,7 +13,7 @@
             @input="change"
             @keyup.enter="search"
             ref="input"
-        >
+        />
         <span class="input-search__clear" :class="{'input-search__clear-enabled': clearable && !disabled}" @click.stop.prevent="clear">
             <IconCross/>
         </span>
@@ -30,9 +31,10 @@ export default {
     props: {
         modelValue: {type: String, default: null},
         original: {type: String, default: null},
-
+        valid: {type: Boolean, default: true},
         disabled: {type: Boolean, default: false},
         placeholder: {type: String, default: null},
+        small: {type: Boolean, default: false},
     },
 
     emits: ['update:modelValue', 'change', 'search'],
@@ -79,6 +81,8 @@ export default {
 @import "../variables";
 
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
+$animation_time: 150ms !default;
+$animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
 $base_size_unit: 35px !default;
 $animation_time: 150ms !default;
 $animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
@@ -87,9 +91,12 @@ $input_border_color: #b7b7b7 !default;
 $input_placeholder_color: #757575 !default;
 $input_dirty_color: #f1f7ff !default;
 $input_disabled_color: #626262 !default;
-$input_disabled_background_color: #e5e5e5 !default;
+$input_disabled_background_color: #f3f3f3 !default;
 $input_icon_color: #ababab !default;
 $input_remove_color: #FF1E00 !default;
+$input_error_color: #FF1E00 !default;
+$input_hover_color: #6fb4f7 !default;
+$input_active_color: #0f82f1 !default;
 
 .input-search {
     border-radius: 2px;
@@ -101,6 +108,19 @@ $input_remove_color: #FF1E00 !default;
     flex-direction: row;
     height: $base_size_unit;
     width: 100%;
+    transition: border-color $animation $animation_time;
+
+    &:not(&__disabled):hover {
+        border-color: $input_hover_color;
+    }
+
+    &:not(&__disabled):focus-within {
+        border-color: $input_active_color;
+    }
+
+    &__error {
+        border-color: $input_error_color;
+    }
 
     &__input {
         background-color: transparent;
@@ -118,6 +138,10 @@ $input_remove_color: #FF1E00 !default;
         outline: none !important;
         padding: 0;
         width: 100%;
+
+        &-small {
+            font-size: 14px;
+        }
 
         &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
             color: $input_placeholder_color;

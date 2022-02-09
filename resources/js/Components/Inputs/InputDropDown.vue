@@ -67,6 +67,7 @@ export default {
             if (!this.valid) computed.push('input-dropdown__error');
             if (this.isDirty) computed.push('input-dropdown__dirty');
             if (this.disabled) computed.push('input-dropdown__disabled');
+            if (this.dropped) computed.push('input-dropdown__dropped');
             return computed;
         },
         isDirty() {
@@ -176,6 +177,7 @@ export default {
 
 <style lang="scss">
 @use "sass:math";
+@import "../variables";
 
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
 $base_size_unit: 35px !default;
@@ -187,11 +189,13 @@ $input_border_color: #b7b7b7 !default;
 $input_dirty_color: #f1f7ff !default;
 $input_placeholder_color: #757575 !default;
 $input_disabled_color: #626262 !default;
-$input_disabled_background_color: #e5e5e5 !default;
+$input_disabled_background_color: #f3f3f3 !default;
 $input_error_color: #FF1E00 !default;
 $input_background_color: #ffffff !default;
 $base_primary_color: #0D74D7 !default;
 $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
+$input_hover_color: #6fb4f7 !default;
+$input_active_color: #0f82f1 !default;
 
 .input-dropdown {
     border-radius: 2px;
@@ -204,6 +208,15 @@ $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
     height: $base_size_unit;
     position: relative;
     width: 100%;
+    transition: border-color $animation $animation_time;
+
+    &:not(&__disabled):not(&__dropped):hover {
+        border-color: $input_hover_color;
+    }
+
+    &__dropped:not(&__disabled) {
+        border-color: $input_active_color;
+    }
 
     &__value {
         background-color: transparent;

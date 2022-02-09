@@ -1,19 +1,39 @@
 <template>
     <label class="input-number" :class="{'input-number__dirty': isDirty, 'input-number__disabled': disabled, 'input-number__error': !valid}">
+        <span class="input-number__decrease" v-if="quantity"
+              :class="{'input-number__decrease-disabled': disabled}"
+              tabindex="-1"
+              @click.stop.prevent="decrease"
+        >
+            <IconMinus/>
+        </span>
         <input
             class="input-number__input"
+            :class="{'input-number__input-small': small}"
             :value="modelValue"
             :type="'number'"
             :disabled="disabled"
             :placeholder="placeholder"
             @input="update"
             @click.stop.prevent="focus"
-            ref="input">
+            ref="input"
+        />
+        <span class="input-number__increase" v-if="quantity"
+              :class="{'input-number__increase-disabled': disabled}"
+              tabindex="-1"
+              @click.stop.prevent="increase"
+        >
+            <IconPlus/>
+        </span>
     </label>
 </template>
 
 <script>
+import IconMinus from "@/Components/Icons/IconMinus";
+import IconPlus from "@/Components/Icons/IconPlus";
+
 export default {
+    components: {IconPlus, IconMinus},
     props: {
         name: String,
         modelValue: {type: Number, default: null},
@@ -21,7 +41,11 @@ export default {
         valid: {type: Boolean, default: true},
         disabled: {type: Boolean, default: false},
 
+        step: {type: Number, default: 1},
+        quantity: {type: Boolean, default: false},
+
         placeholder: {type: String, default: null},
+        small: {type: Boolean, default: false},
     },
 
     emits: ['update:modelValue', 'change'],
@@ -29,6 +53,15 @@ export default {
     computed: {
         isDirty() {
             return this.original !== this.modelValue;
+        },
+
+        valueProxy: {
+            get() {
+                return this.modelValue;
+            },
+            set(value) {
+                this.$emit('update:modelValue', value);
+            }
         },
     },
 
@@ -42,6 +75,20 @@ export default {
             this.$emit('update:modelValue', value);
             this.$emit('change', value, this.name);
         },
+
+        decrease() {
+            if (this.disabled) return;
+            this.$refs.input.focus();
+            this.$emit('update:modelValue', this.modelValue - this.step);
+            this.$emit('change', this.modelValue - this.step, this.name);
+        },
+
+        increase() {
+            if (this.disabled) return;
+            this.$refs.input.focus();
+            this.$emit('update:modelValue', this.modelValue + this.step);
+            this.$emit('change', this.modelValue + this.step, this.name);
+        },
     }
 }
 </script>
@@ -50,15 +97,19 @@ export default {
 @import "../variables";
 
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
+$animation_time: 150ms !default;
+$animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
 $base_size_unit: 35px !default;
 $input_color: #1e1e1e !default;
 $input_border_color: #b7b7b7 !default;
 $input_dirty_color: #f1f7ff !default;
 $input_placeholder_color: #757575 !default;
 $input_disabled_color: #626262 !default;
-$input_disabled_background_color: #e5e5e5 !default;
+$input_disabled_background_color: #f3f3f3 !default;
 $input_error_color: #FF1E00 !default;
 $input_background_color: #ffffff !default;
+$input_hover_color: #6fb4f7 !default;
+$input_active_color: #0f82f1 !default;
 
 .input-number {
     display: flex;
@@ -71,6 +122,15 @@ $input_background_color: #ffffff !default;
     cursor: text;
     position: relative;
     background-color: $input_background_color;
+    transition: border-color $animation $animation_time;
+
+    &:not(&__disabled):hover {
+        border-color: $input_hover_color;
+    }
+
+    &:not(&__disabled):focus-within {
+        border-color: $input_active_color;
+    }
 
     &__dirty {
         background-color: $input_dirty_color;
@@ -103,6 +163,10 @@ $input_background_color: #ffffff !default;
         display: block;
         cursor: inherit;
 
+        &-small {
+            font-size: 14px;
+        }
+
         &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
             color: $input_placeholder_color;
             opacity: 1; /* Firefox */
@@ -124,6 +188,43 @@ $input_background_color: #ffffff !default;
         &[type=number] {
             -moz-appearance: textfield; /* Firefox */
         }
+    }
+
+    &__increase, &__decrease {
+        display: inline-flex;
+        justify-content: center;
+        vertical-align: top;
+        width: $base_size_unit;
+        height: $base_size_unit;
+        padding: $base_size_unit * 0.25;
+        flex-grow: 0;
+        flex-shrink: 0;
+        box-sizing: border-box;
+        cursor: pointer;
+        background-color: transparent;
+        color: $input_color;
+        transition: color $animation $animation_time,;
+        @include no_selection;
+
+    }
+
+    &:not(&__disabled) &__increase, &:not(&__disabled) &__decrease {
+        &:hover {
+            color: $input_active_color;
+        }
+    }
+
+    &#{&}__disabled &__increase, &#{&}__disabled &__decrease {
+        color: $input_disabled_color;
+        cursor: not-allowed;
+    }
+
+    &__decrease {
+        margin-right: 3px;
+    }
+
+    &__increase {
+        margin-left: 3px;
     }
 }
 </style>
