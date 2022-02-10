@@ -56,7 +56,7 @@ $input_active_color: #0f82f1 !default;
     }
 
     &:not(&__disabled):focus-within, &__focus:not(&__disabled) {
-        border-color: $input_active_color;
+        border-color: $input_active_color !important;
     }
 
     &__dirty {
