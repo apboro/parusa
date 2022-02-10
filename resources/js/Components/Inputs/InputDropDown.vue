@@ -1,5 +1,7 @@
 <template>
-    <div class="input-dropdown" :class="inputClass">
+    <InputWrapper class="input-dropdown" :dirty="isDirty" :disabled="disabled" :valid="valid" :has-focus="dropped" :label="false"
+                  :class="{'input-dropdown__disabled': disabled}"
+    >
         <span class="input-dropdown__value"
               :class="{'input-dropdown__value-placeholder': this.modelValue === null && !this.hasNull, 'input-dropdown__value-small': small}"
               :title="value" @click="toggle">{{ value }}</span>
@@ -19,7 +21,7 @@
                       :key="key" @click="value = val['key']" v-html="displayValue(val['value'])"></span>
             </scroll-box>
         </div>
-    </div>
+    </InputWrapper>
 </template>
 
 <script>
@@ -27,6 +29,7 @@ import empty from "@/Core/Helpers/Empty";
 import IconDropdown from "@/Components/Icons/IconDropdown";
 import ScrollBox from "@/Components/ScrollBox";
 import InputSearch from "@/Components/Inputs/InputSearch";
+import InputWrapper from "@/Components/Inputs/Helpers/InputWrapper";
 
 export default {
     props: {
@@ -53,7 +56,7 @@ export default {
 
     emits: ['update:modelValue', 'change', 'drop'],
 
-    components: {IconDropdown, ScrollBox, InputSearch},
+    components: {InputWrapper, IconDropdown, ScrollBox, InputSearch},
 
     data: () => ({
         dropped: false,
@@ -62,14 +65,6 @@ export default {
     }),
 
     computed: {
-        inputClass() {
-            let computed = [];
-            if (!this.valid) computed.push('input-dropdown__error');
-            if (this.isDirty) computed.push('input-dropdown__dirty');
-            if (this.disabled) computed.push('input-dropdown__disabled');
-            if (this.dropped) computed.push('input-dropdown__dropped');
-            return computed;
-        },
         isDirty() {
             return this.original !== this.modelValue;
         },
@@ -185,43 +180,22 @@ $animation_time: 150ms !default;
 $animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
 $shadow_1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !default;
 $input_color: #1e1e1e !default;
-$input_border_color: #b7b7b7 !default;
-$input_dirty_color: #f1f7ff !default;
 $input_placeholder_color: #757575 !default;
-$input_disabled_color: #626262 !default;
-$input_disabled_background_color: #f3f3f3 !default;
-$input_error_color: #FF1E00 !default;
 $input_background_color: #ffffff !default;
 $base_primary_color: #0D74D7 !default;
 $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
-$input_hover_color: #6fb4f7 !default;
-$input_active_color: #0f82f1 !default;
 
 .input-dropdown {
-    border-radius: 2px;
-    border: 1px solid $input_border_color;
-    box-sizing: border-box;
-    color: $input_color;
-    cursor: text;
-    display: flex;
-    flex-direction: row;
     height: $base_size_unit;
-    position: relative;
-    width: 100%;
-    transition: border-color $animation $animation_time;
 
-    &:not(&__disabled):not(&__dropped):hover {
-        border-color: $input_hover_color;
-    }
-
-    &__dropped:not(&__disabled) {
-        border-color: $input_active_color;
+    &:not(&__disabled) {
+        cursor: pointer;
     }
 
     &__value {
         background-color: transparent;
-        color: $input_color;
-        cursor: pointer;
+        color: inherit;
+        cursor: inherit;
         display: flex;
         flex-grow: 1;
         font-family: $project_font;
@@ -244,7 +218,7 @@ $input_active_color: #0f82f1 !default;
     &__toggle {
         align-items: center;
         box-sizing: border-box;
-        cursor: pointer;
+        cursor: inherit;
         display: flex;
         flex-grow: 0;
         flex-shrink: 0;
@@ -262,20 +236,6 @@ $input_active_color: #0f82f1 !default;
                 transform: rotate(-180deg);
             }
         }
-    }
-
-    &__error {
-        border-color: $input_error_color;
-    }
-
-    &__dirty &__value, &__dirty &__toggle {
-        background-color: $input_dirty_color;
-    }
-
-    &__disabled &__value, &__disabled &__toggle {
-        background-color: $input_disabled_background_color;
-        color: $input_disabled_color;
-        cursor: not-allowed;
     }
 
     &__list {

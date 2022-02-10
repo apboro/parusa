@@ -1,5 +1,5 @@
 <template>
-    <label class="input-string" :class="{'input-string__dirty': isDirty, 'input-string__disabled': disabled, 'input-string__error': !valid}">
+    <InputWrapper class="input-string" :dirty="isDirty" :disabled="disabled" :valid="valid">
         <input
             class="input-string__input"
             :class="{'input-string__input-small': small}"
@@ -12,12 +12,15 @@
             @click.stop.prevent="focus"
             ref="input"
         />
-    </label>
+    </InputWrapper>
 </template>
 
 <script>
 
+import InputWrapper from "@/Components/Inputs/Helpers/InputWrapper";
+
 export default {
+    components: {InputWrapper},
     props: {
         name: String,
         modelValue: {type: String, default: null},
@@ -57,54 +60,12 @@ export default {
 @import "../variables";
 
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
-$animation_time: 150ms !default;
-$animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
 $base_size_unit: 35px !default;
 $input_color: #1e1e1e !default;
-$input_border_color: #b7b7b7 !default;
-$input_dirty_color: #f1f7ff !default;
 $input_placeholder_color: #757575 !default;
-$input_disabled_color: #626262 !default;
-$input_disabled_background_color: #f3f3f3 !default;
-$input_error_color: #FF1E00 !default;
-$input_background_color: #ffffff !default;
-$input_hover_color: #6fb4f7 !default;
-$input_active_color: #0f82f1 !default;
 
 .input-string {
-    display: flex;
-    width: 100%;
     height: $base_size_unit;
-    border: 1px solid $input_border_color;
-    border-radius: 2px;
-    box-sizing: border-box;
-    color: $input_color;
-    cursor: text;
-    position: relative;
-    background-color: $input_background_color;
-    transition: border-color $animation $animation_time;
-
-    &:not(&__disabled):hover {
-        border-color: $input_hover_color;
-    }
-
-    &:not(&__disabled):focus-within {
-        border-color: $input_active_color;
-    }
-
-    &__dirty {
-        background-color: $input_dirty_color;
-    }
-
-    &__error {
-        border-color: $input_error_color;
-    }
-
-    &__disabled {
-        background-color: $input_disabled_background_color;
-        color: $input_disabled_color;
-        cursor: not-allowed;
-    }
 
     &__input {
         border: none !important;

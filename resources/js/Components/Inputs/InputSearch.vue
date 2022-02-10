@@ -1,5 +1,5 @@
 <template>
-    <label class="input-search" :class="{'input-search__dirty': isDirty, 'input-search__disabled': disabled, 'input-search__error': !valid}">
+    <InputWrapper class="input-search" :dirty="isDirty" :disabled="disabled" :valid="valid">
         <span class="input-search__icon">
             <IconSearch/>
         </span>
@@ -17,16 +17,17 @@
         <span class="input-search__clear" :class="{'input-search__clear-enabled': clearable && !disabled}" @click.stop.prevent="clear">
             <IconCross/>
         </span>
-    </label>
+    </InputWrapper>
 </template>
 
 <script>
 import empty from "@/Core/Helpers/Empty";
 import IconCross from "@/Components/Icons/IconCross";
 import IconSearch from "@/Components/Icons/IconSearch";
+import InputWrapper from "@/Components/Inputs/Helpers/InputWrapper";
 
 export default {
-    components: {IconSearch, IconCross},
+    components: {InputWrapper, IconSearch, IconCross},
 
     props: {
         modelValue: {type: String, default: null},
@@ -84,43 +85,12 @@ $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Ne
 $animation_time: 150ms !default;
 $animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
 $base_size_unit: 35px !default;
-$animation_time: 150ms !default;
-$animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
-$input_color: #1e1e1e !default;
-$input_border_color: #b7b7b7 !default;
 $input_placeholder_color: #757575 !default;
-$input_dirty_color: #f1f7ff !default;
-$input_disabled_color: #626262 !default;
-$input_disabled_background_color: #f3f3f3 !default;
 $input_icon_color: #ababab !default;
 $input_remove_color: #FF1E00 !default;
-$input_error_color: #FF1E00 !default;
-$input_hover_color: #6fb4f7 !default;
-$input_active_color: #0f82f1 !default;
 
 .input-search {
-    border-radius: 2px;
-    border: 1px solid $input_border_color;
-    box-sizing: border-box;
-    color: $input_color;
-    cursor: text;
-    display: flex;
-    flex-direction: row;
     height: $base_size_unit;
-    width: 100%;
-    transition: border-color $animation $animation_time;
-
-    &:not(&__disabled):hover {
-        border-color: $input_hover_color;
-    }
-
-    &:not(&__disabled):focus-within {
-        border-color: $input_active_color;
-    }
-
-    &__error {
-        border-color: $input_error_color;
-    }
 
     &__input {
         background-color: transparent;
@@ -157,10 +127,6 @@ $input_active_color: #0f82f1 !default;
         }
     }
 
-    &__dirty {
-        background-color: $input_dirty_color;
-    }
-
     &__icon, &__clear {
         box-sizing: border-box;
         flex-grow: 0;
@@ -193,12 +159,6 @@ $input_active_color: #0f82f1 !default;
                 opacity: 1;
             }
         }
-    }
-
-    &__disabled {
-        background-color: $input_disabled_background_color;
-        color: $input_disabled_color;
-        cursor: not-allowed;
     }
 }
 </style>

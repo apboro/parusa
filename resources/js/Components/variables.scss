@@ -64,6 +64,8 @@ $base_active_color: $color-secondary-2-3;
 $base_inactive_color: $color-secondary-1-3;
 
 $input_color: #1e1e1e;
+$input_hover_color: lighten($color-primary-0, 30%);
+$input_active_color: lighten($color-primary-0, 10%);
 $input_background_color: #ffffff;
 $input_placeholder_color: #757575;
 $input_border_color: #b7b7b7;
