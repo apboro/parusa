@@ -61,7 +61,6 @@ export default {
 
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
 $base_size_unit: 35px !default;
-$input_color: #1e1e1e !default;
 $input_placeholder_color: #757575 !default;
 
 .input-string {
