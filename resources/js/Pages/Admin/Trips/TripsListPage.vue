@@ -1,4 +1,116 @@
 <template>
+    <LayoutPage :loading="list.is_loading" :title="title">
+        <template #actions>
+            <GuiActionsMenu>
+                <router-link class="link" :to="{ name: 'trip-edit', params: { id: 0 }, query: linkQuery}">Добавить рейс</router-link>
+            </GuiActionsMenu>
+        </template>
+
+        <LayoutFilters>
+            <LayoutFiltersItem :class="'w-25'" :title="'Дата'">
+                <GuiIconButton :class="'mr-5'" :border="false" @click="setDay(-1)">
+                    <IconBackward/>
+                </GuiIconButton>
+                <InputDate
+                    :original="list.filters_original['date']"
+                    v-model="list.filters['date']"
+                    :pick-on-clear="false"
+                    :small="true"
+                    @change="dateChanged"
+                />
+                <GuiIconButton :class="'ml-5'" :border="false" @click="setDay(1)">
+                    <IconForward/>
+                </GuiIconButton>
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :class="'w-25'" :title="'Статус движения'">
+                <DictionaryDropDown
+                    :dictionary="'trip_statuses'"
+                    v-model="list.filters['status_id']"
+                    :original="list.filters_original['status_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :class="'w-25'" :title="'Экскурсия'" v-if="excursionId === null">
+                <DictionaryDropDown
+                    :dictionary="'excursions'"
+                    v-model="list.filters['excursion_id']"
+                    :original="list.filters_original['excursion_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :search="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :class="'w-25'" :title="'Причал отправления'" v-if="pierId === null">
+                <DictionaryDropDown
+                    :dictionary="'piers'"
+                    v-model="list.filters['start_pier_id']"
+                    :original="list.filters_original['start_pier_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :search="true"
+                    :right="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
+        </LayoutFilters>
+
+        <ListTable v-if="list.list.length > 0" :titles="list.titles" :has-action="true">
+            <ListTableRow v-for="trip in list.list">
+                <ListTableCell>
+                    <div><b>{{ trip['start_time'] }}</b></div>
+                    <div>{{ trip['start_date'] }}</div>
+                </ListTableCell>
+                <ListTableCell>
+                    <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}</router-link>
+                </ListTableCell>
+                <ListTableCell>
+                    {{ trip['excursion'] }}
+                </ListTableCell>
+                <ListTableCell>
+                    <div>{{ trip['pier'] }}</div>
+                    <div>{{ trip['ship'] }}</div>
+                </ListTableCell>
+                <ListTableCell>{{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})</ListTableCell>
+                <ListTableCell>
+                    <div>
+                        <span class="link" @click="statusChange(trip)">{{ trip['status'] }}</span>
+                    </div>
+                    <div>
+                        <span class="link" v-if="trip['has_rate']" @click="saleStatusChange(trip)">{{ trip['sale_status'] }}</span>
+                        <span class="text-red" v-else><IconExclamation :class="'h-1em inline'"/> Тариф не задан</span>
+                    </div>
+                </ListTableCell>
+                <ListTableCell :nowrap="true" :class="'flex'">
+                    <GuiIconButton v-if="trip['chained']" :class="'mr-5'" :color="'blue'" @click="chainInfo(trip)">
+                        <IconLink/>
+                    </GuiIconButton>
+                    <GuiActionsMenu :title="null">
+                        <span class="link">Редактировать</span>
+                        <span class="link">Копировать рейс</span>
+                        <span class="link">Удалить</span>
+                    </GuiActionsMenu>
+                </ListTableCell>
+            </ListTableRow>
+        </ListTable>
+
+        <GuiMessage border v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
+
+        <GuiPagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
+
+        <PopUp ref="status_popup" :title="popup_title"
+                :buttons="[{result: 'no', caption: 'Отмена', color: 'white'}, {result: 'yes', caption: 'OK', color: 'green'}]"
+                :manual="true"
+        >
+            <DictionaryDropDown :dictionary="popup_dictionary" v-model="current_status" :name="'status'" :original="initial_status"/>
+        </PopUp>
+    </LayoutPage>
+<!--
     <list-page :loading="list.loading">
 
         <template v-slot:header>
@@ -14,10 +126,12 @@
                 <ButtonIcon :class="'mr-5'" :border="false" @click="setDay(-1)">
                     <IconBackward/>
                 </ButtonIcon>
-                <base-date-input
+                <InputDate
                     :original="list.filters_original['date']"
                     v-model="list.filters['date']"
-                    @changed="dateChanged"
+                    :pick-on-clear="false"
+                    :small="true"
+                    @change="dateChanged"
                 />
                 <ButtonIcon :class="'ml-5'" :border="false" @click="setDay(1)">
                     <IconForward/>
@@ -113,56 +227,60 @@
             <dictionary-drop-down :dictionary="popup_dictionary" v-model="current_status" :name="'status'" :original="initial_status"/>
         </pop-up>
     </list-page>
+    -->
 </template>
 
 <script>
-import listDataSource from "../../../../Helpers/Core/listDataSource";
-import UseBaseTableBundle from "../../../../Mixins/UseBaseTableBundle";
-import empty from "../../../../Mixins/empty";
-
+import moment from "moment";
+import list from "@/Core/List";
+import LayoutPage from "@/Components/Layout/LayoutPage";
+import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
+import LayoutFilters from "@/Components/Layout/LayoutFilters";
+import LayoutFiltersItem from "@/Components/Layout/LayoutFiltersItem";
 import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown";
-
-import ListPage from "../../../../Layouts/ListPage";
-import PageTitleBar from "../../../../Layouts/Parts/PageTitleBar";
-import ActionsMenu from "../../../../Components/GUI/GuiActionsMenu";
-import PageBarItem from "../../../../Layouts/Parts/PageBarItem";
-import Message from "@/Components/GUI/GuiMessage";
-import BasePagination from "../../../../Components/GUI/GuiPagination";
-
-import BaseInput from "../../../../Components/Base/BaseInput";
-import PopUp from "../../../../Components/PopUp";
-import BaseDateInput from "../../../../Components/Base/BaseDateInput";
+import InputDate from "@/Components/Inputs/InputDate";
+import GuiIconButton from "@/Components/GUI/GuiIconButton";
 import IconBackward from "@/Components/Icons/IconBackward";
 import IconForward from "@/Components/Icons/IconForward";
-import ButtonIcon from "@/Components/GUI/GuiIconButton";
-import moment from "moment";
-import IconLink from "@/Components/Icons/IconLink";
+import GuiMessage from "@/Components/GUI/GuiMessage";
+import GuiPagination from "@/Components/GUI/GuiPagination";
+import ListTable from "@/Components/ListTable/ListTable";
+import ListTableRow from "@/Components/ListTable/ListTableRow";
+import ListTableCell from "@/Components/ListTable/ListTableCell";
 import IconExclamation from "@/Components/Icons/IconExclamation";
+import IconLink from "@/Components/Icons/IconLink";
+import PopUp from "@/Components/PopUp";
+
 
 export default {
-    components: {
-        IconExclamation,
-        IconLink,
-        ButtonIcon,
-        IconForward,
-        IconBackward,
-        BaseDateInput,
-        PopUp,
-        ListPage,
-        PageTitleBar,
-        ActionsMenu,
-        PageBarItem,
-        DictionaryDropDown,
-        Message,
-        BasePagination,
-
-        BaseInput,
+    props: {
+        excursionId: {type: Number, default: null},
+        pierId: {type: Number, default: null},
     },
 
-    mixins: [UseBaseTableBundle, empty],
+    components: {
+        PopUp,
+        IconLink,
+        IconExclamation,
+        ListTableCell,
+        ListTableRow,
+        ListTable,
+        GuiPagination,
+        GuiMessage,
+        IconForward,
+        IconBackward,
+        GuiIconButton,
+        InputDate,
+        DictionaryDropDown,
+        LayoutFiltersItem,
+        LayoutFilters,
+        GuiActionsMenu,
+        LayoutPage
+
+    },
 
     data: () => ({
-        list: null,
+        list: list('/api/trips'),
         popup_title: null,
         popup_dictionary: null,
         initial_status: null,
@@ -170,8 +288,7 @@ export default {
     }),
 
     created() {
-        this.list = listDataSource('/api/trips');
-        this.list.load(1, null, true);
+        this.list.initial();
     },
 
     computed: {
@@ -194,12 +311,6 @@ export default {
     },
 
     methods: {
-        setPagination(page, perPage) {
-            this.list.load(page, perPage);
-        },
-        reload() {
-            this.list.load();
-        },
         dateChanged(name, value) {
             if (value !== null) {
                 this.list.load();
@@ -208,7 +319,7 @@ export default {
         setDay(increment) {
             let date = moment(this.list.filters['date'], 'DD.MM.YYYY');
             this.list.filters['date'] = date.date(date.date() + increment).format('DD.MM.YYYY');
-            this.reload();
+            this.list.load();
         },
         chainInfo(trip) {
             axios.post('/api/trips/info', {id: trip['id']})

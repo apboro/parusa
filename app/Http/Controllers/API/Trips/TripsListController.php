@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Trips;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
@@ -8,11 +8,8 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Sails\Trip;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use JsonException;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class TripsListController extends ApiController
 {
@@ -37,8 +34,6 @@ class TripsListController extends ApiController
      * @param ApiListRequest $request
      *
      * @return  JsonResponse
-     *
-     * @throws JsonException
      */
     public function list(ApiListRequest $request): JsonResponse
     {
@@ -72,7 +67,7 @@ class TripsListController extends ApiController
         // current page automatically resolved from request via `page` parameter
         $trips = $query->paginate($request->perPage(10, $this->rememberKey));
 
-        /** @var Collection $trips */
+        /** @var LengthAwarePaginator $trips */
         $trips->transform(function (Trip $trip) {
             return [
                 'id' => $trip->id,
@@ -92,16 +87,12 @@ class TripsListController extends ApiController
             ];
         });
 
-        return APIResponse::paginationListOld($trips, [
-            'start_at' => 'Отправление',
-            'trip_id' => '№ рейса',
-            'excursion' => 'Экскурсия',
-            'pier_ship' => 'Причал, теплоход',
-            'tickets' => 'Осталось билетов (всего)',
-            'statuses' => 'Статусы движение / продажа',
-        ], [
-            'filters' => $filters,
-            'filters_original' => $this->defaultFilters,
-        ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
+        return APIResponse::list(
+            $trips,
+            ['Отправление', '№ рейса', 'Экскурсия', 'Причал, теплоход', 'Осталось билетов (всего)', 'Статусы движение / продажа'],
+            $filters,
+            $this->defaultFilters,
+            []
+        )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }

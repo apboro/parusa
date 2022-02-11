@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Excursions;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
@@ -9,7 +9,7 @@ use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Sails\Excursion;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ExcursionsListController extends ApiController
 {
@@ -37,33 +37,29 @@ class ExcursionsListController extends ApiController
             ->orderBy('name');
 
         // apply filters
-        if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
-            if (!empty($filters['status_id'])) {
-                $query->where('status_id', $filters['status_id']);
-            }
+        if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey)) && !empty($filters['status_id'])) {
+            $query->where('status_id', $filters['status_id']);
         }
 
         // current page automatically resolved from request via `page` parameter
         $excursions = $query->paginate($request->perPage(10, $this->rememberKey));
 
-        /** @var Collection $excursions */
+        /** @var LengthAwarePaginator $excursions */
         $excursions->transform(function (Excursion $excursions) {
             return [
                 'active' => $excursions->hasStatus(ExcursionStatus::active),
                 'id' => $excursions->id,
-                'record' => [
-                    'name' => $excursions->name,
-                    'status' => $excursions->status->name,
-                ],
+                'name' => $excursions->name,
+                'status' => $excursions->status->name,
             ];
         });
 
-        return APIResponse::paginationListOld($excursions, [
-            'name' => 'Название',
-            'status' => 'Статус',
-        ], [
-            'filters' => $filters,
-            'filters_original' => $this->defaultFilters,
-        ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
+        return APIResponse::list(
+            $excursions,
+            ['Название', 'Статус'],
+            $filters,
+            $this->defaultFilters,
+            []
+        )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }

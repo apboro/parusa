@@ -24,17 +24,16 @@ import PiersListPage from "../../Pages/Admin/Sails/Piers/PiersListPage";
 import PierCardPage from "../../Pages/Admin/Sails/Piers/PierCardPage";
 import PierEditPage from "../../Pages/Admin/Sails/Piers/PierEditPage";
 
-import ExcursionsListPage from "../../Pages/Admin/Sails/Excursions/ExcursionsListPage";
 import ExcursionCardPage from "../../Pages/Admin/Sails/Excursions/ExcursionCardPage";
 import ExcursionEditPage from "../../Pages/Admin/Sails/Excursions/ExcursionEditPage";
 import DictionariesPage from "../../Pages/Admin/Dictionaries/DictionariesPage";
 
-import TripsListPage from "../../Pages/Admin/Sails/Trips/TripsListPage";
 import TripCardPage from "../../Pages/Admin/Sails/Trips/TripCardPage";
 import TripEditPage from "../../Pages/Admin/Sails/Trips/TripEditPage";
+import TestPage from "@/Pages/Admin/TestPage";
 
 export default [
-    {path: '/', name: 'home', component: TripsListPage, meta: {title: 'Список рейсов'}},
+    {path: '/', name: 'home', component: () => import('@/Pages/Admin/Trips/TripsListPage'), meta: {title: 'Список рейсов'}},
 
     {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки'}},
 
@@ -64,11 +63,11 @@ export default [
     {path: '/piers/:id', name: 'pier-view', component: PierCardPage, meta: {title: 'Просмотр причала'}},
     {path: '/piers/:id/edit', name: 'pier-edit', component: PierEditPage, meta: {title: 'Редактирование причала'}},
 
-    {path: '/excursions', name: 'excursion-list', component: ExcursionsListPage, meta: {title: 'Каталог экскурсий'}},
+    {path: '/excursions', name: 'excursion-list', component: () => import('@/Pages/Admin/Excursions/ExcursionsListPage'), meta: {title: 'Каталог экскурсий'}},
     {path: '/excursions/:id', name: 'excursion-view', component: ExcursionCardPage, meta: {title: 'Просмотр экскурсии'}},
     {path: '/excursions/:id/edit', name: 'excursion-edit', component: ExcursionEditPage, meta: {title: 'Редактирование экскурсии'}},
 
-    {path: '/trips', name: 'trip-list', component: TripsListPage, meta: {title: 'Список рейсов'}},
+    {path: '/trips', name: 'trip-list', component: () => import('@/Pages/Admin/Trips/TripsListPage'), meta: {title: 'Список рейсов'}},
     {path: '/trips/:id', name: 'trip-view', component: TripCardPage, meta: {title: 'Просмотр рейса'}},
     {path: '/trips/:id/edit', name: 'trip-edit', component: TripEditPage, meta: {title: 'Редактирование рейса'}},
 
@@ -84,6 +83,6 @@ export default [
     {path: '/order-info/:id', name: 'order-info', component: () => import("@/Pages/Admin/Order/OrderInfoPage"), meta: {title: 'Заказ'}},
     {path: '/ticket-info/:id', name: 'ticket-info', component: () => import("@/Pages/Admin/Order/TicketInfoPage"), meta: {title: 'Билет'}},
 
-    // {path: '/test', name: 'test', component: TestPage, meta: {title: 'Страница для тестов'}},
+    {path: '/test', name: 'test', component: TestPage, meta: {title: 'Страница для тестов'}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 ];
