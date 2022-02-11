@@ -45,6 +45,7 @@
         box-sizing: border-box;
         padding: 5px 15px 5px 0;
         color: $drag_item_body_color;
+        display: flex;
 
         &-value {
             margin: 0 50px 0 10px;
@@ -52,8 +53,9 @@
             min-width: 50px;
             display: inline-block;
 
-            &:not(:last-child) {
-                //border-right: 1px solid $drag_item_separator_color;
+            &-auto {
+                flex: 1;
+                width: min-content;
             }
         }
     }
