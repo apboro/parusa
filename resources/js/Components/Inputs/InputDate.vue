@@ -95,7 +95,6 @@ export default {
             if (this.picker === true) {
                 this.close();
             } else {
-                this.$emit('drop');
                 this.picker = true;
                 this.dropping = true;
                 document.addEventListener('click', this.close);
