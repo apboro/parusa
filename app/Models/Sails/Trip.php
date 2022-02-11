@@ -15,6 +15,7 @@ use App\Models\Tickets\TicketsRatesList;
 use App\Settings;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -42,6 +43,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property TripStatus $status
  * @property TripSaleStatus $saleStatus
  * @property TripDiscountStatus $discountStatus
+ * @property Collection $chains
  */
 class Trip extends Model implements Statusable
 {

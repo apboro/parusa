@@ -7,7 +7,9 @@ use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Sails\Trip;
+use App\Models\Sails\TripChain;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -41,6 +43,9 @@ class TripsListController extends ApiController
 
         $query = Trip::query()
             ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus'])
+            ->with(['chains' => function (BelongsToMany $query) {
+                $query->withCount('trips');
+            }])
             ->withCount(['chains', 'tickets'])
             ->orderBy('start_at', 'asc');
 
@@ -69,6 +74,11 @@ class TripsListController extends ApiController
 
         /** @var LengthAwarePaginator $trips */
         $trips->transform(function (Trip $trip) {
+            /** @var TripChain $chain */
+            $chain = $trip->chains->first();
+            $chainStart = $chain->trips()->min('start_at');
+            $chainEnd = $chain->trips()->max('start_at');
+
             return [
                 'id' => $trip->id,
                 'start_date' => $trip->start_at->format('d.m.Y'),
@@ -84,6 +94,9 @@ class TripsListController extends ApiController
                 'has_rate' => $trip->hasRate(),
                 'sale_status_id' => $trip->sale_status_id,
                 'chained' => $trip->getAttribute('chains_count') > 0,
+                'chain_trips_count' => $chain->getAttribute('trips_count'),
+                'chain_trips_start_at' => $chainStart ? Carbon::parse($chainStart)->format('d.m.Y') : null,
+                'chain_trips_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('d.m.Y') : null,
             ];
         });
 

@@ -13,7 +13,6 @@ use App\Http\Controllers\API\Sails\TripCardController;
 use App\Http\Controllers\API\Sails\TripDeleteController;
 use App\Http\Controllers\API\Sails\TripDetailController;
 use App\Http\Controllers\API\Sails\TripEditController;
-use App\Http\Controllers\API\Sails\TripInfoController;
 use App\Http\Controllers\API\Sails\TripsSelectListController;
 use App\Http\Controllers\API\Sails\TripStatusController;
 use App\Http\Controllers\API\Tickets\ExcursionRatesController;
@@ -51,7 +50,6 @@ Route::post('/excursions/rates/update', [ExcursionRatesController::class, 'updat
 Route::post('/excursions/rates/delete', [ExcursionRatesDeleteController::class, 'delete'])->middleware('auth:sanctum');
 
 Route::post('/trips', [TripsListController::class, 'list'])->middleware('auth:sanctum');
-Route::post('/trips/info', [TripInfoController::class, 'info'])->middleware('auth:sanctum');
 Route::post('/trips/view', [TripCardController::class, 'get'])->middleware('auth:sanctum');
 Route::post('/trips/get', [TripEditController::class, 'get'])->middleware('auth:sanctum');
 Route::post('/trips/update', [TripEditController::class, 'update'])->middleware('auth:sanctum');
