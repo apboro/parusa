@@ -50,6 +50,7 @@ class DictionaryEditController extends ApiEditController
             'titles' => $this->dictionaries[$name]['titles'],
             'validation' => $this->dictionaries[$name]['validation'],
             'hide' => $this->dictionaries[$name]['hide'] ?? null,
+            'auto' => $this->dictionaries[$name]['auto'] ?? null,
         ]);
     }
 

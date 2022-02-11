@@ -32,6 +32,7 @@ trait EditableDictionaries
                 'description' => 'text',
             ],
 //            'hide' => ['description'],
+            'auto' => 'description',
         ],
         'ticket_grades' => [
             'name' => 'Типы билетов',

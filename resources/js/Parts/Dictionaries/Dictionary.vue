@@ -4,7 +4,7 @@
 
         <container w-100 mt-15 pv-10 ph-15 border v-if="!processing">
             <div class="drag-item__header" v-if="active.length !== 0">
-                        <span class="drag-item__body-value" :class="'same-width-' + name" v-for="name in displayableFields"
+                        <span class="drag-item__body-value" :class="[name !== data.payload['auto'] ? 'same-width-' + name : 'drag-item__body-value-auto']" v-for="name in displayableFields"
                         >{{ data.payload['titles'][name] }}</span>
             </div>
             <div class="drag-item" v-for="(item, key) in active"
@@ -20,7 +20,7 @@
                     <icon-grip-vertical/>
                 </div>
                 <div class="drag-item__body">
-                    <span class="drag-item__body-value" :class="'same-width-' + name" v-for="name in displayableFields">{{ item[name] }}</span>
+                    <span class="drag-item__body-value" :class="[name !== data.payload['auto'] ? 'same-width-' + name : 'drag-item__body-value-auto']" v-for="name in displayableFields" v-html="format(item[name])"></span>
                 </div>
                 <div class="drag-item__actions">
                     <div class="drag-item__actions-button drag-item__actions-button-on" title="Отключить" @click="switchOff(item)">
@@ -44,7 +44,7 @@
         <heading mt-15>Неактивные</heading>
         <container w-100 mt-15 pv-10 ph-15 border v-if="!processing">
             <div class="drag-item__header" v-if="inactive.length !== 0">
-                <span class="drag-item__body-value" :class="'same-width-' + name" v-for="name in displayableFields">{{ data.payload['titles'][name] }}</span>
+                <span class="drag-item__body-value" :class="[name !== data.payload['auto'] ? 'same-width-' + name : 'drag-item__body-value-auto']" v-for="name in displayableFields">{{ data.payload['titles'][name] }}</span>
             </div>
             <div class="drag-item" v-for="(item, key) in inactive"
                  :key="key"
@@ -54,7 +54,7 @@
                     <icon-grip-vertical/>
                 </div>
                 <div class="drag-item__body">
-                    <span class="drag-item__body-value" :class="'same-width-' + name" v-for="name in displayableFields">{{ item[name] }}</span>
+                    <span class="drag-item__body-value" :class="[name !== data.payload['auto'] ? 'same-width-' + name : 'drag-item__body-value-auto']" v-for="name in displayableFields" v-html="format(item[name])"></span>
                 </div>
                 <div class="drag-item__actions">
                     <span class="drag-item__actions-button drag-item__actions-button-off" title="Включить" @click="switchOn(item)">
@@ -198,6 +198,11 @@ export default {
             setTimeout(() => {
                 this.sameWidths();
             }, 50);
+        },
+
+        format(value) {
+            if(value === null) return null;
+            return String(value).replaceAll("\n", '<br/>');
         },
 
         sameWidths() {
