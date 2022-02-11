@@ -9,10 +9,13 @@
             :disabled="disabled"
             :placeholder="placeholder"
             @input="change"
-            @click="toggle"
+            @click="showPicker"
             ref="input"
         />
-        <span class="input-date__clear" :class="{'input-date__clear-enabled': clearable && !disabled}" @click.stop.prevent="clear">
+        <span class="input-date__clear" v-if="clearable"
+              :class="{'input-date__clear-enabled': clearable && !disabled}"
+              @click.stop.prevent="clear"
+        >
             <IconCross/>
         </span>
         <div class="input-date__picker" :class="{'input-date__picker-shown': picker}">
@@ -43,6 +46,7 @@ export default {
         placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
 
+        clearable: {type: Boolean, default: false},
         pickOnClear: {type: Boolean, default: true},
 
         from: {type: String, default: null},
@@ -57,8 +61,8 @@ export default {
     }),
 
     computed: {
-        clearable() {
-            return !empty(this.modelValue);
+        isClearable() {
+            return this.clearable && !empty(this.modelValue);
         },
         isDirty() {
             return empty(this.original) ? !empty(this.modelValue) : this.original !== this.modelValue;
@@ -73,7 +77,7 @@ export default {
             this.set(event.target.value);
         },
         clear() {
-            if (this.clearable && !this.disabled) {
+            if (this.isClearable && !this.disabled) {
                 this.set(null);
                 if (this.pickOnClear && !this.picker) {
                     this.toggle();
@@ -95,15 +99,11 @@ export default {
                 this.picker = false;
             });
         },
-        toggle() {
-            if (this.disabled) return;
-            if (this.picker === true) {
-                this.close();
-            } else {
-                this.picker = true;
-                this.dropping = true;
-                document.addEventListener('click', this.close);
-            }
+        showPicker() {
+            if (this.disabled || this.picker === true) return;
+            this.picker = true;
+            this.dropping = true;
+            document.addEventListener('click', this.close);
         },
         close() {
             if (this.dropping === true) {
