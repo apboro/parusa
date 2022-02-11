@@ -43,6 +43,8 @@ export default {
         placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
 
+        pickOnClear: {type: Boolean, default: true},
+
         from: {type: String, default: null},
         to: {type: String, default: null},
     },
@@ -73,6 +75,9 @@ export default {
         clear() {
             if (this.clearable && !this.disabled) {
                 this.set(null);
+                if (this.pickOnClear && !this.picker) {
+                    this.toggle();
+                }
             }
             this.focus();
         },
