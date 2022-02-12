@@ -3,7 +3,7 @@
         <span class="input-number__decrease" v-if="quantity"
               :class="{'input-number__decrease-disabled': disabled}"
               tabindex="-1"
-              @click.stop.prevent="decrease"
+              @click="decrease"
         >
             <IconMinus/>
         </span>
@@ -15,13 +15,12 @@
             :disabled="disabled"
             :placeholder="placeholder"
             @input="update"
-            @click.stop.prevent="focus"
             ref="input"
         />
         <span class="input-number__increase" v-if="quantity"
               :class="{'input-number__increase-disabled': disabled}"
               tabindex="-1"
-              @click.stop.prevent="increase"
+              @click="increase"
         >
             <IconPlus/>
         </span>

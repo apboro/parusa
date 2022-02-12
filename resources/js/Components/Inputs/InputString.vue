@@ -9,7 +9,6 @@
             :autocomplete="autocomplete"
             :placeholder="placeholder"
             @input="update"
-            @click.stop.prevent="focus"
             ref="input"
         />
     </InputWrapper>
