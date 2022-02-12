@@ -294,7 +294,7 @@ $input_error_color: #FF1E00 !default;
 .date-picker {
     display: flex;
     flex-direction: column;
-    width: 300px;
+    width: 250px;
     background-color: $input_background_color;
     @include no_selection;
 
@@ -392,17 +392,17 @@ $input_error_color: #FF1E00 !default;
 
         &-date &-item {
             width: calc(100% / 7);
-            height: calc(200px / 6);
+            height: calc(180px / 6);
         }
 
         &-month &-item {
             width: calc(100% / 3);
-            height: calc(200px / 4);
+            height: calc(180px / 4);
         }
 
         &-year &-item {
             width: calc(100% / 5);
-            height: calc(200px / 4);
+            height: calc(180px / 4);
         }
     }
 
