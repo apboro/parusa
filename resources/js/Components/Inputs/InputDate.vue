@@ -1,18 +1,19 @@
 <template>
-    <InputWrapper class="input-date" :dirty="isDirty" :disabled="disabled" :valid="valid">
-        <input
-            class="input-date__input"
-            maxlength="10"
-            :class="{'input-date__input-small': small}"
-            :autocomplete="'off'"
-            :value="modelValue"
-            :disabled="disabled"
-            :placeholder="placeholder"
-            @input="change"
-            @click="showPicker"
-            ref="input"
+    <InputWrapper class="input-date" :dirty="isDirty" :disabled="disabled" :valid="valid" :has-focus="picker">
+        <input class="input-date__input"
+               :class="{'input-date__input-small': small}"
+               v-model="display"
+               :autocomplete="'off'"
+               :disabled="disabled"
+               :placeholder="placeholder"
+               maxlength="10"
+               @keydown="filterKeys"
+               @click="showPicker"
+               @focus="isFocused = true"
+               @blur="focusOut"
+               ref="input"
         />
-        <span class="input-date__clear" v-if="clearable"
+        <span class="input-date__clear" v-if="isClearable"
               :class="{'input-date__clear-enabled': clearable && !disabled}"
               @click.stop.prevent="clear"
         >
@@ -20,9 +21,9 @@
         </span>
         <div class="input-date__picker" :class="{'input-date__picker-shown': picker}">
             <DatePicker
-                :date="modelValue"
-                :from="from"
-                :to="to"
+                :date="innerValue"
+                :from="fromProxy"
+                :to="toProxy"
                 @selected="picked"
             />
         </div>
@@ -58,6 +59,9 @@ export default {
     data: () => ({
         picker: false,
         dropping: false,
+        isFocused: false,
+        displayValue: null,
+        innerValue: null,
     }),
 
     computed: {
@@ -67,52 +71,127 @@ export default {
         isDirty() {
             return empty(this.original) ? !empty(this.modelValue) : this.original !== this.modelValue;
         },
+        display: {
+            get() {
+                return this.displayValue;
+            },
+            set(value) {
+                this.displayValue = value;
+                if (value === '' || value === null) {
+                    this.setInner(null);
+                    this.set(null);
+                    return;
+                }
+                const dateObject = value.split('.');
+                const year = (typeof dateObject[2] !== "undefined" && dateObject[2] !== '') ? Number(dateObject[2]) : null;
+                const month = (typeof dateObject[1] !== "undefined" && dateObject[1] !== '') ? Number(dateObject[1]) : null;
+                const day = (typeof dateObject[0] !== "undefined" && dateObject[0] !== '') ? Number(dateObject[0]) : null;
+                if (day !== null && month !== null && year !== null && String(year).length === 4 && month >= 1 && month <= 12) {
+                    const date = new Date(year, month - 1, day);
+                    if (date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day) {
+                        this.setInner(date);
+                        this.set(date);
+                    }
+                }
+            }
+        },
+        fromProxy() {
+            return this.from !== null ? new Date(this.from) : null;
+        },
+        toProxy() {
+            return this.to !== null ? new Date(this.to) : null;
+        },
+    },
+
+    watch: {
+        modelValue(value) {
+            this.setInner(value);
+        }
+    },
+
+    created() {
+        this.setInner(this.modelValue);
     },
 
     methods: {
-        focus() {
-            this.$refs.input.focus()
-        },
-        change(event) {
-            this.set(event.target.value);
-        },
-        clear() {
-            if (this.isClearable && !this.disabled) {
-                this.set(null);
-                if (this.pickOnClear && !this.picker) {
-                    this.toggle();
-                }
+        setInner(value, force = false) {
+            this.innerValue = typeof value === "string" ? new Date(value) : value;
+            if (!this.isFocused || force) {
+                this.displayValue = this.innerValue === null
+                    ? null
+                    : String(this.innerValue.getDate()).padStart(2, '0') + '.' + String(this.innerValue.getMonth() + 1).padStart(2, '0') + '.' + String(this.innerValue.getFullYear()).padStart(4, '0')
             }
-            this.focus();
-        },
-        set(value) {
-            if (empty(value)) {
-                value = null;
-            }
-            this.$emit('update:modelValue', value);
-            this.$emit('change', value);
         },
         picked(value) {
+            this.setInner(value, true);
             this.set(value);
             this.$refs.input.focus();
             this.$nextTick(() => {
                 this.picker = false;
             });
         },
-        showPicker() {
+        set(value) {
+            if (value === null) {
+                this.$emit('update:modelValue', null);
+                this.$emit('change', null);
+            } else {
+                this.$emit('update:modelValue', value.toISOString());
+                this.$emit('change', value.toISOString());
+            }
+        },
+        focus() {
+            this.$refs.input.focus()
+        },
+        focusOut() {
+            this.isFocused = false;
+            this.setInner(this.innerValue);
+        },
+        filterKeys(event) {
+            const accepted = [
+                20, // capslocks
+                17, // control
+                18, // option
+                16, // shift
+                37, 38, 39, 40, // arrow keys
+                9, // tab (let blur handle tab)
+                8, //backspace
+                46, // delete
+            ];
+            if (accepted.indexOf(event.keyCode) === -1 && ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'].indexOf(event.key) === -1) {
+                event.preventDefault();
+            }
+            return true;
+        },
+        clear() {
+            if (this.isClearable && !this.disabled) {
+                this.setInner(null, true);
+                this.set(null);
+                if (this.pickOnClear) {
+                    this.showPicker(false);
+                }
+            }
+            this.focus();
+        },
+        showPicker(dropping = true) {
             if (this.disabled || this.picker === true) return;
             this.picker = true;
-            this.dropping = true;
-            document.addEventListener('click', this.close);
+            this.dropping = dropping;
+            window.addEventListener('click', this.close);
         },
-        close() {
-            if (this.dropping === true) {
+        close(event) {
+            if (this.dropping === true || event && event.target === this.$refs.input) {
                 this.dropping = false;
             } else {
-                document.removeEventListener('click', this.close);
+                window.removeEventListener('click', this.close);
                 this.picker = false;
             }
         },
+        addDays(value) {
+            if (this.innerValue !== null) {
+                this.innerValue.setDate(this.innerValue.getDate() + value);
+                this.set(this.innerValue);
+            }
+        }
     }
 }
 </script>

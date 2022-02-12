@@ -18,10 +18,11 @@
                   class="date-picker__calendar-item"
                   :class="[{
                     'date-picker__calendar-item-disabled': !item['enabled'],
-                    'date-picker__calendar-item-current': !!item['current'],
-                    'date-picker__calendar-item-selected': !!item['selected'],
+                    'date-picker__calendar-item-sibling': item['sibling'],
+                    'date-picker__calendar-item-current': item['current'],
+                    'date-picker__calendar-item-selected': item['selected'],
                   }, item['class']]"
-                  @click="calendarSelect(item['value'], item['enabled'])"
+                  @click="calendarSelect(item['value'], item['enabled'], item['month'])"
                   v-html="item['caption']"
             ></span>
         </div>
@@ -33,7 +34,6 @@
 <script>
 import IconBackward from "@/Components/Icons/IconBackward";
 import IconForward from "@/Components/Icons/IconForward";
-import moment from "moment";
 
 export default {
     emits: ['selected'],
@@ -44,9 +44,9 @@ export default {
     },
 
     props: {
-        date: {type: [String, Object], default: null},
-        from: {type: [String, Object], default: null},
-        to: {type: [String, Object], default: null},
+        date: {type: Object, default: null},
+        from: {type: Object, default: null},
+        to: {type: Object, default: null},
     },
 
     watch: {
@@ -60,23 +60,18 @@ export default {
             year: null,
             month: null,
             date: null,
-            hour: null,
-            minute: null,
         },
         selected: {
             years: null,
             year: null,
             month: null,
             date: null,
-            hour: null,
-            minute: null,
         },
         mode: 'date',
     }),
 
     created() {
         this.refreshCurrent();
-        this.mode = 'date';
         if (window.navigator.languages) {
             this.locale = window.navigator.languages[0];
         } else {
@@ -98,7 +93,8 @@ export default {
                         list[i] = {
                             value: i,
                             caption: i,
-                            enabled: true,
+                            enabled: (!this.from || i >= this.from.getFullYear()) && (!this.to || i <= this.to.getFullYear()),
+                            sibling: false,
                             current: i === this.current.year,
                             selected: i === this.selected.year,
                             class: null,
@@ -110,9 +106,11 @@ export default {
                         list[i] = {
                             value: i,
                             caption: this.monthToLocale(i),
-                            enabled: true,
+                            enabled: (!this.from || (this.selected.year > this.from.getFullYear() || (this.selected.year === this.from.getFullYear() && i >= this.from.getMonth())))
+                                && (!this.to || (this.selected.year < this.to.getFullYear() || (this.selected.year === this.to.getFullYear() && i <= this.to.getMonth()))),
+                            sibling: false,
                             current: (i === this.current.month && this.selected.year === this.current.year),
-                            selected: (i === this.selected.month),
+                            selected: (this.date && this.selected.year === this.date.getFullYear() && i === this.date.getMonth()),
                             class: null,
                         };
                     }
@@ -125,10 +123,19 @@ export default {
                     for (let i = 0; i < 42; i++) {
                         list[i] = {
                             value: day,
+                            month: month,
                             caption: day,
-                            enabled: month === 0,
+                            enabled: (!this.from || (this.selected.year > this.from.getFullYear() || (this.selected.year === this.from.getFullYear()
+                                    && (this.selected.month + month > this.from.getMonth() || this.selected.month + month === this.from.getMonth() && day >= this.from.getDate()))))
+                                && (!this.to || (this.selected.year < this.to.getFullYear() || (this.selected.year === this.to.getFullYear()
+                                    && (this.selected.month + month < this.to.getMonth() || this.selected.month + month === this.to.getMonth() && day <= this.to.getDate())))),
+                            sibling: month !== 0,
                             current: (month === 0 && day === this.current.date && this.selected.month === this.current.month && this.selected.year === this.current.year),
-                            selected: (month === 0 && day === this.selected.date),
+                            selected: (this.date
+                                && this.selected.year === this.date.getFullYear()
+                                && this.selected.month + month === this.date.getMonth()
+                                && day === this.date.getDate()
+                            ),
                             class: null,
                         };
 
@@ -156,8 +163,6 @@ export default {
             this.current.year = current.getFullYear();
             this.current.month = current.getMonth();
             this.current.date = current.getDate();
-            this.current.hour = current.getHours();
-            this.current.minute = current.getMinutes();
         },
 
         monthToLocale(month) {
@@ -182,29 +187,11 @@ export default {
                     this.selected.year = date.getFullYear();
                     this.selected.month = date.getMonth();
                     this.selected.date = date.getDate();
-                    this.selected.hour = date.getHours();
-                    this.selected.minute = date.getMinutes();
-                } else if (typeof this.date === 'string') {
-                    // parse from string
-                    let date;
-                    if (this.withTime) {
-                        date = moment(key, 'DD.MM.YYYY HH:mm');
-                    } else {
-                        date = moment(key, 'DD.MM.YYYY');
-                    }
-                    if (!date.isValid()) date = moment();
-                    this.selected.year = date.year();
-                    this.selected.month = date.month();
-                    this.selected.date = date.date();
-                    this.selected.hour = date.hour();
-                    this.selected.minute = date.minute();
                 } else {
-                    // get from object
-                    this.selected.year = key['year'];
-                    this.selected.month = key['month'];
-                    this.selected.date = key['date'];
-                    this.selected.hour = key['hour'];
-                    this.selected.minute = key['minute'];
+                    // get from date object
+                    this.selected.year = key.getFullYear();
+                    this.selected.month = key.getMonth();
+                    this.selected.date = key.getDate();
                 }
                 this.selected.years = Math.floor(this.selected.year / 20) * 20;
                 return;
@@ -213,32 +200,28 @@ export default {
             let dateObj = Object.assign({}, this.selected);
             dateObj[key] = value;
 
-            const date = new Date(dateObj.year, dateObj.month, dateObj.date, dateObj.hour, dateObj.minute);
-            // fix absent dates in month
+            const date = new Date(dateObj.year, dateObj.month, dateObj.date);
             if (date.getDate() !== dateObj.date && date.getMonth() !== dateObj.month) {
-                date.setMonth(dateObj.month + 1);
+                date.setMonth(dateObj.month);
                 date.setDate(0);
             }
 
             this.selected.year = date.getFullYear();
             this.selected.month = date.getMonth();
             this.selected.date = date.getDate();
-            this.selected.hour = date.getHours();
-            this.selected.minute = date.getMinutes();
             this.selected.years = Math.floor(this.selected.year / 20) * 20;
         },
-
 
         clickNavigation(direction) {
             switch (this.mode) {
                 case 'year':
-                    this.selected.years = this.selected.years + direction * 20;
+                    this.selected.years += direction * 20;
                     break;
                 case 'month':
-                    this.updateSelected('year', this.selected.year + direction);
+                    this.selected.year += direction;
                     break;
                 case 'date':
-                    this.updateSelected('month', this.selected.month + direction);
+                    this.selected.month += direction;
                     break;
                 default:
             }
@@ -261,7 +244,7 @@ export default {
             return {firstDayOfWeek, lastInMonth, lastInPreviousMonth};
         },
 
-        calendarSelect(value, enabled) {
+        calendarSelect(value, enabled, monthDelta) {
             if (!enabled) return;
             switch (this.mode) {
                 case 'year':
@@ -274,37 +257,21 @@ export default {
                     break;
                 case 'date':
                     this.selected.date = value;
-                    let date = moment();
-                    date.year(this.selected.year);
-                    date.month(this.selected.month);
-                    date.date(this.selected.date);
-                    date.hour(this.selected.hour);
-                    date.minute(this.selected.minute);
-                    if (this.withTime) {
-                        this.$emit('selected', date.format('DD.MM.YYYY HH:mm'));
-                    } else {
-                        this.$emit('selected', date.format('DD.MM.YYYY'));
-                    }
+                    this.selected.month += monthDelta;
+                    this.$emit('selected', new Date(this.selected.year, this.selected.month, this.selected.date));
                     break;
                 default:
             }
         },
 
         selectCurrent() {
-            this.mode = 'date';
-            this.updateSelected('year', this.current.year);
-            this.updateSelected('month', this.current.month);
-            this.updateSelected('date', this.current.date);
-            let date = moment();
-            date.year(this.selected.year);
-            date.month(this.selected.month);
-            date.date(this.selected.date);
-            date.hour(this.selected.hour);
-            date.minute(this.selected.minute);
-            if (this.withTime) {
-                this.$emit('selected', date.format('DD.MM.YYYY HH:mm'));
-            } else {
-                this.$emit('selected', date.format('DD.MM.YYYY'));
+            const date = new Date(this.current.year, this.current.month, this.current.date);
+            if ((!this.from || this.from <= date) && (!this.to || this.to >= date)) {
+                this.updateSelected('year', this.current.year);
+                this.updateSelected('month', this.current.month);
+                this.updateSelected('date', this.current.date);
+                this.mode = 'date';
+                this.$emit('selected', date);
             }
         }
     }
@@ -399,6 +366,11 @@ $input_error_color: #FF1E00 !default;
             &-disabled {
                 color: $input_disabled_color;
                 cursor: default;
+                opacity: 0.4;
+            }
+
+            &-sibling:not(&-disabled):not(&-selected) {
+                opacity: 0.6;
             }
 
             &-current {
@@ -413,8 +385,8 @@ $input_error_color: #FF1E00 !default;
                 border: 1px solid $input_active_color;
             }
 
-            &-preselected {
-
+            &:not(&-disabled):not(&-selected):hover {
+                background-color: $input_hover_color;
             }
         }
 
