@@ -17,6 +17,7 @@
                     :pick-on-clear="false"
                     :small="true"
                     @change="dateChanged"
+                    ref="date"
                 />
                 <GuiIconButton :class="'ml-5'" :border="false" @click="setDay(1)">
                     <IconForward/>
@@ -113,7 +114,6 @@
 </template>
 
 <script>
-import moment from "moment";
 import list from "@/Core/List";
 import LayoutPage from "@/Components/Layout/LayoutPage";
 import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
@@ -198,9 +198,10 @@ export default {
             }
         },
         setDay(increment) {
-            let date = moment(this.list.filters['date'], 'DD.MM.YYYY');
-            this.list.filters['date'] = date.date(date.date() + increment).format('DD.MM.YYYY');
-            this.list.load();
+            this.$refs.date.addDays(increment);
+            // let date = moment(this.list.filters['date'], 'DD.MM.YYYY');
+            // this.list.filters['date'] = date.date(date.date() + increment).format('DD.MM.YYYY');
+            // this.list.load();
         },
         chainInfo(trip) {
             let count = trip['chain_trips_count'];

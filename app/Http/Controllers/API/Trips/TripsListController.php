@@ -39,7 +39,7 @@ class TripsListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
-        $this->defaultFilters['date'] = Carbon::now()->format('d.m.Y');
+        $this->defaultFilters['date'] = Carbon::now();
 
         $query = Trip::query()
             ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus'])
@@ -52,11 +52,11 @@ class TripsListController extends ApiController
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
             if (!empty($filters['date'])) {
-                $date = Carbon::parse($filters['date']);
+                $date = Carbon::parse($filters['date'])->setTimezone(config('app.timezone'));
                 $query->whereDate('start_at', $date);
             } else {
-                $filters['date'] = Carbon::now()->format('d.m.Y');
-                $query->whereDate('start_at', Carbon::now());
+                $filters['date'] = Carbon::now();
+                $query->whereDate('start_at', $filters['date']);
             }
             if (!empty($filters['status_id'])) {
                 $query->where('status_id', $filters['status_id']);
@@ -81,6 +81,7 @@ class TripsListController extends ApiController
 
             return [
                 'id' => $trip->id,
+                'start_at' => $trip->start_at,
                 'start_date' => $trip->start_at->format('d.m.Y'),
                 'start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
