@@ -35,6 +35,7 @@ export default {
     components: {TimeInput, DateInput, InputWrapper},
 
     props: {
+        name: String,
         modelValue: {type: String, default: null},
         from: {type: String, default: null},
         to: {type: String, default: null},
@@ -141,8 +142,6 @@ $base_size_unit: 35px !default;
     &__time {
         flex-grow: 1;
         width: 40%;
-
-
     }
 }
 </style>

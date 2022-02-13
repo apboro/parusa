@@ -194,15 +194,15 @@ export default {
 </script>
 
 <style lang="scss">
+//@import "../../variables";
 @use "sass:math";
-@import "../../variables";
 
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
 $animation_time: 150ms !default;
 $animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
+$shadow_2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23) !default;
 $base_size_unit: 35px !default;
 $input_placeholder_color: #757575 !default;
-$input_icon_color: #ababab !default;
 $input_remove_color: #FF1E00 !default;
 $input_background_color: #ffffff !default;
 

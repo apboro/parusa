@@ -24,6 +24,7 @@ export default {
     components: {DateInput, InputWrapper},
 
     props: {
+        name: String,
         modelValue: {type: String, default: null},
         from: {type: String, default: null},
         to: {type: String, default: null},
