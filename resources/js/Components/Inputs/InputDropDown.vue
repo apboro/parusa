@@ -110,7 +110,7 @@ export default {
                     }
                 }
                 this.$emit('update:modelValue', value);
-                this.$emit('change', this.name, value);
+                this.$emit('change', value, this.name);
                 this.close();
             }
         },
