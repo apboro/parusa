@@ -144,7 +144,7 @@ export default {
         },
         filterKeys(event) {
             const accepted = [
-                20, // capslocks
+                20, // capslock
                 17, // control
                 18, // option
                 16, // shift
