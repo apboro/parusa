@@ -41,7 +41,7 @@ export default {
 </script>
 
 <style lang="scss">
-//@import "../../variables";
+@import "../../variables";
 
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
 $base_size_unit: 35px !default;
