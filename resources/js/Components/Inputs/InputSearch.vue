@@ -30,6 +30,7 @@ export default {
     components: {InputWrapper, IconSearch, IconCross},
 
     props: {
+        name: String,
         modelValue: {type: String, default: null},
         original: {type: String, default: null},
         valid: {type: Boolean, default: true},
@@ -71,7 +72,7 @@ export default {
                 value = null;
             }
             this.$emit('update:modelValue', value);
-            this.$emit('change', value);
+            this.$emit('change', value, this.name);
         }
     }
 }
