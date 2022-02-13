@@ -49,6 +49,7 @@ $input_color: #1e1e1e !default;
 $input_disabled_color: #626262 !default;
 $input_active_color: #0f82f1 !default;
 $input_background_color: #ffffff !default;
+$input_placeholder_color: #757575;
 
 .checkbox {
     height: 100%;
@@ -73,7 +74,7 @@ $input_background_color: #ffffff !default;
     &__check {
         width: 16px;
         height: 16px;
-        border: 1px solid $input_active_color;
+        border: 1px solid $input_placeholder_color;
         border-radius: 2px;
         display: flex;
         align-items: center;
@@ -115,6 +116,7 @@ $input_background_color: #ffffff !default;
         display: inline-block;
         height: 100%;
         color: $input_color;
+        @include no_selection;
 
         &-small {
             font-size: 14px;
