@@ -54,15 +54,6 @@ export default {
         isDirty() {
             return this.original !== this.modelValue;
         },
-
-        valueProxy: {
-            get() {
-                return this.modelValue;
-            },
-            set(value) {
-                this.$emit('update:modelValue', value);
-            }
-        },
     },
 
     methods: {
