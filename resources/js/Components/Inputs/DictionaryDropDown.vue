@@ -91,8 +91,8 @@ export default {
                     this.loaded = true;
                 });
         },
-        change(name, value) {
-            this.$emit('change', name, value);
+        change(value, name) {
+            this.$emit('change', value, name);
         },
     }
 }
