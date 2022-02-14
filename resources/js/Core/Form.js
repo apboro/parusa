@@ -43,45 +43,51 @@ const form = function (load_url, save_url, options = {}, toaster = null) {
          * @param options Options to pass to load request. Overrides form default options if not null.
          */
         load(options = null) {
-            if (this.load_url === null) {
-                this.is_loaded = true;
-                if (typeof this.loaded_callback === "function") {
-                    this.loaded_callback(this.values, this.payload);
-                }
-                return;
-            }
-
-            this.is_loaded = false;
-            this.is_loading = true;
-            this.is_saving = false;
-
-            axios.post(this.load_url, options !== null ? options : this.options)
-                .then(response => {
-                    this.values = response.data.values;
-                    this.originals = clone(this.values);
-                    this.titles = response.data.titles;
-                    this.rules = {};
-                    Object.keys(response.data.rules).map(key => {
-                        this.rules[key] = parseRules(response.data.rules[key]);
-                    });
-                    this.payload = !empty(response.data.payload) ? response.data.payload : {};
-
+            return new Promise((resolve, reject) => {
+                if (this.load_url === null) {
                     this.is_loaded = true;
-
                     if (typeof this.loaded_callback === "function") {
                         this.loaded_callback(this.values, this.payload);
                     }
-                })
-                .catch(error => {
-                    this.notify(error.response.data.message, 0, 'error');
+                    return;
+                }
 
-                    if (typeof this.load_failed_callback === "function") {
-                        this.load_failed_callback(error.response.status, error.response.data);
-                    }
-                })
-                .finally(() => {
-                    this.is_loading = false;
-                });
+                this.is_loaded = false;
+                this.is_loading = true;
+                this.is_saving = false;
+
+                axios.post(this.load_url, options !== null ? options : this.options)
+                    .then(response => {
+                        this.values = response.data.values;
+                        this.originals = clone(this.values);
+                        this.titles = response.data.titles;
+                        this.rules = {};
+                        Object.keys(response.data.rules).map(key => {
+                            this.rules[key] = parseRules(response.data.rules[key]);
+                        });
+                        this.payload = !empty(response.data.payload) ? response.data.payload : {};
+
+                        this.is_loaded = true;
+
+                        if (typeof this.loaded_callback === "function") {
+                            this.loaded_callback(this.values, this.payload);
+                        }
+
+                        resolve(this.values);
+                    })
+                    .catch(error => {
+                        this.notify(error.response.data.message, 0, 'error');
+
+                        if (typeof this.load_failed_callback === "function") {
+                            this.load_failed_callback(error.response.status, error.response.data);
+                        }
+
+                        reject(error.response.data);
+                    })
+                    .finally(() => {
+                        this.is_loading = false;
+                    });
+            });
         },
 
         /**
@@ -114,7 +120,7 @@ const form = function (load_url, save_url, options = {}, toaster = null) {
                         if (typeof this.saved_callback === "function") {
                             this.saved_callback(this.values, this.payload);
                         }
-                        resolve(this.values, this.payload);
+                        resolve(this.values);
                     })
                     .catch(error => {
                         if (error.response.status === 422) {
@@ -132,7 +138,7 @@ const form = function (load_url, save_url, options = {}, toaster = null) {
                                 this.save_failed_callback(error.response.status, error.response.data);
                             }
                         }
-                        reject(error.response.status, error.response.data);
+                        reject(error.response.data);
                     })
                     .finally(() => {
                         this.is_saved = false;
