@@ -87,14 +87,14 @@
                         <span class="text-red" v-else><IconExclamation :class="'h-1em inline'"/> Тариф не задан</span>
                     </div>
                 </ListTableCell>
-                <ListTableCell :nowrap="true" :class="'flex'">
+                <ListTableCell :nowrap="true" :class="'flex justify-end'">
                     <GuiIconButton v-if="trip['chained']" :class="'mr-5'" :color="'blue'" @click="chainInfo(trip)">
                         <IconLink/>
                     </GuiIconButton>
                     <GuiActionsMenu :title="null">
                         <span class="link">Редактировать</span>
                         <span class="link">Копировать рейс</span>
-                        <span class="link">Удалить</span>
+                        <span class="link" @click="remove(trip)">Удалить</span>
                     </GuiActionsMenu>
                 </ListTableCell>
             </ListTableRow>
@@ -110,6 +110,8 @@
         >
             <DictionaryDropDown :dictionary="popup_dictionary" v-model="current_status" :name="'status'" :original="initial_status"/>
         </PopUp>
+
+        <TripDeletePopup ref="trip_delete"/>
     </LayoutPage>
 </template>
 
@@ -132,6 +134,8 @@ import ListTableCell from "@/Components/ListTable/ListTableCell";
 import IconExclamation from "@/Components/Icons/IconExclamation";
 import IconLink from "@/Components/Icons/IconLink";
 import PopUp from "@/Components/PopUp";
+import deleteEntry from "@/Mixins/DeleteEntry";
+import TripDeletePopup from "@/Pages/Admin/Trips/Parts/TripDeletePopup";
 
 
 export default {
@@ -141,6 +145,7 @@ export default {
     },
 
     components: {
+        TripDeletePopup,
         PopUp,
         IconLink,
         IconExclamation,
@@ -159,6 +164,8 @@ export default {
         GuiActionsMenu,
         LayoutPage
     },
+
+    mixins: [deleteEntry],
 
     data: () => ({
         list: list('/api/trips'),
@@ -187,7 +194,9 @@ export default {
             return query;
         },
         title() {
-            return this.$route.meta['title'] + (this.list.filters['date'] ? ' на ' + this.list.filters['date'] : '');
+            return this.$route.meta['title']
+                + (this.list.payload['date'] ? ' на ' + this.list.payload['date'] : '')
+                + (this.list.payload['day'] ? ', ' + ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'][this.list.payload['day']-1] : '');
         },
     },
 
@@ -199,9 +208,6 @@ export default {
         },
         setDay(increment) {
             this.$refs.date.addDays(increment);
-            // let date = moment(this.list.filters['date'], 'DD.MM.YYYY');
-            // this.list.filters['date'] = date.date(date.date() + increment).format('DD.MM.YYYY');
-            // this.list.load();
         },
         chainInfo(trip) {
             let count = trip['chain_trips_count'];
@@ -213,6 +219,19 @@ export default {
             message += 'Количество связанных рейсов: <b>' + count + '</b>';
             this.$dialog.show(message, 'info', 'green', [this.$dialog.button('ok', 'ok', 'green')], 'center');
         },
+        remove(trip) {
+            if (!trip['chained']) {
+                this.deleteEntry('Удалить рейс №' + trip['id'] + '?', '/api/trips/delete', {id: trip['id'], mode: 'single'})
+                    .then(() => {
+                        this.list.reload();
+                    });
+            } else {
+                this.$refs.trip_delete.remove(trip)
+                    .then(() => {
+                        this.list.reload();
+                    })
+            }
+        },
 
         statusChange(trip) {
             this.popup_title = 'Статус движения';
@@ -221,10 +240,10 @@ export default {
             this.current_status = this.initial_status;
             this.genericStatusChange('/api/trips/status', trip['id'])
                 .then(data => {
-                    this.list.data.some((item, key) => {
+                    this.list.list.some((item, key) => {
                         if (item['id'] === trip['id']) {
-                            this.list.data[key]['status'] = data['status'];
-                            this.list.data[key]['status_id'] = data['status_id'];
+                            this.list.list[key]['status'] = data['status'];
+                            this.list.list[key]['status_id'] = data['status_id'];
                             return true;
                         }
                         return false;
@@ -246,8 +265,6 @@ export default {
                         }
                         return false;
                     })
-                    // this.datasource.data['sale_status'] = data['status'];
-                    // this.datasource.data['sale_status_id'] = data['status_id'];
                 });
         },
         genericStatusChange(url, id) {
@@ -273,7 +290,7 @@ export default {
                         }
                     });
             });
-        }
+        },
     },
 }
 </script>

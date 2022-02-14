@@ -76,12 +76,11 @@ class TripsListController extends ApiController
         $trips->transform(function (Trip $trip) {
             /** @var TripChain $chain */
             $chain = $trip->chains->first();
-            $chainStart = $chain->trips()->min('start_at');
-            $chainEnd = $chain->trips()->max('start_at');
+            $chainStart = $chain ? $chain->trips()->min('start_at') : null;
+            $chainEnd = $chain ? $chain->trips()->max('start_at') : null;
 
             return [
                 'id' => $trip->id,
-                'start_at' => $trip->start_at,
                 'start_date' => $trip->start_at->format('d.m.Y'),
                 'start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
@@ -95,9 +94,11 @@ class TripsListController extends ApiController
                 'has_rate' => $trip->hasRate(),
                 'sale_status_id' => $trip->sale_status_id,
                 'chained' => $trip->getAttribute('chains_count') > 0,
-                'chain_trips_count' => $chain->getAttribute('trips_count'),
+                'chain_trips_count' => $chain ? $chain->getAttribute('trips_count') : null,
                 'chain_trips_start_at' => $chainStart ? Carbon::parse($chainStart)->format('d.m.Y') : null,
                 'chain_trips_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('d.m.Y') : null,
+                '_trip_start_at' => $trip->start_at,
+                '_chain_end_at' => $chainEnd ? Carbon::parse($chainEnd) : null,
             ];
         });
 
@@ -106,7 +107,10 @@ class TripsListController extends ApiController
             ['Отправление', '№ рейса', 'Экскурсия', 'Причал, теплоход', 'Осталось билетов (всего)', 'Статусы движение / продажа'],
             $filters,
             $this->defaultFilters,
-            []
+            [
+                'date' => Carbon::parse($filters['date'])->setTimezone(config('app.timezone'))->format('d.m.Y'),
+                'day' => Carbon::parse($filters['date'])->setTimezone(config('app.timezone'))->dayOfWeek,
+            ]
         )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }

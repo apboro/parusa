@@ -27,16 +27,21 @@ class TripDeleteController extends ApiController
     {
         $id = $request->input('id');
 
+        /** @var Trip $trip */
         if ($id === null || null === ($trip = Trip::query()->with(['chains'])->where('id', $id)->first())) {
             return APIResponse::notFound('Рейс не найден');
         }
-        /** @var Trip $trip */
+
+        $mode = $request->input('mode');
+        if (!in_array($mode, ['single', 'all', 'range'])) {
+            return APIResponse::error('Неверные параметры');
+        }
 
         /** @var TripChain $chain */
         $chain = $trip->chains->first();
 
-        if ($request->input('chained', false) === false) {
-            // Delete single trip
+        // Delete single trip
+        if ($mode === 'single') {
 
             // Check for ordered tickets
             if ($trip->tickets()->count() > 0) {
@@ -44,7 +49,7 @@ class TripDeleteController extends ApiController
             }
 
             // Get trip ids to move to new chain
-            $laterTripIds = $chain->trips()->where('start_at', '>', $trip->start_at)->pluck('id')->toArray();
+            $laterTripIds = $chain ? $chain->trips()->where('start_at', '>', $trip->start_at)->pluck('id')->toArray() : null;
 
             // Delete trip
             try {
@@ -57,13 +62,23 @@ class TripDeleteController extends ApiController
                 return APIResponse::error($exception->getMessage());
             }
 
-            // Detach later trips from chain and attach to new
-            if ($chain->trips()->count() !== count($laterTripIds)) {
-                $chain->trips()->detach($laterTripIds);
-                $newChain = new TripChain;
-                $newChain->save();
-                $newChain->trips()->sync($laterTripIds);
-                $newChainTripsCount = count($laterTripIds);
+            if ($chain) {
+                // Detach later trips from chain and attach to new if count greater than 1
+                $laterCount = count($laterTripIds);
+                if ($chain->trips()->count() !== $laterCount) {
+                    $chain->trips()->detach($laterTripIds);
+                    if ($laterCount > 1) {
+                        $newChain = new TripChain;
+                        $newChain->save();
+                        $newChain->trips()->sync($laterTripIds);
+                        $newChainTripsCount = count($laterTripIds);
+                    }
+                }
+                // Remove chain if it no longer actual
+                if ($chain->trips()->count() <= 1) {
+                    $chain->trips()->detach();
+                    $chain->delete();
+                }
             }
 
             return APIResponse::formSuccess("Рейс №{$id} удалён." . (isset($newChainTripsCount) ? " $newChainTripsCount рейсов перенесено в новую цепочку." : ''));
@@ -71,22 +86,26 @@ class TripDeleteController extends ApiController
 
         // Delete chained trips
 
-        $chainEnd = $request->input('chain_upto');
+        $chainEnd = $request->input('delete_to');
 
         if (!$chainEnd) {
             return APIResponse::error("Неверно указан диапазон дат.");
         }
 
-        $chainEnd = Carbon::parse($chainEnd);
+        $chainEnd = Carbon::parse($chainEnd)->setTimezone(config('app.timezone'));
 
-        // Check for ordered tickets
+        // Get trips list to delete
         $tripsToDelete = Trip::query()
+            ->select(['id', 'start_at'])
             ->withCount('tickets')
             ->whereHas('chains', function (Builder $query) use ($chain) {
                 $query->where('id', $chain->id);
             })
-            ->where('start_at', ">=", $trip->start_at)
-            ->whereDate('start_at', '<=', $chainEnd)
+            ->when($mode === 'range', function (Builder $query) use ($trip, $chainEnd) {
+                $query
+                    ->where('start_at', ">=", $trip->start_at)
+                    ->whereDate('start_at', '<=', $chainEnd);
+            })
             ->get();
 
         $tripsWithTickets = $tripsToDelete->filter(function (Trip $trip) {
@@ -94,12 +113,13 @@ class TripDeleteController extends ApiController
         });
 
         if ($tripsWithTickets->count() > 0) {
-            $ids = $tripsWithTickets->pluck('id')->toArray();
-            return APIResponse::error('В диапазоне есть рейсы с оформленнымы билетами. [' . implode(',', $ids) . ']');
+            return APIResponse::error('В диапазоне есть рейсы с оформленнымы билетами.');
         }
 
         // Get trip ids to move to new chain
-        $laterTripIds = $chain->trips()->whereDate('start_at', '>', $chainEnd)->pluck('id')->toArray();
+        if ($mode === 'range') {
+            $laterTripIds = $chain->trips()->whereDate('start_at', '>', $chainEnd)->pluck('id')->toArray();
+        }
 
         // Delete trips
         $deleteCount = $tripsToDelete->count();
@@ -117,13 +137,26 @@ class TripDeleteController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        // Detach later trips from chain and attach to new
-        if ($chain->trips()->count() !== count($laterTripIds)) {
-            $chain->trips()->detach($laterTripIds);
-            $newChain = new TripChain;
-            $newChain->save();
-            $newChain->trips()->sync($laterTripIds);
-            $newChainTripsCount = count($laterTripIds);
+        if ($mode === 'range') {
+            // Detach later trips from chain and attach to new if count greater than 1
+            $laterCount = count($laterTripIds);
+            if ($chain->trips()->count() !== $laterCount) {
+                $chain->trips()->detach($laterTripIds);
+                if ($laterCount > 1) {
+                    $newChain = new TripChain;
+                    $newChain->save();
+                    $newChain->trips()->sync($laterTripIds);
+                    $newChainTripsCount = count($laterTripIds);
+                }
+            }
+            // Remove chain if it no longer actual
+            if ($chain->trips()->count() <= 1) {
+                $chain->trips()->detach();
+                $chain->delete();
+            }
+        } else {
+            $chain->trips()->detach();
+            $chain->delete();
         }
 
         return APIResponse::formSuccess("Удалёно $deleteCount рейсов." . (isset($newChainTripsCount) ? " $newChainTripsCount рейсов перенесено в новую цепочку." : ''));
