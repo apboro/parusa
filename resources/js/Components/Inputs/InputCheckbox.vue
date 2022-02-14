@@ -1,16 +1,15 @@
 <template>
-    <InputWrapper class="input-checkbox" :label="false" :dirty="isDirty" :disabled="disabled" :valid="valid">
-        <CheckBox class="input-checkbox__input" :value="value" v-model="proxyValue" :label="label" :disabled="disabled" :small="small"/>
-    </InputWrapper>
+    <div class="input-checkbox">
+        <CheckBox class="input-checkbox__input" :value="value" v-model="proxyValue" :valid="valid" :label="label" :disabled="disabled" :small="small"/>
+    </div>
 </template>
 
 <script>
-import InputWrapper from "@/Components/Inputs/Helpers/InputWrapper";
 import CheckBox from "@/Components/Inputs/Helpers/CheckBox";
 import empty from "@/Core/Helpers/Empty";
 
 export default {
-    components: {CheckBox, InputWrapper},
+    components: {CheckBox},
     props: {
         name: String,
         modelValue: {type: [Number, String, Boolean, Array], default: null},
@@ -53,7 +52,7 @@ $base_size_unit: 35px !default;
 
     &__input {
         width: 100%;
-        padding: 0 10px;
+        padding: 0;
     }
 }
 </style>

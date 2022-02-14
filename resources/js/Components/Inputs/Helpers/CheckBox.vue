@@ -1,5 +1,5 @@
 <template>
-    <label class="checkbox" :class="{'checkbox__disabled': disabled}">
+    <label class="checkbox" :class="{'checkbox__disabled': disabled, 'checkbox__error': !valid}">
         <input class="checkbox__input" type="checkbox"
                v-model="proxyValue"
                :value="value"
@@ -21,6 +21,7 @@ export default {
         modelValue: {type: [String, Number, Boolean, Array], default: null},
         label: {type: String, default: null},
         value: {type: [String, Number, Boolean], default: null},
+        valid: {type: Boolean, default: true},
         disabled: {type: Boolean, default: false},
         small: {type: Boolean, default: false},
     },
@@ -50,6 +51,7 @@ $input_disabled_color: #626262 !default;
 $input_active_color: #0f82f1 !default;
 $input_background_color: #ffffff !default;
 $input_placeholder_color: #757575;
+$input_error_color: #FF1E00 !default;
 
 .checkbox {
     height: 100%;
@@ -88,9 +90,9 @@ $input_placeholder_color: #757575;
         }
     }
 
-    //&:not(&__disabled):hover &__check {
-    //    border-color: $input_disabled_color;
-    //}
+    &__error:not(&__disabled) &__check {
+        border-color: $input_error_color !important;
+    }
 
     &__disabled &__check {
         border-color: $input_disabled_color !important;
@@ -116,6 +118,8 @@ $input_placeholder_color: #757575;
         display: inline-block;
         height: 100%;
         color: $input_color;
+        position: relative;
+        top: 1px;
         @include no_selection;
 
         &-small {

@@ -1,23 +1,22 @@
 <template>
-    <InputWrapper class="input-days" :label="false" :dirty="isDirty" :disabled="disabled" :valid="valid">
-        <CheckBox :value="1" v-model="proxyValue" :label="'Пн'" :disabled="disabled" :small="small"/>
-        <CheckBox :value="2" v-model="proxyValue" :label="'Вт'" :disabled="disabled" :small="small"/>
-        <CheckBox :value="3" v-model="proxyValue" :label="'Ср'" :disabled="disabled" :small="small"/>
-        <CheckBox :value="4" v-model="proxyValue" :label="'Чт'" :disabled="disabled" :small="small"/>
-        <CheckBox :value="5" v-model="proxyValue" :label="'Пт'" :disabled="disabled" :small="small"/>
-        <CheckBox :value="6" v-model="proxyValue" :label="'Сб'" :disabled="disabled" :small="small"/>
-        <CheckBox :value="7" v-model="proxyValue" :label="'Вс'" :disabled="disabled" :small="small"/>
-    </InputWrapper>
+    <div class="input-days">
+        <CheckBox :value="1" v-model="proxyValue"  :valid="valid" :label="'Пн'" :disabled="disabled" :small="small"/>
+        <CheckBox :value="2" v-model="proxyValue"  :valid="valid" :label="'Вт'" :disabled="disabled" :small="small"/>
+        <CheckBox :value="3" v-model="proxyValue"  :valid="valid" :label="'Ср'" :disabled="disabled" :small="small"/>
+        <CheckBox :value="4" v-model="proxyValue"  :valid="valid" :label="'Чт'" :disabled="disabled" :small="small"/>
+        <CheckBox :value="5" v-model="proxyValue"  :valid="valid" :label="'Пт'" :disabled="disabled" :small="small"/>
+        <CheckBox :value="6" v-model="proxyValue"  :valid="valid" :label="'Сб'" :disabled="disabled" :small="small"/>
+        <CheckBox :value="7" v-model="proxyValue"  :valid="valid" :label="'Вс'" :disabled="disabled" :small="small"/>
+    </div>
 </template>
 
 <script>
 
-import InputWrapper from "@/Components/Inputs/Helpers/InputWrapper";
 import CheckBox from "@/Components/Inputs/Helpers/CheckBox";
 import empty from "@/Core/Helpers/Empty";
 
 export default {
-    components: {CheckBox, InputWrapper},
+    components: {CheckBox},
     props: {
         name: String,
         modelValue: {type: Array, default: null},
@@ -60,7 +59,8 @@ $base_size_unit: 35px !default;
 
 .input-days {
     height: $base_size_unit;
-    padding: 0 10px;
+    padding: 0;
     cursor: default;
+    display: flex;
 }
 </style>
