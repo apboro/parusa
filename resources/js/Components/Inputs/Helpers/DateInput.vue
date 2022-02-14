@@ -15,7 +15,7 @@
         />
         <span class="input-date__clear" v-if="isClearable"
               :class="{'input-date__clear-enabled': clearable && !disabled}"
-              @click.stop.prevent="clear"
+              @click="clear"
         >
             <IconCross/>
         </span>

@@ -265,7 +265,7 @@ export default {
         },
 
         selectCurrent() {
-            const date = new Date(this.current.year, this.current.month, this.current.date);
+            const date = new Date();
             if ((!this.from || this.from <= date) && (!this.to || this.to >= date)) {
                 this.updateSelected('year', this.current.year);
                 this.updateSelected('month', this.current.month);

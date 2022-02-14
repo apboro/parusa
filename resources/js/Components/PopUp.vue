@@ -18,6 +18,7 @@
                         <GuiButton v-for="button in buttons"
                                    :color="button.color"
                                    :identifier="button.result"
+                                   :disabled="button.disabled"
                                    @clicked="resolve"
                         >
                             {{ button.caption }}

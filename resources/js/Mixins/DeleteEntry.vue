@@ -7,8 +7,8 @@ export default {
         deleteEntry(confirmation, url, options) {
             return new Promise((resolve, reject) => {
                 this.$dialog.show(confirmation, 'question', 'red', [
+                    this.$dialog.button('yes', 'Удалить', 'red'),
                     this.$dialog.button('no', 'Отмена', 'blue'),
-                    this.$dialog.button('yes', 'Продолжить', 'red'),
                 ]).then(result => {
                     if (result === 'yes') {
                         // delete logic
