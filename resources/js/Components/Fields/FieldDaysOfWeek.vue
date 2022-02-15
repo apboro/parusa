@@ -1,17 +1,11 @@
 <template>
     <FieldWrapper :title="title" :required="required" :disabled="disabled" :valid="valid" :errors="errors">
-        <InputDate
+        <InputDaysOfWeek
             v-model="proxyValue"
             :name="name"
             :original="original"
             :valid="valid"
             :disabled="disabled"
-            :from="from"
-            :to="to"
-            :clearable="clearable"
-            :pick-on-clear="pickOnClear"
-            :placeholder="placeholder"
-            :small="small"
             @change="change"
             ref="input"
         />
@@ -20,14 +14,14 @@
 
 <script>
 import FieldWrapper from "@/Components/Fields/Helpers/FieldWrapper";
-import InputDate from "@/Components/Inputs/InputDate";
+import InputDaysOfWeek from "@/Components/Inputs/InputDaysOfWeek";
 
 export default {
-    components: {InputDate, FieldWrapper},
+    components: {InputDaysOfWeek, FieldWrapper},
     props: {
-        name: {type: String, required: true},
-        modelValue: {type: String, default: null},
-        original: {type: String, default: null},
+        name: String,
+        modelValue: {type: Array, default: null},
+        original: {type: Array, default: null},
 
         title: {type: String, default: null},
         required: {type: Boolean, default: false},
@@ -35,13 +29,7 @@ export default {
         valid: {type: Boolean, default: true},
         errors: {type: Array, default: null},
 
-        placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
-
-        from: {type: String, default: null},
-        to: {type: String, default: null},
-        clearable: {type: Boolean, default: false},
-        pickOnClear: {type: Boolean, default: true},
     },
 
     emits: ['update:modelValue', 'change'],

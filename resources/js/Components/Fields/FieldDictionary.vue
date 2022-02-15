@@ -31,7 +31,7 @@ import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown";
 export default {
     components: {DictionaryDropDown, FieldWrapper},
     props: {
-        name: {type: String, required: true},
+        name: String,
         modelValue: {type: [Boolean, String, Number, Object], default: null},
         original: {type: [Boolean, String, Number, Object], default: null},
 

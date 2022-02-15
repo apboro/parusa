@@ -6,6 +6,8 @@
             :original="original"
             :valid="valid"
             :disabled="disabled"
+            :date-disabled="dateDisabled"
+            :time-disabled="timeDisabled"
             :from="from"
             :to="to"
             :clearable="clearable"
@@ -25,13 +27,15 @@ import InputDateTime from "@/Components/Inputs/InputDateTime";
 export default {
     components: {InputDateTime, FieldWrapper},
     props: {
-        name: {type: String, required: true},
+        name: String,
         modelValue: {type: String, default: null},
         original: {type: String, default: null},
 
         title: {type: String, default: null},
         required: {type: Boolean, default: false},
         disabled: {type: Boolean, default: false},
+        dateDisabled: {type: Boolean, default: false},
+        timeDisabled: {type: Boolean, default: false},
         valid: {type: Boolean, default: true},
         errors: {type: Array, default: null},
 

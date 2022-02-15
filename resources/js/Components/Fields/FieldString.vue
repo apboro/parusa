@@ -23,7 +23,7 @@ import InputString from "@/Components/Inputs/InputString";
 export default {
     components: {InputString, FieldWrapper},
     props: {
-        name: {type: String, required: true},
+        name: String,
         modelValue: {type: String, default: null},
         original: {type: String, default: null},
 

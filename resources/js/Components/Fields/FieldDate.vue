@@ -1,13 +1,15 @@
 <template>
     <FieldWrapper :title="title" :required="required" :disabled="disabled" :valid="valid" :errors="errors">
-        <InputNumber
+        <InputDate
             v-model="proxyValue"
             :name="name"
             :original="original"
             :valid="valid"
             :disabled="disabled"
-            :step="step"
-            :quantity="quantity"
+            :from="from"
+            :to="to"
+            :clearable="clearable"
+            :pick-on-clear="pickOnClear"
             :placeholder="placeholder"
             :small="small"
             @change="change"
@@ -18,14 +20,14 @@
 
 <script>
 import FieldWrapper from "@/Components/Fields/Helpers/FieldWrapper";
-import InputNumber from "@/Components/Inputs/InputNumber";
+import InputDate from "@/Components/Inputs/InputDate";
 
 export default {
-    components: {InputNumber, FieldWrapper},
+    components: {InputDate, FieldWrapper},
     props: {
         name: String,
-        modelValue: {type: Number, default: null},
-        original: {type: Number, default: null},
+        modelValue: {type: String, default: null},
+        original: {type: String, default: null},
 
         title: {type: String, default: null},
         required: {type: Boolean, default: false},
@@ -36,8 +38,10 @@ export default {
         placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
 
-        step: {type: Number, default: 1},
-        quantity: {type: Boolean, default: false},
+        from: {type: String, default: null},
+        to: {type: String, default: null},
+        clearable: {type: Boolean, default: false},
+        pickOnClear: {type: Boolean, default: true},
     },
 
     emits: ['update:modelValue', 'change'],

@@ -30,7 +30,7 @@ import InputDropDown from "@/Components/Inputs/InputDropDown";
 export default {
     components: {InputDropDown, FieldWrapper},
     props: {
-        name: {type: String, required: true},
+        name: String,
         modelValue: {type: [Boolean, String, Number, Object], default: null},
         original: {type: [Boolean, String, Number, Object], default: null},
 
