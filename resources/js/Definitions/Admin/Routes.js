@@ -29,7 +29,6 @@ import ExcursionEditPage from "../../Pages/Admin/Sails/Excursions/ExcursionEditP
 import DictionariesPage from "../../Pages/Admin/Dictionaries/DictionariesPage";
 
 import TripCardPage from "../../Pages/Admin/Sails/Trips/TripCardPage";
-import TripEditPage from "../../Pages/Admin/Sails/Trips/TripEditPage";
 import TestPage from "@/Pages/Admin/TestPage";
 
 export default [
@@ -69,7 +68,7 @@ export default [
 
     {path: '/trips', name: 'trip-list', component: () => import('@/Pages/Admin/Trips/TripsListPage'), meta: {title: 'Список рейсов'}},
     {path: '/trips/:id', name: 'trip-view', component: TripCardPage, meta: {title: 'Просмотр рейса'}},
-    {path: '/trips/:id/edit', name: 'trip-edit', component: TripEditPage, meta: {title: 'Редактирование рейса'}},
+    {path: '/trips/:id/edit', name: 'trip-edit', component: () => import('@/Pages/Admin/Trips/TripEditPage'), meta: {title: 'Редактирование рейса'}},
 
     /**
      * Dictionaries

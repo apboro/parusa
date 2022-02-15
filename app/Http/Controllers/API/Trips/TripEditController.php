@@ -39,11 +39,6 @@ class TripEditController extends ApiEditController
         'tickets_total' => 'Общее количество билетов',
         'discount_status_id' => 'Скидки от базовой цены на кассах',
         'cancellation_time' => 'Время аннулирования брони на рейс, мин.',
-        'repeat_mode' => 'Повторять рейс',
-        'repeat_days' => 'Дни',
-        'repeat_until' => 'Повторять до (включительно)',
-        'edit_chain_mode' => 'Применить корректировки для связанных рейсов',
-        'edit_chain_upto' => 'Применить корректировки до (включительно)',
     ];
 
     /**
@@ -62,7 +57,7 @@ class TripEditController extends ApiEditController
         $createFrom = ($trip && !$trip->exists) ? $request->input('create_from') : null;
 
         if ($createFrom) {
-            $trip = Trip::query()->where('id', $createFrom)->get();
+            $trip = Trip::query()->where('id', $createFrom)->first();
         }
 
         if ($trip === null) {
@@ -73,14 +68,14 @@ class TripEditController extends ApiEditController
 
         /** @var TripChain $chain */
         $chain = $trip->chains->first();
-        $chainStart = $chain->trips()->min('start_at');
-        $chainEnd = $chain->trips()->max('start_at');
+        $chainStart = $chain ? $chain->trips()->min('start_at') : null;
+        $chainEnd = $chain ? $chain->trips()->max('start_at') : null;
 
         // send response
         return APIResponse::form(
             [
-                'start_at' => $trip->start_at ? $trip->start_at->format('d.m.Y H:i') : null,
-                'end_at' => $trip->end_at ? $trip->end_at->format('d.m.Y H:i') : null,
+                'start_at' => $trip->start_at ? $trip->start_at->format('Y-m-d\TH:i') : null,
+                'end_at' => $trip->end_at ? $trip->end_at->format('Y-m-d\TH:i') : null,
                 'start_pier_id' => $trip->start_pier_id,
                 'end_pier_id' => $trip->end_pier_id,
                 'ship_id' => $trip->ship_id,
@@ -101,9 +96,10 @@ class TripEditController extends ApiEditController
             $this->titles,
             [
                 'title' => !$new ? $trip->name : 'Добавление рейса',
-                'chain_trips_count' => !$new ? $chain->trips()->count() : null,
-                'chain_trips_start_at' => !$new && $chainStart ? Carbon::parse($chainStart)->format('d.m.Y') : null,
-                'chain_trips_end_at' => !$new && $chainEnd ? Carbon::parse($chainEnd)->format('d.m.Y') : null,
+                'chained' => $chain !== null,
+                'chain_trips_start_at' => $chainStart ? Carbon::parse($chainStart)->format('d.m.Y') : null,
+                'chain_trips_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('d.m.Y') : null,
+                'chain_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('Y-m-d\TH:i') : null,
             ]
         );
     }

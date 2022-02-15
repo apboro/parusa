@@ -92,8 +92,8 @@
                         <IconLink/>
                     </GuiIconButton>
                     <GuiActionsMenu :title="null">
-                        <span class="link">Редактировать</span>
-                        <span class="link">Копировать рейс</span>
+                        <router-link :to="{name: 'trip-edit', params: {id: trip['id']}}" class="link">Редактировать</router-link>
+                        <router-link :to="{name: 'trip-edit', params: {id: 0}, query: {from: trip['id']}}" class="link">Копировать рейс</router-link>
                         <span class="link" @click="remove(trip)">Удалить</span>
                     </GuiActionsMenu>
                 </ListTableCell>

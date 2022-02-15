@@ -30,29 +30,31 @@ class TripChainInfoController extends ApiController
         /** @var Trip $trip */
 
         $mode = $request->input('mode');
-        $to = $request->input('delete_to');
+        $to = $request->input('to');
         $from = $trip->start_at;
 
-        if ($to === null || !in_array($mode, ['single', 'all', 'range'])) {
+        if (($to === null && $mode === 'range') || !in_array($mode, ['single', 'all', 'range'])) {
             return APIResponse::error('Неверные параметры');
         }
 
         $to = Carbon::parse($to)->setTimezone(config('app.timezone'));
-        if ($to->startOfDay() < $trip->start_at->startOfDay()) {
+        if ($mode === 'range' && $to->startOfDay() < $trip->start_at->startOfDay()) {
             return APIResponse::error('Неверные параметры');
         }
 
         /** @var TripChain $chain */
         $chain = $trip->chains->first();
-        if ($chain === null) {
-            return APIResponse::error('Нет связанных ркйсов.');
+        if ($mode !== 'single' && $chain === null) {
+            return APIResponse::error('Нет связанных рейсов.');
         }
 
         // Get trips range
         $tripsRange = Trip::query()
             ->withCount('tickets')
-            ->whereHas('chains', function (Builder $query) use ($chain) {
-                $query->where('id', $chain->id);
+            ->when($mode !== 'single', function (Builder $query) use ($chain) {
+                $query->whereHas('chains', function (Builder $query) use ($chain) {
+                    $query->where('id', $chain->id);
+                });
             })
             ->when($mode === 'single', function (Builder $query) use ($trip) {
                 $query->where('id', $trip->id);

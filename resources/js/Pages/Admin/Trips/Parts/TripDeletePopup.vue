@@ -94,7 +94,7 @@ export default {
                     .then(result => {
                         if (result === 'yes') {
                             this.$refs.delete_popup.process(true);
-                            axios.post('/api/trips/delete', {id: this.trip_id, mode: this.mode, delete_to: this.delete_to})
+                            axios.post('/api/trips/delete', {id: this.trip_id, mode: this.mode, to: this.delete_to})
                                 .then(response => {
                                     this.$toast.success(response.data.message, 5000);
                                     resolve();
@@ -122,7 +122,7 @@ export default {
                 return;
             }
             this.$refs.delete_popup.process(true);
-            axios.post('/api/trips/chain', {id: this.trip_id, mode: this.mode, delete_to: this.delete_to})
+            axios.post('/api/trips/chain', {id: this.trip_id, mode: this.mode, to: this.delete_to})
                 .then(response => {
                     this.count = response.data.data['count'];
                     this.can_delete = response.data.data['operable'];
