@@ -3,7 +3,7 @@ import {getMessage} from "./Validator/messages";
 import clone from "@/Core/Helpers/Clone";
 import empty from "@/Core/Helpers/Empty";
 
-const form = function (load_url, save_url, options = {}, toaster = null) {
+const form = function (load_url, save_url, options = {}) {
     let form = {
 
         /** Url to load form data */
@@ -12,6 +12,9 @@ const form = function (load_url, save_url, options = {}, toaster = null) {
         save_url: null,
         /** Default options to pass to request */
         options: {},
+
+        /** Validate field on update */
+        validate_on_update: false,
 
         /** form payload */
         payload: {},
@@ -192,6 +195,23 @@ const form = function (load_url, save_url, options = {}, toaster = null) {
         },
 
         /**
+         * Update field value.
+         *
+         * @param name
+         * @param value
+         * @param force Force validation
+         */
+        update(name, value, force = false) {
+            this.values[name] = value;
+            if (force || this.validate_on_update) {
+                this.validate(name);
+            } else {
+                this.errors[name] = [];
+                this.valid[name] = true;
+            }
+        },
+
+        /**
          * Validate all form or single field.
          *
          * @param name
@@ -201,17 +221,15 @@ const form = function (load_url, save_url, options = {}, toaster = null) {
             if (name === null) {
                 let all = true;
                 Object.keys(this.rules).map(key => {
-                    all = all && this.validate(key);
+                    all = this.validate(key) && all;
                 });
                 return all;
             }
-
             if (empty(this.rules) || Object.keys(this.rules[name]).length === 0) {
                 this.errors[name] = [];
                 this.valid[name] = true;
                 return true;
             }
-
             let failed = validate(name, this.values[name], this.rules[name], this.values);
 
             if (failed.length === 0) {
@@ -257,7 +275,6 @@ const form = function (load_url, save_url, options = {}, toaster = null) {
     form.load_url = load_url;
     form.save_url = save_url;
     form.options = options;
-    form.toaster = toaster;
 
     return form;
 };

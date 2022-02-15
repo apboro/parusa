@@ -28,16 +28,16 @@ const Rules = function() {
         // Instead of passing a date, you may specify another field to compare against the date.
         // after:date
         after: (value, attributes, name, fields, nullable) => {
-            let field = moment(value, 'DD.MM.YYYY HH:mm');
-            let another = moment(fields[attributes], 'DD.MM.YYYY HH:mm');
+            let field = moment(value);
+            let another = moment(fields[attributes]);
             return field.isValid() && another.isValid() && (field > another);
         },
 
         // The field under validation must be a value after or equal to the given date. For more information, see the after rule.
         // after_or_equal:date
         after_or_equal: (value, attributes, name, fields, nullable) => {
-            let field = moment(value, 'DD.MM.YYYY HH:mm');
-            let another = moment(attributes, 'DD.MM.YYYY HH:mm');
+            let field = moment(value);
+            let another = moment(attributes);
             return field.isValid() && another.isValid() && (field >= another);
         },
 
@@ -104,7 +104,7 @@ const Rules = function() {
         // The field under validation must be a valid date according to the strtotime PHP function.
         date: (value, attributes, name, fields, nullable) => {
             if(nullable && isValueNull(value)) return true;
-            return moment(value, 'DD.MM.YYYY').isValid();
+            return moment(value).isValid();
         },
 
         // The field under validation must be equal to the given date. The dates will be passed into the PHP strtotime function.
