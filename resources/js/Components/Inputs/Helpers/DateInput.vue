@@ -89,10 +89,12 @@ export default {
             }
         },
         fromProxy() {
-            return this.from !== null ? new Date(this.from) : null;
+            const date = this.from === null ? null : this.from.split('T');
+            return date === null || date[0] === '' ? null : new Date(date[0]);
         },
         toProxy() {
-            return this.to !== null ? new Date(this.to) : null;
+            const date = this.to === null ? null : this.to.split('T');
+            return date === null || date[0] === '' ? null : new Date(date[0]);
         },
     },
 
@@ -127,7 +129,8 @@ export default {
             if (value === null) {
                 this.$emit('update:modelValue', null);
             } else {
-                this.$emit('update:modelValue', value.toISOString());
+                const formatted = value.getFullYear() + '-' + String(value.getMonth() + 1).padStart(2, '0') + '-' + String(value.getDate()).padStart(2, '0');
+                this.$emit('update:modelValue', formatted);
             }
         },
         focus() {
@@ -138,7 +141,7 @@ export default {
         blur() {
             this.setInner(this.innerValue);
             this.isFocused = this.picker;
-            if(!this.isFocused) {
+            if (!this.isFocused) {
                 this.$emit('blur');
             }
         },
@@ -200,7 +203,7 @@ export default {
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
 $animation_time: 150ms !default;
 $animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
-$shadow_2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23) !default;
+$shadow_2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !default;
 $base_size_unit: 35px !default;
 $input_placeholder_color: #757575 !default;
 $input_remove_color: #FF1E00 !default;

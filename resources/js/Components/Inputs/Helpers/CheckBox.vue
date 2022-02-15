@@ -26,7 +26,7 @@ export default {
         small: {type: Boolean, default: false},
     },
 
-    emits: ['update:modelValue', 'change'],
+    emits: ['update:modelValue'],
 
     computed: {
         proxyValue: {
@@ -111,7 +111,7 @@ $input_error_color: #FF1E00 !default;
     }
 
     &__label {
-        margin: 0 5px;
+        margin: 0 7px 0 7px;
         font-size: 16px;
         font-family: $project_font;
         line-height: $base_size_unit;

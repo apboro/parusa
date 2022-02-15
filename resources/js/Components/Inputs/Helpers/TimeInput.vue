@@ -38,18 +38,16 @@ export default {
                 return this.displayValue;
             },
             set(value) {
-                this.displayValue = value;
+                if (value !== null && value.length === 2 && value.indexOf(':') === -1) {
+                    this.displayValue = value + ':';
+                } else {
+                    this.displayValue = value;
+                }
                 const time = value !== null && value !== '' ? value.split(':') : null;
                 if (time !== null) {
                     if (typeof time[0] !== "undefined" && (time[0] !== '' && time[0] >= 0 && time[0] <= 23) && typeof time[1] !== "undefined" && (time[1] !== '' && time[1] >= 0 && time[1] <= 59)) {
-                        if (this.innerValue === null) {
-                            this.innerValue = new Date();
-                            this.innerValue.setSeconds(0);
-                            this.innerValue.setMilliseconds(0);
-                        }
-                        this.innerValue.setHours(time[0]);
-                        this.innerValue.setMinutes(time[1]);
-                        this.$emit('update:modelValue', this.innerValue.toISOString());
+                        const formatted = String(time[0]).padStart(2, '0') + ':' + String(time[1]).padStart(2, '0');
+                        this.$emit('update:modelValue', formatted);
                     }
                 } else {
                     this.$emit('update:modelValue', null);
@@ -70,9 +68,12 @@ export default {
 
     methods: {
         setInner(value, force = false) {
-            this.innerValue = typeof value === "string" ? new Date(value) : value;
+            const time = value !== null && value !== '' ? value.split(':') : null;
+            const formatted = time !== null ? String(time[0]).padStart(2, '0') + ':' + String(time[1]).padStart(2, '0') : null;
+
+            this.innerValue = formatted;
             if (!this.isFocused || force) {
-                this.displayValue = this.innerValue === null ? null : String(this.innerValue.getHours()).padStart(2, '0') + ':' + String(this.innerValue.getMinutes()).padStart(2, '0');
+                this.displayValue = this.innerValue === null ? null : formatted;
             }
         },
         filterKeys(event) {

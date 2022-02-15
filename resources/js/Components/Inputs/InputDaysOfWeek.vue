@@ -6,7 +6,7 @@
         <CheckBox :value="4" v-model="proxyValue"  :valid="valid" :label="'Чт'" :disabled="disabled" :small="small"/>
         <CheckBox :value="5" v-model="proxyValue"  :valid="valid" :label="'Пт'" :disabled="disabled" :small="small"/>
         <CheckBox :value="6" v-model="proxyValue"  :valid="valid" :label="'Сб'" :disabled="disabled" :small="small"/>
-        <CheckBox :value="7" v-model="proxyValue"  :valid="valid" :label="'Вс'" :disabled="disabled" :small="small"/>
+        <CheckBox :value="0" v-model="proxyValue"  :valid="valid" :label="'Вс'" :disabled="disabled" :small="small"/>
     </div>
 </template>
 

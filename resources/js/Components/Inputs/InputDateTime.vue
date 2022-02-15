@@ -1,12 +1,12 @@
 <template>
     <div class="input-datetime">
-        <InputWrapper class="input-datetime__date" :dirty="isDateDirty" :disabled="disabled" :valid="valid" :has-focus="isFocused">
+        <InputWrapper class="input-datetime__date" :dirty="isDateDirty" :disabled="proxyDateDisabled" :valid="valid" :has-focus="isFocused">
             <DateInput
                 v-model="proxyDate"
                 :from="from"
                 :to="to"
                 :placeholder="placeholder"
-                :disabled="disabled"
+                :disabled="proxyDateDisabled"
                 :small="small"
                 :clearable="clearable"
                 :pickOnClear="pickOnClear"
@@ -15,11 +15,11 @@
                 ref="date"
             />
         </InputWrapper>
-        <InputWrapper class="input-datetime__time" :dirty="isTimeDirty" :disabled="disabled" :valid="valid">
+        <InputWrapper class="input-datetime__time" :dirty="isTimeDirty" :disabled="proxyTimeDisabled" :valid="valid">
             <TimeInput
                 v-model="proxyTime"
                 :placeholder="null"
-                :disabled="disabled"
+                :disabled="proxyTimeDisabled"
                 :small="small"
             />
         </InputWrapper>
@@ -42,6 +42,8 @@ export default {
         original: {type: String, default: null},
         valid: {type: Boolean, default: true},
         disabled: {type: Boolean, default: false},
+        dateDisabled: {type: Boolean, default: false},
+        timeDisabled: {type: Boolean, default: false},
         placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
         clearable: {type: Boolean, default: false},
@@ -59,10 +61,18 @@ export default {
 
     computed: {
         isDateDirty() {
-            return this.original !== this.date;
+            let date = this.original === null ? null : this.original.split('T');
+            return date ? this.date !== date[0] : this.date !== null;
         },
         isTimeDirty() {
-            return this.original !== this.time;
+            let date = this.original === null ? null : this.original.split('T');
+            return date && typeof date[1] !== "undefined" ? this.time !== date[1] : this.time !== null;
+        },
+        proxyDateDisabled() {
+            return this.disabled || this.dateDisabled;
+        },
+        proxyTimeDisabled() {
+            return this.disabled || this.timeDisabled;
         },
         proxyDate: {
             get() {
@@ -102,20 +112,23 @@ export default {
 
     methods: {
         init(value) {
-            this.date = value;
-            this.time = value;
-        },
-        set() {
-            if (this.date === null || this.time === null) {
+            if (value === null || value === '') {
+                this.date = null;
+                this.time = null;
                 return;
             }
-            let value = new Date(this.time);
-            let date = new Date(this.date);
-            value.setFullYear(date.getFullYear());
-            value.setMonth(date.getMonth());
-            value.setDate(date.getDate());
-            this.$emit('update:modelValue', value.toISOString());
-            this.$emit('change', value.toISOString(), this.name);
+            let date, time;
+            [date, time] = value.split('T');
+            this.date = date;
+            this.time = time ? time : null;
+        },
+        set() {
+            if (this.date === null && this.time === null) {
+                return;
+            }
+            const formatted = (this.date ? this.date : '') + (this.time ? 'T' + this.time : '');
+            this.$emit('update:modelValue', formatted);
+            this.$emit('change', formatted, this.name);
         },
         addDays(value) {
             this.$refs.input.addDays(value);

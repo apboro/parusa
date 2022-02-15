@@ -21,6 +21,8 @@ export default {
         small: {type: Boolean, default: false},
     },
 
+    emits: ['update:modelValue', 'change'],
+
     computed: {
         isDirty() {
             if (this.modelValue instanceof Array) {
