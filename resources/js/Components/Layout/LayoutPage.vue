@@ -62,6 +62,9 @@ $shadow_1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !default
 $base_white_color: #ffffff !default;
 $base_black_color: #1e1e1e !default;
 $base_light_gray_color: #e5e5e5 !default;
+$base_text_gray_color: #3f3f3f;
+$base_primary_color: #0D74D7 !default;
+$base_primary_hover_color: lighten(#0D74D7, 10%) !default;
 
 .layout-page {
     max-width: $page_max_width;
@@ -96,11 +99,17 @@ $base_light_gray_color: #e5e5e5 !default;
 
             &-breadcrumbs {
                 &-link {
+                    color: $base_primary_color;
+                    text-decoration: none;
+
+                    &:hover {
+                        color: $base_primary_hover_color
+                    }
                 }
 
                 &-divider {
                     margin: 0 5px;
-                    color: $base_light_gray_color;
+                    color: $base_text_gray_color;
                 }
             }
 
