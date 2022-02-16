@@ -21,6 +21,7 @@ class PierEditController extends ApiEditController
         'name' => 'Название',
         'status_id' => 'Статус',
         'work_time' => 'Время работы',
+        'phone' => 'Телефон',
         'address' => 'Адрес',
         'latitude' => 'Широта',
         'longitude' => 'Долгота',
@@ -52,6 +53,7 @@ class PierEditController extends ApiEditController
                 'name' => $pier->name,
                 'status_id' => $pier->status_id,
                 'work_time' => $pier->info->work_time,
+                'phone' => $pier->info->phone,
                 'address' => $pier->info->address,
                 'latitude' => $pier->info->latitude,
                 'longitude' => $pier->info->longitude,
@@ -97,6 +99,7 @@ class PierEditController extends ApiEditController
 
         $info = $pier->info;
         $info->setAttribute('work_time', $data['work_time']);
+        $info->setAttribute('phone', $data['phone']);
         $info->setAttribute('address', $data['address']);
         $info->setAttribute('latitude', $data['latitude']);
         $info->setAttribute('longitude', $data['longitude']);

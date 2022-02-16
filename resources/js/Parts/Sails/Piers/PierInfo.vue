@@ -4,6 +4,7 @@
             <value :title="'Название'">{{ datasource.data['name'] }}</value>
             <value :title="'Адрес причала'">{{ datasource.data['address'] }}</value>
             <value :title="'Время работы'">{{ datasource.data['work_time'] }}</value>
+            <value :title="'Телефон'">{{ datasource.data['phone'] }}</value>
             <value :title="'Координаты причала'">
                 <span v-if="datasource.data['latitude'] && datasource.data['longitude']">{{ datasource.data['latitude'] }}, {{ datasource.data['longitude'] }}</span>
             </value>

@@ -28,6 +28,7 @@ class PierCardController extends ApiController
             'name' => $pier->name,
             'address' => $pier->info->address,
             'work_time' => $pier->info->work_time,
+            'phone' => $pier->info->phone,
             'latitude' => $pier->info->latitude,
             'longitude' => $pier->info->longitude,
             'status' => $pier->status->name,

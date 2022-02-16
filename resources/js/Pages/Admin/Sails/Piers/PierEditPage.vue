@@ -11,6 +11,7 @@
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'pier_statuses'" :name="'status_id'"/>
             <data-field-images :datasource="form" :name="'images'"/>
             <data-field-input :datasource="form" :name="'work_time'"/>
+            <data-field-masked-input :datasource="form" :name="'phone'" :mask="'+7 (###) ###-##-##'"/>
             <data-field-input :datasource="form" :name="'address'"/>
             <data-field-input :datasource="form" :name="'latitude'"/>
             <data-field-input :datasource="form" :name="'longitude'"/>
@@ -37,9 +38,11 @@ import DataFieldDictionaryDropdown from "../../../../Components/DataFields/DataF
 import DataFieldImages from "../../../../Components/DataFields/DataFieldImages";
 import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
 import BaseButton from "../../../../Components/GUI/GuiButton";
+import DataFieldMaskedInput from "@/Components/DataFields/DataFieldMaskedInput";
 
 export default {
     components: {
+        DataFieldMaskedInput,
         Page,
         PageTitleBar,
         Container,

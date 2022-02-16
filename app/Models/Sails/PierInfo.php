@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 /**
  * @property int $pier_id
  * @property string $work_time
+ * @property string $phone
  * @property string $address
  * @property string $latitude
  * @property string $longitude
@@ -31,6 +32,7 @@ class PierInfo extends Model
     /** @var string[] Fillable attributes. */
     protected $fillable = [
         'work_time',
+        'phone',
         'address',
         'latitude',
         'longitude',
