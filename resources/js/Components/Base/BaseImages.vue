@@ -27,7 +27,7 @@
 <script>
 import clone from "@/Core/Helpers/Clone";
 import BaseImagesImage from "./Parts/BaseImagesImage";
-import IconPlus from "../Icons/IconPlus";
+import IconPlus from "../Icons/IconPlusCircle";
 
 export default {
     components: {IconPlus, BaseImagesImage},

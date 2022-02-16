@@ -26,7 +26,7 @@
 
 <script>
 import clone from "@/Core/Helpers/Clone";
-import IconPlus from "../Icons/IconPlus";
+import IconPlus from "../Icons/IconPlusCircle";
 import BaseFilesFile from "./Parts/BaseFilesFile";
 
 export default {
@@ -79,6 +79,8 @@ export default {
                 '.xls',
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 '.xlsx',
+                'image/jpg',
+                'image/png',
             ];
         }
     },

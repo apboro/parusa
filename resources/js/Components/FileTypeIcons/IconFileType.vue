@@ -7,6 +7,8 @@ import IconFileTypePdf from "./IconFileTypePdf";
 import IconFileTypeDoc from "./IconFileTypeDoc";
 import IconFileTypeXls from "./IconFileTypeXls";
 import IconFileTypeDefault from "./IconFileTypeDefault";
+import IconFileTypeJpg from "@/Components/FileTypeIcons/IconFileTypeJpg";
+import IconFileTypePng from "@/Components/FileTypeIcons/IconFileTypePng";
 
 export default {
     props: {
@@ -15,6 +17,10 @@ export default {
     computed: {
         icon() {
             switch (this.type) {
+                case 'image/jpg':
+                    return IconFileTypeJpg;
+                case 'image/png':
+                    return IconFileTypePng;
                 case 'application/pdf':
                     return IconFileTypePdf;
                 case 'application/msword':
