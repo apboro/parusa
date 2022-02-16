@@ -64,7 +64,7 @@
         <ListTable v-if="list.list.length > 0" :titles="list.titles" :has-action="true">
             <ListTableRow v-for="trip in list.list">
                 <ListTableCell>
-                    <div><b>{{ trip['start_time'] }}</b></div>
+                    <div><b><router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link></b></div>
                     <div>{{ trip['start_date'] }}</div>
                 </ListTableCell>
                 <ListTableCell>
