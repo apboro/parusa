@@ -64,7 +64,9 @@
         <ListTable v-if="list.list.length > 0" :titles="list.titles" :has-action="true">
             <ListTableRow v-for="trip in list.list">
                 <ListTableCell>
-                    <div><b><router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link></b></div>
+                    <div><b>
+                        <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
+                    </b></div>
                     <div>{{ trip['start_date'] }}</div>
                 </ListTableCell>
                 <ListTableCell>
@@ -196,7 +198,7 @@ export default {
         title() {
             return this.$route.meta['title']
                 + (this.list.payload['date'] ? ' на ' + this.list.payload['date'] : '')
-                + (this.list.payload['day'] ? ', ' + ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'][this.list.payload['day']-1] : '');
+                + (!isNaN(this.list.payload['day']) ? ', ' + ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'][this.list.payload['day']] : '');
         },
     },
 
