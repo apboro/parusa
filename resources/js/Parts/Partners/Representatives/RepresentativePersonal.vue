@@ -75,7 +75,6 @@
                 :title="position_popup_title"
                 :buttons="[{result: 'no', caption: 'Отмена', color: 'white'},{result: 'yes', caption: 'OK', color: 'green'}]"
                 :resolving="positionFormResolving"
-                :manual="true"
         >
             <container w-600px>
                 <data-field-dictionary-dropdown :datasource="form"
@@ -151,6 +150,7 @@ export default {
         this.form = formDataSource(null, '/api/representatives/attach', {id: this.representativeId});
         this.form.toaster = this.$toast;
         this.form.afterSave = this.positionAfterSave;
+        this.form.failedSave = this.positionFailSave;
         this.form.values = {
             partner: null,
             title: null,
@@ -226,7 +226,15 @@ export default {
         },
 
         positionFormResolving(result) {
-            return result !== 'yes' || this.form.validateAll();
+            if (result !== 'yes') {
+                return true;
+            }
+            if (this.form.validateAll()) {
+                this.$refs.position.process(true);
+                this.form.options = {representative_id: this.representativeId, id: 0};
+                this.form.save();
+            }
+            return false;
         },
 
         positionAfterSave(payload) {
@@ -234,7 +242,9 @@ export default {
             this.form.loaded = false;
             this.$refs.position.hide();
         },
-
+        positionFailSave() {
+            this.$refs.position.process(false);
+        },
         attachPosition() {
             this.form.values = {
                 partner_id: null,

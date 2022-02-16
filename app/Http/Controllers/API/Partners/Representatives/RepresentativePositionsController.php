@@ -53,16 +53,17 @@ class RepresentativePositionsController extends ApiEditController
             return APIResponse::notFound('Партнёр не найден');
         }
 
-        $position = $this->firstOrNew(Position::class, $request);
-
-        if ($position === null) {
-            return APIResponse::notFound('Привязка пользователя к организации не найдена');
-        }
 
         /** @var User $user */
         /** @var Partner $partner */
         /** @var Position $position */
+        $position = Position::query()->where(['partner_id' => $partner->id, 'user_id' => $user->id])->first();
 
+        if ($position !== null) {
+            return APIResponse::error('Представитель уже привязан к этой организации.');
+        }
+
+        $position = new Position;
         $position->user_id = $user->id;
         $position->partner_id = $partner->id;
         $position->title = $data['title'];
