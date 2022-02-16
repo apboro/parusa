@@ -9,7 +9,6 @@ use App\Http\Controllers\API\Sails\PierDeleteController;
 use App\Http\Controllers\API\Sails\PierEditController;
 use App\Http\Controllers\API\Sails\PiersListController;
 use App\Http\Controllers\API\Sails\PierStatusController;
-use App\Http\Controllers\API\Sails\TripCardController;
 use App\Http\Controllers\API\Sails\TripDetailController;
 use App\Http\Controllers\API\Sails\TripsSelectListController;
 use App\Http\Controllers\API\Sails\TripStatusController;
@@ -46,7 +45,6 @@ Route::post('/excursions/rates', [ExcursionRatesController::class, 'get'])->midd
 Route::post('/excursions/rates/update', [ExcursionRatesController::class, 'update'])->middleware('auth:sanctum');
 Route::post('/excursions/rates/delete', [ExcursionRatesDeleteController::class, 'delete'])->middleware('auth:sanctum');
 
-Route::post('/trips/view', [TripCardController::class, 'get'])->middleware('auth:sanctum');
 
 
 Route::post('/trips/status', [TripStatusController::class, 'setStatus'])->middleware('auth:sanctum');

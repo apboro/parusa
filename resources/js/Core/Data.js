@@ -12,6 +12,8 @@ const data = function (url) {
         loaded_callback: null,
         load_failed_callback: null,
 
+        toaster: null,
+
         /**
          * Load data.
          *
@@ -38,7 +40,8 @@ const data = function (url) {
                         if (typeof this.load_failed_callback === "function") {
                             this.load_failed_callback(error.response.status, error.response.data);
                         }
-                        reject(error.response.status, error.response.data);
+                        console.log(error.response.status);
+                        reject(error.response.status);
                     })
                     .finally(() => {
                         this.is_loading = false;

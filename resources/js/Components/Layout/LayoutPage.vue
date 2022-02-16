@@ -54,15 +54,19 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../variables";
 
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
+$animation_time: 150ms !default;
+$animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
 $base_size_unit: 35px !default;
 $page_max_width: 1200px !default;
 $shadow_1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !default;
 $base_white_color: #ffffff !default;
 $base_black_color: #1e1e1e !default;
 $base_light_gray_color: #e5e5e5 !default;
-$base_text_gray_color: #3f3f3f;
+$base_text_gray_color: #3f3f3f !default;
+$base_gray_color: #8f8f8f !default;
 $base_primary_color: #0D74D7 !default;
 $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
 
@@ -101,6 +105,7 @@ $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
                 &-link {
                     color: $base_primary_color;
                     text-decoration: none;
+                    font-weight: bold;
 
                     &:hover {
                         color: $base_primary_hover_color
@@ -109,13 +114,13 @@ $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
 
                 &-divider {
                     margin: 0 5px;
-                    color: $base_text_gray_color;
+                    color: $base_gray_color;
                 }
             }
 
             &-title, &-title-link {
                 font-weight: bold;
-                color: $base_black_color;
+                color: $base_text_gray_color;
             }
 
             &-title-link {
@@ -132,6 +137,15 @@ $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
                 margin-right: 20px;
 
                 &-href {
+                    font-family: $project_font;
+                    color: $base_primary_color;
+                    cursor: pointer;
+                    transition: color $animation $animation_time;
+                    text-decoration: none;
+
+                    &:hover {
+                        color: $base_primary_hover_color;
+                    }
                 }
             }
         }

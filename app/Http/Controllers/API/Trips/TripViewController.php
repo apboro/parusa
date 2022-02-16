@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Trips;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
@@ -9,9 +9,9 @@ use App\Models\Sails\Trip;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class TripCardController extends ApiController
+class TripViewController extends ApiController
 {
-    public function get(Request $request): JsonResponse
+    public function view(Request $request): JsonResponse
     {
         $id = $request->input('id');
 

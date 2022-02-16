@@ -122,7 +122,7 @@ export default {
                 return;
             }
             this.$refs.delete_popup.process(true);
-            axios.post('/api/trips/chain', {id: this.trip_id, mode: this.mode, to: this.delete_to})
+            axios.post('/api/trips/info', {id: this.trip_id, mode: this.mode, to: this.delete_to})
                 .then(response => {
                     this.count = response.data.data['count'];
                     this.can_delete = response.data.data['operable'];

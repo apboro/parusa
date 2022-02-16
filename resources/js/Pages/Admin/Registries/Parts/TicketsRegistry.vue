@@ -2,16 +2,16 @@
     <LoadingProgress :loading="list.is_loading">
 
         <LayoutFilters>
-            <LayoutFiltersItem :title="'Период'">
-                <base-date-input
+            <LayoutFiltersItem :title="'Период'" v-if="tripId === null">
+                <InputDate
                     v-model="list.filters['date_from']"
                     :original="list.filters_original['date_from']"
-                    @changed="list.load()"
+                    @change="list.load()"
                 />
-                <base-date-input
+                <InputDate
                     v-model="list.filters['date_to']"
                     :original="list.filters_original['date_to']"
-                    @changed="list.load()"
+                    @change="list.load()"
                 />
             </LayoutFiltersItem>
             <LayoutFiltersItem :title="'Способ продажи'">
@@ -81,7 +81,7 @@
             </ListTableRow>
         </ListTable>
 
-        <GuiMessage v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
+        <GuiMessage v-else-if="list.is_loaded" border>Нет проданных билетов</GuiMessage>
 
         <GuiPagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
@@ -101,13 +101,19 @@ import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
 import GuiMessage from "@/Components/GUI/GuiMessage";
 import GuiPagination from "@/Components/GUI/GuiPagination";
+import InputDate from "@/Components/Inputs/InputDate";
 
 export default {
     props: {
         partnerId: {type: Number, default: null},
+        tripId: {type: Number, default: null},
+        excursionId: {type: Number, default: null},
+        pierId: {type: Number, default: null},
+        shipId: {type: Number, default: null},
     },
 
     components: {
+        InputDate,
         GuiPagination,
         GuiMessage,
         ListTableCell,
@@ -127,7 +133,13 @@ export default {
     }),
 
     created() {
-        this.list = list('/api/registries/tickets', {partner_id: this.partnerId});
+        this.list = list('/api/registries/tickets', {
+            partner_id: this.partnerId,
+            trip_id: this.tripId,
+            excursion_id: this.excursionId,
+            pier_id: this.pierId,
+            ship_id: this.shipId,
+        });
         this.list.initial();
     },
 

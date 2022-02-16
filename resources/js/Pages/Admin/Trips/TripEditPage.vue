@@ -1,6 +1,9 @@
 <template>
-    <LayoutPage :loading="processing" :title="form.payload['title']" :breadcrumbs="[{caption: 'Рейсы', to: {name: 'trip-list'}}]">
-
+    <LayoutPage :loading="processing" :title="form.payload['title']"
+                :breadcrumbs="[{caption: 'Рейсы', to: {name: 'trip-view'}, params: {id: tripId}}]"
+                :link="{name: 'trip-list'}"
+                :link-title="'К списку рейсов'"
+    >
         <GuiContainer mt-20 w-700px>
             <FormDictionary :form="form" :name="'start_pier_id'" :dictionary="'piers'" :search="true" @change="startPierChanged"/>
             <FormDateTime :form="form" :name="'start_at'" :to="start_end_match ? null : form.values['end_at']"
@@ -346,7 +349,7 @@ export default {
                 return;
             }
             this.loading_info = true;
-            axios.post('/api/trips/chain', {id: this.tripId, mode: this.edit_chained ? 'range' : 'single', to: this.edit_to})
+            axios.post('/api/trips/info', {id: this.tripId, mode: this.edit_chained ? 'range' : 'single', to: this.edit_to})
                 .then(response => {
                     this.count = response.data.data['count'];
                     this.can_edit = response.data.data['operable'];

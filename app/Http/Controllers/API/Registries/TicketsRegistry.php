@@ -9,11 +9,9 @@ use App\Http\Requests\APIListRequest;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Crypt;
 
 class TicketsRegistry extends ApiController
 {
@@ -39,29 +37,51 @@ class TicketsRegistry extends ApiController
     {
         $current = Currents::get($request);
 
-        $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('d.m.Y');
-        $this->defaultFilters['date_to'] = Carbon::now()->format('d.m.Y');
+        $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('Y-m-d');
+        $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d');
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
+
+        $partnerId = $current->isStaff() ? $request->input('partner_id') : $current->partnerId();
+
+        $tripId = $request->input('trip_id');
+        $excursionId = $request->input('excursion_id');
+        $pierId = $request->input('pier_id');
+        $shipId = $request->input('ship_id');
 
         $query = Ticket::query()
             ->with(['status', 'order', 'order.type', 'order.partner', 'order.position', 'order.position.user.profile', 'transaction', 'grade', 'trip', 'trip.startPier', 'trip.excursion'])
-            ->when(!$current->isStaff(), function (Builder $query) use ($current) {
-                $query->whereHas('order', function (Builder $query) use ($current) {
-                    $query->where('partner_id', $current->partnerId());
+            ->when($partnerId, function (Builder $query) use ($partnerId) {
+                $query->whereHas('order', function (Builder $query) use ($partnerId) {
+                    $query->where('partner_id', $partnerId);
                 });
             })
-            ->when($current->isStaff() && ($request->input('partner_id')), function (Builder $query) use ($request) {
-                $query->whereHas('order', function (Builder $query) use ($request) {
-                    $query->where('partner_id', $request->input('partner_id'));
+            ->when($tripId, function (Builder $query) use ($tripId) {
+                $query->where('trip_id', $tripId);
+            })
+            ->when($excursionId, function (Builder $query) use ($excursionId) {
+                $query->whereHas('trip', function (Builder $query) use ($excursionId) {
+                    $query->where('excursion_id', $excursionId);
+                });
+            })
+            ->when($pierId, function (Builder $query) use ($pierId) {
+                $query->whereHas('trip', function (Builder $query) use ($pierId) {
+                    $query->where('pier_id', $pierId);
+                });
+            })
+            ->when($shipId, function (Builder $query) use ($shipId) {
+                $query->whereHas('trip', function (Builder $query) use ($shipId) {
+                    $query->where('ship_id', $shipId);
                 });
             });
 
         // apply filters
-        if (!empty($filters['date_from'])) {
-            $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
-        }
-        if (!empty($filters['date_to'])) {
-            $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+        if (!$tripId) {
+            if (!empty($filters['date_from'])) {
+                $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
+            }
+            if (!empty($filters['date_to'])) {
+                $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+            }
         }
         if (!empty($filters['order_type_id'])) {
             $query->whereHas('order', function (Builder $query) use ($filters) {
@@ -80,7 +100,7 @@ class TicketsRegistry extends ApiController
             });
         }
 
-        $tickets = $query->paginate($request->perPage(10));
+        $tickets = $query->paginate($request->perPage());
 
         /** @var LengthAwarePaginator $tickets */
         $tickets->transform(function (Ticket $ticket) {

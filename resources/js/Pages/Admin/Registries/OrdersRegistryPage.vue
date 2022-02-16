@@ -12,7 +12,7 @@
 
 import Page from "../../../Layouts/Page";
 import PageTitleBar from "../../../Layouts/Parts/PageTitleBar";
-import OrderRegistry from "../../../Parts/Registries/OrderRegistry";
+import OrderRegistry from "./Parts/OrderRegistry";
 
 export default {
     components: {
