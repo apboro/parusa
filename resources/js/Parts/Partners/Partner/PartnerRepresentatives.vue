@@ -48,7 +48,6 @@
                 :title="position_popup_title"
                 :buttons="[{result: 'no', caption: 'Отмена', color: 'white'},{result: 'yes', caption: 'OK', color: 'green'}]"
                 :resolving="positionFormResolving"
-                :manual="true"
         >
             <container w-600px>
                 <data-field-dictionary-dropdown :dictionary="'representatives'"
@@ -118,6 +117,7 @@ export default {
         this.form = formDataSource(null, '/api/partners/representative/attach', {id: this.partnerId});
         this.form.toaster = this.$toast;
         this.form.afterSave = this.positionAfterSave;
+        this.form.failedSave = this.positionFailSave;
         this.form.validation_rules = {
             representative_id: parseRules('required'),
             title: parseRules('required'),
@@ -186,7 +186,15 @@ export default {
         },
 
         positionFormResolving(result) {
-            return result !== 'yes' || this.form.validateAll();
+            if (result !== 'yes') {
+                return true;
+            }
+            if (this.form.validateAll()) {
+                this.$refs.position.process(true);
+                this.form.options = {partner_id: this.partnerId, id: 0};
+                this.form.save();
+            }
+            return false;
         },
 
         representativeSelected(name, value) {
@@ -211,7 +219,9 @@ export default {
             this.form.loaded = false;
             this.$refs.position.hide();
         },
-
+        positionFailSave() {
+            this.$refs.position.process(false);
+        },
         attachPosition() {
             this.form.values = {representative_id: null, title: null, work_phone: null, work_phone_additional: null, email: null};
             this.form.originals = {representative_id: null, title: null, work_phone: null, work_phone_additional: null, email: null};
@@ -219,17 +229,7 @@ export default {
             this.position_change_user = true;
             this.form.loaded = true;
 
-            this.$refs.position.show()
-                .then(result => {
-                    if (result === 'yes') {
-                        this.$refs.position.process(true);
-                        this.form.options = {partner_id: this.partnerId, id: 0};
-                        this.form.save();
-                    } else {
-                        this.form.loaded = false;
-                        this.$refs.position.hide();
-                    }
-                });
+            this.$refs.position.show();
         },
 
         editPosition(position) {
