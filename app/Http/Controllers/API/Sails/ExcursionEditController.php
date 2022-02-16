@@ -24,8 +24,8 @@ class ExcursionEditController extends ApiEditController
         'images' => 'Фотография экскурсии',
         'programs' => 'Типы программы',
         'duration' => 'Продолжительность, минут',
-        'description' => 'Краткое описание',
-        'announce' => 'Полное описание',
+        'announce' => 'Краткое описание',
+        'description' => 'Полное описание',
     ];
 
     /**

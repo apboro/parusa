@@ -16,8 +16,8 @@
             <data-field-images :datasource="form" :name="'images'"/>
             <data-field-dictionary-dropdown-multi :datasource="form" :dictionary="'excursion_programs'" :name="'programs'"/>
             <data-field-input :datasource="form" :name="'duration'" :type="'number'"/>
-            <data-field-text-area :datasource="form" :name="'description'"/>
             <data-field-text-area :datasource="form" :name="'announce'"/>
+            <data-field-text-area :datasource="form" :name="'description'"/>
         </container>
 
         <container mt-30>
