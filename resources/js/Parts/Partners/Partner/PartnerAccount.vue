@@ -5,10 +5,14 @@
                 <heading text-md mb-10>Баланс лицевого счёта</heading>
                 <heading>{{ list.payload['balance'] }} руб.</heading>
             </container>
-            <container inline>
-                <heading text-md mb-10>Доступный остаток по лицевому счёту</heading>
+            <container inline v-if="editable" >
+                <heading text-md mb-10>Лимит по лицевому счёту</heading>
                 <heading>{{ list.payload['limit'] }} руб.</heading>
                 <span class="link text-sm flex mt-10" v-if="editable" @click="limitChange">Изменить</span>
+            </container>
+            <container inline v-else>
+                <heading text-md mb-10>Доступный остаток по лицевому счёту</heading>
+                <heading>{{ list.payload['balance'] - list.payload['limit'] }} руб.</heading>
             </container>
         </container>
 
