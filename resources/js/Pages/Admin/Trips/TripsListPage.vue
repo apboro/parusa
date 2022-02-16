@@ -257,10 +257,10 @@ export default {
             this.current_status = this.initial_status;
             this.genericStatusChange('/api/trips/sale-status', trip['id'])
                 .then(data => {
-                    this.list.data.some((item, key) => {
+                    this.list.list.some((item, key) => {
                         if (item['id'] === trip['id']) {
-                            this.list.data[key]['sale_status'] = data['status'];
-                            this.list.data[key]['sale_status_id'] = data['status_id'];
+                            this.list.list[key]['sale_status'] = data['status'];
+                            this.list.list[key]['sale_status_id'] = data['status_id'];
                             return true;
                         }
                         return false;

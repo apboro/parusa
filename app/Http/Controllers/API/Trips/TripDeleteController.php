@@ -86,7 +86,7 @@ class TripDeleteController extends ApiController
 
         // Delete chained trips
 
-        $chainEnd = $request->input('delete_to');
+        $chainEnd = $request->input('to');
 
         if (!$chainEnd) {
             return APIResponse::error("Неверно указан диапазон дат.");

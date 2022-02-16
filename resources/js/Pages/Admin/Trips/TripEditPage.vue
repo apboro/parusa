@@ -3,12 +3,18 @@
 
         <GuiContainer mt-20 w-700px>
             <FormDictionary :form="form" :name="'start_pier_id'" :dictionary="'piers'" :search="true" @change="startPierChanged"/>
-            <FormDateTime :form="form" :name="'start_at'" :to="start_end_match ? null : form.values['end_at']" :clearable="true" :pick-on-clear="true" @change="startDateChanged"/>
+            <FormDateTime :form="form" :name="'start_at'" :to="start_end_match ? null : form.values['end_at']"
+                          :clearable="true" :pick-on-clear="true" @change="startDateChanged"
+                          :date-disabled="tripId !== 0"
+            />
             <GuiContainer mt-5 mb-10>
                 <InputCheckbox v-model="start_end_match" :label="'Дата и причал прибытия совпадают с отправлением'" @change="matchModeChanged"/>
             </GuiContainer>
             <FormDictionary :form="form" :name="'end_pier_id'" :dictionary="'piers'" :search="true" :disabled="start_end_match"/>
-            <FormDateTime :form="form" :name="'end_at'" :from="form.values['start_at']" :clearable="true" :pick-on-clear="true" :date-disabled="start_end_match"/>
+            <FormDateTime :form="form" :name="'end_at'" :from="form.values['start_at']"
+                          :clearable="true" :pick-on-clear="true"
+                          :date-disabled="start_end_match || tripId !== 0"
+            />
         </GuiContainer>
 
         <GuiContainer mt-20 w-700px>
@@ -28,13 +34,13 @@
             <GuiHeading mb-15>Повторять рейс</GuiHeading>
             <FieldDropDown v-model="create_mode"
                            :title="'Повторять рейс'"
-                           :options="[{id: 'single', name: 'Без повторов'},{id: 'daily', name: 'Каждый день'},{id: 'weekly', name: 'Недельная сетка'}]"
+                           :options="[{id: 'single', name: 'Без повторов'},{id: 'range', name: 'Каждый день'},{id: 'weekly', name: 'Недельная сетка'}]"
                            :identifier="'id'"
                            :show="'name'"
                            :top="true"
             />
             <FieldDaysOfWeek v-model="create_days" v-if="create_mode === 'weekly'" :title="'Дни'" :valid="!days_error" @change="daysChanged"/>
-            <FieldDate v-model="create_until" v-if="create_mode === 'daily' || create_mode === 'weekly'"
+            <FieldDate v-model="create_until" v-if="create_mode === 'range' || create_mode === 'weekly'"
                        :title="'Повторять до (включительно)'"
                        :from="form.values['start_at']"
                        :valid="!date_error"
@@ -171,7 +177,7 @@ export default {
                 if (start > end) {
                     return null;
                 }
-                if (this.create_mode === 'daily' && this.create_until && this.form.values['start_at']) {
+                if (this.create_mode === 'range' && this.create_until && this.form.values['start_at']) {
                     const diff = end.getTime() - start.getTime();
                     return diff / (1000 * 3600 * 24) + 1;
                 } else if (this.create_mode === 'weekly') {
@@ -270,7 +276,8 @@ export default {
             }
             let mode = this.tripId === 0 ? this.create_mode : (this.edit_chained ? 'range' : 'single');
             let to = this.tripId === 0 ? this.create_until : this.edit_to;
-            this.form.save({id: this.tripId, mode: mode, to: to})
+            let days = this.tripId === 0 ? this.create_days : null;
+            this.form.save({id: this.tripId, mode: mode, to: to, days: days})
                 .then(() => {
                     if (this.tripId === 0) {
                         const newId = this.form.payload['id'];

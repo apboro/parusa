@@ -39,7 +39,7 @@ class TripsListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
-        $this->defaultFilters['date'] = Carbon::now();
+        $this->defaultFilters['date'] = Carbon::now()->format('Y-m-d');
 
         $query = Trip::query()
             ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus'])
@@ -52,7 +52,7 @@ class TripsListController extends ApiController
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
             if (!empty($filters['date'])) {
-                $date = Carbon::parse($filters['date'])->setTimezone(config('app.timezone'));
+                $date = Carbon::parse($filters['date']);
                 $query->whereDate('start_at', $date);
             } else {
                 $filters['date'] = Carbon::now();
@@ -97,8 +97,8 @@ class TripsListController extends ApiController
                 'chain_trips_count' => $chain ? $chain->getAttribute('trips_count') : null,
                 'chain_trips_start_at' => $chainStart ? Carbon::parse($chainStart)->format('d.m.Y') : null,
                 'chain_trips_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('d.m.Y') : null,
-                '_trip_start_at' => $trip->start_at,
-                '_chain_end_at' => $chainEnd ? Carbon::parse($chainEnd) : null,
+                '_trip_start_at' => $trip->start_at->format('Y-m-d'),
+                '_chain_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('Y-m-d') : null,
             ];
         });
 

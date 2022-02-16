@@ -54,7 +54,8 @@ class TripEditController extends ApiEditController
         /** @var Trip|null $trip */
         $trip = $this->firstOrNew(Trip::class, $request, ['chains']);
 
-        $createFrom = ($trip && !$trip->exists) ? $request->input('create_from') : null;
+        // if new trip and set source trip get existing trip info as new
+        $createFrom = ($trip !== null && !$trip->exists) ? $request->input('create_from') : null;
 
         if ($createFrom) {
             $trip = Trip::query()->where('id', $createFrom)->first();
@@ -115,8 +116,26 @@ class TripEditController extends ApiEditController
     {
         $data = $this->getData($request);
 
+        $mode = $request->input('mode');
+        $to = $request->input('to');
+        $days = $request->input('days', []);
+
+        if (
+            ($mode === 'range' && empty($to)) ||
+            ($mode === 'weekly' && empty($to) && empty($days)) ||
+            !in_array($mode, ['single', 'weekly', 'range'])
+        ) {
+            return APIResponse::error('Неверные параметры');
+        }
+
         if ($errors = $this->validate($data, $this->rules, $this->titles)) {
             return APIResponse::formError($data, $this->rules, $this->titles, $errors);
+        }
+
+        $to = $to ? Carbon::parse($to)->startOfDay() : null;
+
+        if ($mode !== 'single' && $to < Carbon::parse($data['start_at'])->startOfDay()) {
+            return APIResponse::error('Неверно задан диапазон дат');
         }
 
         /** @var Trip|null $trip */
@@ -126,73 +145,123 @@ class TripEditController extends ApiEditController
             return APIResponse::notFound('Рейс не найден');
         }
 
-        // Edit
-        if ($trip->exists) {
-            /** @var TripChain $chain */
-            $chain = $trip->chains->first();
-
-            if ($data['edit_chain_mode']) {
-                // check range
-                if (!($editUpTo = $data['edit_chain_upto'])) {
-                    return APIResponse::error("Неверно указан диапазон дат.");
-                }
-
-                $tripsToEdit = Trip::query()
-                    ->withCount('tickets')
-                    ->whereHas('chains', function (Builder $query) use ($chain) {
-                        $query->where('id', $chain->id);
-                    })
-                    ->where('start_at', ">=", $trip->start_at)
-                    ->whereDate('start_at', '<=', Carbon::parse($editUpTo))
-                    ->get();
-            } else {
-                $tripsToEdit = collect($trip);
-            }
-
-            // Check for ordered tickets
-            $tripsWithTickets = $tripsToEdit->filter(function (Trip $trip) {
-                return $trip->getAttribute('tickets_count') !== 0;
-            });
-
-            if ($tripsWithTickets->count() > 0) {
-                $ids = $tripsWithTickets->pluck('id')->toArray();
-                return APIResponse::error($data['edit_chain_mode']
-                    ? 'В диапазоне есть рейсы с оформленнымы билетами. [' . implode(',', $ids) . ']'
-                    : "Редактирование запрещено. Есть билеты, оформленные на этот рейс."
-                );
-            }
-
-            // todo run update
-            $count = $this->updateTripChain($tripsToEdit, $data);
-
-            return APIResponse::formSuccess(
-                "Данные обновлены для $count рейсов.",
-                [
-                    'id' => $trip->id,
-                    'title' => $trip->name,
-                ]
-            );
-        }
-
         // Create
+        if (!$trip->exists) {
+            $trip = $this->fillTrip($trip, $data, Carbon::parse($data['start_at']), Carbon::parse($data['end_at']));
+            $trip->save();
 
-        $trip = $this->fillTrip($trip, $data, Carbon::parse($data['start_at']), Carbon::parse($data['end_at']));
-        $trip->save();
+            $message = 'Рейс добавлен';
+            if (in_array($mode, ['range', 'weekly'])) {
+                $count = 1;
+                $count += $this->createChainedTrips($trip, $mode, $days, $to);
+                $message = "Добавлено $count рейсов.";
+            }
 
-        $message = 'Рейс добавлен';
-
-        if ($data['repeat_mode']) {
-            $count = $this->createChainedTrips($trip, (int)$data['repeat_mode'], $data['repeat_days'], Carbon::parse($data['repeat_until']));
-            $count++;
-            $message = "Добавлено $count рейсов.";
+            return APIResponse::formSuccess($message, ['id' => $trip->id, 'title' => $trip->name]);
         }
 
+        // Edit
+
+        // check if editable
+
+        /** @var TripChain $chain */
+        $chain = $trip->chains->first();
+
+        if ($mode !== 'single' && $chain === null) {
+            return APIResponse::error('Рейс не связан с другими рейсами.');
+        }
+
+        $tripsToEdit = Trip::query()
+            ->withCount('tickets')
+            ->when($mode !== 'single', function (Builder $query) use ($chain, $trip, $to) {
+                $query->whereHas('chains', function (Builder $query) use ($chain) {
+                    $query->where('id', $chain->id);
+                })
+                    ->where('start_at', ">=", $trip->start_at)
+                    ->whereDate('start_at', '<=', Carbon::parse($to));
+            })
+            ->when($mode === 'single', function (Builder $query) use ($trip) {
+                $query->where('id', $trip->id);
+            })
+            ->get();
+
+        // Get trip with ordered tickets
+        $tripsWithTickets = $tripsToEdit->filter(function (Trip $trip) {
+            return $trip->getAttribute('tickets_count') !== 0;
+        });
+
+        if ($tripsWithTickets->count() > 0) {
+            return APIResponse::error('В диапазоне есть рейсы с оформленнымы билетами.');
+        }
+
+        // iterate trips and update data
+        $editedIds = [];
+        $newStartAt = Carbon::parse($data['start_at']);
+        $newEndAt = Carbon::parse($data['end_at']);
+
+        foreach ($tripsToEdit as $editTrip) {
+            /** @var Trip $editTrip */
+            $editedIds[] = $editTrip->id;
+            // operate on dates
+            // date change is disabled for now
+            $toSetStartAt = $editTrip->start_at->hours($newStartAt->hour)->minutes($newStartAt->minute);
+            $toSetEndAt = $editTrip->end_at->hours($newEndAt->hour)->minutes($newEndAt->minute);
+            $editTrip = $this->fillTrip($editTrip, $data, $toSetStartAt, $toSetEndAt);
+            $editTrip->save();
+        }
+        // reattach edited to new chain
+        // works in case date can not change
+        $earlierTripIds = $chain->trips()->whereDate('start_at', '<', $trip->start_at->startOfDay())->pluck('id')->toArray();
+        $laterTripIds = $chain->trips()->whereDate('start_at', '>', $to)->pluck('id')->toArray();
+
+        if ($chain !== null) {
+            if (count($earlierTripIds) === 1) {
+                $chain->trips()->detach($earlierTripIds);
+                if (count($laterTripIds) === 1) {
+                    $chain->trips()->detach($laterTripIds);
+                    if (count($editedIds) === 1) {
+                        $chain->trips()->detach($editedIds);
+                    }
+                } else {
+                    $chain->trips()->detach($editedIds);
+                    if (count($editedIds) > 1) {
+                        $newChain = new TripChain;
+                        $newChain->save();
+                        $newChain->trips()->sync($editedIds);
+                    }
+                }
+            } else {
+                if (count($laterTripIds) === 1) {
+                    $chain->trips()->detach($laterTripIds);
+                    $chain->trips()->detach($editedIds);
+                    if (count($editedIds) > 1) {
+                        $newChain = new TripChain;
+                        $newChain->save();
+                        $newChain->trips()->sync($editedIds);
+                    }
+                } else {
+                    $chain->trips()->detach($laterTripIds);
+                    $chain->trips()->detach($editedIds);
+                    if (count($editedIds) > 1) {
+                        $newChain = new TripChain;
+                        $newChain->save();
+                        $newChain->trips()->sync($editedIds);
+                    }
+                    $newChain = new TripChain;
+                    $newChain->save();
+                    $newChain->trips()->sync($laterTripIds);
+                }
+            }
+            if($chain->trips()->count() === 0) {
+                $chain->delete();
+            }
+        }
+
+        // response
+
+        $count = count($editedIds);
         return APIResponse::formSuccess(
-            $message,
-            [
-                'id' => $trip->id,
-                'title' => $trip->name,
-            ]
+            $count === 1 ? 'Данные рейса обновлены.' : "Данные обновлены для $count рейсов.",
         );
     }
 
@@ -200,17 +269,17 @@ class TripEditController extends ApiEditController
      * Add chained trips.
      *
      * @param Trip $trip
-     * @param int $repeatMode
-     * @param array|null $days
-     * @param Carbon $repeatUntil
+     * @param string $mode
+     * @param array $days
+     * @param Carbon $to
      *
      * @return  int
      */
-    protected function createChainedTrips(Trip $trip, int $repeatMode, ?array $days, Carbon $repeatUntil): int
+    protected function createChainedTrips(Trip $trip, string $mode, array $days, Carbon $to): int
     {
-        $currentDate = $trip->start_at->clone()->hours(0)->minutes(0);
+        $currentDate = $trip->start_at->clone()->startOfDay();
 
-        if ($currentDate >= $repeatUntil || !in_array($repeatMode, [1, 2])) {
+        if ($currentDate >= $to || !in_array($mode, ['range', 'weekly'])) {
             return 0;
         }
 
@@ -221,15 +290,8 @@ class TripEditController extends ApiEditController
 
         $duration = $trip->end_at->diffInMinutes($trip->start_at);
 
-        $days = array_map(static function ($item) {
-            if ($item === '7') {
-                return 0;
-            }
-            return (int)$item;
-        }, $days);
-
-        while ($currentDate->addDay() <= $repeatUntil) {
-            if ($repeatMode === 1 || ($repeatMode === 2 && in_array($currentDate->dayOfWeek, $days))) {
+        while ($currentDate->addDay() <= $to) {
+            if ($mode === 'range' || ($mode === 'weekly' && in_array($currentDate->dayOfWeek, $days, true))) {
                 $newTrip = $trip->replicate();
                 $newTrip->start_at = $newTrip->start_at->year($currentDate->year)->month($currentDate->month)->day($currentDate->day);
                 $newTrip->end_at = $newTrip->start_at->clone()->addMinutes($duration);
