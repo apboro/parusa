@@ -2,7 +2,7 @@
     <div>
         <container w-50 mt-30>
             <value :title="'Название партнера'">{{ datasource.data['name'] }}</value>
-            <value :title="'Дата заведения'">{{ datasource.data['created_at'] }}</value>
+            <value :title="'Дата заведения'" v-if="editable">{{ datasource.data['created_at'] }}</value>
             <value :title="'Тип партнера'">{{ datasource.data['type'] }}</value>
             <value :title="'Статус'">
                 <span class="link" v-if="editable" @click="statusChange"><activity :active="datasource.data.active"/>{{ datasource.data.status }}</span>
@@ -14,11 +14,11 @@
                 <span class="link" v-if="editable" @click="ticketsChange">{{ datasource.data['tickets_for_guides'] }}</span>
                 <span v-else>{{ datasource.data['tickets_for_guides'] }}</span>
             </value>
-            <hint mt-5 mb-10 v-if="editable">
+            <hint mt-5 mb-10>
                 При значении "0" партнер не может включать в заказ бесплатные билеты для гидов. Любое положительное число разрешает данную возможность и определяет
                 максимальное количество таких билетов для одного заказа. Например, при значении "1" к заказу можно будет добавить 1 билет для гида.
             </hint>
-            <value :title="'Бронирование билетов'">
+            <value :title="'Бронирование билетов'" v-if="editable">
                 <span class="link" v-if="editable" @click="reserveChange">{{ datasource.data['can_reserve_tickets'] === 1 ? 'Разрешено' : 'Запрещено' }}</span>
                 <span v-else>{{ datasource.data['can_reserve_tickets'] }}</span>
             </value>
@@ -30,7 +30,7 @@
             </value-area>
         </container>
 
-        <container w-100 mt-20>
+        <container w-100 mt-20 v-if="editable">
             <value-area :title="'Заметки'" v-text="datasource.data['notes']"/>
         </container>
 
