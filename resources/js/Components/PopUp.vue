@@ -51,7 +51,6 @@ export default {
 
     data: () => ({
         shown: false,
-        promise: null,
         resolve_function: null,
         showing: false,
         hiding: false,
