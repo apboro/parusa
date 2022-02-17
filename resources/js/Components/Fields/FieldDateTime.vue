@@ -1,5 +1,5 @@
 <template>
-    <FieldWrapper :title="title" :required="required" :disabled="disabled" :valid="valid" :errors="errors">
+    <FieldWrapper :title="title" :hide-title="hideTitle" :required="required" :disabled="disabled" :valid="valid" :errors="errors">
         <InputDateTime
             v-model="proxyValue"
             :name="name"
@@ -38,6 +38,7 @@ export default {
         timeDisabled: {type: Boolean, default: false},
         valid: {type: Boolean, default: true},
         errors: {type: Array, default: null},
+        hideTitle: {type: Boolean, default: false},
 
         placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},

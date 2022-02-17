@@ -1,6 +1,6 @@
 <template>
     <div class="input-field" :class="{'input-field__required': required}">
-        <span class="input-field__title">{{ title }}</span>
+        <span class="input-field__title" v-if="!hideTitle">{{ title }}</span>
         <div class="input-field__wrapper">
             <div class="input-field__input">
                 <slot/>
@@ -21,6 +21,7 @@ export default {
         disabled: {type: Boolean, default: false},
         valid: {type: Boolean, default: true},
         errors: {type: Array, default: () => ([])},
+        hideTitle: {type: Boolean, default: false},
     }
 }
 </script>

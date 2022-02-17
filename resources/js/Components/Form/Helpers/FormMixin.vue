@@ -4,6 +4,7 @@ export default {
         name: {type: String, required: true},
         form: {type: Object, required: true},
         defaultValue: {default: null},
+        hideTitle: {type: Boolean, default: false},
     },
 
     emits: ['change'],

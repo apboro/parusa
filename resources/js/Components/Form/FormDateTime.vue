@@ -3,6 +3,7 @@
         :model-value="value"
         :name="name"
         :title="title"
+        :hide-title="hideTitle"
         :original="original"
         :valid="valid"
         :errors="errors"
