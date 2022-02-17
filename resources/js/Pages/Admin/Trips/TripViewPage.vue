@@ -62,7 +62,7 @@ export default {
 
     methods: {
         deleteTrip() {
-            this.deleteEntry('Удалить рейс №' + this.data.data['id'] + '?', '/api/trips/delete', {id: this.tripId})
+            this.deleteEntry('Удалить рейс №' + this.data.data['id'] + '?', '/api/trips/delete', {id: this.tripId, mode: 'single'})
                 .then(() => this.$router.push({name: 'trip-list'}));
         },
     }
