@@ -12,7 +12,7 @@
 
         <LayoutRoutedTabs :tabs="{description: 'Описание рейса', tickets: 'Проданные билеты'}" @change="tab = $event"/>
 
-        <TripInfo v-if="tab === 'description'" :trip-id="tripId" :data="data.data" :editable="true"/>
+        <TripInfo v-if="tab === 'description'" :trip-id="tripId" :data="data.data" :editable="true" @update="update"/>
         <TicketsRegistry v-if="tab === 'tickets'" :trip-id="tripId"/>
 
     </LayoutPage>
@@ -65,6 +65,9 @@ export default {
             this.deleteEntry('Удалить рейс №' + this.data.data['id'] + '?', '/api/trips/delete', {id: this.tripId, mode: 'single'})
                 .then(() => this.$router.push({name: 'trip-list'}));
         },
+        update(payload) {
+            console.log(payload);
+        }
     }
 }
 </script>

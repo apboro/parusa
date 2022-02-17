@@ -77,6 +77,8 @@ export default {
         editable: {type: Boolean, default: false},
     },
 
+    emits: ['update'],
+
     components: {
         FormNumber,
         FormDictionary,
@@ -97,49 +99,33 @@ export default {
         edit() {
             this.$router.push({name: 'trip-edit', params: {id: this.tripId}});
         },
-        initForm(title, key, dictionary = null) {
+        showForm(title, key, rules, dictionary = null) {
             this.form_title = title;
             this.form.reset();
             this.form.set('name', key);
-            this.form.set('value', this.data[key], 'required', title, true);
+            this.form.set('value', this.data[key], rules, title, true);
             this.dictionary = dictionary;
             this.form.toaster = this.$toast;
             this.form.load();
+            this.$refs.popup.show()
+                .then(response => {
+                    this.$emit('update', response);
+                })
         },
         statusChange() {
-            this.initForm('Статус движения', 'status_id', 'trip_statuses');
-            this.$refs.popup.show()
-                .then(response => {
-                    console.log(response);
-                })
+            this.showForm('Статус движения', 'status_id', 'required', 'trip_statuses');
         },
         saleStatusChange() {
-            this.initForm('Статус продаж', 'sale_status_id', 'trip_sale_statuses');
-            this.$refs.popup.show()
-                .then(response => {
-                    console.log(response);
-                })
+            this.showForm('Статус продаж', 'sale_status_id', 'required', 'trip_sale_statuses');
         },
         ticketsCountChange() {
-            this.initForm('Общее количество билетов', 'tickets_total');
-            this.$refs.popup.show()
-                .then(response => {
-                    console.log(response);
-                })
+            this.showForm('Общее количество билетов', 'tickets_total', 'required|integer|min:0');
         },
         discountStatusChange() {
-            this.initForm('Скидки от базовой цены на кассах', 'discount_status_id', 'trip_statuses');
-            this.$refs.popup.show()
-                .then(response => {
-                    console.log(response);
-                })
+            this.showForm('Скидки от базовой цены на кассах', 'discount_status_id', 'required', 'trip_statuses');
         },
         cancellationTimeChange() {
-            this.initForm('Время аннулирования брони, за Х мин.', 'discount_status_id');
-            this.$refs.popup.show()
-                .then(response => {
-                    console.log(response);
-                })
+            this.showForm('Время аннулирования брони, за Х мин.', 'discount_status_id', 'required|integer|min:0');
         },
     }
 }

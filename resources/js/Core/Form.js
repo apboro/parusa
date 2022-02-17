@@ -124,7 +124,7 @@ const form = function (load_url, save_url, options = {}) {
                         if (typeof this.saved_callback === "function") {
                             this.saved_callback(this.values, this.payload);
                         }
-                        resolve(this.values);
+                        resolve(this.payload);
                     })
                     .catch(error => {
                         if (error.response.status === 422) {
