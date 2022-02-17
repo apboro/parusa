@@ -47,11 +47,12 @@ const form = function (load_url, save_url, options = {}) {
          */
         load(options = null) {
             return new Promise((resolve, reject) => {
-                if (this.load_url === null) {
+                if (this.load_url === null || this.load_url === '') {
                     this.is_loaded = true;
                     if (typeof this.loaded_callback === "function") {
                         this.loaded_callback(this.values, this.payload);
                     }
+                    resolve(this.values);
                     return;
                 }
 
