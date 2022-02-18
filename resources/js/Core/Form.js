@@ -52,7 +52,7 @@ const form = function (load_url, save_url, options = {}) {
                     if (typeof this.loaded_callback === "function") {
                         this.loaded_callback(this.values, this.payload);
                     }
-                    resolve(this.values);
+                    resolve({values: this.values, payload: this.payload});
                     return;
                 }
 
@@ -74,19 +74,19 @@ const form = function (load_url, save_url, options = {}) {
                         this.is_loaded = true;
 
                         if (typeof this.loaded_callback === "function") {
-                            this.loaded_callback(this.values, this.payload);
+                            this.loaded_callback({values: this.values, payload: this.payload});
                         }
 
-                        resolve(this.values);
+                        resolve({values: this.values, payload: this.payload});
                     })
                     .catch(error => {
                         this.notify(error.response.data.message, 0, 'error');
 
                         if (typeof this.load_failed_callback === "function") {
-                            this.load_failed_callback(error.response.status, error.response.data);
+                            this.load_failed_callback({code: error.response.status, message: error.response.data.message});
                         }
 
-                        reject(error.response.data);
+                        reject({code: error.response.status, message: error.response.data.message});
                     })
                     .finally(() => {
                         this.is_loading = false;
@@ -122,9 +122,9 @@ const form = function (load_url, save_url, options = {}) {
                             this.payload = response.data.payload;
                         }
                         if (typeof this.saved_callback === "function") {
-                            this.saved_callback(this.values, this.payload);
+                            this.saved_callback({values: this.values, payload: this.payload});
                         }
-                        resolve(this.payload);
+                        resolve({values: this.values, payload: this.payload});
                     })
                     .catch(error => {
                         if (error.response.status === 422) {
@@ -139,10 +139,10 @@ const form = function (load_url, save_url, options = {}) {
                         } else {
                             this.notify(error.response.data.message, 0, 'error');
                             if (typeof this.save_failed_callback === "function") {
-                                this.save_failed_callback(error.response.status, error.response.data);
+                                this.save_failed_callback({code: error.response.status, message: error.response.data.message});
                             }
                         }
-                        reject(error.response.data);
+                        reject({code: error.response.status, message: error.response.data.message});
                     })
                     .finally(() => {
                         this.is_saved = false;

@@ -8,11 +8,11 @@ const data = function (url) {
         is_loading: false,
         is_loaded: false,
 
+        toaster: null,
+
         /** Callbacks */
         loaded_callback: null,
         load_failed_callback: null,
-
-        toaster: null,
 
         /**
          * Load data.
@@ -30,18 +30,17 @@ const data = function (url) {
                         this.data = response.data.data;
                         this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
                         if (typeof this.loaded_callback === "function") {
-                            this.loaded_callback(this.data, this.payload);
+                            this.loaded_callback({data: this.data, payload: this.payload});
                         }
                         this.is_loaded = true;
-                        resolve(this.data, this.payload);
+                        resolve({data: this.data, payload: this.payload});
                     })
                     .catch(error => {
                         this.notify(error.response.data.message);
                         if (typeof this.load_failed_callback === "function") {
-                            this.load_failed_callback(error.response.status, error.response.data);
+                            this.load_failed_callback({code: error.response.status, message: error.response.data.message});
                         }
-                        console.log(error.response.status);
-                        reject(error.response.status);
+                        reject({code: error.response.status, message: error.response.data.message});
                     })
                     .finally(() => {
                         this.is_loading = false;

@@ -27,6 +27,10 @@ const list = function (url, options = {}, pagination = true) {
 
         toaster: null,
 
+        /** Callbacks */
+        loaded_callback: null,
+        load_failed_callback: null,
+
         reload() {
             return this.load(this.pagination.current_page, this.pagination.per_page);
         },
@@ -59,11 +63,17 @@ const list = function (url, options = {}, pagination = true) {
                         this.filters_original = typeof response.data.filters_original !== "undefined" && response.data.filters_original !== null ? response.data.filters_original : {};
                         this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
                         this.is_loaded = true;
-                        resolve(this.list);
+                        if (typeof this.loaded_callback === "function") {
+                            this.loaded_callback({titles: this.titles, list: this.list, payload: this.payload});
+                        }
+                        resolve({titles: this.titles, list: this.list, payload: this.payload});
                     })
                     .catch(error => {
                         this.notify(error.response.message, 0, 'error');
-                        reject(error.response.status, error.response.data);
+                        if (typeof this.load_failed_callback === "function") {
+                            this.load_failed_callback({code: error.response.status, message: error.response.data.message});
+                        }
+                        reject({code: error.response.status, message: error.response.data.message});
                     })
                     .finally(() => {
                         this.is_loading = false;
