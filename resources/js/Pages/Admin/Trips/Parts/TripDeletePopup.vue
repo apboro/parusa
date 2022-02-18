@@ -1,7 +1,7 @@
 <template>
     <PopUp ref="delete_popup" :title="title"
            :buttons="[
-                    {result: 'yes', caption: 'Удалить' + (count ? ' (' + count + ')' : ''), disabled: !can_delete, color: 'red'},
+                    {result: 'yes', caption: 'Удалить' + (count ? ` (${count})` : ''), disabled: !can_delete, color: 'red'},
                     {result: 'no', caption: 'Отмена', color: 'white'},
                    ]"
            :manual="true"
@@ -71,7 +71,7 @@ export default {
         },
         blockedBy() {
             return Object.keys(this.blocked_by).length === 0 ? null
-                : Object.keys(this.blocked_by).map(key => '<b>№' + this.blocked_by[key]['id'] + '</b> (' + this.blocked_by[key]['start_at_date'] + ')').join(', ')
+                : Object.keys(this.blocked_by).map(key => `<b>№${this.blocked_by[key]['id']}</b> (${this.blocked_by[key]['start_at_date']})`).join(', ')
         }
     },
 

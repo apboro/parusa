@@ -57,7 +57,7 @@ export default {
 
     created() {
         this.data.load({id: this.tripId})
-            .catch(code => code === 404 && this.$router.push({name: '404'}));
+            .catch(response => response.code === 404 && this.$router.push({name: '404'}));
     },
 
     methods: {
@@ -66,7 +66,9 @@ export default {
                 .then(() => this.$router.push({name: 'trip-list'}));
         },
         update(payload) {
-            console.log(payload);
+            Object.keys(payload).map(key => {
+                this.data.data[key] = payload[key];
+            })
         }
     }
 }

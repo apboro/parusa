@@ -64,9 +64,9 @@ export default {
             }
             this.$refs.popup.process(true);
             this.form.save(this.options)
-                .then((values) => {
+                .then((payload) => {
                     this.$refs.popup.hide();
-                    this.resolve_function(values)
+                    this.resolve_function(payload)
                     return true;
                 })
                 .finally(() => {

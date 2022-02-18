@@ -246,6 +246,25 @@ class APIResponse
     }
 
     /**
+     * Make 422 form validation error response.
+     *
+     * @param array $errors
+     * @param mixed $payload
+     *
+     * @return  JsonResponse
+     */
+    public static function validationError(array $errors = [], array $payload = []): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Не все поля корректно заполнены',
+            'status' => 'Validation error',
+            'code' => 422,
+            'errors' => $errors,
+            'payload' => $payload,
+        ], 422);
+    }
+
+    /**
      * Add last modifier header to response.
      * Modified timestamp must be GMT timezone.
      *

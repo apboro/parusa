@@ -53,7 +53,7 @@
                    ref="popup"
         >
             <GuiContainer w-350px>
-                <FormDictionary v-if="dictionary !== null" :form="form" :name="'value'" :dictionary="dictionary" :hide-title="true"/>
+                <FormDictionary v-if="dictionary !== null" :form="form" :name="'value'" :dictionary="dictionary" :fresh="true" :hide-title="true"/>
                 <FormNumber v-else :form="form" :name="'value'" :hide-title="true"/>
             </GuiContainer>
         </FormPopUp>
@@ -109,7 +109,7 @@ export default {
             this.form.load();
             this.$refs.popup.show()
                 .then(response => {
-                    this.$emit('update', response);
+                    this.$emit('update', response.payload);
                 })
         },
         statusChange() {
@@ -122,10 +122,10 @@ export default {
             this.showForm('Общее количество билетов', 'tickets_total', 'required|integer|min:0');
         },
         discountStatusChange() {
-            this.showForm('Скидки от базовой цены на кассах', 'discount_status_id', 'required', 'trip_statuses');
+            this.showForm('Скидки от базовой цены на кассах', 'discount_status_id', 'required', 'trip_discount_statuses');
         },
         cancellationTimeChange() {
-            this.showForm('Время аннулирования брони, за Х мин.', 'discount_status_id', 'required|integer|min:0');
+            this.showForm('Время аннулирования брони, за Х мин.', 'cancellation_time', 'required|integer|min:0');
         },
     }
 }

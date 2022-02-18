@@ -17,6 +17,7 @@
             <LayoutFiltersItem :title="'Способ продажи'">
                 <DictionaryDropDown
                     :dictionary="'order_types'"
+                    :fresh="true"
                     v-model="list.filters['order_type_id']"
                     :original="list.filters_original['order_type_id']"
                     :placeholder="'Все'"

@@ -16,7 +16,7 @@
         :center="center"
         :small="small"
         :options="items"
-        @dropped="refresh"
+        @drop="refresh"
         @change="change"
     />
 </template>

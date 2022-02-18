@@ -5,7 +5,7 @@
                 :link-title="'К списку рейсов'"
     >
         <GuiContainer mt-20 w-700px>
-            <FormDictionary :form="form" :name="'start_pier_id'" :dictionary="'piers'" :search="true" @change="startPierChanged"/>
+            <FormDictionary :form="form" :name="'start_pier_id'" :dictionary="'piers'" :fresh="true" :search="true" @change="startPierChanged"/>
             <FormDateTime :form="form" :name="'start_at'" :to="start_end_match ? null : form.values['end_at']"
                           :clearable="true" :pick-on-clear="true" @change="startDateChanged"
                           :date-disabled="tripId !== 0"
@@ -13,7 +13,7 @@
             <GuiContainer mt-5 mb-10>
                 <InputCheckbox v-model="start_end_match" :label="'Дата и причал прибытия совпадают с отправлением'" @change="matchModeChanged"/>
             </GuiContainer>
-            <FormDictionary :form="form" :name="'end_pier_id'" :dictionary="'piers'" :search="true" :disabled="start_end_match"/>
+            <FormDictionary :form="form" :name="'end_pier_id'" :dictionary="'piers'" :fresh="true" :search="true" :disabled="start_end_match"/>
             <FormDateTime :form="form" :name="'end_at'" :from="form.values['start_at']"
                           :clearable="true" :pick-on-clear="true"
                           :date-disabled="start_end_match || tripId !== 0"
@@ -21,15 +21,15 @@
         </GuiContainer>
 
         <GuiContainer mt-20 w-700px>
-            <FormDictionary :form="form" :name="'ship_id'" :dictionary="'ships'" :search="true" @change="shipSelected"/>
-            <FormDictionary :form="form" :name="'excursion_id'" :dictionary="'excursions'" :search="true"/>
+            <FormDictionary :form="form" :name="'ship_id'" :dictionary="'ships'" :fresh="true" :search="true" @change="shipSelected"/>
+            <FormDictionary :form="form" :name="'excursion_id'" :dictionary="'excursions'" :fresh="true" :search="true"/>
         </GuiContainer>
 
         <GuiContainer mt-20 w-700px>
-            <FormDictionary :form="form" :name="'status_id'" :dictionary="'trip_statuses'"/>
-            <FormDictionary :form="form" :name="'sale_status_id'" :dictionary="'trip_sale_statuses'"/>
+            <FormDictionary :form="form" :name="'status_id'" :dictionary="'trip_statuses'" :fresh="true"/>
+            <FormDictionary :form="form" :name="'sale_status_id'" :dictionary="'trip_sale_statuses'" :fresh="true"/>
             <FormNumber :form="form" :name="'tickets_total'"/>
-            <FormDictionary :form="form" :name="'discount_status_id'" :dictionary="'trip_discount_statuses'"/>
+            <FormDictionary :form="form" :name="'discount_status_id'" :dictionary="'trip_discount_statuses'" :fresh="true"/>
             <FormNumber :form="form" :name="'cancellation_time'"/>
         </GuiContainer>
 
@@ -221,27 +221,27 @@ export default {
         const query = this.$route.query;
 
         this.form.load({id: this.tripId, create_from: typeof query['from'] !== "undefined" && query['from'] !== null ? query['from'] : null})
-            .then(values => {
+            .then(response => {
                 if (this.tripId === 0) {
                     if (typeof query['pier'] !== "undefined" && query['pier'] !== null) {
-                        values['start_pier_id'] = Number(query['pier']);
-                        values['end_pier_id'] = Number(query['pier']);
+                        this.form.update('start_pier_id', Number(query['pier']));
+                        this.form.update('end_pier_id', Number(query['pier']));
                     }
                     /**
                      * For future use:
                      * if(typeof query['excursion'] !== "undefined" && query['excursion'] !== null) {
-                     *   values['excursion_id'] = Number(query['excursion']);
+                     *   response.values['excursion_id'] = Number(query['excursion']);
                      * }
                      */
                     return;
                 }
-                this.edit_from = values['start_at'];
-                this.edit_to = values['start_at'];
-                this.edit_max = this.form.payload['chain_end_at'];
-                this.chained = this.form.payload['chained'];
-                this.chain_trips_end_at = this.form.payload['chain_trips_end_at'];
-                this.chain_trips_start_at = this.form.payload['chain_trips_start_at'];
-                if (values['start_pier_id'] !== values['end_pier_id'] || (values['start_at'] && values['end_at'] && (values['start_at'].split('T')[0] !== values['end_at'].split('T')[0]))) {
+                this.edit_from = response.values['start_at'];
+                this.edit_to = response.values['start_at'];
+                this.edit_max = response.payload['chain_end_at'];
+                this.chained = response.payload['chained'];
+                this.chain_trips_end_at = response.payload['chain_trips_end_at'];
+                this.chain_trips_start_at = response.payload['chain_trips_start_at'];
+                if (response.values['start_pier_id'] !== response.values['end_pier_id'] || (response.values['start_at'] && response.values['end_at'] && (response.values['start_at'].split('T')[0] !== response.values['end_at'].split('T')[0]))) {
                     this.start_end_match = false;
                 }
             });

@@ -2,9 +2,9 @@
 
 namespace App\Models\Sails;
 
-use App\Exceptions\Sails\WrongTripDiscountStatusException;
-use App\Exceptions\Sails\WrongTripSaleStatusException;
-use App\Exceptions\Sails\WrongTripStatusException;
+use App\Exceptions\Trips\WrongTripDiscountStatusException;
+use App\Exceptions\Trips\WrongTripSaleStatusException;
+use App\Exceptions\Trips\WrongTripStatusException;
 use App\Interfaces\Statusable;
 use App\Models\Dictionaries\TripDiscountStatus;
 use App\Models\Dictionaries\TripSaleStatus;
