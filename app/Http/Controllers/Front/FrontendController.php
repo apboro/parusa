@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use JsonException;
 
 class FrontendController extends Controller
 {
@@ -21,7 +22,8 @@ class FrontendController extends Controller
      *
      * @param Request $request
      *
-     * @return Response|RedirectResponse
+     * @return  Response|RedirectResponse
+     * @throws JsonException
      */
     public function frontend(Request $request)
     {
@@ -67,24 +69,24 @@ class FrontendController extends Controller
 
         if ($current->position()->is_staff) {
             return response()->view('admin', [
-                'user' => [
-                    'name' => $user->profile->compactName,
-                    'organization' => __('common.root organization'),
-                    'position' => $current->position()->title,
+                'user' => json_encode([
+                    'name' => $this->e($user->profile->compactName),
+                    'organization' => $this->e(__('common.root organization')),
+                    'position' => $this->e($current->position()->title),
                     'positions' => $positionsCount > 1,
                     'can_reserve' => false,
-                ],
+                ], JSON_THROW_ON_ERROR),
             ])->withCookie($current->positionToCookie());
         }
 
         return response()->view('partner', [
-            'user' => [
-                'name' => $user->profile->compactName,
-                'organization' => $current->position()->partner->name,
-                'position' => $current->position()->title,
+            'user' => json_encode([
+                'name' => $this->e($user->profile->compactName),
+                'organization' => $this->e($current->position()->partner->name),
+                'position' => $this->e($current->position()->title),
                 'positions' => $positionsCount > 1,
                 'can_reserve' => $current->partner()->profile->can_reserve_tickets,
-            ],
+            ], JSON_THROW_ON_ERROR),
         ])->withCookie($current->positionToCookie());
     }
 
@@ -140,5 +142,17 @@ class FrontendController extends Controller
             return ($position->is_staff && !$position->hasStatus(PositionStatus::active)) ||
                 (!$position->is_staff && !$position->hasStatus(PositionAccessStatus::active, 'access_status_id'));
         });
+    }
+
+    /**
+     * Format text to json encodable.
+     *
+     * @param string $text
+     *
+     * @return  string
+     */
+    protected function e(string $text): string
+    {
+        return str_replace('"', '\\"', $text);
     }
 }
