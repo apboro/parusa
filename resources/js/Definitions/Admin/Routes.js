@@ -20,10 +20,6 @@ import RepresentativesListPage from "../../Pages/Admin/Partner/Representatives/R
 import RepresentativeCardPage from "../../Pages/Admin/Partner/Representatives/RepresentativeCardPage";
 import RepresentativeEditPage from "../../Pages/Admin/Partner/Representatives/RepresentativeEditPage";
 
-import PiersListPage from "../../Pages/Admin/Sails/Piers/PiersListPage";
-import PierCardPage from "../../Pages/Admin/Sails/Piers/PierCardPage";
-import PierEditPage from "../../Pages/Admin/Sails/Piers/PierEditPage";
-
 import ExcursionCardPage from "../../Pages/Admin/Sails/Excursions/ExcursionCardPage";
 import ExcursionEditPage from "../../Pages/Admin/Sails/Excursions/ExcursionEditPage";
 import DictionariesPage from "../../Pages/Admin/Dictionaries/DictionariesPage";
@@ -57,9 +53,9 @@ export default [
     /**
      * Sails part
      */
-    {path: '/piers', name: 'pier-list', component: PiersListPage, meta: {title: 'Причалы'}},
-    {path: '/piers/:id', name: 'pier-view', component: PierCardPage, meta: {title: 'Просмотр причала'}},
-    {path: '/piers/:id/edit', name: 'pier-edit', component: PierEditPage, meta: {title: 'Редактирование причала'}},
+    {path: '/piers', name: 'pier-list', component: () => import('@/Pages/Admin/Piers/PiersListPage'), meta: {title: 'Причалы'}},
+    {path: '/piers/:id', name: 'pier-view', component: () => import('@/Pages/Admin/Piers/PierViewPage'), meta: {title: 'Просмотр причала'}},
+    {path: '/piers/:id/edit', name: 'pier-edit', component: () => import('@/Pages/Admin/Piers/PierEditPage'), meta: {title: 'Редактирование причала'}},
 
     {path: '/excursions', name: 'excursion-list', component: () => import('@/Pages/Admin/Excursions/ExcursionsListPage'), meta: {title: 'Каталог экскурсий'}},
     {path: '/excursions/:id', name: 'excursion-view', component: ExcursionCardPage, meta: {title: 'Просмотр экскурсии'}},
