@@ -173,7 +173,7 @@ export default {
 
     data: () => ({
         list: list('/api/trips'),
-        form: form('', '/api/trips/properties'),
+        form: form(null, '/api/trips/properties'),
         form_title: null,
         dictionary: null,
         trip_id: null,
@@ -183,6 +183,12 @@ export default {
         this.list.loaded_callback = () => {
             this.$emit('setTitle', this.title);
             this.$emit('setStartPier', this.list.filters['start_pier_id']);
+        }
+        if(this.pierId !== 0) {
+            this.list.options['start_pier_id'] = this.pierId;
+        }
+        if(this.excursionId !== 0) {
+            this.list.options['excursion_id'] = this.excursionId;
         }
         this.list.initial();
     },

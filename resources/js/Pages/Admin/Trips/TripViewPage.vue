@@ -57,7 +57,7 @@ export default {
 
     created() {
         this.data.load({id: this.tripId})
-            .catch(response => response.code === 404 && this.$router.push({name: '404'}));
+            .catch(response => response.code === 404 && this.$router.replace({name: '404'}));
     },
 
     methods: {

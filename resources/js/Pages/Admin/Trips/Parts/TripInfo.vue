@@ -90,7 +90,7 @@ export default {
     },
 
     data: () => ({
-        form: form('', '/api/trips/properties'),
+        form: form(null, '/api/trips/properties'),
         form_title: null,
         dictionary: null,
     }),

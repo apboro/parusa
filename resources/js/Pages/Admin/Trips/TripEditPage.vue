@@ -292,7 +292,7 @@ export default {
         },
         cancel() {
             if (this.tripId === 0) {
-                this.$router.push({name: 'trip-list', params: {id: this.tripId}})
+                this.$router.push({name: 'trip-list'})
             } else {
                 this.$router.push({name: 'trip-view', params: {id: this.tripId}})
             }

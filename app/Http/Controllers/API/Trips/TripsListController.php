@@ -40,6 +40,8 @@ class TripsListController extends ApiController
     public function list(ApiListRequest $request): JsonResponse
     {
         $this->defaultFilters['date'] = Carbon::now()->format('Y-m-d');
+        $startPierId = $request->input('start_pier_id');
+        $excursionId = $request->input('excursion_id');
 
         $query = Trip::query()
             ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus'])
@@ -61,11 +63,11 @@ class TripsListController extends ApiController
             if (!empty($filters['status_id'])) {
                 $query->where('status_id', $filters['status_id']);
             }
-            if (!empty($filters['excursion_id'])) {
-                $query->where('excursion_id', $filters['excursion_id']);
+            if ($startPierId || !empty($filters['start_pier_id'])) {
+                $query->where('start_pier_id', $startPierId ?? $filters['start_pier_id']);
             }
-            if (!empty($filters['start_pier_id'])) {
-                $query->where('start_pier_id', $filters['start_pier_id']);
+            if ($excursionId || !empty($filters['excursion_id'])) {
+                $query->where('excursion_id', $excursionId ?? $filters['excursion_id']);
             }
         }
 
