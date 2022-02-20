@@ -1,7 +1,7 @@
 <template>
     <div class="pagination" v-if="pagination">
 
-        <span class="pagination__shown">Показано {{ pagination.from }}-{{ pagination.to }} из {{ pagination.total }}</span>
+        <span class="pagination__shown">Показано {{ shown }} из {{ pagination.total }}</span>
 
         <div class="pagination__per-page">
             <div class="pagination__per-page-select">
@@ -88,6 +88,9 @@ export default {
     }),
 
     computed: {
+        shown() {
+            return this.pagination.from && this.pagination.to ? `${this.pagination.from} - ${this.pagination.to}` : '0'
+        },
         pages() {
             let pages = [];
             if (this.pagination.last_page <= this.max_links) {

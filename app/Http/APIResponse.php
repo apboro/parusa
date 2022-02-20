@@ -171,8 +171,8 @@ class APIResponse
             'pagination' => [
                 'current_page' => $list->currentPage(),
                 'last_page' => $list->lastPage(),
-                'from' => $list->firstItem(),
-                'to' => $list->lastItem(),
+                'from' => $list->firstItem() ?? 0,
+                'to' => $list->lastItem() ?? 0,
                 'total' => $list->total(),
                 'per_page' => $list->perPage(),
             ],
