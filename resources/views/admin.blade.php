@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
     <script>
-        window.user = '{!! json_encode($user) !!}';
+        window.user = '{!! $user !!}';
     </script>
 </head>
 <body>
