@@ -68,7 +68,7 @@ $input_placeholder_color: #757575 !default;
         font-family: $project_font;
         font-size: 16px;
         color: inherit;
-        padding: 0 10px;
+        padding: 5px 10px;
         flex-grow: 1;
         flex-shrink: 1;
         width: 100%;
