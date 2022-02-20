@@ -14,7 +14,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
-use JsonException;
 
 class TripsSelectListController extends ApiController
 {
@@ -39,8 +38,6 @@ class TripsSelectListController extends ApiController
      * @param ApiListRequest $request
      *
      * @return  JsonResponse
-     *
-     * @throws JsonException
      */
     public function list(ApiListRequest $request): JsonResponse
     {
@@ -79,7 +76,7 @@ class TripsSelectListController extends ApiController
         }
 
         // current page automatically resolved from request via `page` parameter
-        $trips = $query->orderBy('start_at', 'asc')->paginate($request->perPage(10, $this->rememberKey));
+        $trips = $query->orderBy('start_at')->paginate($request->perPage(10, $this->rememberKey));
 
         /** @var LengthAwarePaginator $trips */
         $trips->transform(function (Trip $trip) use ($date) {

@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
-use JsonException;
 
 class RepresentativeListController extends ApiController
 {
@@ -25,8 +24,6 @@ class RepresentativeListController extends ApiController
      * @param ApiListRequest $request
      *
      * @return  JsonResponse
-     *
-     * @throws JsonException
      */
     public function list(ApiListRequest $request): JsonResponse
     {
@@ -38,9 +35,9 @@ class RepresentativeListController extends ApiController
             ->with('staffPosition')
             ->leftJoin('user_profiles', 'users.id', '=', 'user_profiles.user_id')
             ->select('users.*')
-            ->orderBy('user_profiles.lastname', 'asc')
-            ->orderBy('user_profiles.firstname', 'asc')
-            ->orderBy('user_profiles.patronymic', 'asc');
+            ->orderBy('user_profiles.lastname')
+            ->orderBy('user_profiles.firstname')
+            ->orderBy('user_profiles.patronymic');
 
         // apply search
         if (!empty($search = $request->search())) {
@@ -75,7 +72,7 @@ class RepresentativeListController extends ApiController
             $profile = $user->profile;
 
             $positions = [];
-            foreach ($user->positions ?? [] as $position) {
+            foreach ($user->positions as $position) {
                 /** @var Position $position */
                 $positions[] = [
                     'partner_id' => $position->partner_id,
@@ -90,7 +87,7 @@ class RepresentativeListController extends ApiController
             }
             return [
                 'id' => $user->id,
-                'name' => $profile ? $profile->fullName : null,
+                'name' => $profile->fullName ?? null,
                 'positions' => $positions,
                 'is_staff' => $user->staffPosition->exists,
                 'email' => $profile->email,

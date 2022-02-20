@@ -43,7 +43,7 @@ class PartnerRatesController extends ApiEditController
         /** @var Partner $partner */
 
         $excursions = Excursion::query()
-            ->with('ratesLists', static function (HasMany $query) use ($partner) {
+            ->with('ratesLists', static function (HasMany $query) {
                 $query->orderBy('start_at');
             })
             ->with('ratesLists.rates')
@@ -244,8 +244,8 @@ class PartnerRatesController extends ApiEditController
                     'max_price' => $rate->max_price,
                     'commission_type' => $rate->commission_type,
                     'commission_value' => $rate->commission_value,
-                    'partner_commission_type' => $partnerRate ? $partnerRate->commission_type : null,
-                    'partner_commission_value' => $partnerRate ? $partnerRate->commission_value : null,
+                    'partner_commission_type' => $partnerRate->commission_type ?? null,
+                    'partner_commission_value' => $partnerRate->commission_value ?? null,
                 ];
             }),
         ];

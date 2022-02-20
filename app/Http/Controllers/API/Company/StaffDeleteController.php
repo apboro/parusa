@@ -42,6 +42,6 @@ class StaffDeleteController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response([], [], "Сотрудник \"{$name}\" удалён");
+        return APIResponse::response([], [], "Сотрудник \"$name\" удалён");
     }
 }

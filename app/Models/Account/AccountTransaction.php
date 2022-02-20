@@ -178,15 +178,13 @@ class AccountTransaction extends Model implements Statusable, Typeable
     /**
      * Get reason full title.
      *
-     * @param $value
-     *
      * @return  string|null
      */
-    public function getReasonTitleAttribute($value): ?string
+    public function getReasonTitleAttribute(): ?string
     {
         switch ($this->type_id) {
             case AccountTransactionType::account_refill_invoice:
-                return "Пополнение лицевого счёта банковским переводом по счёту №{$this->reason} от " . $this->reason_date->format('d.m.Y');
+                return "Пополнение лицевого счёта банковским переводом по счёту №$this->reason от " . $this->reason_date->format('d.m.Y');
             case AccountTransactionType::account_refill_cash:
                 return 'Пополнение лицевого счёта наличными';
             case AccountTransactionType::tickets_buy:

@@ -2,7 +2,6 @@
 
 namespace App\Models\Positions;
 
-use App\Helpers\PriceConverter;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Model;
 use App\Models\Sails\Trip;

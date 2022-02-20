@@ -49,7 +49,7 @@ class TripsListController extends ApiController
                 $query->withCount('trips');
             }])
             ->withCount(['chains', 'tickets'])
-            ->orderBy('start_at', 'asc');
+            ->orderBy('start_at');
 
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {

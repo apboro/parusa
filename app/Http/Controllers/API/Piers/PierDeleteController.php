@@ -33,11 +33,11 @@ class PierDeleteController extends ApiController
         try {
             $pier->delete();
         } catch (QueryException $exception) {
-            return APIResponse::error("Невозможно удалить причал \"{$name}\". Есть блокирующие связи.");
+            return APIResponse::error("Невозможно удалить причал \"$name\". Есть блокирующие связи.");
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response([], [], "Причал \"{$name}\" удалён");
+        return APIResponse::response([], [], "Причал \"$name\" удалён");
     }
 }

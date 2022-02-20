@@ -13,7 +13,6 @@ use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
-use JsonException;
 
 class TransactionsListController extends ApiController
 {
@@ -34,8 +33,6 @@ class TransactionsListController extends ApiController
      * @param ApiListRequest $request
      *
      * @return  JsonResponse
-     *
-     * @throws JsonException
      */
     public function list(APIListRequest $request): JsonResponse
     {

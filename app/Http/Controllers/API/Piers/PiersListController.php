@@ -10,8 +10,6 @@ use App\Models\Dictionaries\PiersStatus;
 use App\Models\Sails\Pier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
-use function cookie;
 
 class PiersListController extends ApiController
 {

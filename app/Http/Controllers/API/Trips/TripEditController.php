@@ -167,7 +167,7 @@ class TripEditController extends ApiEditController
         /** @var TripChain $chain */
         $chain = $trip->chains->first();
 
-        if ($mode !== 'single' && $chain === null) {
+        if ($chain === null && $mode !== 'single') {
             return APIResponse::error('Рейс не связан с другими рейсами.');
         }
 

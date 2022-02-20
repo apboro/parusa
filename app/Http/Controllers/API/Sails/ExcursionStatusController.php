@@ -33,13 +33,13 @@ class ExcursionStatusController extends ApiController
             $excursion->setStatus((int)$request->input('status_id'));
             $excursion->save();
         } catch (WrongExcursionStatusException $e) {
-            return APIResponse::error("Неверный статус экскурсии \"{$name}\"");
+            return APIResponse::error("Неверный статус экскурсии \"$name\"");
         }
 
         return APIResponse::response([
             'status' => $excursion->status->name,
             'status_id' => $excursion->status_id,
             'active' => $excursion->hasStatus(ExcursionStatus::active),
-        ], [], "Статус экскурсии \"{$name}\" обновлён");
+        ], [], "Статус экскурсии \"$name\" обновлён");
     }
 }

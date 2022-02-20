@@ -57,7 +57,7 @@ class TripDeleteController extends ApiController
                     $trip->delete();
                 });
             } catch (QueryException $exception) {
-                return APIResponse::error("Невозможно удалить рейс №{$id}. Есть блокирующие связи.");
+                return APIResponse::error("Невозможно удалить рейс №$id. Есть блокирующие связи.");
             } catch (Exception $exception) {
                 return APIResponse::error($exception->getMessage());
             }
@@ -81,7 +81,7 @@ class TripDeleteController extends ApiController
                 }
             }
 
-            return APIResponse::formSuccess("Рейс №{$id} удалён." . (isset($newChainTripsCount) ? " $newChainTripsCount рейсов перенесено в новую цепочку." : ''));
+            return APIResponse::formSuccess("Рейс №$id удалён." . (isset($newChainTripsCount) ? " $newChainTripsCount рейсов перенесено в новую цепочку." : ''));
         }
 
         // Delete chained trips

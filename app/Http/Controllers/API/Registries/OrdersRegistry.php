@@ -76,7 +76,7 @@ class OrdersRegistry extends ApiController
             });
         }
 
-        $orders = $query->paginate($request->perPage(10));
+        $orders = $query->paginate($request->perPage());
 
         /** @var LengthAwarePaginator $orders */
         $orders->transform(function (Order $order) {

@@ -33,11 +33,11 @@ class ExcursionDeleteController extends ApiController
         try {
             $excursion->delete();
         } catch (QueryException $exception) {
-            return APIResponse::error("Невозможно удалить экскурсию \"{$name}\". Есть блокирующие связи.");
+            return APIResponse::error("Невозможно удалить экскурсию \"$name\". Есть блокирующие связи.");
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response([], [], "Экскурсия \"{$name}\" удалена");
+        return APIResponse::response([], [], "Экскурсия \"$name\" удалена");
     }
 }

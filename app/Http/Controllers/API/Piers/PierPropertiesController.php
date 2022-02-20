@@ -45,6 +45,6 @@ class PierPropertiesController extends ApiController
             'status' => $pier->status->name,
             'status_id' => $pier->status_id,
             'active' => $pier->hasStatus(PiersStatus::active),
-        ], "Данные причала \"{$pier->name}\" обновлёны");
+        ], "Данные причала \"$pier->name\" обновлёны");
     }
 }

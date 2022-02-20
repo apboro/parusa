@@ -50,11 +50,11 @@ class Pier extends Model implements Statusable, AsDictionary
      *
      * @return  void
      *
-     * @throws \App\Exceptions\Piers\WrongPierStatusException
+     * @throws WrongPierStatusException
      */
     public function setStatus($status, bool $save = true): void
     {
-        $this->checkAndSetStatus(PiersStatus::class, $status, \App\Exceptions\Piers\WrongPierStatusException::class, $save);
+        $this->checkAndSetStatus(PiersStatus::class, $status, WrongPierStatusException::class, $save);
     }
 
     /**

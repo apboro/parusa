@@ -45,13 +45,13 @@ class StaffStatusController extends ApiController
             $position->save();
             $position->load('status');
         } catch (WrongPositionStatusException $e) {
-            return APIResponse::error("Неверный статус трудоустройства сотрудника \"{$name}\"");
+            return APIResponse::error("Неверный статус трудоустройства сотрудника \"$name\"");
         }
 
         return APIResponse::response([
             'status' => $position->status->name,
             'status_id' => $position->status_id,
             'active' => $position->hasStatus(PositionStatus::active),
-        ], [], "Статус трудоустройства сотрудника \"{$name}\" обновлён");
+        ], [], "Статус трудоустройства сотрудника \"$name\" обновлён");
     }
 }

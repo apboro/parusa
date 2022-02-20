@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
-use JsonException;
 
 class PartnersListController extends ApiController
 {
@@ -35,8 +34,6 @@ class PartnersListController extends ApiController
      * @param ApiListRequest $request
      *
      * @return  JsonResponse
-     *
-     * @throws JsonException
      */
     public function list(APIListRequest $request): JsonResponse
     {

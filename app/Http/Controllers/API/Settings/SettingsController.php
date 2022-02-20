@@ -42,7 +42,7 @@ class SettingsController extends ApiEditController
      */
     public function getGeneral(Request $request): JsonResponse
     {
-        return $this->get($request, 'general');
+        return $this->get('general');
     }
 
     /**
@@ -60,12 +60,11 @@ class SettingsController extends ApiEditController
     /**
      * Get settings for section.
      *
-     * @param Request $request
      * @param string $section
      *
      * @return  JsonResponse
      */
-    protected function get(Request $request, string $section): JsonResponse
+    protected function get(string $section): JsonResponse
     {
         $values = [];
 

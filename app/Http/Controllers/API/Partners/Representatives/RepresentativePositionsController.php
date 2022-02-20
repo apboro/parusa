@@ -107,7 +107,7 @@ class RepresentativePositionsController extends ApiEditController
     {
         $id = $request->input('id');
 
-        if ($id === null || null === ($user = User::query()
+        if ($id === null || null === (User::query()
                 ->with(['positions'])
                 ->where('id', $id)
                 ->first())

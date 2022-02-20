@@ -19,7 +19,7 @@ class DictionaryEditController extends ApiEditController
      */
     public function index(): JsonResponse
     {
-        return APIResponse::response(array_map(function ($item) {
+        return APIResponse::response(array_map(static function ($item) {
             return $item['name'];
         }, $this->dictionaries), []);
     }
@@ -36,7 +36,7 @@ class DictionaryEditController extends ApiEditController
         $name = $request->input('name');
 
         if (!array_key_exists($name, $this->dictionaries)) {
-            return APIResponse::notFound("Словарь {$name} не найден.");
+            return APIResponse::notFound("Словарь $name не найден.");
         }
 
         /** @var AbstractDictionary $class */
@@ -66,7 +66,7 @@ class DictionaryEditController extends ApiEditController
         $name = $request->input('name');
 
         if (!array_key_exists($name, $this->dictionaries)) {
-            return APIResponse::notFound("Словарь {$name} не найден.");
+            return APIResponse::notFound("Словарь $name не найден.");
         }
 
         /** @var AbstractDictionary $class */
@@ -78,7 +78,7 @@ class DictionaryEditController extends ApiEditController
             $class::query()->where('id', $item['id'])->update(['order' => $item['order'], 'enabled' => $item['enabled']]);
         }
 
-        return APIResponse::response([], [], "Справочник {$name} обновлён");
+        return APIResponse::response([], [], "Справочник $name обновлён");
     }
 
     /**
@@ -91,7 +91,7 @@ class DictionaryEditController extends ApiEditController
         $name = $request->input('name');
 
         if (!array_key_exists($name, $this->dictionaries)) {
-            return APIResponse::notFound("Словарь {$name} не найден.");
+            return APIResponse::notFound("Словарь $name не найден.");
         }
 
         /** @var AbstractDictionary $class */
@@ -113,7 +113,7 @@ class DictionaryEditController extends ApiEditController
         $item = $this->firstOrNew($class, $request);
 
         if ($item === null) {
-            return APIResponse::notFound("Запись в слваре \"{$title}\" не найдена");
+            return APIResponse::notFound("Запись в слваре \"$title\" не найдена");
         }
 
         foreach ($data as $key => $value) {
@@ -129,7 +129,7 @@ class DictionaryEditController extends ApiEditController
         $item->refresh();
 
         return APIResponse::formSuccess(
-            $item->wasRecentlyCreated ? "Запись в словаре \"{$title}\" добавлена" : "Запись в словаре \"{$title}\" обновлена",
+            $item->wasRecentlyCreated ? "Запись в словаре \"$title\" добавлена" : "Запись в словаре \"$title\" обновлена",
             $item->toArray()
         );
     }

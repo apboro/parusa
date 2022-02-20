@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\Dictionary;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\AbstractDictionary;
-use App\Models\Sails\Pier;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -28,7 +27,7 @@ class DictionaryDeleteController extends ApiController
         $name = $request->input('name');
 
         if (!array_key_exists($name, $this->dictionaries)) {
-            return APIResponse::notFound("Словарь {$name} не найден.");
+            return APIResponse::notFound("Словарь $name не найден.");
         }
 
         /** @var AbstractDictionary $class */
@@ -36,24 +35,24 @@ class DictionaryDeleteController extends ApiController
         $title = $this->dictionaries[$name]['name'];
 
         if (null === ($item = $class::query()->where('id', $id)->first())) {
-            return APIResponse::notFound("Запись в словаре {$title} не найдена.");
+            return APIResponse::notFound("Запись в словаре $title не найдена.");
         }
         /** @var AbstractDictionary $item */
 
         $name = $item->name;
 
         if($item->getAttribute('locked') === true) {
-            return APIResponse::error("Запись \"{$name}\" в словаре \"{$title}\" является системной.");
+            return APIResponse::error("Запись \"$name\" в словаре \"$title\" является системной.");
         }
 
         try {
             $class::query()->where('id', $id)->delete();
         } catch (QueryException $exception) {
-            return APIResponse::error("Невозможно удалить запись \"{$name}\" в словаре \"{$title}\". Есть блокирующие связи.");
+            return APIResponse::error("Невозможно удалить запись \"$name\" в словаре \"$title\". Есть блокирующие связи.");
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response([], [], "Запись \"{$name}\" в словаре \"{$title}\" удалёна");
+        return APIResponse::response([], [], "Запись \"$name\" в словаре \"{$title}\" удалёна");
     }
 }
