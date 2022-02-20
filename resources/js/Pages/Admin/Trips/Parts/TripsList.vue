@@ -103,12 +103,15 @@
 
         <GuiPagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
-        <PopUp ref="status_popup" :title="popup_title"
-               :buttons="[{result: 'no', caption: 'Отмена', color: 'white'}, {result: 'yes', caption: 'OK', color: 'green'}]"
-               :manual="true"
+        <FormPopUp :title="form_title"
+                   :form="form"
+                   :options="{id: trip_id}"
+                   ref="popup"
         >
-            <DictionaryDropDown :dictionary="popup_dictionary" v-model="current_status" :name="'status'" :original="initial_status"/>
-        </PopUp>
+            <GuiContainer w-350px>
+                <FormDictionary v-if="dictionary !== null" :form="form" :name="'value'" :dictionary="dictionary" :fresh="true" :hide-title="true"/>
+            </GuiContainer>
+        </FormPopUp>
 
         <TripDeletePopup ref="trip_delete"/>
     </LoadingProgress>
@@ -116,8 +119,11 @@
 
 <script>
 import list from "@/Core/List";
-import LayoutPage from "@/Components/Layout/LayoutPage";
+import deleteEntry from "@/Mixins/DeleteEntry";
+import TripDeletePopup from "@/Pages/Admin/Trips/Parts/TripDeletePopup";
+
 import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
+import LoadingProgress from "@/Components/LoadingProgress";
 import LayoutFilters from "@/Components/Layout/LayoutFilters";
 import LayoutFiltersItem from "@/Components/Layout/LayoutFiltersItem";
 import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown";
@@ -132,10 +138,10 @@ import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
 import IconExclamation from "@/Components/Icons/IconExclamation";
 import IconLink from "@/Components/Icons/IconLink";
-import PopUp from "@/Components/PopUp";
-import deleteEntry from "@/Mixins/DeleteEntry";
-import TripDeletePopup from "@/Pages/Admin/Trips/Parts/TripDeletePopup";
-import LoadingProgress from "@/Components/LoadingProgress";
+import FormPopUp from "@/Components/FormPopUp";
+import GuiContainer from "@/Components/GUI/GuiContainer";
+import FormDictionary from "@/Components/Form/FormDictionary";
+import form from "@/Core/Form";
 
 export default {
     props: {
@@ -146,35 +152,31 @@ export default {
     emits: ['setTitle', 'setStartPier'],
 
     components: {
+        FormDictionary,
+        GuiContainer,
+        FormPopUp,
         LoadingProgress,
-        TripDeletePopup,
-        PopUp,
-        IconLink,
-        IconExclamation,
-        ListTableCell,
-        ListTableRow,
-        ListTable,
-        GuiPagination,
-        GuiMessage,
-        IconForward,
-        IconBackward,
-        GuiIconButton,
-        InputDate,
+        LayoutFilters, LayoutFiltersItem,
         DictionaryDropDown,
-        LayoutFiltersItem,
-        LayoutFilters,
+        InputDate,
+        GuiIconButton, IconForward, IconBackward,
+        IconLink,
+        ListTableCell, ListTableRow, ListTable,
         GuiActionsMenu,
-        LayoutPage
+        IconExclamation,
+        GuiMessage,
+        GuiPagination,
+        TripDeletePopup,
     },
 
     mixins: [deleteEntry],
 
     data: () => ({
         list: list('/api/trips'),
-        popup_title: null,
-        popup_dictionary: null,
-        initial_status: null,
-        current_status: null,
+        form: form('', '/api/trips/properties'),
+        form_title: null,
+        dictionary: null,
+        trip_id: null,
     }),
 
     created() {
@@ -225,64 +227,33 @@ export default {
                     })
             }
         },
-
-        statusChange(trip) {
-            this.popup_title = 'Статус движения';
-            this.popup_dictionary = 'trip_statuses';
-            this.initial_status = Number(trip['status_id']);
-            this.current_status = this.initial_status;
-            this.genericStatusChange('/api/trips/status', trip['id'])
-                .then(data => {
-                    this.list.list.some((item, key) => {
+        showForm(trip, title, key, rules, dictionary = null) {
+            this.trip_id = trip['id'];
+            this.form_title = title;
+            this.form.reset();
+            this.form.set('name', key);
+            this.form.set('value', trip[key], rules, title, true);
+            this.dictionary = dictionary;
+            this.form.toaster = this.$toast;
+            this.form.load();
+            this.$refs.popup.show()
+                .then(response => {
+                    this.list.list.some((item, index) => {
                         if (item['id'] === trip['id']) {
-                            this.list.list[key]['status'] = data['status'];
-                            this.list.list[key]['status_id'] = data['status_id'];
+                            Object.keys(response.payload).map(key => {
+                                this.list.list[index][key] = response.payload[key];
+                            })
                             return true;
                         }
                         return false;
                     })
-                });
+                })
+        },
+        statusChange(trip) {
+            this.showForm(trip, 'Статус движения', 'status_id', 'required', 'trip_statuses');
         },
         saleStatusChange(trip) {
-            this.popup_title = 'Статус продаж';
-            this.popup_dictionary = 'trip_sale_statuses';
-            this.initial_status = Number(trip['sale_status_id']);
-            this.current_status = this.initial_status;
-            this.genericStatusChange('/api/trips/sale-status', trip['id'])
-                .then(data => {
-                    this.list.list.some((item, key) => {
-                        if (item['id'] === trip['id']) {
-                            this.list.list[key]['sale_status'] = data['status'];
-                            this.list.list[key]['sale_status_id'] = data['status_id'];
-                            return true;
-                        }
-                        return false;
-                    })
-                });
-        },
-        genericStatusChange(url, id) {
-            return new Promise((resolve, reject) => {
-                this.$refs.status_popup.show()
-                    .then(result => {
-                        if (result === 'yes') {
-                            this.$refs.status_popup.process(true);
-                            axios.post(url, {id: id, status_id: this.current_status})
-                                .then(response => {
-                                    this.$toast.success(response.data.message, 3000);
-                                    resolve(response.data.data);
-                                })
-                                .catch(error => {
-                                    this.$toast.error(error.response.data.message);
-                                    reject();
-                                })
-                                .finally(() => {
-                                    this.$refs.status_popup.hide();
-                                })
-                        } else {
-                            this.$refs.status_popup.hide();
-                        }
-                    });
-            });
+            this.showForm(trip, 'Статус продаж', 'sale_status_id', 'required', 'trip_sale_statuses');
         },
     },
 }
