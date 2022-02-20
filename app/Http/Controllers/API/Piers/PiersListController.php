@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Piers;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
@@ -8,8 +8,10 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\PiersStatus;
 use App\Models\Sails\Pier;
-use Illuminate\Support\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+use function cookie;
 
 class PiersListController extends ApiController
 {
@@ -37,33 +39,28 @@ class PiersListController extends ApiController
             ->orderBy('name');
 
         // apply filters
-        if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
-            if (!empty($filters['status_id'])) {
-                $query->where('status_id', $filters['status_id']);
-            }
+        if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey)) && !empty($filters['status_id'])) {
+            $query->where('status_id', $filters['status_id']);
         }
 
         // current page automatically resolved from request via `page` parameter
         $piers = $query->paginate($request->perPage(10, $this->rememberKey));
 
-        /** @var Collection $piers */
+        /** @var LengthAwarePaginator $piers */
         $piers->transform(function (Pier $pier) {
             return [
                 'active' => $pier->hasStatus(PiersStatus::active),
                 'id' => $pier->id,
-                'record' => [
-                    'name' => $pier->name,
-                    'status' => $pier->status->name,
-                ],
+                'name' => $pier->name,
+                'status' => $pier->status->name,
             ];
         });
 
-        return APIResponse::paginationListOld($piers, [
-            'name' => 'Название',
-            'status' => 'Статус',
-        ], [
-            'filters' => $filters,
-            'filters_original' => $this->defaultFilters,
-        ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
+        return APIResponse::list(
+            $piers, ['name' => 'Название', 'status' => 'Статус'],
+            $filters,
+            $this->defaultFilters,
+            []
+        )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }
