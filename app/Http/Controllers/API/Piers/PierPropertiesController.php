@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Piers;
 
-use App\Exceptions\Sails\WrongPierStatusException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\PiersStatus;
 use App\Models\Sails\Pier;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class PierStatusController extends ApiController
+class PierPropertiesController extends ApiController
 {
     /**
      * Update pier status.
@@ -19,28 +19,32 @@ class PierStatusController extends ApiController
      *
      * @return  JsonResponse
      */
-    public function setStatus(Request $request): JsonResponse
+    public function properties(Request $request): JsonResponse
     {
         $id = $request->input('id');
 
+        /** @var Pier $pier */
         if ($id === null || null === ($pier = Pier::query()->where('id', $id)->first())) {
             return APIResponse::notFound('Причал не найден');
         }
-        /** @var Pier $pier */
 
-        $name = $pier->name;
+        $name = $request->input('data.name');
+        $value = $request->input('data.value');
 
-        try {
-            $pier->setStatus((int)$request->input('status_id'));
-            $pier->save();
-        } catch (WrongPierStatusException $e) {
-            return APIResponse::error("Неверный статус причала \"{$name}\"");
+        if (!$value || $name !== 'status_id') {
+            return APIResponse::error('Неверно заданы параметры');
         }
 
-        return APIResponse::response([
+        try {
+            $pier->setStatus((int)$value);
+        } catch (Exception $exception) {
+            return APIResponse::error($exception->getMessage());
+        }
+
+        return APIResponse::response([], [
             'status' => $pier->status->name,
             'status_id' => $pier->status_id,
             'active' => $pier->hasStatus(PiersStatus::active),
-        ], [], "Статус причала \"{$name}\" обновлён");
+        ], "Данные причала \"{$pier->name}\" обновлёны");
     }
 }

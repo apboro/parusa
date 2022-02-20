@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Piers;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
@@ -10,9 +10,9 @@ use App\Models\Sails\Pier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class PierCardController extends ApiController
+class PierViewController extends ApiController
 {
-    public function get(Request $request): JsonResponse
+    public function view(Request $request): JsonResponse
     {
         $id = $request->input('id');
 

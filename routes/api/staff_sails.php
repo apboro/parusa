@@ -4,11 +4,6 @@ use App\Http\Controllers\API\Sails\ExcursionCardController;
 use App\Http\Controllers\API\Sails\ExcursionDeleteController;
 use App\Http\Controllers\API\Sails\ExcursionEditController;
 use App\Http\Controllers\API\Sails\ExcursionStatusController;
-use App\Http\Controllers\API\Sails\PierCardController;
-use App\Http\Controllers\API\Sails\PierDeleteController;
-use App\Http\Controllers\API\Sails\PierEditController;
-use App\Http\Controllers\API\Sails\PiersListController;
-use App\Http\Controllers\API\Sails\PierStatusController;
 use App\Http\Controllers\API\Sails\TripsSelectListController;
 use App\Http\Controllers\API\Tickets\ExcursionRatesController;
 use App\Http\Controllers\API\Tickets\ExcursionRatesDeleteController;
@@ -26,12 +21,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/piers', [PiersListController::class, 'list'])->middleware('auth:sanctum');
-Route::post('/piers/view', [PierCardController::class, 'get'])->middleware('auth:sanctum');
-Route::post('/piers/get', [PierEditController::class, 'get'])->middleware('auth:sanctum');
-Route::post('/piers/update', [PierEditController::class, 'update'])->middleware('auth:sanctum');
-Route::post('/piers/status', [PierStatusController::class, 'setStatus'])->middleware('auth:sanctum');
-Route::post('/piers/delete', [PierDeleteController::class, 'delete'])->middleware('auth:sanctum');
+
 
 
 Route::post('/excursions/view', [ExcursionCardController::class, 'get'])->middleware('auth:sanctum');

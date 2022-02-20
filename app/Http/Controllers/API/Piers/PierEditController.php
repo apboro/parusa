@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Piers;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
@@ -66,7 +66,7 @@ class PierEditController extends ApiEditController
             $this->rules,
             $this->titles,
             [
-                'title' => $pier->exists ? $pier->name : 'Добавление причала',
+                'name' => $pier->exists ? $pier->name : 'Добавление причала',
             ]
         );
     }
@@ -116,7 +116,7 @@ class PierEditController extends ApiEditController
             $pier->wasRecentlyCreated ? 'Причал добавлен' : 'Данные причала обновлены',
             [
                 'id' => $pier->id,
-                'title' => $pier->name,
+                'name' => $pier->name,
             ]
         );
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Piers;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;

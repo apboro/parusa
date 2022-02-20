@@ -2,7 +2,7 @@
 
 namespace App\Models\Sails;
 
-use App\Exceptions\Sails\WrongPierStatusException;
+use App\Exceptions\Piers\WrongPierStatusException;
 use App\Interfaces\Statusable;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
@@ -50,11 +50,11 @@ class Pier extends Model implements Statusable, AsDictionary
      *
      * @return  void
      *
-     * @throws WrongPierStatusException
+     * @throws \App\Exceptions\Piers\WrongPierStatusException
      */
     public function setStatus($status, bool $save = true): void
     {
-        $this->checkAndSetStatus(PiersStatus::class, $status, WrongPierStatusException::class, $save);
+        $this->checkAndSetStatus(PiersStatus::class, $status, \App\Exceptions\Piers\WrongPierStatusException::class, $save);
     }
 
     /**
