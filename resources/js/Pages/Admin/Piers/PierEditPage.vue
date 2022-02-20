@@ -7,42 +7,44 @@
         <GuiContainer mt-30>
             <FormString :form="form" :name="'name'"/>
             <FormDictionary :form="form" :dictionary="'pier_statuses'" :name="'status_id'" :fresh="true"/>
-<!--            <data-field-images :form="form" :name="'images'"/>-->
+            <FormImages :form="form" :name="'images'"/>
             <FormString :form="form" :name="'work_time'"/>
-<!--            <data-field-masked-input :form="form" :name="'phone'" :mask="'+7 (###) ###-##-##'"/>-->
+            <FormPhone :form="form" :name="'phone'"/>
             <FormString :form="form" :name="'address'"/>
             <FormString :form="form" :name="'latitude'"/>
             <FormString :form="form" :name="'longitude'"/>
-<!--            <data-field-text-area :form="form" :name="'description'"/>-->
-<!--            <data-field-text-area :form="form" :name="'way_to'"/>-->
+            <FormText :form="form" :name="'description'"/>
+            <FormText :form="form" :name="'way_to'"/>
         </GuiContainer>
 
         <GuiContainer mt-30>
             <GuiButton @click="save" :color="'green'">Сохранить</GuiButton>
             <GuiButton @click="cancel">Отмена</GuiButton>
         </GuiContainer>
-
     </LayoutPage>
-
-
-
 </template>
 
 <script>
 import form from "@/Core/Form";
 import LayoutPage from "@/Components/Layout/LayoutPage";
 import GuiContainer from "@/Components/GUI/GuiContainer";
-import GuiButton from "@/Components/GUI/GuiButton";
 import FormString from "@/Components/Form/FormString";
 import FormDictionary from "@/Components/Form/FormDictionary";
+import FormText from "@/Components/Form/FormText";
+import FormImages from "@/Components/Form/FormImages";
+import GuiButton from "@/Components/GUI/GuiButton";
+import FormPhone from "@/Components/Form/FormPhone";
 
 export default {
     components: {
-        FormDictionary,
-        FormString,
-        GuiButton,
-        GuiContainer,
+        FormPhone,
         LayoutPage,
+        GuiContainer,
+        FormString,
+        FormDictionary,
+        FormImages,
+        FormText,
+        GuiButton,
     },
 
     data: () => ({
@@ -69,13 +71,13 @@ export default {
                 return;
             }
             this.form.save({id: this.pierId})
-            .then(response => {
-                if (this.pierId === 0) {
-                    this.$router.push({name: 'pier-view', params: {id: response.payload['id']}});
-                } else {
-                    this.$router.push({name: 'pier-view', params: {id: this.pierId}});
-                }
-            })
+                .then(response => {
+                    if (this.pierId === 0) {
+                        this.$router.push({name: 'pier-view', params: {id: response.payload['id']}});
+                    } else {
+                        this.$router.push({name: 'pier-view', params: {id: this.pierId}});
+                    }
+                })
         },
         cancel() {
             if (this.pierId === 0) {
