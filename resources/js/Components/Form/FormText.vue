@@ -9,7 +9,7 @@
         :errors="errors"
         :required="required"
         :disabled="disabled"
-        :placeholder="placeholder"
+        :placeholder="title"
         :small="small"
         @change="change"
         ref="input"
@@ -24,7 +24,6 @@ export default {
     components: {FieldText},
     props: {
         disabled: {type: Boolean, default: false},
-        placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
     },
 

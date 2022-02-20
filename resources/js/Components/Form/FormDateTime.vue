@@ -15,7 +15,7 @@
         :to="to"
         :clearable="clearable"
         :pick-on-clear="pickOnClear"
-        :placeholder="placeholder"
+        :placeholder="title"
         :small="small"
         @change="change"
     />
@@ -32,7 +32,6 @@ export default {
         dateDisabled: {type: Boolean, default: false},
         timeDisabled: {type: Boolean, default: false},
 
-        placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
 
         from: {type: String, default: null},

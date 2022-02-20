@@ -9,7 +9,7 @@
         :errors="errors"
         :required="required"
         :disabled="disabled"
-        :placeholder="placeholder"
+        :placeholder="title"
         :step="step"
         :quantity="quantity"
         :small="small"
@@ -26,7 +26,6 @@ export default {
     components: {FieldNumber},
     props: {
         disabled: {type: Boolean, default: false},
-        placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
         step: {type: Number, default: 1},
         quantity: {type: Boolean, default: false},

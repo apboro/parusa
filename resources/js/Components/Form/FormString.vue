@@ -9,7 +9,7 @@
         :errors="errors"
         :required="required"
         :disabled="disabled"
-        :placeholder="placeholder"
+        :placeholder="title"
         :type="type"
         :autocomplete="autocomplete"
         :small="small"
@@ -26,7 +26,6 @@ export default {
     components: {FieldString},
     props: {
         disabled: {type: Boolean, default: false},
-        placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
         type: {type: String, default: 'text'},
         autocomplete: {type: String, default: 'off'},
