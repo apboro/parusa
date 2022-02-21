@@ -2,7 +2,7 @@
 
 namespace App\Models\Sails;
 
-use App\Exceptions\Sails\WrongExcursionStatusException;
+use App\Exceptions\Excursions\WrongExcursionStatusException;
 use App\Interfaces\Statusable;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
@@ -56,7 +56,7 @@ class Excursion extends Model implements Statusable, AsDictionary
      *
      * @return  void
      *
-     * @throws WrongExcursionStatusException
+     * @throws \App\Exceptions\Excursions\WrongExcursionStatusException
      */
     public function setStatus($status, bool $save = true): void
     {
