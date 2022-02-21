@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Excursions;
 
-use App\Exceptions\Sails\WrongExcursionStatusException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Sails\Excursion;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ExcursionStatusController extends ApiController
+class ExcursionPropertiesController extends ApiController
 {
     /**
      * Update excursion status.
@@ -19,27 +19,32 @@ class ExcursionStatusController extends ApiController
      *
      * @return  JsonResponse
      */
-    public function setStatus(Request $request): JsonResponse
+    public function properties(Request $request): JsonResponse
     {
         $id = $request->input('id');
 
+        /** @var Excursion $excursion */
         if ($id === null || null === ($excursion = Excursion::query()->where('id', $id)->first())) {
             return APIResponse::notFound('Экскурсия не найдена');
         }
-        /** @var Excursion $excursion */
-        $name = $excursion->name;
 
-        try {
-            $excursion->setStatus((int)$request->input('status_id'));
-            $excursion->save();
-        } catch (WrongExcursionStatusException $e) {
-            return APIResponse::error("Неверный статус экскурсии \"$name\"");
+        $name = $request->input('data.name');
+        $value = $request->input('data.value');
+
+        if (!$value || $name !== 'status_id') {
+            return APIResponse::error('Неверно заданы параметры');
         }
 
-        return APIResponse::response([
+        try {
+            $excursion->setStatus((int)$value);
+        } catch (Exception $exception) {
+            return APIResponse::error($exception->getMessage());
+        }
+
+        return APIResponse::response([], [
             'status' => $excursion->status->name,
             'status_id' => $excursion->status_id,
             'active' => $excursion->hasStatus(ExcursionStatus::active),
-        ], [], "Статус экскурсии \"$name\" обновлён");
+        ], "Данные экскурсии \"$excursion->name\" обновлёны");
     }
 }

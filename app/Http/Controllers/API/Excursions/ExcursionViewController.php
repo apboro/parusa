@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Excursions;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
@@ -11,9 +11,9 @@ use App\Models\Sails\Excursion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ExcursionCardController extends ApiController
+class ExcursionViewController extends ApiController
 {
-    public function get(Request $request): JsonResponse
+    public function view(Request $request): JsonResponse
     {
         $id = $request->input('id');
 

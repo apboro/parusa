@@ -12,9 +12,9 @@
 
         <LayoutRoutedTabs :tabs="{description: 'Описание причала', schedule: 'Расписание рейсов'}" @change="tab = $event"/>
 
-        <GuiHeading v-if="tab === 'schedule' && trips_title !== null" mt-15>{{ trips_title }}</GuiHeading>
-
         <PierInfo v-if="tab === 'description'" :data="data.data" :pier-id="pierId" :editable="true" @update="update"/>
+
+        <GuiHeading v-if="tab === 'schedule' && trips_title !== null" mt-15>{{ trips_title }}</GuiHeading>
         <TripsList v-if="tab === 'schedule'" :pier-id="pierId" @setTitle="trips_title = $event"/>
     </LayoutPage>
 </template>
