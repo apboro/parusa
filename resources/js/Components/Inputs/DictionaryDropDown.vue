@@ -63,7 +63,7 @@ export default {
             }
         },
         items() {
-            if (!this.ready) {
+            if (this.ready === null) {
                 return [];
             }
             return this.$store.getters['dictionary/dictionary'](this.dictionary);
