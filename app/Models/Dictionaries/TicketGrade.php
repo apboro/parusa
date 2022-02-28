@@ -10,6 +10,9 @@ namespace App\Models\Dictionaries;
  */
 class TicketGrade extends AbstractDictionary
 {
+    /** @var int The id of guide ticket grade */
+    public const guide = 1;
+
     /** @var string Referenced table */
     protected $table = 'dictionary_ticket_grades';
 

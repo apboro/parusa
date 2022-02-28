@@ -3,8 +3,10 @@
 namespace App\Models\Tickets;
 
 use App\Models\Model;
+use App\Models\Sails\Excursion;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -16,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Collection $rates
+ * @property Excursion $excursion
  */
 class TicketsRatesList extends Model
 {
@@ -36,5 +39,15 @@ class TicketsRatesList extends Model
     public function rates(): HasMany
     {
         return $this->hasMany(TicketRate::class, 'rate_id', 'id')->with('grade');
+    }
+
+    /**
+     * All grades for this rate.
+     *
+     * @return  BelongsTo
+     */
+    public function excursion(): BelongsTo
+    {
+        return $this->belongsTo(Excursion::class);
     }
 }
