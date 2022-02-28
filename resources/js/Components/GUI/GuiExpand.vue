@@ -37,7 +37,7 @@ $base_size_unit: 35px !default;
 $base_black_color: #1e1e1e !default;
 
 .expand {
-    display: flex !important;
+    display: inline-flex !important;
     justify-content: center;
     align-items: center;
     width: $base_size_unit;
