@@ -34,6 +34,7 @@ export default {
         async refresh({commit, state}, dictionary) {
 
             return new Promise(function (resolve, reject) {
+                commit('setDictionaryState', {name: dictionary, data: false});
                 let headers = {};
                 if (typeof state.timestamps[dictionary] !== "undefined" && state.timestamps[dictionary] !== null) {
                     headers['if-modified-since'] = state.timestamps[dictionary];

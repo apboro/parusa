@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Tickets;
+namespace App\Http\Controllers\API\Rates;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
@@ -12,30 +12,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
-class ExcursionRatesController extends ApiEditController
+class RateUpdateController extends ApiEditController
 {
-    /**
-     * Get rates for excursion.
-     *
-     * @param Request $request
-     *
-     * @return  JsonResponse
-     */
-    public function get(Request $request): JsonResponse
-    {
-        if (null === ($id = $request->input('id')) || null === ($excursion = Excursion::query()->with(['ratesLists', 'ratesLists.rates'])->where('id', $id)->first())) {
-            return APIResponse::notFound('Экскурсия не найдена');
-        }
-
-        /** @var Excursion $excursion */
-        $rates = $excursion->ratesLists->map(function (TicketsRatesList $ratesList) {
-            return $this->rateListToArray($ratesList);
-        });
-
-        return APIResponse::response($rates, [
-            'today' => Carbon::now()->format('d.m.Y'),
-        ]);
-    }
+    use RateToArray;
 
     /**
      * Update rate.
@@ -47,7 +26,7 @@ class ExcursionRatesController extends ApiEditController
     public function update(Request $request): JsonResponse
     {
         if (
-            null === ($excursionId = $request->input('excursionId')) ||
+            null === ($excursionId = $request->input('excursion_id')) ||
             null === (Excursion::query()->with('ratesLists')->where('id', $excursionId)->first())
         ) {
             return APIResponse::notFound('Экскурсия не найдена');
@@ -64,7 +43,7 @@ class ExcursionRatesController extends ApiEditController
         // make dynamic validation rules and check
         $count = count($data['rates'] ?? []);
         $rules = [
-            'start_at' => 'required|date|after_or_equal:' . Carbon::now()->format('Y-m-d'),
+            'start_at' => 'required|date',
             'end_at' => 'required|date|after:start_at',
         ];
         $titles = [
@@ -168,43 +147,8 @@ class ExcursionRatesController extends ApiEditController
 
         return APIResponse::formSuccess($ratesList->wasRecentlyCreated ? 'Тариф добавлен' : 'Тариф изменён',
             [
-                'rate' => $this->rateListToArray($ratesList),
-                'debug' => [
-                    'created' => $created,
-                    'changed' => $changed,
-                    'unchanged' => $unchanged,
-                    'deleted' => $deleted,
-                ],
+                'rate' => $this->rateToArray($ratesList, true),
             ]
         );
-    }
-
-    /**
-     * Format rates list for output.
-     *
-     * @param TicketsRatesList $ratesList
-     *
-     * @return  array
-     */
-    protected function rateListToArray(TicketsRatesList $ratesList): array
-    {
-        return [
-            'id' => $ratesList->id,
-            'start_at' => $ratesList->start_at->format('d.m.Y'),
-            'end_at' => $ratesList->end_at->format('d.m.Y'),
-            'caption' => $ratesList->caption,
-            'rates' => $ratesList->rates->map(static function (TicketRate $rate) {
-                return [
-                    'id' => $rate->id,
-                    'rate_id' => $rate->rate_id,
-                    'grade_id' => $rate->grade_id,
-                    'base_price' => $rate->base_price,
-                    'min_price' => $rate->min_price,
-                    'max_price' => $rate->max_price,
-                    'commission_type' => $rate->commission_type,
-                    'commission_value' => $rate->commission_value,
-                ];
-            }),
-        ];
     }
 }

@@ -10,11 +10,11 @@
             </GuiActionsMenu>
         </template>
 
-        <LayoutRoutedTabs :tabs="{description: 'Описание экскурсии',rates: 'Тарифы на билеты',schedule: 'Расписание'}" @change="tab = $event"/>
+        <LayoutRoutedTabs :tabs="{description: 'Описание экскурсии', rates: 'Тарифы на билеты', schedule: 'Расписание'}" @change="tab = $event"/>
 
         <ExcursionInfo v-if="tab === 'description'" :excursion-id="excursionId" :data="data.data" :editable="true" @update="update"/>
-        <!-- TODO refactor -->
-        <excursion-ticket-rates v-if="tab === 'rates'" :excursion-id="excursionId" :editable="true"/>
+
+        <ExcursionRates v-if="tab === 'rates'" :excursion-id="excursionId" :editable="true"/>
 
         <GuiHeading v-if="tab === 'schedule' && trips_title !== null" mt-15>{{ trips_title }}</GuiHeading>
         <TripsList v-if="tab === 'schedule'" :excursion-id="excursionId" @setTitle="trips_title = $event"/>
@@ -31,17 +31,17 @@ import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 
 import ExcursionInfo from "@/Pages/Admin/Excursions/Parts/ExcursionInfo";
-import ExcursionTicketRates from "../../../Parts/Sails/Excursions/ExcursionTicketRates";
 import GuiHeading from "@/Components/GUI/GuiHeading";
 import TripsList from "@/Pages/Admin/Trips/Parts/TripsList";
+import ExcursionRates from "@/Pages/Admin/Excursions/Parts/ExcursionRates";
 
 export default {
     components: {
+        ExcursionRates,
         GuiHeading,
         TripsList,
         GuiActionsMenu,
         LayoutPage,
-        ExcursionTicketRates,
         LayoutRoutedTabs,
         ExcursionInfo,
     },

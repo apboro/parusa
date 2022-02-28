@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Tickets;
+namespace App\Http\Controllers\API\Rates;
 
 use App\Models\Tickets\TicketsRatesList;
 use Illuminate\Http\Request;
@@ -10,7 +10,7 @@ use App\Http\Controllers\ApiController;
 use Exception;
 use Illuminate\Database\QueryException;
 
-class ExcursionRatesDeleteController extends ApiController
+class RateDeleteController extends ApiController
 {
     /**
      * Delete rates list.
