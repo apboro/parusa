@@ -154,12 +154,12 @@ export default {
             return this.form.is_loading || this.form.is_saving || !this.ready || this.loading_info;
         },
         ready() {
-            return this.$store.getters['dictionary/ready']('piers') &&
-                this.$store.getters['dictionary/ready']('ships') &&
-                this.$store.getters['dictionary/ready']('excursions') &&
-                this.$store.getters['dictionary/ready']('trip_statuses') &&
-                this.$store.getters['dictionary/ready']('trip_sale_statuses') &&
-                this.$store.getters['dictionary/ready']('trip_discount_statuses');
+            return this.$store.getters['dictionary/ready']('piers') !== null &&
+                this.$store.getters['dictionary/ready']('ships') !== null &&
+                this.$store.getters['dictionary/ready']('excursions') !== null &&
+                this.$store.getters['dictionary/ready']('trip_statuses') !== null &&
+                this.$store.getters['dictionary/ready']('trip_sale_statuses') !== null &&
+                this.$store.getters['dictionary/ready']('trip_discount_statuses') !== null;
         },
         buttonCount() {
             if (!this.edit_chained && this.create_mode === 'single') {
