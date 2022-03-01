@@ -11,7 +11,9 @@ use App\Interfaces\Typeable;
 use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TripSaleStatus;
+use App\Models\Dictionaries\TripStatus;
 use App\Models\Model;
 use App\Models\Partner\Partner;
 use App\Models\Positions\Position;
@@ -156,14 +158,21 @@ class Order extends Model implements Statusable, Typeable
     }
 
     /**
-     * @param int $typeId
-     * @param Ticket[] $tickets
-     * @param int $statusId
-     * @param int $partnerId
-     * @param int|null $positionId
-     * @param string|null $email
-     * @param string|null $name
-     * @param string|null $phone
+     * Order factory.
+     *
+     * @param int $typeId Order initiator
+     * @see OrderType
+     * @param Ticket[] $tickets Array of tickets to order
+     * @see Ticket
+     * @param int $statusId Order initial status
+     * @see OrderStatus
+     * @param int $partnerId Partner ID
+     * @see Partner
+     * @param int|null $positionId Position of partner made this order (or null)
+     * @see Position
+     * @param string|null $email Buyer details
+     * @param string|null $name Buyer details
+     * @param string|null $phone Buyer details
      *
      * @return  Order
      */
@@ -181,12 +190,18 @@ class Order extends Model implements Statusable, Typeable
         // check tickets
         foreach ($tickets as $ticket) {
             // check trip and rate
+            $trip = $ticket->trip;
+            $rateList = $trip ? $trip->getRate() : null;
+            /** @var TicketRate $rate */
+            $rate = $rateList ? $rateList->rates()->where('grade_id', $ticket->grade_id)->first() : null;
+
             if (
-                ($trip = $ticket->trip) === null ||
-                $trip->start_at < $now ||
-                !$trip->hasStatus(TripSaleStatus::selling, 'sale_status_id') ||
-                ($rate = $trip->getRate()) === null ||
-                $rate->rates()->where('grade_id', $ticket->grade_id)->count() === 0
+                $trip === null
+                || $trip->start_at < $now
+                || $rate === null
+                || ($rate->base_price <= 0 && $rate->grade_id !== TicketGrade::guide)
+                || !$trip->hasStatus(TripStatus::regular)
+                || !$trip->hasStatus(TripSaleStatus::selling, 'sale_status_id')
             ) {
                 throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ.');
             }
@@ -225,8 +240,6 @@ class Order extends Model implements Statusable, Typeable
         } catch (Exception $exception) {
             throw new WrongOrderException($exception->getMessage());
         }
-
-        // todo check order for collisions
 
         return $order;
     }

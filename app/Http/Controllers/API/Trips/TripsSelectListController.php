@@ -7,6 +7,7 @@ use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\ExcursionProgram;
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Sails\Trip;
@@ -84,6 +85,17 @@ class TripsSelectListController extends ApiController
         $trips->transform(function (Trip $trip) use ($date) {
             $excursion = $trip->excursion;
             $rateList = $excursion->rateForDate($date);
+            $rates = !$rateList ? [] : $rateList->rates
+                ->filter(function (TicketRate $rate) {
+                    return $rate->grade_id === TicketGrade::guide || $rate->base_price > 0;
+                })
+                ->map(function (TicketRate $rate) {
+                    return [
+                        'id' => $rate->grade->id,
+                        'name' => $rate->grade->name,
+                        'value' => $rate->base_price,
+                    ];
+                })->toArray();
 
             return [
                 'id' => $trip->id,
@@ -97,13 +109,7 @@ class TripsSelectListController extends ApiController
                 'pier' => $trip->startPier->name,
                 'tickets_count' => $trip->getAttribute('tickets_count'),
                 'tickets_total' => $trip->tickets_total,
-                'rates' => $rateList === null ? null : $rateList->rates->map(function (TicketRate $rate) {
-                    return [
-                        'id' => $rate->grade->id,
-                        'name' => $rate->grade->name,
-                        'value' => $rate->base_price,
-                    ];
-                }),
+                'rates' => array_values($rates),
                 'status' => $trip->status->name,
                 'status_id' => $trip->status_id,
                 'sale_status' => $trip->saleStatus->name,

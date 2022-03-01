@@ -106,7 +106,7 @@ export default {
     mixins: [deleteEntry],
 
     data: () => ({
-        data: data('/api/order/get'),
+        data: data('/api/cart'),
         form: form(null, '/api/order/make'),
     }),
 
@@ -164,7 +164,7 @@ export default {
         },
 
         remove(ticket_id) {
-            this.deleteEntry('Удалить билеты из заказа?', '/api/order/remove', {ticket_id: ticket_id})
+            this.deleteEntry('Удалить билеты из заказа?', '/api/cart/remove', {ticket_id: ticket_id})
                 .then(() => {
                     this.data.data['tickets'] = this.data.data['tickets'].filter(ticket => ticket['id'] !== ticket_id);
                     this.form.unset('tickets.' + ticket_id + '.quantity');

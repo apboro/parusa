@@ -11,7 +11,6 @@ use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\TicketStatus;
-use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Tickets\Order;
 use App\Models\Tickets\Ticket;
@@ -22,92 +21,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
-class OrderController extends ApiEditController
+class PartnerOrderController extends ApiEditController
 {
-    /**
-     * Get current order.
-     *
-     * @param Request $request
-     *
-     * @return  JsonResponse
-     */
-    public function get(Request $request): JsonResponse
-    {
-        $current = Currents::get($request);
-
-        if ($current->isStaff()) {
-            return APIResponse::error('Сотрудники не могут оформлять заказы.');
-        }
-
-        if (($position = $current->position()) === null || $current->partner() === null) {
-            return APIResponse::error('Вы не являетесь представителем компании-партнёра.');
-        }
-
-        $tickets = $position->ordering()
-            ->with(['grade', 'trip', 'trip.excursion', 'trip.startPier'])
-            ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
-            ->leftJoin('dictionary_ticket_grades', 'dictionary_ticket_grades.id', '=', 'position_ordering_tickets.grade_id')
-            ->orderBy('trips.start_at')
-            ->orderBy('dictionary_ticket_grades.order')
-            ->select('position_ordering_tickets.*')
-            ->get();
-        $limits = [];
-
-        $tickets = $tickets->map(function (PositionOrderingTicket $ticket) use (&$limits) {
-            $trip = $ticket->trip;
-            if (!isset($limits[$trip->id])) {
-                $limits[$trip->id] = [
-                    'count' => $trip->tickets()->count(),
-                    'total' => $trip->tickets_total,
-                ];
-            }
-            return [
-                'id' => $ticket->id,
-                'trip_id' => $trip->id,
-                'trip_start_date' => $trip->start_at->format('d.m.Y'),
-                'trip_start_time' => $trip->start_at->format('H:i'),
-                'excursion' => $trip->excursion->name,
-                'pier' => $trip->startPier->name,
-                'grade' => $ticket->grade->name,
-                'base_price' => $price = $ticket->getPrice(),
-                'quantity' => $ticket->quantity,
-                'available' => ($price !== null) && $trip->hasStatus(TripSaleStatus::selling, 'sale_status_id') && ($trip->start_at > Carbon::now()),
-            ];
-        });
-
-        return APIResponse::response([
-            'tickets' => $tickets,
-            'limits' => $limits,
-            'can_reserve' => $current->partner()->profile->can_reserve_tickets,
-        ], []);
-    }
-
-    /**
-     * Remove ticket from current order.
-     *
-     * @param Request $request
-     *
-     * @return  JsonResponse
-     */
-    public function remove(Request $request): JsonResponse
-    {
-        $current = Currents::get($request);
-
-        if ($current->isStaff()) {
-            return APIResponse::error('Сотрудники не могут оформлять заказы.');
-        }
-
-        if (($position = $current->position()) === null || $current->partner() === null) {
-            return APIResponse::error('Вы не являетесь представителем компании-партнёра.');
-        }
-
-        $id = $request->input('ticket_id');
-
-        PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id])->delete();
-
-        return APIResponse::formSuccess('Билет удалён из заказа.');
-    }
-
     /**
      * Make order.
      *
