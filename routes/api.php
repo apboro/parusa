@@ -1,11 +1,5 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-*/
-
 use App\Http\Controllers\API\NotFoundController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +9,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     require base_path('routes/api/trips.php');
     require base_path('routes/api/piers.php');
     require base_path('routes/api/rates.php');
+    require base_path('routes/api/cart.php');
     require base_path('routes/api/account.php');
     require base_path('routes/api/staff_company.php');
     require base_path('routes/api/staff_settings.php');

@@ -1,6 +1,5 @@
 import NotFound from "../../Pages/NotFound";
 import PartnerSelfPage from "../../Pages/Partner/PartnerSelfPage";
-import TicketsSelect from "../../Pages/Partner/TicketsSelect";
 import Account from "../../Pages/Partner/Account";
 import OrdersRegistryPage from "../../Pages/Partner/Registries/OrdersRegistryPage";
 import TicketsRegistryPage from "../../Pages/Partner/Registries/TicketsRegistryPage";
@@ -9,8 +8,8 @@ import Rates from "../../Pages/Partner/Rates";
 import OrderPage from "@/Pages/Partner/OrderPage";
 
 export default [
-    {path: '/', name: 'home', component: TicketsSelect, meta: {title: 'Подбор билетов'}},
-    {path: '/', name: 'tickets-select', component: TicketsSelect, meta: {title: 'Подбор билетов'}},
+    {path: '/', name: 'home', component: () => import('@/Pages/Partner/TripsSelectPage'), meta: {title: 'Подбор билетов'}},
+    {path: '/', name: 'tickets-select', component: () => import('@/Pages/Partner/TripsSelectPage'), meta: {title: 'Подбор билетов'}},
 
     {path: '/settings', name: 'settings', component: () => import('@/Pages/Partner/SettingsPage'), meta: {title: 'Настройки'}},
 

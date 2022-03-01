@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Tickets;
+namespace App\Http\Controllers\API\Cart;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
@@ -15,7 +15,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
-class TripTicketsAddController extends ApiEditController
+class TicketsAddController extends ApiEditController
 {
     /**
      * Add tickets to cart.
@@ -37,7 +37,7 @@ class TripTicketsAddController extends ApiEditController
         }
 
         if (
-            null === ($tripId = $request->input('data.trip_id')) ||
+            null === ($tripId = $request->input('trip_id')) ||
             null === ($trip = Trip::query()->where('id', $tripId)->first())
         ) {
             return APIResponse::notFound('Рейс не найден');
