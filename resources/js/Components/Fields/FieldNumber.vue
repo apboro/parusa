@@ -8,6 +8,8 @@
             :disabled="disabled"
             :step="step"
             :quantity="quantity"
+            :min="min"
+            :max="max"
             :placeholder="placeholder"
             :small="small"
             @change="change"
@@ -39,6 +41,8 @@ export default {
 
         step: {type: Number, default: 1},
         quantity: {type: Boolean, default: false},
+        min: {type: Number, default: null},
+        max: {type: Number, default: null},
     },
 
     emits: ['update:modelValue', 'change'],

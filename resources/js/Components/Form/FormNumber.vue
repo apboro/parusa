@@ -12,6 +12,8 @@
         :placeholder="title"
         :step="step"
         :quantity="quantity"
+        :min="min"
+        :max="max"
         :small="small"
         @change="change"
         ref="input"
@@ -29,6 +31,8 @@ export default {
         small: {type: Boolean, default: false},
         step: {type: Number, default: 1},
         quantity: {type: Boolean, default: false},
+        min: {type: Number, default: null},
+        max: {type: Number, default: null},
     },
 
     mixins: [FormMixin],

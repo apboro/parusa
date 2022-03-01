@@ -46,6 +46,9 @@ export default {
 
         placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
+
+        min: {type: Number, default: null},
+        max: {type: Number, default: null},
     },
 
     emits: ['update:modelValue', 'change'],
@@ -68,14 +71,14 @@ export default {
         },
 
         decrease() {
-            if (this.disabled) return;
+            if (this.disabled || this.min !== null && (this.min > this.modelValue - this.step)) return;
             this.$refs.input.focus();
             this.$emit('update:modelValue', this.modelValue - this.step);
             this.$emit('change', this.modelValue - this.step, this.name);
         },
 
         increase() {
-            if (this.disabled) return;
+            if (this.disabled || this.max !== null && (this.max < this.modelValue + this.step)) return;
             this.$refs.input.focus();
             this.$emit('update:modelValue', this.modelValue + this.step);
             this.$emit('change', this.modelValue + this.step, this.name);
