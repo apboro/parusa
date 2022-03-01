@@ -51,11 +51,11 @@ class RateUpdateController extends ApiEditController
             'end_at' => 'Окончание действия тарифа',
         ];
         for ($i = 0; $i < $count; $i++) {
-            $rules["rates.$i.base_price"] = 'required|integer|min:0|bail';
-            $rules["rates.$i.min_price"] = 'required|integer|min:0|bail';
-            $rules["rates.$i.max_price"] = "required|integer|gte:rates.$i.base_price|min:0|bail";
+            $rules["rates.$i.base_price"] = 'required|numeric|min:0|bail';
+            $rules["rates.$i.min_price"] = 'required|numeric|min:0|bail';
+            $rules["rates.$i.max_price"] = "required|numeric|gte:rates.$i.base_price|min:0|bail";
             $rules["rates.$i.commission_type"] = 'required';
-            $rules["rates.$i.commission_value"] = 'required|integer|min:0|bail';
+            $rules["rates.$i.commission_value"] = 'required|numeric|min:0|bail';
             $titles["rates.$i.base_price"] = 'Базовая цена';
             $titles["rates.$i.min_price"] = 'Минимальная';
             $titles["rates.$i.max_price"] = 'Максимальная';

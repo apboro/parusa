@@ -202,7 +202,7 @@ export default {
     },
 
     methods: {
-        dateChanged(name, value) {
+        dateChanged(value) {
             if (value !== null) {
                 this.list.load();
             }

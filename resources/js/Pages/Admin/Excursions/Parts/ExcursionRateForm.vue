@@ -142,11 +142,6 @@ export default {
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
 $base_black_color: #1e1e1e !default;
 
-$list_table_border_color: #e3e3e3 !default;
-$list_table_hover_background_color: #eaf5ff !default;
-$list_table_odd_background_color: #ffffff !default;
-$list_table_even_background_color: #f9f8f8 !default;
-
 .excursion-rate-table {
     font-size: 14px;
     font-family: $project_font;
