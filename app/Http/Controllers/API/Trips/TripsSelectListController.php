@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Trips;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
@@ -8,6 +8,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\TripSaleStatus;
+use App\Models\Dictionaries\TripStatus;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
 use Carbon\Carbon;
@@ -41,23 +42,24 @@ class TripsSelectListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
-        $this->defaultFilters['date'] = Carbon::now()->format('d.m.Y');
+        $this->defaultFilters['date'] = Carbon::now()->format('Y-m-d');
 
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $date = Carbon::parse($filters['date'] ?? null);
+
         $now = Carbon::now();
 
         $query = Trip::query()
-            ->with(['startPier', 'excursion', 'excursion.programs'])
+            ->with(['startPier', 'excursion', 'excursion.programs', 'excursion.ratesLists'])
             ->withCount(['tickets'])
+            // filter actual trips
+            ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
             ->whereDate('start_at', $date)
             ->where('start_at', '>', $now)
             ->whereHas('excursion.ratesLists', function (Builder $query) use ($date) {
-                $query
-                    ->whereDate('start_at', '<=', $date)
-                    ->whereDate('end_at', '>=', $date);
+                $query->whereDate('start_at', '<=', $date)->whereDate('end_at', '>=', $date);
             });
 
         // apply filters
