@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class TicketsRegistry extends ApiController
+class TicketsRegistryController extends ApiController
 {
     protected array $defaultFilters = [
         'date_from' => null,

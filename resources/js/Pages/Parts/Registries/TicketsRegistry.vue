@@ -94,7 +94,6 @@ import list from "@/Core/List";
 import LoadingProgress from "@/Components/LoadingProgress";
 import LayoutFilters from "@/Components/Layout/LayoutFilters";
 import LayoutFiltersItem from "@/Components/Layout/LayoutFiltersItem";
-import BaseDateInput from "@/Components/Base/BaseDateInput";
 import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown";
 import InputSearch from "@/Components/Inputs/InputSearch";
 import ListTable from "@/Components/ListTable/ListTable";
@@ -122,7 +121,6 @@ export default {
         ListTable,
         InputSearch,
         DictionaryDropDown,
-        BaseDateInput,
         LayoutFiltersItem,
         LayoutFilters,
         LoadingProgress

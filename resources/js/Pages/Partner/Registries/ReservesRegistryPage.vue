@@ -1,24 +1,17 @@
 <template>
-    <page>
-        <template v-slot:header>
-            <page-title-bar :title="$route.meta['title']"/>
-        </template>
-
-        <reserves-registry/>
-    </page>
+    <LayoutPage :title="$route.meta['title']">
+        <ReservesRegistry/>
+    </LayoutPage>
 </template>
 
 <script>
-
-import Page from "../../../Layouts/Page";
-import PageTitleBar from "../../../Layouts/Parts/PageTitleBar";
-import ReservesRegistry from "../../Admin/Registries/Parts/ReservesRegistry";
+import LayoutPage from "@/Components/Layout/LayoutPage";
+import ReservesRegistry from "@/Pages/Parts/Registries/ReservesRegistry";
 
 export default {
     components: {
         ReservesRegistry,
-        PageTitleBar,
-        Page
+        LayoutPage
     },
 }
 </script>

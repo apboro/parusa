@@ -3,19 +3,19 @@
 
         <LayoutFilters>
             <LayoutFiltersItem :title="'Период'">
-                <base-date-input
+                <InputDate
                     v-model="list.filters['date_from']"
                     :original="list.filters_original['date_from']"
-                    @changed="list.load()"
+                    @change="list.load()"
                 />
-                <base-date-input
+                <InputDate
                     v-model="list.filters['date_to']"
                     :original="list.filters_original['date_to']"
-                    @changed="list.load()"
+                    @change="list.load()"
                 />
             </LayoutFiltersItem>
             <template #search>
-                <LayoutFiltersItem :title="'Поиск по номеру заказа, билета'">
+                <LayoutFiltersItem :title="'Поиск по номеру заказа, брони'">
                     <InputSearch v-model="list.search" @change="list.load()"/>
                 </LayoutFiltersItem>
             </template>
@@ -112,7 +112,7 @@ import GuiMessage from "@/Components/GUI/GuiMessage";
 import GuiPagination from "@/Components/GUI/GuiPagination";
 import PopUp from "@/Components/PopUp";
 import GuiValue from "@/Components/GUI/GuiValue";
-import BaseDateInput from "@/Components/Base/BaseDateInput";
+import InputDate from "@/Components/Inputs/InputDate";
 
 export default {
     props: {
@@ -120,7 +120,7 @@ export default {
     },
 
     components: {
-        BaseDateInput,
+        InputDate,
         LoadingProgress,
         LayoutFilters,
         LayoutFiltersItem,

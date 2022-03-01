@@ -1,24 +1,17 @@
 <template>
-    <page>
-        <template v-slot:header>
-            <page-title-bar :title="$route.meta['title']"/>
-        </template>
-
-        <order-registry/>
-    </page>
+    <LayoutPage :title="$route.meta['title']">
+        <OrderRegistry/>
+    </LayoutPage>
 </template>
 
 <script>
-
-import Page from "../../../Layouts/Page";
-import PageTitleBar from "../../../Layouts/Parts/PageTitleBar";
-import OrderRegistry from "../../Admin/Registries/Parts/OrderRegistry";
+import LayoutPage from "@/Components/Layout/LayoutPage";
+import OrderRegistry from "@/Pages/Parts/Registries/OrderRegistry";
 
 export default {
     components: {
         OrderRegistry,
-        PageTitleBar,
-        Page
+        LayoutPage,
     },
 }
 </script>

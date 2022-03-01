@@ -25,7 +25,7 @@ import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 import TripInfo from "@/Pages/Admin/Trips/Parts/TripInfo";
 import DeleteEntry from "@/Mixins/DeleteEntry";
-import TicketsRegistry from "@/Pages/Admin/Registries/Parts/TicketsRegistry";
+import TicketsRegistry from "@/Pages/Parts/Registries/TicketsRegistry";
 
 export default {
     components: {

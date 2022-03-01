@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class ReservesRegistry extends ApiController
+class ReservesRegistryController extends ApiController
 {
     protected array $defaultFilters = [
         'date_from' => null,
@@ -38,8 +38,8 @@ class ReservesRegistry extends ApiController
     {
         $current = Currents::get($request);
 
-        $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('d.m.Y');
-        $this->defaultFilters['date_to'] = Carbon::now()->format('d.m.Y');
+        $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('Y-m-d');
+        $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d');
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $query = Order::query()
@@ -111,7 +111,7 @@ class ReservesRegistry extends ApiController
 
         return APIResponse::list(
             $orders,
-            ['№ заказа', 'Дата бронирования', 'Информация о брони', 'Билетов в брони', 'Стоимость брони', 'Бронь действует до'],
+            ['№ брони', 'Дата бронирования', 'Информация о брони', 'Билетов в брони', 'Стоимость брони', 'Бронь действует до'],
             $filters,
             $this->defaultFilters,
             []

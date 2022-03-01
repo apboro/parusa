@@ -1,14 +1,16 @@
 <?php
 
-use App\Http\Controllers\API\Registries\OrdersRegistry;
-use App\Http\Controllers\API\Registries\ReservesRegistry;
-use App\Http\Controllers\API\Registries\TicketsRegistry;
+use App\Http\Controllers\API\Registries\OrdersRegistryItemController;
+use App\Http\Controllers\API\Registries\OrdersRegistryController;
+use App\Http\Controllers\API\Registries\ReservesRegistryController;
+use App\Http\Controllers\API\Registries\TicketsRegistryItemController;
+use App\Http\Controllers\API\Registries\TicketsRegistryController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/registries/orders', [OrdersRegistry::class, 'list']);
-Route::post('/registries/orders/tickets', [OrdersRegistry::class, 'tickets']);
+Route::post('/registries/orders', [OrdersRegistryController::class, 'list']);
+Route::post('/registries/order', [OrdersRegistryItemController::class, 'view']);
 
-Route::post('/registries/reserves', [ReservesRegistry::class, 'list']);
-Route::post('/registries/reserves/tickets', [ReservesRegistry::class, 'tickets']);
+Route::post('/registries/reserves', [ReservesRegistryController::class, 'list']);
 
-Route::post('/registries/tickets', [TicketsRegistry::class, 'list']);
+Route::post('/registries/tickets', [TicketsRegistryController::class, 'list']);
+Route::post('/registries/ticket', [TicketsRegistryItemController::class, 'view']);
