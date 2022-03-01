@@ -211,10 +211,11 @@ class TripEditController extends ApiEditController
         }
         // reattach edited to new chain
         // works in case date can not change
-        $earlierTripIds = $chain->trips()->whereDate('start_at', '<', $trip->start_at->startOfDay())->pluck('id')->toArray();
-        $laterTripIds = $chain->trips()->whereDate('start_at', '>', $to)->pluck('id')->toArray();
 
         if ($chain !== null) {
+            $earlierTripIds = $chain->trips()->whereDate('start_at', '<', $trip->start_at->startOfDay())->pluck('id')->toArray();
+            $laterTripIds = $chain->trips()->whereDate('start_at', '>', $to)->pluck('id')->toArray();
+
             if (count($earlierTripIds) === 1) {
                 $chain->trips()->detach($earlierTripIds);
                 if (count($laterTripIds) === 1) {
@@ -252,7 +253,7 @@ class TripEditController extends ApiEditController
                     $newChain->trips()->sync($laterTripIds);
                 }
             }
-            if($chain->trips()->count() === 0) {
+            if ($chain->trips()->count() === 0) {
                 $chain->delete();
             }
         }
