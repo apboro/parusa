@@ -1,37 +1,41 @@
 <template>
-    <page :title="$route.meta['title']" :loading="processing">
+    <LayoutPage :title="$route.meta['title']" :loading="processing">
         <template v-if="data.data && data.data['tickets'] && data.data['tickets'].length > 0">
             <GuiHeading mt-20 bold>Состав заказа</GuiHeading>
-            <table class="rates-table rates-table__border mt-20 w-100">
+            <table class="order-table">
                 <thead>
                 <tr>
-                    <th class="p-10">Дата</th>
-                    <th class="p-10">Время</th>
-                    <th class="p-10">Экскурсия</th>
-                    <th class="p-10">Причал</th>
-                    <th class="p-10">Тип билета</th>
-                    <th class="p-10">Цена</th>
-                    <th class="p-10">Количество</th>
-                    <th class="p-10">Стоимость</th>
+                    <th>Дата</th>
+                    <th>Время</th>
+                    <th>Экскурсия</th>
+                    <th>Причал</th>
+                    <th>Тип билета</th>
+                    <th class="w-110px">Цена</th>
+                    <th>Количество</th>
+                    <th class="w-110px">Стоимость</th>
                     <th></th>
                 </tr>
                 </thead>
                 <tr v-for="ticket in data.data['tickets']">
-                    <td class="p-10 va-middle">{{ ticket['trip_start_date'] }}</td>
-                    <td class="p-10 va-middle">{{ ticket['trip_start_time'] }}</td>
-                    <td class="p-10 va-middle">
+                    <td>{{ ticket['trip_start_date'] }}</td>
+                    <td>{{ ticket['trip_start_time'] }}</td>
+                    <td>
                         <div>{{ ticket['excursion'] }}</div>
                     </td>
-                    <td class="p-10 va-middle">{{ ticket['pier'] }}</td>
-                    <td class="p-10 va-middle">{{ ticket['grade'] }}</td>
-                    <td class="p-10 bold text-md no-wrap va-middle">{{ ticket['available'] ? ticket['base_price'] + ' руб.' : '—' }}</td>
-                    <td class="pt-5 va-middle">
-                        <data-field-input v-if="ticket['available']" :datasource="form" :name="'tickets.' + ticket['id'] + '.quantity'" :type="'number'"/>
-                        <div v-else class="text-red text-sm mt-5">Продажа билетов на этот рейс не осуществляется</div>
-                    </td>
-                    <td class="p-10 bold text-md no-wrap va-middle">
-                        {{ ticket['available'] ? (ticket['base_price'] * form.values['tickets.' + ticket['id'] + '.quantity']) + ' руб.' : '—' }}
-                    </td>
+                    <td>{{ ticket['pier'] }}</td>
+                    <td>{{ ticket['grade'] }}</td>
+                    <template v-if="ticket['available']">
+                        <td class="bold no-wrap">{{ ticket['base_price'] }} руб.</td>
+                        <td>
+                            <FormNumber :form="form" :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true" :min="0" :hide-title="true"/>
+                        </td>
+                        <td class="bold no-wrap">
+                            {{ multiply(ticket['base_price'], form.values['tickets.' + ticket['id'] + '.quantity']) }} руб.
+                        </td>
+                    </template>
+                    <template v-else>
+                        <td colspan="3" class="text-red text-sm mt-5">Продажа билетов на этот рейс не осуществляется</td>
+                    </template>
                     <td class="va-middle">
                         <GuiIconButton :title="'Удалить из заказа'" :border="false" :color="'red'" @click="remove(ticket['id'])">
                             <IconCross/>
@@ -45,16 +49,18 @@
                 <GuiHint mb-30>Информация предоставляется на случай, если поупателя нужно будет уведомить об отмене рейса или иных непредвиденных обстаятельствах. Не является
                     обязательной.
                 </GuiHint>
-                <data-field-input :datasource="form" :name="'name'"/>
-                <data-field-input :datasource="form" :name="'email'"/>
-                <data-field-masked-input :datasource="form" :name="'phone'" :mask="'+7 (###) ###-##-##'"/>
+                <FormString :form="form" :name="'name'"/>
+                <FormString :form="form" :name="'email'"/>
+                <FormPhone :form="form" :name="'phone'"/>
             </GuiContainer>
+
             <GuiContainer w-30 mt-30 inline>
                 <GuiButton @click="back">Вернуться к подбору билетов</GuiButton>
             </GuiContainer>
+
             <GuiContainer w-70 mt-30 inline text-right>
-                <GuiButton @click="reserve" :color="'green'" :disabled="hasUnavailable" v-if="data.data['can_reserve']">Оформить бронь</GuiButton>
-                <GuiButton @click="order" :color="'green'" :disabled="hasUnavailable">Оплатить с лицевого счёта</GuiButton>
+                <GuiButton @click="reserve" :color="'green'" :disabled="!canOrder" v-if="data.data['can_reserve']">Оформить бронь</GuiButton>
+                <GuiButton @click="order" :color="'green'" :disabled="!canOrder">Оплатить с лицевого счёта</GuiButton>
             </GuiContainer>
         </template>
         <template v-else>
@@ -63,43 +69,45 @@
                 <GuiButton @click="back">Вернуться к подбору билетов</GuiButton>
             </GuiContainer>
         </template>
-    </page>
+    </LayoutPage>
 </template>
 
 <script>
-import Page from "@/Layouts/Page";
 import data from "@/Core/Data";
+import form from "@/Core/Form";
+import LayoutPage from "@/Components/Layout/LayoutPage";
 import GuiMessage from "@/Components/GUI/GuiMessage";
 import GuiHeading from "@/Components/GUI/GuiHeading";
 import GuiHint from "@/Components/GUI/GuiHint";
 import GuiContainer from "@/Components/GUI/GuiContainer";
 import GuiButton from "@/Components/GUI/GuiButton";
-import formDataSource from "@/Helpers/Core/formDataSource";
-import DataFieldInput from "@/Components/DataFields/DataFieldInput";
-import DataFieldMaskedInput from "@/Components/DataFields/DataFieldMaskedInput";
 import GuiIconButton from "@/Components/GUI/GuiIconButton";
 import IconCross from "@/Components/Icons/IconCross";
 import deleteEntry from "@/Mixins/DeleteEntry";
+import FormString from "@/Components/Form/FormString";
+import FormPhone from "@/Components/Form/FormPhone";
+import FormNumber from "@/Components/Form/FormNumber";
 
 export default {
     components: {
+        FormNumber,
+        FormPhone,
+        FormString,
+        LayoutPage,
         IconCross,
         GuiIconButton,
-        DataFieldMaskedInput,
-        DataFieldInput,
         GuiButton,
         GuiContainer,
         GuiHint,
         GuiHeading,
         GuiMessage,
-        Page,
     },
 
     mixins: [deleteEntry],
 
     data: () => ({
         data: data('/api/order/get'),
-        form: formDataSource(null, '/api/order/make'),
+        form: form(null, '/api/order/make'),
     }),
 
     computed: {
@@ -114,14 +122,19 @@ export default {
             let total = 0;
             this.data.data['tickets'].map(ticket => {
                 if (ticket['available'] && !isNaN(ticket['base_price'])) {
-                    total += ticket['base_price'] * this.form.values['tickets.' + ticket['id'] + '.quantity'];
+                    total += this.multiply(ticket['base_price'], this.form.values['tickets.' + ticket['id'] + '.quantity']);
                 }
             });
-            return total + ' руб.';
+            return this.multiply(total, 1) + ' руб.';
         },
 
-        hasUnavailable() {
-            return this.data.data['tickets'].some(ticket => !ticket['available']);
+        canOrder() {
+            let hasUnavailable = this.data.data['tickets'].some(ticket => !ticket['available']);
+            let count = 0;
+            this.data.data['tickets'].map(ticket => {
+                count += this.form.values['tickets.' + ticket['id'] + '.quantity'];
+            });
+            return !hasUnavailable && count > 0;
         }
     },
 
@@ -133,16 +146,16 @@ export default {
     methods: {
         load() {
             this.data.load()
-                .then((data) => {
+                .then(data => {
                     this.form.reset();
-                    data['tickets'].map(ticket => {
-                        this.form.setField('tickets.' + ticket['id'] + '.quantity', ticket['quantity'], 'integer|min:0', 'Количество', true);
+                    data.data['tickets'].map(ticket => {
+                        this.form.set('tickets.' + ticket['id'] + '.quantity', ticket['quantity'], 'integer|min:0', 'Количество', true);
                     });
-                    this.form.setField('name', null, null, 'Имя', true);
-                    this.form.setField('email', null, 'email|nullable', 'Email', true);
-                    this.form.setField('phone', null, null, 'Телефон', true);
+                    this.form.set('name', null, null, 'Имя', true);
+                    this.form.set('email', null, 'email|nullable', 'Email', true);
+                    this.form.set('phone', null, null, 'Телефон', true);
 
-                    this.form.loaded = true;
+                    this.form.load();
                 });
         },
 
@@ -160,7 +173,7 @@ export default {
         },
 
         reserve() {
-            if (this.hasUnavailable) {
+            if (!this.canOrder) {
                 return;
             }
             this.$dialog.show('Добавить билеты в бронь?', 'question', 'orange', [
@@ -181,7 +194,7 @@ export default {
         },
 
         order() {
-            if (this.hasUnavailable) {
+            if (!this.canOrder) {
                 return;
             }
             this.$dialog.show('Оформить заказ и оплатить с лицевого счёта?', 'question', 'orange', [
@@ -200,6 +213,57 @@ export default {
                     }
                 });
         },
+
+        multiply(a, b) {
+            return Math.ceil(a * b * 100) / 100;
+        },
     },
 }
 </script>
+
+<style lang="scss" scoped>
+$project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
+$base_black_color: #1e1e1e !default;
+
+.order-table {
+    font-size: 14px;
+    font-family: $project_font;
+    border-collapse: collapse;
+    margin: 10px 0 0;
+    width: 100%;
+    color: $base_black_color;
+
+    & thead {
+        color: #424242;
+
+        & td {
+            vertical-align: middle;
+        }
+    }
+
+    & th {
+        text-align: left;
+        padding: 10px;
+        cursor: default;
+    }
+
+    & td {
+        vertical-align: middle;
+        padding: 0 10px;
+        cursor: default;
+    }
+
+    & .input-field {
+        width: 140px;
+    }
+
+    &:deep .input-number__input {
+        text-align: center;
+    }
+
+    & .input-field__errors-error {
+        font-size: 12px;
+    }
+
+}
+</style>
