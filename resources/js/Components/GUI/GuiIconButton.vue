@@ -1,5 +1,5 @@
 <template>
-    <div class="icon-button" :class="classProxy" @click.stop.prevent="click">
+    <div class="icon-button" :class="classProxy" @click.prevent="click">
         <slot/>
     </div>
 </template>
