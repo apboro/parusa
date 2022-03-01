@@ -28,12 +28,11 @@
         </GuiContainer>
 
         <template v-if="info.is_loaded && !isReserve">
-            <GuiContainer w-70 inline>
+            <GuiContainer>
                 <GuiButton @click="in_dew">Скачать билет в PDF</GuiButton>
                 <GuiButton @click="in_dew">Отправить клиенту на почту</GuiButton>
+                <GuiButton @click="in_dew">Отправить клиенту СМС</GuiButton>
                 <GuiButton @click="in_dew">Распечатать</GuiButton>
-            </GuiContainer>
-            <GuiContainer w-30 inline text-right>
                 <GuiButton @click="in_dew" :color="'red'">Оформить возврат</GuiButton>
             </GuiContainer>
         </template>
@@ -62,7 +61,7 @@ export default {
     },
 
     data: () => ({
-        info: data('/api/ticket/info'),
+        info: data('/api/registries/ticket'),
     }),
 
     computed: {

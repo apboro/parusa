@@ -2,10 +2,6 @@ import NotFound from "../../Pages/NotFound";
 
 import SettingsPage from "../../Pages/Admin/Settings/SettingsPage";
 
-import OrdersRegistryPage from "../../Pages/Admin/Registries/OrdersRegistryPage";
-import TicketsRegistryPage from "../../Pages/Admin/Registries/TicketsRegistryPage";
-import ReservesRegistryPage from "../../Pages/Admin/Registries/ReservesRegistryPage";
-
 import TicketRefundsListPage from "../../Pages/Admin/TicketRefundsListPage";
 import MobileSalesListPage from "../../Pages/Admin/MobileSalesListPage";
 
@@ -30,9 +26,11 @@ export default [
 
     {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки'}},
 
-    {path: '/registry/orders', name: 'orders-registry', component: OrdersRegistryPage, meta: {title: 'Реестр заказов'}},
-    {path: '/registry/tickets', name: 'tickets-registry', component: TicketsRegistryPage, meta: {title: 'Реестр билетов'}},
-    {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней'}},
+    {path: '/registry/orders', name: 'orders-registry', component: () => import('@/Pages/Admin/Registries/OrdersRegistryPage'), meta: {title: 'Реестр заказов'}},
+    {path: '/registry/orders/:id', name: 'order-info', component: () => import("@/Pages/Admin/Registries/OrderInfoPage"), meta: {title: 'Заказ'}},
+    {path: '/registry/tickets', name: 'tickets-registry', component: () => import('@/Pages/Admin/Registries/TicketsRegistryPage'), meta: {title: 'Реестр билетов'}},
+    {path: '/registry/tickets/:id', name: 'ticket-info', component: () => import("@/Pages/Admin/Registries/TicketInfoPage"), meta: {title: 'Билет'}},
+    {path: '/registry/reserves', name: 'reserves-registry', component: () => import('@/Pages/Admin/Registries/ReservesRegistryPage'), meta: {title: 'Реестр броней'}},
 
     {path: '/staff', name: 'staff-list', component: () => import('@/Pages/Admin/Staff/StaffListPage'), meta: {title: 'Сотрудники'}},
     {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника'}},
@@ -73,8 +71,7 @@ export default [
     /**
      * Order
      */
-    {path: '/order-info/:id', name: 'order-info', component: () => import("@/Pages/Admin/Order/OrderInfoPage"), meta: {title: 'Заказ'}},
-    {path: '/ticket-info/:id', name: 'ticket-info', component: () => import("@/Pages/Admin/Order/TicketInfoPage"), meta: {title: 'Билет'}},
+
 
     {path: '/test', name: 'test', component: TestPage, meta: {title: 'Страница для тестов'}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},

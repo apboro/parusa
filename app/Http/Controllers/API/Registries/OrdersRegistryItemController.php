@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Order;
+namespace App\Http\Controllers\API\Registries;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
@@ -12,9 +12,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class OrderCardController extends ApiController
+class OrdersRegistryItemController extends ApiController
 {
-    public function get(Request $request): JsonResponse
+    public function view(Request $request): JsonResponse
     {
         $current = Currents::get($request);
 

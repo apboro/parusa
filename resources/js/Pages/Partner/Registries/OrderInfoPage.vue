@@ -1,17 +1,17 @@
 <template>
-    <TicketInfo :ticket-id="ticketId"/>
+    <OrderInfo :order-id="orderId"/>
 </template>
 
 <script>
-import TicketInfo from "@/Parts/Order/TicketInfo";
+import OrderInfo from "@/Pages/Parts/Registries/OrderInfo";
 
 export default {
     components: {
-        TicketInfo,
+        OrderInfo,
     },
 
     computed: {
-        ticketId() {
+        orderId() {
             return Number(this.$route.params.id);
         },
     }

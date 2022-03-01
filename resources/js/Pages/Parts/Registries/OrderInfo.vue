@@ -8,7 +8,7 @@
 
         <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>
 
-        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']">
+        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve">
             <ListTableRow v-for="ticket in info.data['tickets']">
                 <ListTableCell>
                     <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
@@ -24,6 +24,13 @@
                 <ListTableCell>{{ ticket['grade'] }}</ListTableCell>
                 <ListTableCell>{{ ticket['base_price'] }} руб.</ListTableCell>
                 <ListTableCell>{{ ticket['status'] }}</ListTableCell>
+                <ListTableCell v-if="isReserve" class="va-middle">
+                    <div>
+                        <GuiIconButton :title="'Удалить из брони'" :border="false" :color="'red'" @click="in_dew">
+                            <IconCross/>
+                        </GuiIconButton>
+                    </div>
+                </ListTableCell>
             </ListTableRow>
             <ListTableRow :no-highlight="true">
                 <ListTableCell colspan="3"/>
@@ -43,12 +50,11 @@
 
         <template v-if="info.is_loaded">
             <template v-if="!isReserve">
-                <GuiContainer w-70 inline>
+                <GuiContainer>
                     <GuiButton @click="in_dew">Скачать заказ в PDF</GuiButton>
                     <GuiButton @click="in_dew">Отправить клиенту на почту</GuiButton>
                     <GuiButton @click="in_dew">Распечатать</GuiButton>
-                </GuiContainer>
-                <GuiContainer w-30 inline text-right>
+                    <GuiButton @click="in_dew">Отправить клиенту СМС</GuiButton>
                     <GuiButton @click="in_dew" :color="'red'">Оформить возврат</GuiButton>
                 </GuiContainer>
             </template>
@@ -72,9 +78,13 @@ import ListTable from "@/Components/ListTable/ListTable";
 import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
 import GuiButton from "@/Components/GUI/GuiButton";
+import GuiIconButton from "@/Components/GUI/GuiIconButton";
+import IconCross from "@/Components/Icons/IconCross";
 
 export default {
     components: {
+        IconCross,
+        GuiIconButton,
         GuiButton,
         ListTableCell,
         ListTableRow,
@@ -90,7 +100,7 @@ export default {
     },
 
     data: () => ({
-        info: data('/api/order/info'),
+        info: data('/api/registries/order'),
     }),
 
     computed: {
@@ -98,7 +108,7 @@ export default {
             return (this.info.data['is_reserve'] ? 'Бронь' : 'Заказ') + ' №' + this.orderId;
         },
         isReserve() {
-            return this.info.data['is_reserve'];
+            return Boolean(this.info.data['is_reserve']);
         }
     },
 
