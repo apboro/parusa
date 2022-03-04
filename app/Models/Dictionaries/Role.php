@@ -10,8 +10,11 @@ namespace App\Models\Dictionaries;
  */
 class Role extends AbstractDictionary
 {
-    /** @var int The id of admin role. */
+    /** @var int Администратор */
     public const admin = 1;
+
+    /** @var int Кассир */
+    public const terminal = 2;
 
     /** @var string Referenced table name. */
     protected $table = 'dictionary_roles';

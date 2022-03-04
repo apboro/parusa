@@ -10,6 +10,7 @@ class UserRolesSeeder extends GenericSeeder
     protected array $data = [
         Role::class => [
             Role::admin => ['name' => 'Администратор'],
+            Role::terminal => ['name' => 'Кассир'],
         ]
     ];
 }

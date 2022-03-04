@@ -93,28 +93,22 @@ class Currents
     }
 
     /**
-     * Get current user position.
-     *
-     * @return  Position|null
-     */
-    public function position(): ?Position
-    {
-        return $this->position;
-    }
-
-    /**
-     * Set current user position.
+     * Set current user position and role.
      *
      * @param Position|null $position
+     * @param Role|null $role
      *
      * @return  void
      */
-    public function setPosition(?Position $position): void
+    public function set(?Position $position, ?Role $role = null): void
     {
         if ($position && $position->user_id !== $this->user->id) {
             throw new BadUserPositionException('User can not have this position.');
         }
         $this->position = $position;
+
+
+        $this->role = $role;
     }
 
     /**
@@ -128,6 +122,16 @@ class Currents
     }
 
     /**
+     * Make role cookie.
+     *
+     * @return  Cookie
+     */
+    public function roleToCookie(): Cookie
+    {
+        return cookie(self::ROLE_COOKIE_NAME, $this->role() ? $this->role()->id : null);
+    }
+
+    /**
      * Whether is staff position.
      *
      * @return  bool
@@ -135,6 +139,17 @@ class Currents
     public function isStaff(): bool
     {
         return $this->position() && $this->position()->is_staff;
+    }
+
+
+    /**
+     * Get user id.
+     *
+     * @return  int|null
+     */
+    public function userId(): ?int
+    {
+        return $this->position() ? $this->position()->user_id : null;
     }
 
     /**
@@ -148,13 +163,33 @@ class Currents
     }
 
     /**
-     * Get user id.
+     * Get current user position.
+     *
+     * @return  Position|null
+     */
+    public function position(): ?Position
+    {
+        return $this->position;
+    }
+
+    /**
+     * Get current position role id.
      *
      * @return  int|null
      */
-    public function userId(): ?int
+    public function roleId(): ?int
     {
-        return $this->position() ? $this->position()->user_id : null;
+        return $this->role() ? $this->role()->id : null;
+    }
+
+    /**
+     * Get current position role.
+     *
+     * @return  Role|null
+     */
+    public function role(): ?Role
+    {
+        return $this->role;
     }
 
     /**
