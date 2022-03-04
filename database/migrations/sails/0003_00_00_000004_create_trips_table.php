@@ -14,13 +14,13 @@ class CreateTripsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('trips', function (Blueprint $table) {
+        Schema::create('trips', static function (Blueprint $table) {
             $table->id();
 
-            $table->timestamp('start_at');
-            $table->timestamp('end_at');
+            $table->dateTime('start_at');
+            $table->dateTime('end_at');
 
             $table->unsignedBigInteger('start_pier_id');
             $table->unsignedBigInteger('end_pier_id');
@@ -54,7 +54,7 @@ class CreateTripsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('trips');
     }

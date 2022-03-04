@@ -86,12 +86,6 @@ class TripEditController extends ApiEditController
                 'tickets_total' => $trip->tickets_total,
                 'discount_status_id' => $trip->discount_status_id,
                 'cancellation_time' => $trip->cancellation_time,
-                'repeat_mode' => null,
-                'repeat_days' => [],
-                'repeat_until' => null,
-                'edit_chain_mode' => false,
-                'edit_chain_from' => null,
-                'edit_chain_upto' => null,
             ],
             $this->rules,
             $this->titles,
@@ -196,16 +190,16 @@ class TripEditController extends ApiEditController
 
         // iterate trips and update data
         $editedIds = [];
-        $newStartAt = Carbon::parse($data['start_at']);
-        $newEndAt = Carbon::parse($data['end_at']);
+        $newStartAt = Carbon::parse($data['start_at'])->seconds(0)->milliseconds(0);
+        $newEndAt = Carbon::parse($data['end_at'])->seconds(0)->milliseconds(0);
 
         foreach ($tripsToEdit as $editTrip) {
             /** @var Trip $editTrip */
             $editedIds[] = $editTrip->id;
             // operate on dates
             // date change is disabled for now
-            $toSetStartAt = $editTrip->start_at->hours($newStartAt->hour)->minutes($newStartAt->minute);
-            $toSetEndAt = $editTrip->end_at->hours($newEndAt->hour)->minutes($newEndAt->minute);
+            $toSetStartAt = $editTrip->start_at->hours($newStartAt->hour)->minutes($newStartAt->minute)->seconds(0)->milliseconds(0);
+            $toSetEndAt = $editTrip->end_at->hours($newEndAt->hour)->minutes($newEndAt->minute)->seconds(0)->milliseconds(0);
             $editTrip = $this->fillTrip($editTrip, $data, $toSetStartAt, $toSetEndAt);
             $editTrip->save();
         }
@@ -263,6 +257,9 @@ class TripEditController extends ApiEditController
         $count = count($editedIds);
         return APIResponse::formSuccess(
             $count === 1 ? 'Данные рейса обновлены.' : "Данные обновлены для $count рейсов.",
+            [
+                'trips' => $tripsToEdit,
+            ],
         );
     }
 

@@ -45,9 +45,9 @@ class FrontendController extends Controller
             }
 
             if ($positionsCount === 1) {
-                $current->setPosition($positions->first());
+                $current->set($positions->first());
             } else {
-                $current->setPosition(null);
+                $current->set(null);
                 return response()->view('select', [
                     'positions' => $positions->map(static function (Position $position) {
                         return [
@@ -107,7 +107,7 @@ class FrontendController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $user->current($request)->setPosition($position);
+        $user->current($request)->set($position);
 
         return redirect()->back()->withCookies([$user->current()->positionToCookie()]);
     }
@@ -124,7 +124,7 @@ class FrontendController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $user->current($request)->setPosition(null);
+        $user->current($request)->set(null);
 
         return redirect()->back()->withCookies([$user->current()->positionToCookie()]);
     }

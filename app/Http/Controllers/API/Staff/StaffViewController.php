@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\API\Company;
+namespace App\Http\Controllers\API\Staff;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\PositionStatus;
+use App\Models\Dictionaries\Role;
 use App\Models\Positions\StaffPositionInfo;
 use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class StaffCardController extends ApiController
+class StaffViewController extends ApiController
 {
-    public function get(Request $request): JsonResponse
+    public function view(Request $request): JsonResponse
     {
         $id = $request->input('id');
 
@@ -57,6 +58,8 @@ class StaffCardController extends ApiController
 
             'has_access' => !empty($user->login) && !empty($user->password),
             'login' => $user->login,
+
+            'roles' => $user->staffPosition->roles->pluck('id')->toArray(),
         ];
 
         // send response

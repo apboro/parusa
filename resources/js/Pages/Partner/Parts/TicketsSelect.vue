@@ -107,6 +107,7 @@ export default {
             this.$refs.popup.process(true);
             this.form.save({trip_id: this.tripId})
                 .then(() => {
+                    this.$store.dispatch('partner/refresh');
                     this.$refs.popup.hide();
                     if(result === 'add_and_redirect') {
                         this.$router.push({name: 'order'});

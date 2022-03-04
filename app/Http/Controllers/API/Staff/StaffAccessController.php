@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Company;
+namespace App\Http\Controllers\API\Staff;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
@@ -37,7 +37,7 @@ class StaffAccessController extends ApiEditController
         }
 
         /** @var User $user */
-        if($user->id === $request->user()->id) {
+        if ($user->id === $request->user()->id) {
             return APIResponse::error('Вы не можете отключить себе доступ.');
         }
 
@@ -45,10 +45,12 @@ class StaffAccessController extends ApiEditController
         $user->password = null;
         $user->save();
 
-        return APIResponse::response([
-            'has_access' => false,
-            'login' => null,
-        ], [], 'Доступ закрыт');
+        return APIResponse::formSuccess('Доступ закрыт',
+            [
+                'has_access' => false,
+                'login' => null,
+            ]
+        );
     }
 
     /**

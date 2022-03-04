@@ -17,8 +17,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     require base_path('routes/api/order.php');
 
     require base_path('routes/api/staff.php');
+    require base_path('routes/api/terminals.php');
+
     require base_path('routes/api/account.php');
-    require base_path('routes/api/staff_company.php');
     require base_path('routes/api/staff_settings.php');
     require base_path('routes/api/staff_partners.php');
 });

@@ -65,7 +65,7 @@ class AuthController extends Controller
         $user = $request->user();
 
         $current = $user->current($request);
-        $current->setPosition(null);
+        $current->set(null);
 
         Auth::guard('web')->logout();
 

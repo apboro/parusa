@@ -10,6 +10,7 @@ use App\Models\Dictionaries\PiersStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\ShipStatus;
+use App\Models\Dictionaries\TerminalStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripDiscountStatus;
 use App\Models\Dictionaries\TripSaleStatus;
@@ -83,6 +84,11 @@ class StatusesSeeder extends GenericSeeder
             OrderStatus::partner_paid => ['name' => 'Оплачен'],
             OrderStatus::partner_returned => ['name' => 'Оформлен возврат'],
             OrderStatus::creating => ['name' => 'Создаётся'],
+        ],
+
+        TerminalStatus::class => [
+            TripDiscountStatus::enabled => ['name' => 'Работает'],
+            TripDiscountStatus::disabled => ['name' => 'Не работает'],
         ],
     ];
 }

@@ -17,6 +17,7 @@ use App\Models\Dictionaries\PiersStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\ShipStatus;
+use App\Models\Dictionaries\TerminalStatus;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TripDiscountStatus;
 use App\Models\Dictionaries\TripSaleStatus;
@@ -71,6 +72,8 @@ class DictionaryController extends ApiController
         'transaction_refill_types' => AccountTransactionTypeRefill::class,
 
         'order_types' => OrderType::class,
+
+        'terminal_statuses' => TerminalStatus::class,
     ];
 
     /**

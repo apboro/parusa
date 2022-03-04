@@ -3,9 +3,7 @@ import NotFound from "../../Pages/NotFound";
 import SettingsPage from "../../Pages/Admin/Settings/SettingsPage";
 
 import TicketRefundsListPage from "../../Pages/Admin/TicketRefundsListPage";
-import MobileSalesListPage from "../../Pages/Admin/MobileSalesListPage";
 
-import StaffViewPage from "../../Pages/Admin/Company/Staff/StaffCardPage";
 import StaffEditPage from "../../Pages/Admin/Company/Staff/StaffEditPage";
 
 import PartnersListPage from "../../Pages/Admin/Partner/Partner/PartnersListPage";
@@ -33,7 +31,7 @@ export default [
     {path: '/registry/reserves', name: 'reserves-registry', component: () => import('@/Pages/Admin/Registries/ReservesRegistryPage'), meta: {title: 'Реестр броней'}},
 
     {path: '/staff', name: 'staff-list', component: () => import('@/Pages/Admin/Staff/StaffListPage'), meta: {title: 'Сотрудники'}},
-    {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника'}},
+    {path: '/staff/:id', name: 'staff-view', component: () => import('@/Pages/Admin/Staff/StaffViewPage'), meta: {title: 'Просмотр сотрудника'}},
     {path: '/staff/:id/edit', name: 'staff-edit', component: StaffEditPage, meta: {title: 'Редактирование сотрудника'}},
 
     {path: '/partners', name: 'partners-list', component: PartnersListPage, meta: {title: 'Компании-партнёры'}},
@@ -44,7 +42,10 @@ export default [
     {path: '/representatives/:id', name: 'representatives-view', component: RepresentativeCardPage, meta: {title: 'Просмотр представителя'}},
     {path: '/representatives/:id/edit', name: 'representatives-edit', component: RepresentativeEditPage, meta: {title: 'Редактирование представителя'}},
 
-    {path: '/mobile-sales', name: 'mobile-sales-list', component: MobileSalesListPage, meta: {title: 'Мобильные кассы'}},
+    {path: '/terminals', name: 'terminals-list', component: () => import('@/Pages/Admin/Terminals/TerminalsListPage'), meta: {title: 'Мобильные кассы'}},
+    {path: '/terminals/:id', name: 'terminals-view', component: () => import('@/Pages/Admin/Terminals/TerminalsViewPage'), meta: {title: 'Просмотр мобильной кассы'}},
+    {path: '/terminals/:id/edit', name: 'terminals-edit', component: () => import('@/Pages/Admin/Terminals/TerminalsEditPage'), meta: {title: 'Редактирование мобильной кассы'}},
+
     {path: '/ticket-refund', name: 'ticket-refund-list', component: TicketRefundsListPage, meta: {title: 'Возврат билетов'}},
 
     /**

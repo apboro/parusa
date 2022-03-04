@@ -25,7 +25,7 @@ class CreateAccountTransactionsTable extends Migration
 
             $table->unsignedBigInteger('amount');
 
-            $table->timestamp('timestamp');
+            $table->dateTime('timestamp');
 
             $table->string('reason')->nullable();
             $table->date('reason_date')->nullable();

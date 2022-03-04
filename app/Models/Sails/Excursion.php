@@ -56,7 +56,7 @@ class Excursion extends Model implements Statusable, AsDictionary
      *
      * @return  void
      *
-     * @throws \App\Exceptions\Excursions\WrongExcursionStatusException
+     * @throws WrongExcursionStatusException
      */
     public function setStatus($status, bool $save = true): void
     {

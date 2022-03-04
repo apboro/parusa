@@ -11,7 +11,7 @@ export default [
         'items': [
             {'title': 'Компании-партнёры', 'route': 'partners-list'},
             {'title': 'Представители', 'route': 'representatives-list'},
-            {'title': 'Мобильные кассы', 'route': ''},
+            {'title': 'Мобильные кассы', 'route': 'terminals-list'},
             {'title': 'Возврат билетов', 'route': ''},
         ]
     },

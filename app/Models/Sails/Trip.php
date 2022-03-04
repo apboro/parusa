@@ -35,6 +35,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $tickets_total
  * @property int $discount_status_id
  * @property int $cancellation_time
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  *
  * @property Pier $startPier
  * @property Pier $endPier
@@ -51,6 +53,8 @@ class Trip extends Model implements Statusable
 
     /** @var array Attributes casting. */
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'start_at' => 'datetime',
         'end_at' => 'datetime',
         'tickets_total' => 'int',
