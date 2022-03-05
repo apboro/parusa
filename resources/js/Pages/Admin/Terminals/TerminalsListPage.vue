@@ -20,9 +20,9 @@
             </LayoutFiltersItem>
         </LayoutFilters>
 
-        <ListTable v-if="list.list && list.list.length > 0">
+        <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
             <ListTableRow v-for="terminal in list.list">
-                    <ListTableCell>
+                    <ListTableCell :nowrap="true">
                         <GuiActivityIndicator :active="terminal['active']"/>
                         <router-link class="link" :to="{ name: 'terminals-view', params: { id: terminal['id'] }}">Касса №{{ terminal['id'] }}</router-link>
                     </ListTableCell>

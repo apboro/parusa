@@ -32,7 +32,7 @@ class StaffPropertiesController extends ApiController
         $name = $request->input('data.name');
         $value = $request->input('data.value');
 
-        if (!$value || !in_array($name, ['status_id', 'roles'])) {
+        if (!in_array($name, ['status_id', 'roles'])) {
             return APIResponse::error('Неверно заданы параметры');
         }
 
@@ -46,6 +46,7 @@ class StaffPropertiesController extends ApiController
                     // 1. self turn off of admin
                     // 2. turn off assigned terminal users
                     $user->staffPosition->roles()->sync($value);
+                    $user->touch();
                     break;
                 default:
             }

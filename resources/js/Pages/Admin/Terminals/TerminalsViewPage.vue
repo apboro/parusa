@@ -12,8 +12,9 @@
 
         <LayoutRoutedTabs :tabs="{description: 'Описание кассы', staff: 'Кассиры', sales: 'Операции'}" @change="tab = $event"/>
 
-        <!-- INFO AND TABS -->
         <TerminalInfo v-if="tab === 'description'" :terminal-id="terminalId" :data="data.data" :editable="true" @update="update"/>
+        <TerminalStaff v-if="tab === 'staff'" :terminal-id="terminalId" :data="data.data" :editable="true" @attach="attach" @detach="detach"/>
+        <!-- SALES -->
 
     </LayoutPage>
 </template>
@@ -25,9 +26,11 @@ import LayoutPage from "@/Components/Layout/LayoutPage";
 import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 import TerminalInfo from "@/Pages/Admin/Terminals/Parts/TerminalInfo";
+import TerminalStaff from "@/Pages/Admin/Terminals/Parts/TerminalStaff";
 
 export default {
     components: {
+        TerminalStaff,
         TerminalInfo,
         LayoutRoutedTabs,
         GuiActionsMenu,
@@ -69,6 +72,12 @@ export default {
             Object.keys(payload).map(key => {
                 this.data.data[key] = payload[key];
             });
+        },
+        attach(user) {
+            this.data.data['staff'].push(user);
+        },
+        detach(user_id) {
+            this.data.data['staff'] = this.data.data['staff'].filter(user => user['id'] !== user_id);
         },
     }
 }

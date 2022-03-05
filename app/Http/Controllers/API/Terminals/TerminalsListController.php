@@ -57,7 +57,7 @@ class TerminalsListController extends ApiController
 
         return APIResponse::list(
             $terminals,
-            [],
+            ['Касса', 'Статус', 'Причал', 'Адрес'],
             $filters,
             $this->defaultFilters,
             []

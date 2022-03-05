@@ -26,6 +26,7 @@ use App\Models\Dictionaries\UserContactType;
 use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\UserStatus;
 use App\Models\Partner\Partner;
+use App\Models\POS\TerminalUser;
 use App\Models\Sails\Excursion;
 use App\Models\Sails\Pier;
 use App\Models\Sails\Ship;
@@ -74,6 +75,7 @@ class DictionaryController extends ApiController
         'order_types' => OrderType::class,
 
         'terminal_statuses' => TerminalStatus::class,
+        'terminal_staff' => TerminalUser::class,
     ];
 
     /**

@@ -4,10 +4,10 @@ export default {
         deleting: false,
     }),
     methods: {
-        deleteEntry(confirmation, url, options) {
+        deleteEntry(confirmation, url, options, delete_caption = 'Удалить') {
             return new Promise((resolve, reject) => {
                 this.$dialog.show(confirmation, 'question', 'red', [
-                    this.$dialog.button('yes', 'Удалить', 'red'),
+                    this.$dialog.button('yes', delete_caption, 'red'),
                     this.$dialog.button('no', 'Отмена', 'blue'),
                 ]).then(result => {
                     if (result === 'yes') {
