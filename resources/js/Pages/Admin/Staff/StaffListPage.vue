@@ -25,29 +25,32 @@
         </LayoutFilters>
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
-            <ListTableRow v-for="(row, key) in list.list" :key="key">
+            <ListTableRow v-for="(staff, key) in list.list" :key="key">
                 <ListTableCell>
-                    <GuiActivityIndicator :active="row.active"/>
-                    <router-link class="link" :to="{ name: 'staff-view', params: { id: row.id }}" v-html="highlight(row.record['name'])"/>
+                    <GuiActivityIndicator :active="staff['active']"/>
+                    <router-link class="link" :to="{ name: 'staff-view', params: { id: staff['id'] }}" v-html="highlight(staff['name'])"/>
                 </ListTableCell>
                 <ListTableCell>
-                    {{ row.record['position'] }}
+                    {{ staff['position'] }}
                 </ListTableCell>
                 <ListTableCell>
-                    <div v-if="row.record['contacts']['email']">
-                        <a class="link" target="_blank" :href="'mailto:' + row.record['contacts']['email']">{{ row.record['contacts']['email'] }}</a>
+                    <div v-if="staff['email']">
+                        <a class="link" target="_blank" :href="'mailto:' + staff['email']">{{ staff['email'] }}</a>
                     </div>
-                    <div v-if="row.record['contacts']['mobile_phone']">
-                        <span>{{ row.record['contacts']['work_phone'] }}</span>
-                        <span v-if="row.record['contacts']['work_phone_add']"> доб. {{ row.record['contacts']['work_phone_add'] }}</span>
+                    <div v-if="staff['mobile_phone']">
+                        <span>{{ staff['work_phone'] }}</span>
+                        <span v-if="staff['work_phone_add']"> доб. {{ staff['work_phone_add'] }}</span>
                     </div>
-                    <div v-if="row.record['contacts']['mobile_phone']">
-                        {{ row.record['contacts']['mobile_phone'] }}
+                    <div v-if="staff['mobile_phone']">
+                        {{ staff['mobile_phone'] }}
                     </div>
                 </ListTableCell>
                 <ListTableCell>
-                    <GuiAccessIndicator :locked="!row.record['has_access']"/>
-                    <span>{{ row.record['has_access'] ? 'открыт' : 'закрыт' }}</span>
+                    <GuiAccessIndicator :locked="!staff['has_access']"/>
+                    <span>{{ staff['has_access'] ? 'открыт' : 'закрыт' }}</span>
+                </ListTableCell>
+                <ListTableCell>
+                    <div v-for="role in staff['roles']">{{ role }}</div>
                 </ListTableCell>
             </ListTableRow>
         </ListTable>

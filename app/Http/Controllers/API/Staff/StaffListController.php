@@ -7,6 +7,7 @@ use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\PositionStatus;
+use App\Models\Dictionaries\Role;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -34,7 +35,7 @@ class StaffListController extends ApiController
     public function list(ApiListRequest $request): JsonResponse
     {
         $query = User::query()
-            ->with(['profile', 'staffPosition', 'staffPosition.staffInfo'])
+            ->with(['profile', 'staffPosition', 'staffPosition.staffInfo', 'staffPosition.roles'])
             ->has('staffPosition')
             ->leftJoin('user_profiles', 'users.id', '=', 'user_profiles.user_id')
             ->select('users.*')
@@ -74,17 +75,16 @@ class StaffListController extends ApiController
             return [
                 'active' => $user->staffPosition ? $user->staffPosition->hasStatus(PositionStatus::active) : null,
                 'id' => $user->id,
-                'record' => [
-                    'name' => $profile ? $profile->lastname . ' ' . $profile->firstname . ' ' . $profile->patronymic : null,
-                    'position' => $position->title,
-                    'contacts' => [
-                        'email' => $info->email,
-                        'work_phone' => $info->work_phone,
-                        'work_phone_add' => $info->work_phone_additional,
-                        'mobile_phone' => $info->mobile_phone,
-                    ],
-                    'has_access' => !empty($user->login) && !empty($user->password),
-                ],
+                'name' => $profile ? $profile->lastname . ' ' . $profile->firstname . ' ' . $profile->patronymic : null,
+                'position' => $position->title,
+                'email' => $info->email,
+                'work_phone' => $info->work_phone,
+                'work_phone_add' => $info->work_phone_additional,
+                'mobile_phone' => $info->mobile_phone,
+                'has_access' => !empty($user->login) && !empty($user->password),
+                'roles' => $position->roles->map(function (Role $role) {
+                    return $role->name;
+                }),
             ];
         });
 
@@ -95,6 +95,7 @@ class StaffListController extends ApiController
                 'position' => 'Должность',
                 'contacts' => 'Контакты',
                 'access' => 'Доступ в систему',
+                'roles' => 'Роли',
             ],
             $filters,
             $this->defaultFilters,
