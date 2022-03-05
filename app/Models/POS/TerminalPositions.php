@@ -3,12 +3,14 @@
 namespace App\Models\POS;
 
 use App\Models\Dictionaries\Role;
-use App\Models\User\User;
+use App\Models\Positions\Position;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-class TerminalUser extends User
+class TerminalPositions extends Position
 {
+    protected $table = 'positions';
+
     public static function asDictionary(): Builder
     {
         if (DB::getDefaultConnection() === 'sqlite') {
@@ -18,16 +20,16 @@ class TerminalUser extends User
         }
 
         return self::query()
+            ->leftJoin('users', 'users.id', '=', 'positions.user_id')
             ->leftJoin('user_profiles', 'users.id', '=', 'user_profiles.user_id')
-            ->whereHas('staffPosition', function (Builder $query) {
-                $query->whereHas('roles', function (Builder $query) {
-                    $query->where('id', Role::terminal);
-                });
+            ->where('is_staff', true)
+            ->whereHas('roles', function (Builder $query) {
+                $query->where('id', Role::terminal);
             })
             ->select([
-                'id',
+                'positions.id',
                 $name,
-                'status_id as enabled', // TODO subselect status_id === PartnerStatus::active
+                'positions.status_id as enabled', // TODO subselect status_id === PartnerStatus::active
                 'user_profiles.lastname as order',
                 'users.created_at as created_at',
                 'users.updated_at as updated_at',

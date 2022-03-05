@@ -46,7 +46,7 @@
         >
             <GuiContainer w-350px>
                 <FormDictionary :form="form" :name="'staff_id'"
-                                :dictionary="'terminal_staff'"
+                                :dictionary="'terminal_positions'"
                                 :placeholder="'Выберите сотрудника'"
                                 :fresh="true"
                                 :hide-title="true"
