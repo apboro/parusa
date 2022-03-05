@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * @property int $id
  * @property int $status_id
+ * @property string $workplace_id
  * @property int $pier_id
  *
  * @property TerminalStatus $status

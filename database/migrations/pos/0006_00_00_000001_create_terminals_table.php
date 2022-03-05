@@ -20,6 +20,8 @@ class CreateTerminalsTable extends Migration
             $table->unsignedInteger('status_id')->default(TerminalStatus::default);
             $table->unsignedBigInteger('pier_id');
 
+            $table->string('workplace_id')->nullable();
+
             $table->timestamps();
 
             $table->foreign('status_id')->references('id')->on('dictionary_terminal_statuses')->restrictOnDelete()->restrictOnUpdate();

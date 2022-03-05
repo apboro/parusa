@@ -13,11 +13,13 @@ class TerminalEditController extends ApiEditController
     protected array $rules = [
         'status_id' => 'required',
         'pier_id' => 'required',
+        'workplace_id' => 'required',
     ];
 
     protected array $titles = [
         'status_id' => 'Статус',
         'pier_id' => 'Причал',
+        'workplace_id' => 'Внешний ID мобильной кассы',
     ];
 
     /**
@@ -42,6 +44,7 @@ class TerminalEditController extends ApiEditController
             [
                 'status_id' => $terminal->status_id,
                 'pier_id' => $terminal->pier_id,
+                'workplace_id' => $terminal->workplace_id,
             ],
             $this->rules,
             $this->titles,
@@ -74,6 +77,7 @@ class TerminalEditController extends ApiEditController
         }
 
         $terminal->setAttribute('pier_id', $data['pier_id']);
+        $terminal->setAttribute('workplace_id', $data['workplace_id']);
         $terminal->setStatus($data['status_id'], false);
         $terminal->save();
 

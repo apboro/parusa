@@ -32,6 +32,7 @@ class TerminalViewController extends ApiController
             'active' => $terminal->hasStatus(TerminalStatus::enabled),
             'status' => $terminal->status->name,
             'status_id' => $terminal->status_id,
+            'workplace_id' => $terminal->workplace_id,
             'staff' => $terminal->staff->map(function (Position $position) {
                 return [
                     'id' => $position->id,

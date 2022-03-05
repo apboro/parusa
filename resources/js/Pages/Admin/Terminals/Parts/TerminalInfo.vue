@@ -8,6 +8,7 @@
                 <span class="link" v-if="editable" @click="statusChange"><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
                 <span v-else><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
             </GuiValue>
+            <GuiValue :title="'Внешний ID'">{{ data['workplace_id'] }}</GuiValue>
         </GuiContainer>
 
         <GuiContainer mt-15 v-if="editable">

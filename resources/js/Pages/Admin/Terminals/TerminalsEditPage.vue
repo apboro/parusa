@@ -5,6 +5,7 @@
                 :link-title="'К списку мобильных касс'"
     >
         <GuiContainer mt-30>
+            <FormString :form="form" :name="'workplace_id'"/>
             <FormDictionary :form="form" :dictionary="'terminal_statuses'" :name="'status_id'" :fresh="true"/>
             <FormDictionary :form="form" :dictionary="'piers'" :name="'pier_id'" :fresh="true" :search="true"/>
         </GuiContainer>
@@ -22,9 +23,11 @@ import LayoutPage from "@/Components/Layout/LayoutPage";
 import GuiContainer from "@/Components/GUI/GuiContainer";
 import FormDictionary from "@/Components/Form/FormDictionary";
 import GuiButton from "@/Components/GUI/GuiButton";
+import FormString from "@/Components/Form/FormString";
 
 export default {
     components: {
+        FormString,
         GuiButton,
         FormDictionary,
         GuiContainer,
