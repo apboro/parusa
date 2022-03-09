@@ -33,6 +33,7 @@ class PartnerInfoController extends ApiController
             $orderAmount = 0;
         } else {
             $orderAmount = $current->position()->ordering()
+                ->where('terminal_id', null)
                 ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
                 ->where('trips.start_at', '>', Carbon::now())
                 ->leftJoin('excursions', 'excursions.id', '=', 'trips.excursion_id')

@@ -5,12 +5,15 @@ namespace App\Http\Controllers\API\Order;
 use App\Exceptions\Account\AccountException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\LifePos\LifePosSales;
 use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Partner\Partner;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Tickets\Order;
 use App\Models\Tickets\Ticket;
@@ -21,7 +24,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
-class PartnerOrderController extends ApiEditController
+class TerminalMakeOrderController extends ApiEditController
 {
     /**
      * Make order.
@@ -36,26 +39,37 @@ class PartnerOrderController extends ApiEditController
     {
         $current = Currents::get($request);
 
-        if ($current->isStaff()) {
-            return APIResponse::error('Сотрудники не могут оформлять заказы.');
+        if (!$current->isStaff() || $current->role() === null || !$current->role()->matches(Role::terminal)) {
+            return APIResponse::error('Оформлление заказа запрещено.');
         }
 
-        if (($position = $current->position()) === null || ($partner = $current->partner()) === null) {
-            return APIResponse::error('Вы не являетесь представителем компании-партнёра.');
+        if (($position = $current->position()) === null || ($current->partner() !== null)) {
+            return APIResponse::error('Оформлление заказа запрещено.');
+        }
+
+        if (null === ($terminal = $current->terminal())) {
+            return APIResponse::error('Оформлление заказа запрещено.');
+        }
+
+        if (Order::query()->where(['position_id' => $position->id, 'terminal_id' => $terminal->id])
+                ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
+                ->count() > 0
+        ) {
+            return APIResponse::error('Другой заказ уже находится в оформлении');
+        }
+
+        $partnerId = $request->input('data.partner_id');
+        $partner = $partnerId ? Partner::query()->where('id', $partnerId)->first() : null;
+        if ($partnerId !== null && $partner === null) {
+            return APIResponse::validationError(['partner_id' => ['Партнёр не найден.']]);
         }
 
         $mode = $request->input('mode');
+
         switch ($mode) {
-            case 'reserve':
-                if (!$partner->profile->can_reserve_tickets) {
-                    return APIResponse::error('Ошибка. Неверное действие.');
-                }
-                $status_id = OrderStatus::partner_reserve;
-                $successMessage = 'Бронь оформлена';
-                break;
             case 'order':
-                $status_id = OrderStatus::partner_paid;
-                $successMessage = 'Заказ оформлен';
+                $status_id = OrderStatus::terminal_creating;
+                $successMessage = 'Заказ отправлен в оплату.';
                 break;
             default:
                 return APIResponse::error('Ошибка. Неверное действие.');
@@ -74,39 +88,40 @@ class PartnerOrderController extends ApiEditController
         $titles = ['email' => 'Email'];
         for ($i = 0; $i < $count; $i++) {
             $rules["tickets.$i.quantity"] = 'nullable|integer|min:0|bail';
+            $rules["tickets.$i.price"] = 'nullable|numeric|bail';
             $titles["tickets.$i.quantity"] = 'Количество';
+            $titles["tickets.$i.price"] = 'Количество';
         }
 
         if ($errors = $this->validate($data, $rules, $titles)) {
             return APIResponse::formError($flat, $rules, $titles, $errors);
         }
 
-        $totalAmount = 0;
         $tickets = [];
 
-        foreach ($data['tickets'] as $id => $quantity) {
-            if ($quantity['quantity'] > 0) {
-                if (null === ($ordering = PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id])->first())) {
+        foreach ($data['tickets'] as $id => $ticketInfo) {
+            if ($ticketInfo['quantity'] > 0) {
+                if (null === ($ordering = PositionOrderingTicket::query()
+                        ->where(['id' => $id, 'position_id' => $position->id, 'terminal_id' => $terminal->id])
+                        ->first())
+                ) {
                     return APIResponse::error('Ошибка. Неверные данные билета.');
                 }
                 switch ($status_id) {
-                    case OrderStatus::partner_reserve:
-                        $ticketStatus = TicketStatus::partner_reserved;
-                        break;
-                    case OrderStatus::partner_paid:
-                        $ticketStatus = TicketStatus::partner_payed;
+                    case OrderStatus::terminal_creating:
+                        $ticketStatus = TicketStatus::terminal_creating;
                         break;
                     default:
                         return APIResponse::error('Ошибка. Неверные данные заказа.');
                 }
-                for ($i = 1; $i <= $quantity['quantity']; $i++) {
+                for ($i = 1; $i <= $ticketInfo['quantity']; $i++) {
                     /** @var PositionOrderingTicket $ordering */
                     $ticket = new Ticket([
                         'trip_id' => $ordering->trip_id,
                         'grade_id' => $ordering->grade_id,
                         'status_id' => $ticketStatus,
+                        'base_price' => $ticketInfo['price'],
                     ]);
-                    $totalAmount += $ordering->getPrice();
                     $tickets[] = $ticket;
                 }
             }
@@ -116,35 +131,31 @@ class PartnerOrderController extends ApiEditController
             return APIResponse::error('Нельзя оформить заказ без билетов.');
         }
 
-        if (($status_id === OrderStatus::partner_paid) && ($partner->account->amount - $partner->account->limit < $totalAmount)) {
-            return APIResponse::error('Недостаточно средств на лицевом счёте для оформления заказа.');
+        try {
+            // create order
+            $order = Order::make(
+                OrderType::terminal,
+                $tickets,
+                $status_id,
+                $partnerId,
+                $position->id,
+                $terminal->id,
+                $data['email'] ?? null,
+                $data['name'] ?? null,
+                $data['phone'] ?? null
+            );
+
+            // clear cart
+            PositionOrderingTicket::query()->where(['position_id' => $position->id, 'terminal_id' => $terminal->id])->delete();
+        } catch (Exception $exception) {
+            return APIResponse::error($exception->getMessage());
         }
 
+        // send order to POS
         try {
-            // add transaction first
-            if ($status_id === OrderStatus::partner_paid) {
-                $transaction = $partner->account->attachTransaction(new AccountTransaction([
-                    'type_id' => AccountTransactionType::tickets_buy,
-                    'status_id' => AccountTransactionStatus::accepted,
-                    'timestamp' => Carbon::now(),
-                    'amount' => $totalAmount,
-                ]));
-            }
-            // create order
-            $order = Order::make(OrderType::partner_sale, $tickets, $status_id, $partner->id, $position->id, $data['email'] ?? null, $data['name'] ?? null, $data['phone'] ?? null);
-            // attach order_id to transaction
-            if ($status_id === OrderStatus::partner_paid) {
-                $partner->account->updateTransaction($transaction, ['order_id' => $order->id]);
-            }
-            // pay commissions
-            $order->payCommissions();
-            // clear cart
-            PositionOrderingTicket::query()->where('position_id', $position->id)->delete();
+            LifePosSales::send($order, $terminal, $current->position());
+            $order->setStatus(OrderStatus::terminal_wait_for_pay);
         } catch (Exception $exception) {
-            // remove transaction on error
-            if (isset($transaction)) {
-                $partner->account->detachTransaction($transaction);
-            }
             return APIResponse::error($exception->getMessage());
         }
 
