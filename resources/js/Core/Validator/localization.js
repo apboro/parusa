@@ -91,7 +91,7 @@ export default {
     regex: 'Поле :attribute имеет ошибочный формат.',
     relatable: 'Поле :attribute не может быть связано с этим ресурсом.',
     required: 'Поле :attribute обязательно для заполнения.',
-    required_if: 'Поле :attribute обязательно для заполнения, когда :other равно :value.',
+    required_if: 'Поле :attribute обязательно для заполнения.',
     required_unless: 'Поле :attribute обязательно для заполнения, когда :other не равно :values.',
     required_with: 'Поле :attribute обязательно для заполнения, когда :values указано.',
     required_with_all: 'Поле :attribute обязательно для заполнения, когда :values указано.',

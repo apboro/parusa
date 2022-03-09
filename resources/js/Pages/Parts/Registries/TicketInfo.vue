@@ -31,7 +31,6 @@
             <GuiContainer>
                 <GuiButton @click="in_dew">Скачать билет в PDF</GuiButton>
                 <GuiButton @click="in_dew">Отправить клиенту на почту</GuiButton>
-                <GuiButton @click="in_dew">Отправить клиенту СМС</GuiButton>
                 <GuiButton @click="in_dew">Распечатать</GuiButton>
                 <GuiButton @click="in_dew" :color="'red'">Оформить возврат</GuiButton>
             </GuiContainer>

@@ -16,6 +16,7 @@
             <data-field-input :datasource="form" :name="'patronymic'"/>
             <data-field-dictionary-dropdown :datasource="form" :dictionary="'position_statuses'" :name="'status_id'"/>
             <data-field-input :datasource="form" :name="'position_title'"/>
+            <data-field-input :datasource="form" :name="'external_id'"/>
         </container>
         <container mt-30>
             <data-field-date :datasource="form" :name="'birthdate'"/>

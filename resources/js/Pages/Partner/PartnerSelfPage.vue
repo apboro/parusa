@@ -39,7 +39,7 @@ export default {
     },
 
     created() {
-        this.data = genericDataSource('/api/partner/partners/view');
+        this.data = genericDataSource('/api/partners/partner/view');
         this.data.load({id: this.partnerId});
     },
 }

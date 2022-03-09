@@ -438,7 +438,7 @@ const Rules = function() {
             const attrs = attributes.split(',');
             const field = attrs.splice(0, 1);
 
-            return attrs.indexOf(fields[field]) === -1 || !isValueNull(value);
+            return attrs.indexOf(String(fields[field])) === -1 || !isValueNull(value);
         },
 
         // The field under validation must be present and not empty unless the another field is equal to any value.

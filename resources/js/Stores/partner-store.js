@@ -1,4 +1,4 @@
-const dataUrl = '/api/partner/info';
+const dataUrl = '/api/partners/partner/info';
 
 export default {
     namespaced: true,

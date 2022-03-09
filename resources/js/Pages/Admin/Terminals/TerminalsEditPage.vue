@@ -6,6 +6,7 @@
     >
         <GuiContainer mt-30>
             <FormString :form="form" :name="'workplace_id'"/>
+            <FormString :form="form" :name="'outlet_id'"/>
             <FormDictionary :form="form" :dictionary="'terminal_statuses'" :name="'status_id'" :fresh="true"/>
             <FormDictionary :form="form" :dictionary="'piers'" :name="'pier_id'" :fresh="true" :search="true"/>
         </GuiContainer>

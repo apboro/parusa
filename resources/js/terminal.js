@@ -2,13 +2,13 @@ require('./bootstrap');
 
 import {createApp} from 'vue';
 import {createRouter, createWebHistory} from 'vue-router';
-import {createStore} from 'vuex';
+import { createStore } from 'vuex';
 
-import App from './Apps/PartnerApp.vue';
-import menu from './Definitions/Partner/Menu';
-import routes from './Definitions/Partner/Routes';
+import App from './Apps/TerminalApp.vue';
+import menu from './Definitions/Terminal/Menu';
+import routes from './Definitions/Terminal/Routes';
 import DictionaryStore from "@/Stores/dictionary-store";
-import PartnerStore from "@/Stores/partner-store";
+import TerminalStore from "@/Stores/terminal-store";
 
 import Toast from "./Plugins/Toast/toaster";
 import Dialog from "./Plugins/Dialog/dialog";
@@ -23,7 +23,7 @@ const router = createRouter({
 const store = createStore({
     modules: {
         dictionary: DictionaryStore,
-        partner: PartnerStore,
+        terminal: TerminalStore,
     }
 });
 
