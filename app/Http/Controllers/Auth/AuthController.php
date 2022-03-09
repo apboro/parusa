@@ -73,7 +73,10 @@ class AuthController extends Controller
 
         $request->session()->regenerateToken();
 
-        return Response::response('OK')->withCookie($current->positionToCookie());
+        return Response::response('OK')
+            ->withCookie($current->positionToCookie())
+            ->withCookie($current->roleToCookie())
+            ->withCookie($current->terminalToCookie());
     }
 
     /**

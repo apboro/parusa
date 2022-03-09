@@ -9,15 +9,15 @@ use App\Http\Controllers\API\Trips\TripsSelectListController;
 use App\Http\Controllers\API\Trips\TripViewController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/trips', [TripsListController::class, 'list']);
-Route::post('/trips/select', [TripsSelectListController::class, 'list']);
+Route::post('/trips', [TripsListController::class, 'list'])->middleware(['allow:staff_admin']);
 
-Route::post('/trips/get', [TripEditController::class, 'get']);
-Route::post('/trips/info', [TripChainInfoController::class, 'info']);
-Route::post('/trips/update', [TripEditController::class, 'update']);
+Route::post('/trips/get', [TripEditController::class, 'get'])->middleware(['allow:staff_admin']);
+Route::post('/trips/info', [TripChainInfoController::class, 'info'])->middleware(['allow:staff_admin']);
+Route::post('/trips/update', [TripEditController::class, 'update'])->middleware(['allow:staff_admin']);
 
-Route::post('/trips/delete', [TripDeleteController::class, 'delete']);
+Route::post('/trips/delete', [TripDeleteController::class, 'delete'])->middleware(['allow:staff_admin']);
 
-Route::post('/trips/view', [TripViewController::class, 'view']);
+Route::post('/trips/view', [TripViewController::class, 'view'])->middleware(['allow:staff_admin']);
+Route::post('/trips/properties', [TripPropertiesController::class, 'properties'])->middleware(['allow:staff_admin']);
 
-Route::post('/trips/properties', [TripPropertiesController::class, 'properties']);
+Route::post('/trips/select', [TripsSelectListController::class, 'list'])->middleware(['allow:staff_terminal,partner']);

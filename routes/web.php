@@ -22,7 +22,8 @@ Route::get('/login/token', [AuthController::class, 'token'])->name('login.token.
 
 Route::post('/login/select', [FrontendController::class, 'select'])->middleware('auth');
 Route::post('/login/change', [FrontendController::class, 'change'])->middleware('auth');
+
 Route::name('frontend')
-    ->any('/{query?}', [FrontendController::class, 'frontend'])
+    ->any('/{query?}', [FrontendController::class, 'index'])
     ->where('query', '[\/\w\.-]*')
     ->middleware(['web', 'auth']);

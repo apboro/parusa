@@ -22,10 +22,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     require base_path('routes/api/account.php');
     require base_path('routes/api/staff_settings.php');
     require base_path('routes/api/staff_partners.php');
-});
 
-Route::prefix('partner')->middleware(['auth'])->group(function () {
-    require base_path('routes/api/partner_partners.php');
+    require base_path('routes/api/partners.php');
 });
 
 Route::any('{any}', [NotFoundController::class, 'notFound'])->where('any', '.*');

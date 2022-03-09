@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\Role;
+use App\Models\Dictionaries\TerminalStatus;
+use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
+use App\Models\User\Helpers\Currents;
 use App\Models\User\User;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -25,69 +28,212 @@ class FrontendController extends Controller
      * @return  Response|RedirectResponse
      * @throws JsonException
      */
-    public function frontend(Request $request)
+    public function index(Request $request)
     {
-        /** @var User $user */
-        $user = $request->user();
+        $current = Currents::get($request);
 
-        $current = $user->current($request);
+        // check variants
+        $loginVariants = $this->getLoginVariants($current->user());
+        $loginVariantsCount = count($loginVariants);
 
-        $positions = $this->getUserActivePositions($user);
-        $positionsCount = $positions->count();
+        // if no variants logout with message (has no access to any organizations)
+        if ($loginVariantsCount === 0) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return response()->redirectToRoute('login')->withErrors(['message' => __('No access to any organizations')]);
+        }
 
-        if ($current->position() === null) {
-            if ($positionsCount === 0) {
-                // has no access to any organizations
-                Auth::guard('web')->logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                return response()->redirectToRoute('login')->withErrors(['message' => __('No access to any organizations')]);
+        // if only one position available set it as current
+        if ($loginVariantsCount === 1) {
+            $variant = $loginVariants[0];
+
+            /** @var Position $position */
+            $position = Position::query()->where('id', $variant['position_id'])->first();
+            /** @var ?Role $role */
+            $role = $variant['role_id'] ? Role::get($variant['role_id']) : null;
+            /** @var ?Terminal $terminal */
+            $terminal = $variant['terminal_id'] ? Terminal::query()->where('id', $variant['terminal_id'])->first() : null;
+
+            $current->set($position, $role, $terminal);
+        }
+
+        // partner account
+        if ($current->position() !== null && !$current->isStaff()) {
+            return $this->partnerPage($current, $loginVariantsCount > 1);
+        }
+
+        // admin side
+        if ($current->isStaff() && $current->role() !== null && $current->role()->matches(Role::admin)) {
+            return $this->adminPage($current, $loginVariantsCount > 1);
+        }
+
+        // terminal user role selected
+        if ($current->isStaff() && $current->terminal() !== null && $current->role() !== null && $current->role()->matches(Role::terminal)) {
+            return $this->terminalPage($current, $loginVariantsCount > 1);
+        }
+
+        // return select page in all others cases
+        return $this->selectPage($current, $loginVariants);
+    }
+
+    /**
+     * Get available user positions.
+     *
+     * @param User $user
+     *
+     * @return  array
+     */
+    protected function getLoginVariants(User $user): array
+    {
+        $variants = [];
+
+        // Get all user positions
+        $positions = Position::query()->with(['roles', 'partner'])->where('user_id', $user->id)->get();
+
+        // Iterate positions
+        foreach ($positions as $position) {
+            /** @var Position $position */
+            if (!$position->is_staff && $position->hasStatus(PositionAccessStatus::active, 'access_status_id')) {
+                // Partner position
+                $variants[] = $this->variantRecord($position, null, null);
+                continue;
             }
-
-            if ($positionsCount === 1) {
-                $current->set($positions->first());
-            } else {
-                $current->set(null);
-                return response()->view('select', [
-                    'positions' => $positions->map(static function (Position $position) {
-                        return [
-                            'id' => $position->id,
-                            'is_staff' => $position->is_staff,
-                            'title' => $position->title,
-                            'partner' => $position->is_staff ? __('common.root organization') : $position->partner->name,
-                            'roles' => $position->roles->map(static function (Role $role) {
-                                return [
-                                    'id' => $role->id,
-                                    'name' => $role->name,
-                                ];
-                            }),
-                        ];
-                    }),
-                ])->withCookie($current->positionToCookie());
+            if ($position->hasStatus(PositionStatus::active)) {
+                foreach ($position->roles as $role) {
+                    /** @var Role $role */
+                    if ($role->matches(Role::admin)) {
+                        // Staff with admin role
+                        $variants[] = $this->variantRecord($position, $role, null);
+                        continue;
+                    }
+                    if ($role->matches(Role::terminal)) {
+                        // Staff with terminal role
+                        $terminals = Terminal::query()->with(['pier', 'pier.info'])
+                            ->where('status_id', TerminalStatus::enabled)
+                            ->whereHas('staff', function (Builder $query) use ($position) {
+                                $query->where('id', $position->id);
+                            })
+                            ->get();
+                        foreach ($terminals as $terminal) {
+                            /** @var Terminal $terminal */
+                            $variants[] = $this->variantRecord($position, $role, $terminal);
+                        }
+                    }
+                }
             }
         }
 
-        if ($current->position()->is_staff) {
-            return response()->view('admin', [
-                'user' => json_encode([
-                    'name' => $this->e($user->profile->compactName),
-                    'organization' => $this->e(__('common.root organization')),
-                    'position' => $this->e($current->position()->title),
-                    'positions' => $positionsCount > 1,
-                    'can_reserve' => false,
-                ], JSON_THROW_ON_ERROR),
-            ])->withCookie($current->positionToCookie());
-        }
+        return $variants;
+    }
 
+    /**
+     * Make login variant record.
+     *
+     * @param Position $position
+     * @param Role|null $role
+     * @param Terminal|null $terminal
+     *
+     * @return  array
+     */
+    protected function variantRecord(Position $position, ?Role $role, ?Terminal $terminal): array
+    {
+        return [
+            'is_staff' => $position->is_staff,
+            'position_id' => $position->id,
+            'position' => $position->title,
+            'organization' => $position->is_staff ? __('common.root organization') : $position->partner->name,
+            'role_id' => $role->id ?? null,
+            'role' => $role->name ?? null,
+            'terminal_id' => $terminal->id ?? null,
+            'terminal' => $terminal ? "$terminal->name ({$terminal->pier->name})" : null,
+        ];
+    }
+
+    /**
+     * Make login select page.
+     *
+     * @param Currents $current
+     * @param array $loginVariants
+     *
+     * @return  Response
+     */
+    protected function selectPage(Currents $current, array $loginVariants): Response
+    {
+        // reset current
+        $current->set(null);
+
+        // return select page with variants
+        return response()->view('select', ['variants' => $loginVariants])
+            ->withCookie($current->positionToCookie())
+            ->withCookie($current->roleToCookie())
+            ->withCookie($current->terminalToCookie());
+    }
+
+    /**
+     * Render partner page.
+     *
+     * @param Currents $current
+     * @param bool $canChangePosition
+     *
+     * @return  Response
+     * @throws JsonException
+     */
+    protected function partnerPage(Currents $current, bool $canChangePosition): Response
+    {
         return response()->view('partner', [
             'user' => json_encode([
-                'name' => $this->e($user->profile->compactName),
+                'name' => $this->e($current->user()->profile->compactName),
                 'organization' => $this->e($current->position()->partner->name),
                 'position' => $this->e($current->position()->title),
-                'positions' => $positionsCount > 1,
+                'positions' => $canChangePosition,
                 'can_reserve' => $current->partner()->profile->can_reserve_tickets,
             ], JSON_THROW_ON_ERROR),
-        ])->withCookie($current->positionToCookie());
+        ])
+            ->withCookie($current->positionToCookie())
+            ->withCookie($current->roleToCookie())
+            ->withCookie($current->terminalToCookie());
+    }
+
+    /**
+     * Render admin page.
+     *
+     * @param Currents $current
+     * @param bool $canChangePosition
+     *
+     * @return Response
+     * @throws JsonException
+     */
+    protected function adminPage(Currents $current, bool $canChangePosition): Response
+    {
+        return response()->view('admin', [
+            'user' => json_encode([
+                'name' => $this->e($current->user()->profile->compactName),
+                'organization' => $this->e(__('common.root organization')),
+                'position' => $this->e($current->position()->title),
+                'positions' => $canChangePosition,
+                'can_reserve' => false,
+            ], JSON_THROW_ON_ERROR),
+        ])
+            ->withCookie($current->positionToCookie())
+            ->withCookie($current->roleToCookie())
+            ->withCookie($current->terminalToCookie());
+    }
+
+    protected function terminalPage(Currents $current, bool $canChangePosition): Response
+    {
+        return response()->view('terminal', [
+            'user' => json_encode([
+                'name' => $this->e($current->user()->profile->compactName),
+                'organization' => $this->e(__('common.root organization') . ' - ' . $current->terminal()->name),
+                'position' => $this->e($current->position()->title),
+                'positions' => $canChangePosition,
+                'can_reserve' => false,
+            ], JSON_THROW_ON_ERROR),
+        ])
+            ->withCookie($current->positionToCookie())
+            ->withCookie($current->roleToCookie())
+            ->withCookie($current->terminalToCookie());
     }
 
     /**
@@ -99,17 +245,26 @@ class FrontendController extends Controller
      */
     public function select(Request $request): RedirectResponse
     {
-        $positionId = $request->input('position');
+        $positionId = $request->input('position_id');
+        $roleId = $request->input('role_id');
+        $terminalId = $request->input('terminal_id');
 
         /** @var Position $position */
         $position = Position::query()->where('id', $positionId)->first();
+        /** @var ?Role $role */
+        $role = $roleId ? Role::get($roleId) : null;
+        /** @var ?Terminal $terminal */
+        $terminal = $terminalId ? Terminal::query()->where('id', $terminalId)->first() : null;
 
-        /** @var User $user */
-        $user = $request->user();
+        $current = Currents::get($request);
 
-        $user->current($request)->set($position);
+        $current->set($position, $role, $terminal);
 
-        return redirect()->back()->withCookies([$user->current()->positionToCookie()]);
+        return redirect()->back()->withCookies([
+            $current->positionToCookie(),
+            $current->roleToCookie(),
+            $current->terminalToCookie(),
+        ]);
     }
 
     /**
@@ -121,31 +276,19 @@ class FrontendController extends Controller
      */
     public function change(Request $request): RedirectResponse
     {
-        /** @var User $user */
-        $user = $request->user();
+        $current = Currents::get($request);
 
-        $user->current($request)->set(null);
+        $current->set(null);
 
-        return redirect()->back()->withCookies([$user->current()->positionToCookie()]);
+        return redirect()->back()->withCookies([
+            $current->positionToCookie(),
+            $current->roleToCookie(),
+            $current->terminalToCookie(),
+        ]);
     }
 
     /**
-     * Get available user positions.
-     *
-     * @param User $user
-     *
-     * @return  Collection
-     */
-    protected function getUserActivePositions(User $user): Collection
-    {
-        return Position::query()->with(['roles', 'partner'])->where('user_id', $user->id)->get()->reject(function (Position $position) {
-            return ($position->is_staff && !$position->hasStatus(PositionStatus::active)) ||
-                (!$position->is_staff && !$position->hasStatus(PositionAccessStatus::active, 'access_status_id'));
-        });
-    }
-
-    /**
-     * Format text to json encodable.
+     * Prepare text to json encoding.
      *
      * @param string $text
      *

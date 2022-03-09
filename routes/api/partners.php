@@ -15,5 +15,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/partners/view', [PartnerSelfController::class, 'get'])->middleware('auth:sanctum');
-Route::post('/info', [PartnerInfoController::class, 'get'])->middleware('auth:sanctum');
+Route::post('/partners/partner/view', [PartnerSelfController::class, 'get'])->middleware(['allow:partner']);
+Route::post('/partners/partner/info', [PartnerInfoController::class, 'get'])->middleware(['allow:partner']);
