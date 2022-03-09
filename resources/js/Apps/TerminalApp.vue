@@ -11,9 +11,9 @@
                 </layout-user-menu>
             </template>
         </layout-header>
-        <container mt-20 mb-20>
-            <PartnerHeaderWidget/>
-        </container>
+        <GuiContainer mt-20 mb-20>
+            <TerminalHeaderWidget/>
+        </GuiContainer>
         <router-view/>
     </div>
     <div id="toaster" class="toaster"></div>
@@ -24,8 +24,10 @@
 import LayoutHeader from "@/Components/Layout/LayoutHeader";
 import LayoutMenu from "@/Components/Layout/LayoutMenu";
 import LayoutUserMenu from "@/Components/Layout/LayoutUserMenu";
-import PartnerHeaderWidget from "@/Apps/PartnerHeaderWidget";
 import Container from "@/Components/GUI/GuiContainer";
+import GuiContainer from "@/Components/GUI/GuiContainer";
+import TerminalHeaderWidget from "@/Apps/TerminalHeaderWidget";
+import PopUp from "@/Components/PopUp"; // add for style import todo fix when use
 
 export default {
     props: {
@@ -34,11 +36,13 @@ export default {
     },
 
     components: {
+        TerminalHeaderWidget,
+        GuiContainer,
         Container,
-        PartnerHeaderWidget,
         LayoutUserMenu,
         LayoutHeader,
         LayoutMenu,
+        PopUp, // add for style import todo fix when use
     },
 
     created() {
@@ -48,16 +52,16 @@ export default {
     methods: {
         logout() {
             axios.post('/logout', {})
-            .then(() => {
-                window.location.href = '/';
-            });
+                .then(() => {
+                    window.location.href = '/';
+                });
         },
 
         change() {
             axios.post('/login/change', {})
-            .then(() => {
-                window.location.href = '/';
-            })
+                .then(() => {
+                    window.location.href = '/';
+                })
         }
     },
 }

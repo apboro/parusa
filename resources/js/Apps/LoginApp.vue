@@ -36,7 +36,7 @@
 
 <script>
 import BaseButton from "../Components/GUI/GuiButton";
-import FieldString from "../Components/Fields/FieldString";
+import FieldString from "../Components/FieldsOld/FieldString";
 import empty from "@/Core/Helpers/Empty";
 import validation from "../Helpers/validation";
 
