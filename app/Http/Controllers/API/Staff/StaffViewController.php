@@ -59,6 +59,8 @@ class StaffViewController extends ApiController
             'has_access' => !empty($user->login) && !empty($user->password),
             'login' => $user->login,
 
+            'external_id' => $info->external_id,
+
             'roles' => $user->staffPosition->roles->pluck('id')->toArray(),
         ];
 

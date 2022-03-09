@@ -20,14 +20,17 @@ class OrderStatus extends AbstractDictionary
      * 31-60 for ticket office
      * 61-90 for sites
      * 91-120 qr code link
-     * 121-254 - reserved
-     * 255 for creating new order
+     * 121-255 - reserved
      */
 
     public const partner_reserve = 1;
     public const partner_paid = 11;
     public const partner_returned = 21;
-    public const creating = 255;
+
+    public const terminal_creating = 31;
+    public const terminal_wait_for_pay = 41;
+    public const terminal_printing = 45;
+    public const terminal_paid = 50;
 
     public const partner_commission_pay_statuses = [
         self::partner_paid,
@@ -40,5 +43,11 @@ class OrderStatus extends AbstractDictionary
 
     public const order_reserved_statuses = [
         self::partner_reserve,
+    ];
+
+    public const terminal_processing_statuses = [
+        self::terminal_creating,
+        self::terminal_wait_for_pay,
+        self::terminal_printing,
     ];
 }

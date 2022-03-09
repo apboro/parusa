@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Cart;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Sails\Trip;
@@ -16,7 +17,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
-class PartnerCartController extends ApiEditController
+class CartController extends ApiEditController
 {
     /**
      * Get current cart.
@@ -29,15 +30,11 @@ class PartnerCartController extends ApiEditController
     {
         $current = Currents::get($request);
 
-        if ($current->isStaff()) {
-            return APIResponse::error('Сотрудники не могут оформлять заказы.');
+        if ((null === ($position = $current->position())) || ($current->isStaff() && ($current->role() === null || !$current->role()->matches(Role::terminal)))) {
+            return APIResponse::error('ВЫ не можете оформлять заказы.');
         }
 
-        if (($position = $current->position()) === null || $current->partner() === null) {
-            return APIResponse::error('Вы не являетесь представителем компании-партнёра.');
-        }
-
-        $tickets = $position->ordering()
+        $tickets = $position->ordering()->where('terminal_id', $current->terminalId())
             ->with(['grade', 'trip', 'trip.excursion', 'trip.startPier'])
             ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
             ->leftJoin('dictionary_ticket_grades', 'dictionary_ticket_grades.id', '=', 'position_ordering_tickets.grade_id')
@@ -64,6 +61,8 @@ class PartnerCartController extends ApiEditController
                 'pier' => $trip->startPier->name,
                 'grade' => $ticket->grade->name,
                 'base_price' => $price = $ticket->getPrice(),
+                'min_price' => $ticket->getMinPrice(),
+                'max_price' => $ticket->getMaxPrice(),
                 'quantity' => $ticket->quantity,
                 'available' => ($price !== null) && $trip->hasStatus(TripSaleStatus::selling, 'sale_status_id') && ($trip->start_at > Carbon::now()),
             ];
@@ -72,12 +71,12 @@ class PartnerCartController extends ApiEditController
         return APIResponse::response([
             'tickets' => $tickets,
             'limits' => $limits,
-            'can_reserve' => $current->partner()->profile->can_reserve_tickets,
+            'can_reserve' => $current->partner() ? $current->partner()->profile->can_reserve_tickets : null,
         ], []);
     }
 
     /**
-     * Add tickets to cart.
+     * Add tickets to cart for the selected trip.
      *
      * @param Request $request
      *
@@ -87,12 +86,8 @@ class PartnerCartController extends ApiEditController
     {
         $current = Currents::get($request);
 
-        if ($current->isStaff()) {
-            return APIResponse::error('Сотрудники не могут оформлять заказы.');
-        }
-
-        if (($position = $current->position()) === null || $current->partner() === null) {
-            return APIResponse::error('Вы не являетесь представителем компании-партнёра.');
+        if ((null === ($position = $current->position())) || ($current->isStaff() && ($current->role() === null || !$current->role()->matches(Role::terminal)))) {
+            return APIResponse::error('ВЫ не можете оформлять заказы.');
         }
 
         if (
@@ -138,8 +133,8 @@ class PartnerCartController extends ApiEditController
                 }
                 /** @var PositionOrderingTicket $ticket */
                 $ticket = $position->ordering()
-                    ->where(['trip_id' => $trip->id, 'grade_id' => $grade_id])
-                    ->firstOrNew(['position_id' => $position->id, 'trip_id' => $trip->id, 'grade_id' => $grade_id]);
+                    ->where(['trip_id' => $trip->id, 'grade_id' => $grade_id, 'terminal_id' => $current->terminalId()])
+                    ->firstOrNew(['position_id' => $position->id, 'trip_id' => $trip->id, 'grade_id' => $grade_id, 'terminal_id' => $current->terminalId()]);
 
                 $ticket->quantity += $quantity;
                 $count += $quantity;
@@ -177,17 +172,13 @@ class PartnerCartController extends ApiEditController
     {
         $current = Currents::get($request);
 
-        if ($current->isStaff()) {
-            return APIResponse::error('Сотрудники не могут оформлять заказы.');
-        }
-
-        if (($position = $current->position()) === null || $current->partner() === null) {
-            return APIResponse::error('Вы не являетесь представителем компании-партнёра.');
+        if ((null === ($position = $current->position())) || ($current->isStaff() && ($current->role() === null || !$current->role()->matches(Role::terminal)))) {
+            return APIResponse::error('ВЫ не можете оформлять заказы.');
         }
 
         $id = $request->input('ticket_id');
 
-        PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id])->delete();
+        PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id, 'terminal_id' => $current->terminalId()])->delete();
 
         return APIResponse::formSuccess('Билет удалён из заказа.');
     }

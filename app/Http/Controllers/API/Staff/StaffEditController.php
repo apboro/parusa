@@ -41,6 +41,8 @@ class StaffEditController extends ApiEditController
         'whatsapp' => 'WhatsApp',
 
         'notes' => 'Заметки',
+
+        'external_id' => 'Внешний ID сотрудника',
     ];
 
     /**
@@ -84,6 +86,7 @@ class StaffEditController extends ApiEditController
                 'skype' => $info->skype,
                 'whatsapp' => $info->whatsapp,
                 'notes' => $info->notes,
+                'external_id' => $info->external_id,
             ],
             $this->rules,
             $this->titles,
@@ -142,6 +145,7 @@ class StaffEditController extends ApiEditController
         $info->skype = $data['skype'];
         $info->whatsapp = $data['whatsapp'];
         $info->notes = $data['notes'];
+        $info->external_id = $data['external_id'];
         $info->save();
 
         return APIResponse::formSuccess(

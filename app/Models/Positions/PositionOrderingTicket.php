@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property int $position_id
+ * @property int $terminal_id
  * @property int $trip_id
  * @property int $grade_id
  * @property int $quantity
@@ -28,7 +29,7 @@ class PositionOrderingTicket extends Model
     ];
 
     /** @var string[] Fillable attributes. */
-    protected $fillable = ['trip_id', 'grade_id'];
+    protected $fillable = ['trip_id', 'grade_id', 'terminal_id'];
 
     /**
      * Trip relation.
@@ -60,5 +61,29 @@ class PositionOrderingTicket extends Model
         $rateList = $this->trip->getRate();
 
         return $rateList ? $rateList->rates()->where('grade_id', $this->grade_id)->value('base_price') : null;
+    }
+
+    /**
+     * Get ticket min price.
+     *
+     * @return  float|null
+     */
+    public function getMinPrice(): ?float
+    {
+        $rateList = $this->trip->getRate();
+
+        return $rateList ? $rateList->rates()->where('grade_id', $this->grade_id)->value('min_price') : null;
+    }
+
+    /**
+     * Get ticket max price.
+     *
+     * @return  float|null
+     */
+    public function getMaxPrice(): ?float
+    {
+        $rateList = $this->trip->getRate();
+
+        return $rateList ? $rateList->rates()->where('grade_id', $this->grade_id)->value('max_price') : null;
     }
 }

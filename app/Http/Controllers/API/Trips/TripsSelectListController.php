@@ -12,6 +12,7 @@ use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
+use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -43,6 +44,13 @@ class TripsSelectListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
+        $current = Currents::get($request);
+
+        if ($current->terminal() !== null) {
+            $this->defaultFilters['start_pier_id'] = $current->terminal()->pier_id;
+            $this->rememberFilters = [];
+        }
+
         $this->defaultFilters['date'] = Carbon::now()->format('Y-m-d');
 
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);

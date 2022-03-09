@@ -10,33 +10,38 @@ namespace App\Models\Dictionaries;
  */
 class TicketStatus extends AbstractDictionary
 {
-    /**
-     * Tickets has no default statuses!
-     */
-
     /** @var string Referenced table name. */
     protected $table = 'dictionary_ticket_statuses';
 
-    /** @var int The newly created ticket */
-    public const creating = 1;
+    /**
+     * Tickets has no default status!
+     *
+     * 1-30 for partners
+     * 31-60 for ticket office
+     * 61-90 for sites
+     * 91-120 qr code link
+     * 121-255 - reserved
+     */
 
-    /** @var int The ticket in reserve by partner */
-    public const partner_reserved = 2;
+    public const partner_reserve = 1;
+    public const partner_paid = 11;
+    public const partner_returned = 21;
 
-    /** @var int The ticket was paid by partner*/
-    public const partner_payed = 3;
+    public const terminal_creating = 31;
+    public const terminal_wait_for_pay = 41;
+    public const terminal_printing = 45;
+    public const terminal_paid = 50;
 
-    /** @var int The ticket was returner */
-    public const partner_returned = 4;
 
     /** @var int The ticket had expired */
     public const expired = 255;
 
     public const ticket_sold_statuses = [
-        self::partner_payed,
+        self::partner_paid,
+        self::terminal_paid,
     ];
 
     public const ticket_reserved_statuses = [
-        self::partner_reserved,
+        self::partner_reserve,
     ];
 }

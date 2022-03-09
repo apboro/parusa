@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @property int $position_id
+ * @property string $external_id
  * @property string $email
  * @property string $work_phone
  * @property string $work_phone_additional

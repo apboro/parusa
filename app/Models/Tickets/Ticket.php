@@ -40,7 +40,7 @@ class Ticket extends Model implements Statusable
     use HasStatus;
 
     /** @var string[] Fillable attributes. */
-    protected $fillable = ['trip_id', 'grade_id', 'status_id'];
+    protected $fillable = ['trip_id', 'grade_id', 'status_id', 'base_price'];
 
     /**
      * User's status.
@@ -110,25 +110,25 @@ class Ticket extends Model implements Statusable
     /**
      * Convert base_price from store value to real price.
      *
-     * @param int $value
+     * @param int|null $value
      *
      * @return  float
      */
-    public function getBasePriceAttribute(int $value): float
+    public function getBasePriceAttribute(?int $value): ?float
     {
-        return PriceConverter::storeToPrice($value);
+        return $value ? PriceConverter::storeToPrice($value) : null;
     }
 
     /**
      * Convert base_price to store value.
      *
-     * @param float $value
+     * @param float|null $value
      *
      * @return  void
      */
-    public function setBasePriceAttribute(float $value): void
+    public function setBasePriceAttribute(?float $value): void
     {
-        $this->attributes['base_price'] = PriceConverter::priceToStore($value);
+        $this->attributes['base_price'] = $value ? PriceConverter::priceToStore($value) : null;
     }
 
     /**

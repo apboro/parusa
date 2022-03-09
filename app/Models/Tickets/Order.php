@@ -32,6 +32,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $status_id
  * @property int $partner_id
  * @property int|null $position_id
+ * @property int|null $terminal_id
+ * @property string|null $external_id
  * @property string|null $name
  * @property string|null $email
  * @property string|null $phone
@@ -161,22 +163,23 @@ class Order extends Model implements Statusable, Typeable
      * Order factory.
      *
      * @param int $typeId Order initiator
-     * @see OrderType
      * @param Ticket[] $tickets Array of tickets to order
-     * @see Ticket
      * @param int $statusId Order initial status
-     * @see OrderStatus
-     * @param int $partnerId Partner ID
-     * @see Partner
+     * @param int|null $partnerId Partner ID
      * @param int|null $positionId Position of partner made this order (or null)
-     * @see Position
+     * @param int|null $terminalId Terminal this order made by
      * @param string|null $email Buyer details
      * @param string|null $name Buyer details
      * @param string|null $phone Buyer details
      *
      * @return  Order
+     * @see OrderType
+     * @see Ticket
+     * @see OrderStatus
+     * @see Partner
+     * @see Position
      */
-    public static function make(int $typeId, array $tickets, int $statusId, int $partnerId, ?int $positionId, ?string $email, ?string $name, ?string $phone): Order
+    public static function make(int $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?string $email, ?string $name, ?string $phone): Order
     {
         if (empty($tickets)) {
             throw new WrongOrderException('Невозможно создать заказ без билетов.');
@@ -214,8 +217,12 @@ class Order extends Model implements Statusable, Typeable
                 throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Недостаточно свободных мест на рейсе.');
             }
 
-            // calc base price
-            $ticket->base_price = $ticket->getCurrentPrice();
+            // calc base price if not set
+            if ($ticket->base_price === null) {
+                $ticket->base_price = $ticket->getCurrentPrice();
+            } else if ($ticket->base_price < $rate->min_price || $ticket->base_price > $rate->max_price) {
+                throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Неверна указана цена билета.');
+            }
         }
 
         // prepare order
@@ -224,6 +231,7 @@ class Order extends Model implements Statusable, Typeable
         $order->setType($typeId, false);
         $order->partner_id = $partnerId;
         $order->position_id = $positionId;
+        $order->terminal_id = $terminalId;
         $order->email = $email;
         $order->name = $name;
         $order->phone = $phone;

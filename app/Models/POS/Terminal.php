@@ -17,8 +17,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $id
  * @property int $status_id
  * @property string $workplace_id
+ * @property string $outlet_id
  * @property int $pier_id
  *
+ * @property-read string $name
  * @property TerminalStatus $status
  * @property Pier $pier
  * @property Collection $staff
@@ -37,6 +39,16 @@ class Terminal extends Model implements Statusable
     protected $attributes = [
         'status_id' => TerminalStatus::default,
     ];
+
+    /**
+     * Accessor for name generation.
+     *
+     * @return  string|null
+     */
+    public function getNameAttribute(): ?string
+    {
+        return $this->exists ? 'Касса №' . $this->id : null;
+    }
 
     /**
      * Ship status.
