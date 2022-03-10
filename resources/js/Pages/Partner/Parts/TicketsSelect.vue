@@ -48,7 +48,7 @@ export default {
     },
 
     data: () => ({
-        form: form(null, '/api/cart/add'),
+        form: form(null, '/api/cart/partner/add'),
         tripId: null,
         iterator: [],
     }),

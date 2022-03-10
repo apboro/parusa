@@ -19,7 +19,7 @@ export default [
     {path: '/company/account', name: 'company-account', component: Account, meta: {title: 'Лицевой счёт'}},
     {path: '/company/rates', name: 'company-rates', component: Rates, meta: {title: 'Тарифы и комисионное вознаграждение'}},
 
-    {path: '/order', name: 'order', component: () => import("@/Pages/Partner/OrderPage"), meta: {title: 'Оформление заказа'}},
+    {path: '/order', name: 'order', component: () => import("@/Pages/Partner/OrderMakePage"), meta: {title: 'Оформление заказа'}},
 
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 ];

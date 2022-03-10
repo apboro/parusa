@@ -4,10 +4,13 @@ namespace App\Http\Controllers\API\Cart;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Sails\Trip;
+use App\Models\Tickets\Order;
+use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Exception;
@@ -17,7 +20,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
-class CartController extends ApiEditController
+class TerminalCartController extends ApiEditController
 {
     /**
      * Get current cart.
@@ -30,11 +33,32 @@ class CartController extends ApiEditController
     {
         $current = Currents::get($request);
 
-        if ((null === ($position = $current->position())) || ($current->isStaff() && ($current->role() === null || !$current->role()->matches(Role::terminal)))) {
-            return APIResponse::error('ВЫ не можете оформлять заказы.');
+        if ((null === ($position = $current->position())) || !$current->isStaff() || $current->role() === null || !$current->role()->matches(Role::terminal)) {
+            return APIResponse::error('Вы не можете оформлять заказы.');
         }
 
-        $tickets = $position->ordering()->where('terminal_id', $current->terminalId())
+        /** @var ?Order $order */
+        $order = Order::query()
+            ->with(['status', 'tickets', 'tickets.grade', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier'])
+            ->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
+            ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
+            ->first();
+
+        $orderTickets = $order === null ? null : $order->tickets->map(function (Ticket $ticket) {
+            return [
+                'id' => $ticket->id,
+                'trip_id' => $ticket->trip->id,
+                'trip_start_date' => $ticket->trip->start_at->format('d.m.Y'),
+                'trip_start_time' => $ticket->trip->start_at->format('H:i'),
+                'excursion' => $ticket->trip->excursion->name,
+                'pier' => $ticket->trip->startPier->name,
+                'grade' => $ticket->grade->name,
+                'base_price' => $ticket->base_price,
+            ];
+        });
+
+        $tickets = $position->ordering()
+            ->where('terminal_id', $current->terminalId())
             ->with(['grade', 'trip', 'trip.excursion', 'trip.startPier'])
             ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
             ->leftJoin('dictionary_ticket_grades', 'dictionary_ticket_grades.id', '=', 'position_ordering_tickets.grade_id')
@@ -72,6 +96,20 @@ class CartController extends ApiEditController
             'tickets' => $tickets,
             'limits' => $limits,
             'can_reserve' => $current->partner() ? $current->partner()->profile->can_reserve_tickets : null,
+
+            'has_order' => $order !== null,
+            'order_id' => $order->id ?? null,
+            'order_status' => $order ? $order->status->name : null,
+            'order_total' => $order ? $order->total() : null,
+            'order_tickets' => $orderTickets,
+            'actions' => [
+                'start_payment' => $order && $order->hasStatus(OrderStatus::terminal_creating),
+                'delete_order' => $order && $order->hasStatus(OrderStatus::terminal_creating),
+                'cancel_payment' => $order && $order->hasStatus(OrderStatus::terminal_wait_for_pay),
+            ],
+            'status' => [
+                'waiting_for_payment' => $order && $order->hasStatus(OrderStatus::terminal_wait_for_pay),
+            ],
         ], []);
     }
 
@@ -87,7 +125,18 @@ class CartController extends ApiEditController
         $current = Currents::get($request);
 
         if ((null === ($position = $current->position())) || ($current->isStaff() && ($current->role() === null || !$current->role()->matches(Role::terminal)))) {
-            return APIResponse::error('ВЫ не можете оформлять заказы.');
+            return APIResponse::error('Вы не можете оформлять заказы.');
+        }
+
+        if (
+            $current->role() !== null
+            && $current->terminal() !== null
+            && $current->role()->matches(Role::terminal)
+            && Order::query()->where(['position_id' => $position->id, 'terminal_id' => $current->terminalId()])
+                ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
+                ->count() > 0
+        ) {
+            return APIResponse::error('Нельзя добавлять билеты, когда другой заказ уже находится в оформлении.');
         }
 
         if (
@@ -172,7 +221,7 @@ class CartController extends ApiEditController
     {
         $current = Currents::get($request);
 
-        if ((null === ($position = $current->position())) || ($current->isStaff() && ($current->role() === null || !$current->role()->matches(Role::terminal)))) {
+        if ((null === ($position = $current->position())) || !$current->isStaff() || $current->role() === null || !$current->role()->matches(Role::terminal)) {
             return APIResponse::error('ВЫ не можете оформлять заказы.');
         }
 

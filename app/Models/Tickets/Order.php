@@ -160,6 +160,24 @@ class Order extends Model implements Statusable, Typeable
     }
 
     /**
+     * Order total.
+     *
+     * @return  float|null
+     */
+    public function total(): ?float
+    {
+        $this->loadMissing('tickets');
+
+        $total = 0;
+
+        $this->tickets->map(function (Ticket $ticket) use (&$total) {
+            $total += $ticket->base_price;
+        });
+
+        return $total;
+    }
+
+    /**
      * Order factory.
      *
      * @param int $typeId Order initiator

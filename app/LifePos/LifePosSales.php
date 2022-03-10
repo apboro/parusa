@@ -15,6 +15,8 @@ use RuntimeException;
 class LifePosSales
 {
     /**
+     * Send order to LifePos.
+     *
      * @param Order $order
      * @param Terminal $terminal
      * @param Position $position
@@ -26,8 +28,8 @@ class LifePosSales
     public static function send(Order $order, Terminal $terminal, Position $position): void
     {
         if ($order->external_id !== null) {
-             throw new RuntimeException('Зтот заказ уже отправллен в оплату');
-         }
+            throw new RuntimeException('Зтот заказ уже отправллен в оплату');
+        }
 
         $client = new Client([
             'base_uri' => env('LIFE_POS_BASE_URL'),
@@ -95,5 +97,44 @@ class LifePosSales
         $response = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
         $order->external_id = $response['guid'];
         $order->save();
+    }
+
+    /**
+     * Remove order from LifePos.
+     *
+     * @param Order $order
+     *
+     * @return  void
+     * @throws JsonException
+     * @throws RuntimeException
+     */
+    public static function cancel(Order $order): void
+    {
+        if ($order->external_id === null) {
+            throw new RuntimeException('Зтот заказ не связан с продажей.');
+        }
+
+        $client = new Client([
+            'base_uri' => env('LIFE_POS_BASE_URL'),
+            'timeout' => 0,
+            'allow_redirects' => false,
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('LIFE_POS_KEY'),
+                'Accept-Language' => 'ru-RU',
+            ],
+        ]);
+
+        $orgId = env('LIFE_POS_ORG_ID');
+
+        try {
+            $result = $client->delete("/v4/orgs/{$orgId}/deals/sales/{$order->external_id}");
+        } catch (GuzzleException $exception) {
+            throw new RuntimeException($exception->getMessage());
+        }
+
+        if ($result->getStatusCode() !== 204) {
+            $response = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+            throw new RuntimeException($response['message']);
+        }
     }
 }

@@ -1,10 +1,9 @@
 <template>
-    <div class="balance-widget">
-        <router-link :to="{name: current === null ? 'order' : 'current'}" class="balance-widget__item">
+    <div class="balance-widget" v-if="!$route.meta['hideWidget']">
+        <router-link :to="{name: 'order'}" class="balance-widget__item">
             <div class="balance-widget__item-wrapper">
                 <span class="balance-widget__item-title">Текущий заказ</span>
-                <span class="balance-widget__item-value" v-if="current === null">{{ loaded ? order_amount + ' руб.' : '—' }}</span>
-                <span class="balance-widget__item-value" v-else>{{ loaded ? current : '—' }}</span>
+                <span class="balance-widget__item-value">{{ loaded ? order_amount + ' руб.' : '—' }}</span>
             </div>
             <IconShoppingCart :class="'balance-widget__item-icon'"/>
         </router-link>

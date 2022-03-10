@@ -10,8 +10,7 @@
                     <th>Экскурсия</th>
                     <th>Причал</th>
                     <th>Тип билета</th>
-                    <th class="w-90px">Диапазон цен, руб</th>
-                    <th class="w-90px">Цена, руб</th>
+                    <th class="w-110px">Цена</th>
                     <th>Количество</th>
                     <th class="w-110px">Стоимость</th>
                     <th></th>
@@ -25,11 +24,8 @@
                     </td>
                     <td>{{ ticket['pier'] }}</td>
                     <td>{{ ticket['grade'] }}</td>
-                    <td>{{ ticket['min_price'] }} - {{ ticket['max_price'] }}</td>
                     <template v-if="ticket['available']">
-                        <td>
-                            <FormNumber :form="form" :name="'tickets.' + ticket['id'] + '.price'" :hide-title="true"/>
-                        </td>
+                        <td class="bold no-wrap">{{ ticket['base_price'] }} руб.</td>
                         <td>
                             <FormNumber :form="form" :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true" :min="0" :hide-title="true"/>
                         </td>
@@ -48,22 +44,14 @@
                 </tr>
             </table>
             <GuiHeading mt-20 bold right>Итого к оплате: {{ total }}</GuiHeading>
-
-            <GuiContainer mt-20 mb-20 w-50 pr-30 inline>
-                <GuiHeading mb-30 bold>Информация о плательщике
-                    <GuiExpand @expand="show_buyer_info = $event"/>
-                </GuiHeading>
-                <template v-if="show_buyer_info">
-                    <FormString :form="form" :name="'name'"/>
-                    <FormString :form="form" :name="'email'"/>
-                    <FormPhone :form="form" :name="'phone'"/>
-                </template>
-            </GuiContainer>
-
-            <GuiContainer mt-20 w-50 inline>
-                <GuiHeading mb-30 bold>Промоутер</GuiHeading>
-                <FormString :form="form" :name="'partner_id'" :disabled="form.values['without_partner']"/>
-                <FormCheckBox :form="form" :name="'without_partner'" @change="withoutPartnerChanged"/>
+            <GuiContainer mt-20 mb-20 w-50>
+                <GuiHeading mb-30 bold>Информация о плательщике</GuiHeading>
+                <GuiHint mb-30>Информация предоставляется на случай, если поупателя нужно будет уведомить об отмене рейса или иных непредвиденных обстаятельствах. Не является
+                    обязательной.
+                </GuiHint>
+                <FormString :form="form" :name="'name'"/>
+                <FormString :form="form" :name="'email'"/>
+                <FormPhone :form="form" :name="'phone'"/>
             </GuiContainer>
 
             <GuiContainer w-30 mt-30 inline>
@@ -71,7 +59,8 @@
             </GuiContainer>
 
             <GuiContainer w-70 mt-30 inline text-right>
-                <GuiButton @click="order" :color="'green'" :disabled="!canOrder">Отправить в оплату</GuiButton>
+                <GuiButton @click="reserve" :color="'green'" :disabled="!canOrder" v-if="data.data['can_reserve']">Оформить бронь</GuiButton>
+                <GuiButton @click="order" :color="'green'" :disabled="!canOrder">Оплатить с лицевого счёта</GuiButton>
             </GuiContainer>
         </template>
         <template v-else>
@@ -98,13 +87,9 @@ import deleteEntry from "@/Mixins/DeleteEntry";
 import FormString from "@/Components/Form/FormString";
 import FormPhone from "@/Components/Form/FormPhone";
 import FormNumber from "@/Components/Form/FormNumber";
-import GuiExpand from "@/Components/GUI/GuiExpand";
-import FormCheckBox from "@/Components/Form/FormCheckBox";
 
 export default {
     components: {
-        FormCheckBox,
-        GuiExpand,
         FormNumber,
         FormPhone,
         FormString,
@@ -121,9 +106,8 @@ export default {
     mixins: [deleteEntry],
 
     data: () => ({
-        data: data('/api/cart'),
-        form: form(null, '/api/order/terminal/make'),
-        show_buyer_info: false,
+        data: data('/api/cart/partner'),
+        form: form(null, '/api/order/partner/make'),
     }),
 
     computed: {
@@ -138,7 +122,7 @@ export default {
             let total = 0;
             this.data.data['tickets'].map(ticket => {
                 if (ticket['available'] && !isNaN(ticket['base_price'])) {
-                    total += this.multiply(this.form.values['tickets.' + ticket['id'] + '.price'], this.form.values['tickets.' + ticket['id'] + '.quantity']);
+                    total += this.multiply(ticket['base_price'], this.form.values['tickets.' + ticket['id'] + '.quantity']);
                 }
             });
             return this.multiply(total, 1) + ' руб.';
@@ -165,11 +149,8 @@ export default {
                 .then(data => {
                     this.form.reset();
                     data.data['tickets'].map(ticket => {
-                        this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'], `numeric|min:${ticket['min_price']}|max:${ticket['max_price']}`, 'Цена', true);
                         this.form.set('tickets.' + ticket['id'] + '.quantity', ticket['quantity'], 'integer|min:0', 'Количество', true);
                     });
-                    this.form.set('partner_id', null, 'required_if:without_partner,false', 'ID промоутера', true);
-                    this.form.set('without_partner', false, null, 'Без промоутера', true);
                     this.form.set('name', null, null, 'Имя', true);
                     this.form.set('email', null, 'email|nullable', 'Email', true);
                     this.form.set('phone', null, null, 'Телефон', true);
@@ -183,19 +164,40 @@ export default {
         },
 
         remove(ticket_id) {
-            this.deleteEntry('Удалить билеты из заказа?', '/api/cart/remove', {ticket_id: ticket_id})
+            this.deleteEntry('Удалить билеты из заказа?', '/api/cart/partner/remove', {ticket_id: ticket_id})
                 .then(() => {
                     this.data.data['tickets'] = this.data.data['tickets'].filter(ticket => ticket['id'] !== ticket_id);
                     this.form.unset('tickets.' + ticket_id + '.quantity');
-                    this.$store.dispatch('terminal/refresh');
+                    this.$store.dispatch('partner/refresh');
+                });
+        },
+
+        reserve() {
+            if (!this.canOrder) {
+                return;
+            }
+            this.$dialog.show('Добавить билеты в бронь?', 'question', 'orange', [
+                this.$dialog.button('ok', 'Продолжить', 'orange'),
+                this.$dialog.button('cancel', 'Отмена'),
+            ], 'center')
+                .then((result) => {
+                    if (result === 'ok') {
+                        this.form.options['mode'] = 'reserve';
+                        this.form.save()
+                            .then((values, payload) => {
+                                console.log(values, payload);
+                                this.$store.dispatch('partner/refresh');
+                                this.$router.push({name: 'order-info', params: {id: this.form.payload['order_id']}});
+                            });
+                    }
                 });
         },
 
         order() {
-            if (!this.canOrder || !this.form.validate()) {
+            if (!this.canOrder) {
                 return;
             }
-            this.$dialog.show('Завершить оформление заказа и отправить в оплату?', 'question', 'orange', [
+            this.$dialog.show('Оформить заказ и оплатить с лицевого счёта?', 'question', 'orange', [
                 this.$dialog.button('ok', 'Продолжить', 'orange'),
                 this.$dialog.button('cancel', 'Отмена'),
             ], 'center')
@@ -203,9 +205,10 @@ export default {
                     if (result === 'ok') {
                         this.form.options['mode'] = 'order';
                         this.form.save()
-                            .then(() => {
-                                this.$store.dispatch('terminal/refresh');
-                                this.$router.push({name: 'current'});
+                            .then((values, payload) => {
+                                console.log(values, payload);
+                                this.$store.dispatch('partner/refresh');
+                                this.$router.push({name: 'order-info', params: {id: this.form.payload['order_id']}});
                             });
                     }
                 });
@@ -214,12 +217,6 @@ export default {
         multiply(a, b) {
             return Math.ceil(a * b * 100) / 100;
         },
-
-        withoutPartnerChanged(value) {
-            if (value) {
-                this.form.validate('partner_id');
-            }
-        }
     },
 }
 </script>

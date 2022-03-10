@@ -30,6 +30,7 @@
         "xregexp": "^5.1.0",
         "vuex": "^4.0.2",
         "resize-observer-polyfill": "^1.5.1",
+        "vue-imask": "^6.4.2",
         "moment": "^2.29.1"
     },
     "dependencies": {
