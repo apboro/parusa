@@ -7,7 +7,7 @@ use App\Http\Controllers\ApiController;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
-use App\Models\Sails\Excursion;
+use App\Models\Excursions\Excursion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -22,7 +22,7 @@ class ExcursionViewController extends ApiController
             return APIResponse::notFound('Экскурсия не найдена');
         }
 
-        /** @var Excursion $excursion */
+        /** @var \App\Models\Excursions\Excursion $excursion */
 
         // fill data
         $values = [

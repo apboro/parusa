@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API\Tickets;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Excursions\Excursion;
 use App\Models\Partner\Partner;
-use App\Models\Sails\Excursion;
 use App\Models\Tickets\TicketPartnerRate;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
@@ -53,7 +53,7 @@ class PartnerRatesController extends ApiEditController
             ->orderBy('name')
             ->get();
 
-        /** @var Excursion $excursion */
+        /** @var \App\Models\Excursions\Excursion $excursion */
         $excursions = $excursions->map(function (Excursion $excursion) {
             return [
                 'id' => $excursion->id,

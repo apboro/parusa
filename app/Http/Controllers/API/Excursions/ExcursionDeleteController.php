@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API\Excursions;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Models\Sails\Excursion;
+use App\Models\Excursions\Excursion;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -26,7 +26,7 @@ class ExcursionDeleteController extends ApiController
         if ($id === null || null === ($excursion = Excursion::query()->where('id', $id)->first())) {
             return APIResponse::notFound('Экскурсия не найдена');
         }
-        /** @var Excursion $excursion */
+        /** @var \App\Models\Excursions\Excursion $excursion */
 
         $name = $excursion->name;
 

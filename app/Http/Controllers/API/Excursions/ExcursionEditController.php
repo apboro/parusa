@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\API\Sails;
+namespace App\Http\Controllers\API\Excursions;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Common\Image;
-use App\Models\Sails\Excursion;
+use App\Models\Excursions\Excursion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -61,7 +61,7 @@ class ExcursionEditController extends ApiEditController
             $this->rules,
             $this->titles,
             [
-                'title' => $excursion->exists ? $excursion->name : 'Добавление экскурсии',
+                'name' => $excursion->exists ? $excursion->name : 'Добавление экскурсии',
             ]
         );
     }
@@ -109,7 +109,7 @@ class ExcursionEditController extends ApiEditController
             $excursion->wasRecentlyCreated ? 'Экскурсия добавлена' : 'Данные экскурсии обновлены',
             [
                 'id' => $excursion->id,
-                'title' => $excursion->name,
+                'name' => $excursion->name,
             ]
         );
     }

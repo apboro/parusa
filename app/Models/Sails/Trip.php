@@ -9,6 +9,7 @@ use App\Interfaces\Statusable;
 use App\Models\Dictionaries\TripDiscountStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
+use App\Models\Excursions\Excursion;
 use App\Models\Model;
 use App\Models\Piers\Pier;
 use App\Models\Ships\Ship;

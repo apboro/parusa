@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Models\Sails;
+namespace App\Models\Excursions;
 
+use App\Models\Dictionaries\ExcursionStatus;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 trait ExcursionAsDictionary
 {
@@ -12,7 +14,7 @@ trait ExcursionAsDictionary
             ->select([
                 'id',
                 'name',
-                'status_id as enabled', // TODO sub select status_id === ExcursionStatus::active
+                DB::raw('IF(status_id = ' . ExcursionStatus::active . ', true, false) as enabled'),
                 'name as order',
                 'created_at',
                 'updated_at',

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API\Rates;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
-use App\Models\Sails\Excursion;
+use App\Models\Excursions\Excursion;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
 use Carbon\Carbon;

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API\Excursions;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\ExcursionStatus;
-use App\Models\Sails\Excursion;
+use App\Models\Excursions\Excursion;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Sails;
+namespace App\Models\Excursions;
 
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

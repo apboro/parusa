@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Sails;
+namespace App\Models\Excursions;
 
 use App\Exceptions\Excursions\WrongExcursionStatusException;
 use App\Interfaces\Statusable;
