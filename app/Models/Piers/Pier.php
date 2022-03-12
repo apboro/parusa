@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Sails;
+namespace App\Models\Piers;
 
 use App\Exceptions\Piers\WrongPierStatusException;
 use App\Interfaces\Statusable;

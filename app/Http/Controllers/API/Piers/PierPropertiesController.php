@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API\Piers;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\PiersStatus;
-use App\Models\Sails\Pier;
+use App\Models\Piers\Pier;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,7 +23,7 @@ class PierPropertiesController extends ApiController
     {
         $id = $request->input('id');
 
-        /** @var Pier $pier */
+        /** @var \App\Models\Piers\Pier $pier */
         if ($id === null || null === ($pier = Pier::query()->where('id', $id)->first())) {
             return APIResponse::notFound('Причал не найден');
         }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\Terminals;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\POS\Terminal;
-use App\Models\Sails\Pier;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;

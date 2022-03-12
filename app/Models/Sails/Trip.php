@@ -10,6 +10,7 @@ use App\Models\Dictionaries\TripDiscountStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Model;
+use App\Models\Piers\Pier;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketsRatesList;
 use App\Settings;
@@ -213,6 +214,7 @@ class Trip extends Model implements Statusable
      */
     public function tickets(): HasMany
     {
+        // TODO add TicketStatus::countable and check
         return $this->hasMany(Ticket::class);
     }
 

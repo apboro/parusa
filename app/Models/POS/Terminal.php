@@ -6,8 +6,8 @@ use App\Exceptions\POS\WrongTerminalStatusException;
 use App\Interfaces\Statusable;
 use App\Models\Dictionaries\TerminalStatus;
 use App\Models\Model;
+use App\Models\Piers\Pier;
 use App\Models\Positions\Position;
-use App\Models\Sails\Pier;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  *
  * @property-read string $name
  * @property TerminalStatus $status
- * @property Pier $pier
+ * @property \App\Models\Piers\Pier $pier
  * @property Collection $staff
  */
 class Terminal extends Model implements Statusable

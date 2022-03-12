@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API\Piers;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Models\Sails\Pier;
+use App\Models\Piers\Pier;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;

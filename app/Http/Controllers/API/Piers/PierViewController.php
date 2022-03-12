@@ -6,7 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\PiersStatus;
-use App\Models\Sails\Pier;
+use App\Models\Piers\Pier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
