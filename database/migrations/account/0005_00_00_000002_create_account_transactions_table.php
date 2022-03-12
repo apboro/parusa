@@ -44,7 +44,7 @@ class CreateAccountTransactionsTable extends Migration
             $table->foreign('account_id')->references('id')->on('accounts')->restrictOnDelete()->cascadeOnUpdate();
             $table->foreign('type_id')->references('id')->on('dictionary_account_transaction_types')->restrictOnDelete()->cascadeOnUpdate();
             $table->foreign('status_id')->references('id')->on('dictionary_account_transaction_statuses')->restrictOnDelete()->cascadeOnUpdate();
-            $table->foreign('committer_id')->references('id')->on('users')->restrictOnDelete()->cascadeOnUpdate();
+            $table->foreign('committer_id')->references('id')->on('positions')->restrictOnDelete()->cascadeOnUpdate();
 
             $table->foreign('order_id')->references('id')->on('orders')->restrictOnDelete()->cascadeOnUpdate();
             $table->foreign('ticket_id')->references('id')->on('tickets')->restrictOnDelete()->cascadeOnUpdate();

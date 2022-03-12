@@ -9,6 +9,7 @@ use App\Interfaces\Statusable;
 use App\Interfaces\Typeable;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
+use App\Models\Positions\Position;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use App\Models\User\User;
@@ -38,7 +39,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Account $account
  * @property AccountTransactionType $type
  * @property AccountTransactionStatus $status
- * @property User|null $committer
+ * @property Position|null $committer
  *
  * @property-read string $reasonTitle
  */
@@ -148,7 +149,7 @@ class AccountTransaction extends Model implements Statusable, Typeable
      */
     public function committer(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'committer_id', 'id');
+        return $this->belongsTo(Position::class, 'committer_id', 'id');
     }
 
     /**

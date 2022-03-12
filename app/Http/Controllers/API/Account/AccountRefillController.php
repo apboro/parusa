@@ -40,6 +40,7 @@ class AccountRefillController extends ApiEditController
         $id = $request->input('partnerId');
         $transactionId = $request->input('transactionId');
 
+        /** @var Partner $partner */
         if ($id === null || null === ($partner = Partner::query()->where('id', $id)->first())) {
             return APIResponse::notFound('Партнёр не найден');
         }
@@ -70,7 +71,6 @@ class AccountRefillController extends ApiEditController
             return APIResponse::formError($data, $this->rules, $this->titles, $errors);
         }
 
-        /** @var Partner $partner */
         if (!$transaction) {
             $partner->account->attachTransaction(new AccountTransaction([
                 'type_id' => $data['type_id'],
@@ -78,7 +78,7 @@ class AccountRefillController extends ApiEditController
                 'amount' => $data['amount'],
                 'reason' => $type->has_reason ? $data['reason'] : null,
                 'reason_date' => $type->has_reason_date ? $data['reason_date'] : null,
-                'committer_id' => Currents::get($request)->position()->user_id,
+                'committer_id' => Currents::get($request)->positionId(),
                 'comments' => $data['comments'],
             ]));
         } else {
@@ -88,7 +88,7 @@ class AccountRefillController extends ApiEditController
                 'amount' => $data['amount'],
                 'reason' => $type->has_reason ? $data['reason'] : null,
                 'reason_date' => $type->has_reason_date ? $data['reason_date'] : null,
-                'committer_id' => Currents::get($request)->position()->user_id,
+                'committer_id' => Currents::get($request)->positionId(),
                 'comments' => $data['comments'],
             ]);
         }
