@@ -4,8 +4,6 @@ import SettingsPage from "../../Pages/Admin/Settings/SettingsPage";
 
 import TicketRefundsListPage from "../../Pages/Admin/TicketRefundsListPage";
 
-import StaffEditPage from "../../Pages/Admin/Company/Staff/StaffEditPage";
-
 import PartnersListPage from "../../Pages/Admin/Partner/Partner/PartnersListPage";
 import PartnerCardPage from "../../Pages/Admin/Partner/Partner/PartnerCardPage";
 import PartnerEditPage from "../../Pages/Admin/Partner/Partner/PartnerEditPage";
@@ -14,7 +12,6 @@ import RepresentativesListPage from "../../Pages/Admin/Partner/Representatives/R
 import RepresentativeCardPage from "../../Pages/Admin/Partner/Representatives/RepresentativeCardPage";
 import RepresentativeEditPage from "../../Pages/Admin/Partner/Representatives/RepresentativeEditPage";
 
-import ExcursionEditPage from "../../Pages/Admin/Sails/Excursions/ExcursionEditPage";
 import DictionariesPage from "../../Pages/Admin/Dictionaries/DictionariesPage";
 
 import TestPage from "@/Pages/Admin/TestPage";
@@ -30,9 +27,12 @@ export default [
     {path: '/registry/tickets/:id', name: 'ticket-info', component: () => import("@/Pages/Admin/Registries/TicketInfoPage"), meta: {title: 'Билет'}},
     {path: '/registry/reserves', name: 'reserves-registry', component: () => import('@/Pages/Admin/Registries/ReservesRegistryPage'), meta: {title: 'Реестр броней'}},
 
+    /**
+     * Staff
+     */
     {path: '/staff', name: 'staff-list', component: () => import('@/Pages/Admin/Staff/StaffListPage'), meta: {title: 'Сотрудники'}},
     {path: '/staff/:id', name: 'staff-view', component: () => import('@/Pages/Admin/Staff/StaffViewPage'), meta: {title: 'Просмотр сотрудника'}},
-    {path: '/staff/:id/edit', name: 'staff-edit', component: StaffEditPage, meta: {title: 'Редактирование сотрудника'}},
+    {path: '/staff/:id/edit', name: 'staff-edit', component: () => import('@/Pages/Admin/Staff/StaffEditPage'), meta: {title: 'Редактирование сотрудника'}},
 
     {path: '/partners', name: 'partners-list', component: PartnersListPage, meta: {title: 'Компании-партнёры'}},
     {path: '/partners/:id', name: 'partners-view', component: PartnerCardPage, meta: {title: 'Просмотр партнёра'}},
@@ -57,7 +57,7 @@ export default [
 
     {path: '/excursions', name: 'excursion-list', component: () => import('@/Pages/Admin/Excursions/ExcursionsListPage'), meta: {title: 'Каталог экскурсий'}},
     {path: '/excursions/:id', name: 'excursion-view', component: () => import('@/Pages/Admin/Excursions/ExcursionViewPage'), meta: {title: 'Просмотр экскурсии'}},
-    {path: '/excursions/:id/edit', name: 'excursion-edit', component: ExcursionEditPage, meta: {title: 'Редактирование экскурсии'}},
+    {path: '/excursions/:id/edit', name: 'excursion-edit', component: () => import('@/Pages/Admin/Excursions/ExcursionEditPage'), meta: {title: 'Редактирование экскурсии'}},
 
     {path: '/trips', name: 'trip-list', component: () => import('@/Pages/Admin/Trips/TripsListPage'), meta: {title: 'Список рейсов'}},
     {path: '/trips/:id', name: 'trip-view', component: () => import('@/Pages/Admin/Trips/TripViewPage'), meta: {title: 'Просмотр рейса'}},

@@ -73,7 +73,7 @@ class StaffListController extends ApiController
             $info = $position->staffInfo;
 
             return [
-                'active' => $user->staffPosition ? $user->staffPosition->hasStatus(PositionStatus::active) : null,
+                'active' => $position->hasStatus(PositionStatus::active),
                 'id' => $user->id,
                 'name' => $profile ? $profile->lastname . ' ' . $profile->firstname . ' ' . $profile->patronymic : null,
                 'position' => $position->title,
@@ -81,7 +81,7 @@ class StaffListController extends ApiController
                 'work_phone' => $info->work_phone,
                 'work_phone_add' => $info->work_phone_additional,
                 'mobile_phone' => $info->mobile_phone,
-                'has_access' => !empty($user->login) && !empty($user->password),
+                'has_access' => !empty($user->login) && !empty($user->password) && $position->hasStatus(PositionStatus::active),
                 'roles' => $position->roles->map(function (Role $role) {
                     return $role->name;
                 }),

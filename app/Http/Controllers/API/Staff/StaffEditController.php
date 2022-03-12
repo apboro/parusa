@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Staff;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\User\Helpers\Currents;
 use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -27,6 +28,8 @@ class StaffEditController extends ApiEditController
         'status_id' => 'Статус трудоустройства',
         'position_title' => 'Должность',
 
+        'external_id' => 'Внешний ID сотрудника',
+
         'birthdate' => 'Дата рождения',
         'gender' => 'Пол',
 
@@ -41,8 +44,6 @@ class StaffEditController extends ApiEditController
         'whatsapp' => 'WhatsApp',
 
         'notes' => 'Заметки',
-
-        'external_id' => 'Внешний ID сотрудника',
     ];
 
     /**
@@ -74,7 +75,7 @@ class StaffEditController extends ApiEditController
                 'patronymic' => $profile->patronymic,
                 'status_id' => $position->status_id,
                 'position_title' => $position->title,
-                'birthdate' => $profile->birthdate ? $profile->birthdate->format('d.m.Y') : null,
+                'birthdate' => $profile->birthdate ? $profile->birthdate->format('Y-m-d') : null,
                 'gender' => $profile->gender,
                 'email' => $info->email,
                 'work_phone' => $info->work_phone,
@@ -91,7 +92,7 @@ class StaffEditController extends ApiEditController
             $this->rules,
             $this->titles,
             [
-                'title' => $user->exists ? $user->profile->fullName : 'Добавление сотрудника',
+                'name' => $user->exists ? $user->profile->fullName : 'Добавление сотрудника',
             ]
         );
     }
@@ -108,7 +109,7 @@ class StaffEditController extends ApiEditController
         $data = $this->getData($request);
 
         if ($errors = $this->validate($data, $this->rules, $this->titles)) {
-            return APIResponse::formError($data, $this->rules, $this->titles, $errors);
+            return APIResponse::validationError($errors);
         }
 
         /** @var User|null $user */
@@ -118,7 +119,14 @@ class StaffEditController extends ApiEditController
             return APIResponse::notFound('Сотрудник не найен');
         }
 
-        $user->save();
+        if ($user->exists) {
+            $current = Currents::get($request);
+            if($current->positionId() === $user->staffPosition->id && !$user->staffPosition->hasStatus($data['status_id'])) {
+                return APIResponse::validationError(['status_id' => ['Нельзя изменить свой статус трудоустройства.']]);
+            }
+        } else {
+            $user->save();
+        }
 
         $profile = $user->profile;
         $profile->lastname = $data['last_name'];
@@ -152,7 +160,7 @@ class StaffEditController extends ApiEditController
             $user->wasRecentlyCreated ? 'Сотрудник добавлен' : 'Данные сотрудника обновлены',
             [
                 'id' => $user->id,
-                'title' => $profile->fullName,
+                'name' => $profile->fullName,
             ]
         );
     }

@@ -15,7 +15,7 @@ Route::post('/staff/properties', [StaffPropertiesController::class, 'properties'
 Route::post('/staff/access/set', [StaffAccessController::class, 'set'])->middleware(['allow:staff_admin']);
 Route::post('/staff/access/release', [StaffAccessController::class, 'release'])->middleware(['allow:staff_admin']);
 
-Route::post('/company/staff/get', [StaffEditController::class, 'get'])->middleware(['allow:staff_admin']);
-Route::post('/company/staff/update', [StaffEditController::class, 'update'])->middleware(['allow:staff_admin']);
+Route::post('/staff/get', [StaffEditController::class, 'get'])->middleware(['allow:staff_admin']);
+Route::post('/staff/update', [StaffEditController::class, 'update'])->middleware(['allow:staff_admin']);
 
 Route::post('/staff/delete', [StaffDeleteController::class, 'delete'])->middleware(['allow:staff_admin']);

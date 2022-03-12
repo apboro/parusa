@@ -6,8 +6,11 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\Role;
+use App\Models\POS\Terminal;
+use App\Models\User\Helpers\Currents;
 use App\Models\User\User;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -36,15 +39,30 @@ class StaffPropertiesController extends ApiController
             return APIResponse::error('Неверно заданы параметры');
         }
 
+        $current = Currents::get($request);
+
         try {
             switch ($name) {
                 case 'status_id':
-                    $user->setStatus((int)$value);
+                    // Check self change status
+                    if ($current->positionId() === $user->staffPosition->id && !$user->hasStatus((int)$value)) {
+                        return APIResponse::error('Нельзя изменить свой статус трудоустройства.');
+                    }
+                    $user->staffPosition->setStatus((int)$value);
                     break;
                 case 'roles':
-                    // TODO add role disabling check
-                    // 1. self turn off of admin
-                    // 2. turn off assigned terminal users
+                    // Check self turn off of admin
+                    if ($current->positionId() === $user->staffPosition->id && !in_array(Role::admin, $value, true) && $user->staffPosition->hasRole(Role::admin)) {
+                        return APIResponse::error('Нельзя отключить роль адимнистратора для себя.');
+                    }
+                    // Check turn off assigned terminal users
+                    if (!in_array(Role::terminal, $value, true) && $user->staffPosition->hasRole(Role::terminal)
+                        && Terminal::query()->whereHas('staff', function (Builder $query) use ($user) {
+                            $query->where('position_id', $user->staffPosition->id);
+                        })->count() > 0
+                    ) {
+                        return APIResponse::error('Нельзя отключить роль кассира, сотрудник привязан к кассе.');
+                    }
                     $user->staffPosition->roles()->sync($value);
                     $user->touch();
                     break;
@@ -55,9 +73,9 @@ class StaffPropertiesController extends ApiController
         }
 
         return APIResponse::response([], [
-            'status' => $user->status->name,
-            'status_id' => $user->status_id,
-            'active' => $user->hasStatus(PositionStatus::active),
+            'status' => $user->staffPosition->status->name,
+            'status_id' => $user->staffPosition->status_id,
+            'active' => $user->staffPosition->hasStatus(PositionStatus::active),
             'roles' => $user->staffPosition->roles->pluck('id')->toArray(),
         ], "Данные сотрудника обновлёны");
     }
