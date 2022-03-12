@@ -20,6 +20,7 @@
         :center="center"
         :small="small"
         @change="change"
+        @drop="$emit('drop')"
         ref="input"
     />
 </template>
@@ -48,6 +49,8 @@ export default {
         center: {type: Boolean, default: false},
         small: {type: Boolean, default: false},
     },
+
+    emits: ['drop'],
 
     mixins: [FormMixin],
 }

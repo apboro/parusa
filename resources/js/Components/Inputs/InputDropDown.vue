@@ -58,6 +58,14 @@ export default {
 
     components: {InputWrapper, IconDropdown, ScrollBox, InputSearch},
 
+    watch: {
+        options() {
+            if (this.dropped) {
+                this.updateHeight();
+            }
+        }
+    },
+
     data: () => ({
         dropped: false,
         dropping: false,

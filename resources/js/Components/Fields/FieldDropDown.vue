@@ -18,6 +18,7 @@
             :placeholder="placeholder"
             :small="small"
             @change="change"
+            @drop="$emit('drop')"
             ref="input"
         />
     </FieldWrapper>
@@ -56,7 +57,7 @@ export default {
         center: {type: Boolean, default: false},
     },
 
-    emits: ['update:modelValue', 'change'],
+    emits: ['update:modelValue', 'change', 'drop'],
 
     computed: {
         proxyValue: {
