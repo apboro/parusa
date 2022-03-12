@@ -38,7 +38,7 @@ class TransactionsListController extends ApiController
     {
         $current = Currents::get($request);
 
-        $id = $current->isStaff() ? $request->input('id') : $current->position()->partner_id;
+        $id = $current->isStaff() ? $request->input('id') : $current->partnerId();
 
         /** @var Partner $partner */
         if (null === ($partner = Partner::query()->with(['account'])->where('id', $id)->first())) {
@@ -47,7 +47,7 @@ class TransactionsListController extends ApiController
 
         $account = $partner->account;
 
-        $query = $account->transactions()->with(['committer', 'committer.profile']);
+        $query = $account->transactions()->with(['committer', 'committer.user.profile']);
 
         $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('d.m.Y');
         $this->defaultFilters['date_to'] = Carbon::now()->format('d.m.Y');
@@ -96,7 +96,7 @@ class TransactionsListController extends ApiController
                 'reason_date' => $transaction->reason_date ? $transaction->reason_date->format('d.m.Y H:i') : null,
                 'reason_title' => $transaction->reasonTitle,
                 'comments' => $transaction->comments,
-                'operator' => $transaction->committer ? $transaction->committer->profile->compactName : null,
+                'operator' => $transaction->committer ? $transaction->committer->user->profile->compactName : null,
                 'editable' => $transaction->type->editable,
                 'deletable' => $transaction->type->deletable,
             ];
