@@ -28,13 +28,19 @@
         <GuiHeading mt-20 bold right>Итого: {{ data['order_total'] }} руб.</GuiHeading>
         <GuiContainer mt-30>
             <GuiButton :color="'green'" :disabled="!data['actions']['start_payment']" @clicked="sendPayment">Отправить в оплату</GuiButton>
-            <GuiButton :color="'red'" :disabled="!data['actions']['delete_order']" @clicked="deleteOrder">Расформировать заказ</GuiButton>
+            <GuiButton :color="'red'" :disabled="!data['actions']['cancel_order']" @clicked="deleteOrder">Отменить заказ</GuiButton>
         </GuiContainer>
         <GuiContainer mt-30>
             <LoadingProgress :loading="true" v-if="data['status']['waiting_for_payment']">
                 <GuiMessage>Ожидание оплаты</GuiMessage>
             </LoadingProgress>
             <GuiButton :color="'red'" :disabled="!data['actions']['cancel_payment']" @clicked="cancelPayment">Отмена оплаты</GuiButton>
+        </GuiContainer>
+        <GuiContainer mt-30>
+            <GuiButton :color="'greed'" :disabled="!data['actions']['print']">Печать билетов</GuiButton>
+        </GuiContainer>
+        <GuiContainer mt-30>
+            <GuiButton :color="'greed'" :disabled="!data['actions']['finish']" @clicked="closeOrder">Закрыть заказ</GuiButton>
         </GuiContainer>
     </LoadingProgress>
 </template>
@@ -63,14 +69,44 @@ export default {
 
     data: () => ({
         processing: false,
+        interval: null,
+        print_fired: false,
     }),
 
+    mounted() {
+        this.interval = setInterval(this.handleInterval, 1000);
+    },
+
+    unmounted() {
+        clearInterval(this.interval);
+        this.interval = null;
+    },
+
     methods: {
+        handleInterval() {
+            if (this.data['status']['waiting_for_payment']) {
+                axios.post('/api/order/terminal/status', {})
+                    .then(response => {
+                        if (response.data.data['waiting_for_pay'] === false) {
+                            this.$emit('update');
+                            if (!this.print_fired) {
+                                this.$toast.info('Print!');
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        this.$toast.error(error.response.data.data['message']);
+                    })
+            }
+        },
         cancelPayment() {
             this.runAction('/api/order/terminal/cancel');
         },
         sendPayment() {
             this.runAction('/api/order/terminal/send');
+        },
+        closeOrder() {
+            this.runAction('/api/order/terminal/close');
         },
         deleteOrder() {
             this.$dialog.show('Расформировать заказ?', 'question', 'red', [

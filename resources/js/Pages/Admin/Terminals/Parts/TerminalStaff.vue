@@ -45,12 +45,15 @@
                    ref="popup"
         >
             <GuiContainer w-350px>
-                <FormDictionary :form="form" :name="'staff_id'"
-                                :dictionary="'terminal_positions'"
-                                :placeholder="'Выберите сотрудника'"
-                                :fresh="true"
-                                :hide-title="true"
-                                :search="true"
+                <FormDropdown :form="form" :name="'staff_id'"
+                              :options="staff"
+                              :identifier="'id'"
+                              :show="'name'"
+                              :placeholder="'Выберите сотрудника'"
+                              :fresh="true"
+                              :hide-title="true"
+                              :search="true"
+                              @drop="updateDictionary"
                 />
             </GuiContainer>
         </FormPopUp>
@@ -72,6 +75,7 @@ import GuiAccessIndicator from "@/Components/GUI/GuiAccessIndicator";
 import GuiMessage from "@/Components/GUI/GuiMessage";
 import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import DeleteEntry from "@/Mixins/DeleteEntry";
+import FormDropdown from "@/Components/Form/FormDropdown";
 
 export default {
     props: {
@@ -85,6 +89,7 @@ export default {
     mixins: [DeleteEntry],
 
     components: {
+        FormDropdown,
         GuiActionsMenu,
         GuiMessage,
         GuiAccessIndicator,
@@ -98,12 +103,32 @@ export default {
         GuiButton
     },
 
+    computed: {
+        assigned() {
+            if (this.data === null) {
+                return [];
+            }
+            let assigned = [];
+            this.data['staff'].map(staff => {
+                assigned.push(staff['id']);
+            });
+            return assigned;
+        },
+        staff() {
+            if (this.$store.getters['dictionary/ready']('terminal_positions') === null) {
+                return [];
+            }
+            return this.$store.getters['dictionary/dictionary']('terminal_positions').filter(position => this.assigned.indexOf(position['id']) === -1);
+        },
+    },
+
     data: () => ({
         form: form(null, '/api/terminals/attach'),
     }),
 
     created() {
         this.form.toaster = this.$toast;
+        this.updateDictionary();
     },
 
     methods: {
@@ -121,6 +146,9 @@ export default {
                 .then(() => {
                     this.$emit('detach', user['id']);
                 });
+        },
+        updateDictionary() {
+            this.$store.dispatch('dictionary/refresh', 'terminal_positions');
         },
     }
 }

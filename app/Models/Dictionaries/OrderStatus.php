@@ -29,16 +29,20 @@ class OrderStatus extends AbstractDictionary
 
     public const terminal_creating = 31;
     public const terminal_wait_for_pay = 41;
-    public const terminal_printing = 45;
+    public const terminal_finishing = 45;
     public const terminal_paid = 50;
+    public const terminal_canceled = 51;
 
     public const partner_commission_pay_statuses = [
         self::partner_paid,
+        self::terminal_paid,
     ];
 
     public const order_paid_statuses = [
         self::partner_paid,
         self::partner_returned,
+        self::terminal_finishing,
+        self::terminal_paid,
     ];
 
     public const order_reserved_statuses = [
@@ -48,6 +52,6 @@ class OrderStatus extends AbstractDictionary
     public const terminal_processing_statuses = [
         self::terminal_creating,
         self::terminal_wait_for_pay,
-        self::terminal_printing,
+        self::terminal_finishing,
     ];
 }

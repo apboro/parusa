@@ -279,7 +279,7 @@ class Order extends Model implements Statusable, Typeable
      */
     public function payCommissions(): void
     {
-        if (!in_array($this->status_id, OrderStatus::partner_commission_pay_statuses)) {
+        if ($this->partner_id === null || !in_array($this->status_id, OrderStatus::partner_commission_pay_statuses)) {
             return;
         }
 

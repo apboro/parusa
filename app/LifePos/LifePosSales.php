@@ -2,7 +2,6 @@
 
 namespace App\LifePos;
 
-use App\Models\Dictionaries\OrderStatus;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\Tickets\Order;
@@ -127,7 +126,13 @@ class LifePosSales
         $orgId = env('LIFE_POS_ORG_ID');
 
         try {
-            $result = $client->delete("/v4/orgs/{$orgId}/deals/sales/{$order->external_id}");
+            $result = $client->patch("/v4/orgs/{$orgId}/deals/sales/{$order->external_id}", [
+                'json' => [[
+                    "op" => "replace",
+                    "path" => "/status",
+                    "value" => "Canceled",
+                ]],
+            ]);
         } catch (GuzzleException $exception) {
             throw new RuntimeException($exception->getMessage());
         }

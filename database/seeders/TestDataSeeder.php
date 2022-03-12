@@ -4,13 +4,13 @@ namespace Database\Seeders;
 
 use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionType;
+use App\Models\Excursions\Excursion;
 use App\Models\Partner\Partner;
+use App\Models\Piers\Pier;
 use App\Models\Positions\Position;
 use App\Models\Positions\PositionInfo;
 use App\Models\Positions\StaffPositionInfo;
-use App\Models\Sails\Excursion;
-use App\Models\Sails\Pier;
-use App\Models\Sails\Ship;
+use App\Models\Ships\Ship;
 use App\Models\User\User;
 use App\Models\User\UserProfile;
 use Carbon\Carbon;
@@ -133,7 +133,7 @@ class TestDataSeeder extends Seeder
         ];
 
         foreach ($piers as $pierData) {
-            /** @var Pier $pier */
+            /** @var \App\Models\Piers\Pier $pier */
             $pier = Pier::factory()->create(['name' => $pierData['name']]);
             $pier->info()->create([
                 'address' => $pierData['address'],

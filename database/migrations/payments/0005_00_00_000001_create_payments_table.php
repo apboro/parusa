@@ -15,11 +15,20 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', static function (Blueprint $table) {
             $table->id();
+            $table->string('gate');
+            $table->unsignedInteger('order_id');
 
-            $table->unsignedInteger('status_id');
+            $table->string('fiscal')->nullable();
+
+            $table->unsignedInteger('total');
+            $table->unsignedInteger('by_card');
+            $table->unsignedInteger('by_cash');
+
+            $table->string('external_id')->nullable();
 
             $table->timestamps();
 
+            $table->foreign('order_id')->references('id')->on('orders')->restrictOnDelete()->restrictOnUpdate();
         });
     }
 

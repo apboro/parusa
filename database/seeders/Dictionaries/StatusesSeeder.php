@@ -74,11 +74,12 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::partner_reserve => ['name' => 'Забронирован'],
             TicketStatus::partner_paid => ['name' => 'Оплачен'],
             TicketStatus::partner_returned => ['name' => 'Оформлен возврат'],
-            TicketStatus::terminal_creating => ['name' => 'Офопмление'],
+            TicketStatus::terminal_creating => ['name' => 'Оформление'],
             TicketStatus::terminal_wait_for_pay => ['name' => 'Ожидает оплаты'],
-            TicketStatus::terminal_printing => ['name' => 'Печать'],
-            TicketStatus::terminal_paid => ['name' => 'Опдачен'],
-            TicketStatus::expired => ['name' => 'Просрочен'],
+            TicketStatus::terminal_finishing => ['name' => 'Печать'],
+            TicketStatus::terminal_paid => ['name' => 'Оплачен'],
+            TicketStatus::terminal_canceled => ['name' => 'Оплачен'],
+            TicketStatus::expired => ['name' => 'Отменён'],
             // использован после просрочки
         ],
 
@@ -86,10 +87,11 @@ class StatusesSeeder extends GenericSeeder
             OrderStatus::partner_reserve => ['name' => 'Бронь'],
             OrderStatus::partner_paid => ['name' => 'Оплачен'],
             OrderStatus::partner_returned => ['name' => 'Оформлен возврат'],
-            OrderStatus::terminal_creating => ['name' => 'Создаётся'],
+            OrderStatus::terminal_creating => ['name' => 'Новый'],
             OrderStatus::terminal_wait_for_pay => ['name' => 'Ожидает оплаты'],
-            OrderStatus::terminal_printing => ['name' => 'Печать билетов'],
+            OrderStatus::terminal_finishing => ['name' => 'Завершение оформления'],
             OrderStatus::terminal_paid => ['name' => 'Оплачен'],
+            OrderStatus::terminal_canceled => ['name' => 'Отменён'],
         ],
 
         TerminalStatus::class => [

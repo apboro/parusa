@@ -52,6 +52,10 @@ return [
             'url' => env('APP_URL') . '/api/partners/files',
 //            'visibility' => 'public',
         ],
+        'fiscal' => [
+            'driver' => 'local',
+            'root' => storage_path('app/fiscal'),
+        ],
 
         's3' => [
             'driver' => 's3',

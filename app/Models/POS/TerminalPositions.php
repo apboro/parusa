@@ -2,6 +2,7 @@
 
 namespace App\Models\POS;
 
+use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\Role;
 use App\Models\Positions\Position;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,12 +14,6 @@ class TerminalPositions extends Position
 
     public static function asDictionary(): Builder
     {
-        if (DB::getDefaultConnection() === 'sqlite') {
-            $name = DB::raw('user_profiles.lastname || \' \' || user_profiles.firstname || \' \' || user_profiles.patronymic as name');
-        } else {
-            $name = DB::raw('CONCAT_WS(\' \', user_profiles.lastname, user_profiles.firstname, user_profiles.patronymic) as name');
-        }
-
         return self::query()
             ->leftJoin('users', 'users.id', '=', 'positions.user_id')
             ->leftJoin('user_profiles', 'users.id', '=', 'user_profiles.user_id')
@@ -28,11 +23,11 @@ class TerminalPositions extends Position
             })
             ->select([
                 'positions.id',
-                $name,
-                'positions.status_id as enabled', // TODO subselect status_id === PartnerStatus::active
+                DB::raw('CONCAT_WS(\' \', user_profiles.lastname, user_profiles.firstname, user_profiles.patronymic) as name'),
+                DB::raw('IF(positions.status_id = ' . PositionStatus::active . ', true, false) as enabled'),
                 'user_profiles.lastname as order',
-                'users.created_at as created_at',
-                'users.updated_at as updated_at',
+                'positions.created_at as created_at',
+                'positions.updated_at as updated_at',
             ]);
     }
 }

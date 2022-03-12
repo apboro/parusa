@@ -2,8 +2,8 @@
 
 namespace App\Models\Tickets;
 
+use App\Models\Excursions\Excursion;
 use App\Models\Model;
-use App\Models\Sails\Excursion;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

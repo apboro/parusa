@@ -9,20 +9,16 @@ use App\Http\Controllers\API\Terminals\TerminalStaffController;
 use App\Http\Controllers\API\Terminals\TerminalViewController;
 use Illuminate\Support\Facades\Route;
 
-// List
 Route::post('/terminals', [TerminalsListController::class, 'list'])->middleware(['allow:staff_admin']);
 
-// View
 Route::post('/terminals/view', [TerminalViewController::class, 'view'])->middleware(['allow:staff_admin']);
 Route::post('/terminals/properties', [TerminalPropertiesController::class, 'properties'])->middleware(['allow:staff_admin']);
 Route::post('/terminals/attach', [TerminalStaffController::class, 'attach'])->middleware(['allow:staff_admin']);
 Route::post('/terminals/detach', [TerminalStaffController::class, 'detach'])->middleware(['allow:staff_admin']);
 
-// Edit
 Route::post('/terminals/get', [TerminalEditController::class, 'get'])->middleware(['allow:staff_admin']);
 Route::post('/terminals/update', [TerminalEditController::class, 'update'])->middleware(['allow:staff_admin']);
 
-// Delete
 Route::post('/terminals/delete', [TerminalDeleteController::class, 'delete'])->middleware(['allow:staff_admin']);
 
 // Info

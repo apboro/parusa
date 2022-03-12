@@ -128,7 +128,7 @@ class Ticket extends Model implements Statusable
      */
     public function setBasePriceAttribute(?float $value): void
     {
-        $this->attributes['base_price'] = $value ? PriceConverter::priceToStore($value) : null;
+        $this->attributes['base_price'] = $value !== null ? PriceConverter::priceToStore($value) : null;
     }
 
     /**
@@ -153,6 +153,11 @@ class Ticket extends Model implements Statusable
     public function payCommission(): void
     {
         $partner = $this->order->partner;
+
+        if ($partner === null) {
+            return;
+        }
+
         $rateList = $this->trip->getRate();
 
         /** @var TicketRate $rate */

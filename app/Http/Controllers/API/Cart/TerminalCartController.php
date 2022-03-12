@@ -99,16 +99,20 @@ class TerminalCartController extends ApiEditController
 
             'has_order' => $order !== null,
             'order_id' => $order->id ?? null,
+            'order_external_id' => $order->external_id ?? null,
             'order_status' => $order ? $order->status->name : null,
             'order_total' => $order ? $order->total() : null,
             'order_tickets' => $orderTickets,
             'actions' => [
                 'start_payment' => $order && $order->hasStatus(OrderStatus::terminal_creating),
-                'delete_order' => $order && $order->hasStatus(OrderStatus::terminal_creating),
+                'cancel_order' => $order && $order->hasStatus(OrderStatus::terminal_creating),
                 'cancel_payment' => $order && $order->hasStatus(OrderStatus::terminal_wait_for_pay),
+                'print' => $order && $order->hasStatus(OrderStatus::terminal_finishing),
+                'finish' => $order && $order->hasStatus(OrderStatus::terminal_finishing),
             ],
             'status' => [
                 'waiting_for_payment' => $order && $order->hasStatus(OrderStatus::terminal_wait_for_pay),
+                'finishing' => $order && $order->hasStatus(OrderStatus::terminal_finishing),
             ],
         ], []);
     }
