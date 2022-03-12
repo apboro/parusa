@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Sails;
+namespace App\Models\Ships;
 
 use Illuminate\Database\Eloquent\Builder;
 

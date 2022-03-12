@@ -29,7 +29,7 @@ use App\Models\Partner\Partner;
 use App\Models\Piers\Pier;
 use App\Models\POS\TerminalPositions;
 use App\Models\Sails\Excursion;
-use App\Models\Sails\Ship;
+use App\Models\Ships\Ship;
 use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;

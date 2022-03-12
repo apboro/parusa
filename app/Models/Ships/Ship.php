@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Sails;
+namespace App\Models\Ships;
 
 use App\Exceptions\Sails\WrongShipStatusException;
 use App\Exceptions\Sails\WrongShipTypeException;

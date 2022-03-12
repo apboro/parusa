@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API\Dictionary;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\TicketGrade;
-use App\Models\Sails\Ship;
+use App\Models\Ships\Ship;
 
 trait EditableDictionaries
 {
