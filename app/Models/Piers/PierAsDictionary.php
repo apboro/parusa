@@ -2,7 +2,9 @@
 
 namespace App\Models\Piers;
 
+use App\Models\Dictionaries\PiersStatus;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 trait PierAsDictionary
 {
@@ -12,7 +14,7 @@ trait PierAsDictionary
             ->select([
                 'id',
                 'name',
-                'status_id as enabled', // TODO sub select status_id === PierStatus::active
+                DB::raw('IF(status_id = ' . PiersStatus::active . ', true, false) as enabled'),
                 'name as order',
                 'created_at',
                 'updated_at',
