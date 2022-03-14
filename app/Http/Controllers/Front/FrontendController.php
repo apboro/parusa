@@ -138,11 +138,21 @@ class FrontendController extends Controller
      */
     protected function variantRecord(Position $position, ?Role $role, ?Terminal $terminal): array
     {
+        if ($position->is_staff) {
+            if ($role && $terminal && $role->matches(Role::terminal)) {
+                $title = "$terminal->name ({$terminal->pier->name})";
+            } else {
+                $title = __('common.root account caption');
+            }
+        } else {
+            $title = $position->partner->name;
+        }
+
         return [
             'is_staff' => $position->is_staff,
             'position_id' => $position->id,
             'position' => $position->title,
-            'organization' => $position->is_staff ? __('common.root organization') : $position->partner->name,
+            'organization' => $title,
             'role_id' => $role->id ?? null,
             'role' => $role->name ?? null,
             'terminal_id' => $terminal->id ?? null,
@@ -209,7 +219,7 @@ class FrontendController extends Controller
         return response()->view('admin', [
             'user' => json_encode([
                 'name' => $this->e($current->user()->profile->compactName),
-                'organization' => $this->e(__('common.root organization')),
+                'organization' => $this->e(__('common.root account caption')),
                 'position' => $this->e($current->position()->title),
                 'positions' => $canChangePosition,
                 'can_reserve' => false,
@@ -225,7 +235,7 @@ class FrontendController extends Controller
         return response()->view('terminal', [
             'user' => json_encode([
                 'name' => $this->e($current->user()->profile->compactName),
-                'organization' => $this->e(__('common.root organization') . ' - ' . $current->terminal()->name),
+                'organization' => $this->e($current->terminal()->name),
                 'position' => $this->e($current->position()->title),
                 'positions' => $canChangePosition,
                 'can_reserve' => false,

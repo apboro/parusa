@@ -22,7 +22,7 @@
             <?php if(!$variant['is_staff']): ?>
             <p class="card__item-head-sub-title">должность: {{ $variant['position'] }}</p>
             <?php else: ?>
-            <p class="card__item-head-sub-title">роль: {{ $variant['role'] }}<?php echo $variant['terminal'] ? ', ' . $variant['terminal'] : ''; ?></p>
+            <p class="card__item-head-sub-title">роль: {{ $variant['role'] }}</p>
             <?php endif; ?>
         </div>
         <div class="card__item-body">
