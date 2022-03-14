@@ -230,6 +230,15 @@ class FrontendController extends Controller
             ->withCookie($current->terminalToCookie());
     }
 
+    /**
+     * Render terminal page.
+     *
+     * @param Currents $current
+     * @param bool $canChangePosition
+     *
+     * @return Response
+     * @throws JsonException
+     */
     protected function terminalPage(Currents $current, bool $canChangePosition): Response
     {
         return response()->view('terminal', [
