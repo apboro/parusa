@@ -14,8 +14,19 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+            <LayoutFiltersItem :title="'Способ продажи'">
+                <DictionaryDropDown
+                    :dictionary="'order_types'"
+                    v-model="list.filters['order_type_id']"
+                    :original="list.filters_original['order_type_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
             <template #search>
-                <LayoutFiltersItem :title="'Поиск по номеру заказа, брони'">
+                <LayoutFiltersItem :title="'Поиск по номеру заказа, билета'">
                     <InputSearch v-model="list.search" @change="list.load()"/>
                 </LayoutFiltersItem>
             </template>
@@ -38,9 +49,6 @@
                     </ListTableCell>
                     <ListTableCell>
                         {{ order['amount'] }} руб.
-                    </ListTableCell>
-                    <ListTableCell>
-                        {{ order['valid_before'] }}
                     </ListTableCell>
                     <ListTableCell style="padding-top: 5px; padding-bottom: 5px">
                         <GuiExpand @expand="expandTickets(order)"/>
@@ -85,16 +93,18 @@
 
         <GuiPagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
-        <PopUp :title="'Информация о брони'" ref="info" :close-on-overlay="true">
+        <PopUp :title="'Информация о заказе'" ref="info" :close-on-overlay="true">
             <template v-if="info">
                 <GuiValue :title="'Имя'">{{ info['buyer_name'] }}</GuiValue>
                 <GuiValue :title="'Email'">{{ info['buyer_email'] }}</GuiValue>
                 <GuiValue :title="'Телефон'">{{ info['buyer_phone'] }}</GuiValue>
                 <GuiValue :title="'Способ продажи'">{{ info['order_type'] }}</GuiValue>
-                <GuiValue :dots="info['position_name'] !== null" :title="'Партнёр'">{{ info['partner'] }}</GuiValue>
+                <GuiValue v-if="info['terminal_name']" :title="'Касса'">{{ info['terminal_name'] }}</GuiValue>
+                <GuiValue :dots="info['position_name'] !== null" :title="info['terminal_name'] ? 'Промоутер' : 'Партнёр'">{{ info['partner'] }}</GuiValue>
                 <GuiValue v-if="info['position_name'] !== null" :dots="false" :title="'Продавец'">{{ info['position_name'] }}</GuiValue>
             </template>
         </PopUp>
+
     </LoadingProgress>
 </template>
 
@@ -103,6 +113,7 @@ import list from "@/Core/List";
 import LoadingProgress from "@/Components/LoadingProgress";
 import LayoutFilters from "@/Components/Layout/LayoutFilters";
 import LayoutFiltersItem from "@/Components/Layout/LayoutFiltersItem";
+import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown";
 import InputSearch from "@/Components/Inputs/InputSearch";
 import ListTable from "@/Components/ListTable/ListTable";
 import ListTableRow from "@/Components/ListTable/ListTableRow";
@@ -124,6 +135,7 @@ export default {
         LoadingProgress,
         LayoutFilters,
         LayoutFiltersItem,
+        DictionaryDropDown,
         InputSearch,
         ListTable,
         ListTableRow,
@@ -141,7 +153,7 @@ export default {
     }),
 
     created() {
-        this.list = list('/api/registries/reserves', {partner_id: this.partnerId});
+        this.list = list('/api/registries/orders', {partner_id: this.partnerId});
         this.list.initial();
     },
 

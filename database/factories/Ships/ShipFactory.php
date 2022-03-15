@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Factories\Sails;
+namespace Database\Factories\Ships;
 
 use App\Models\Dictionaries\ShipStatus;
-use App\Models\Sails\Ship;
+use App\Models\Ships\Ship;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

@@ -16,6 +16,7 @@ use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Model;
 use App\Models\Partner\Partner;
+use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
@@ -44,6 +45,7 @@ use Illuminate\Support\Facades\DB;
  * @property OrderType $type
  * @property Partner $partner
  * @property Position|null $position
+ * @property Terminal|null $terminal
  * @property Collection $tickets
  */
 class Order extends Model implements Statusable, Typeable
@@ -131,6 +133,16 @@ class Order extends Model implements Statusable, Typeable
     public function position(): HasOne
     {
         return $this->hasOne(Position::class, 'id', 'position_id');
+    }
+
+    /**
+     * Order processed terminal.
+     *
+     * @return  HasOne
+     */
+    public function terminal(): HasOne
+    {
+        return $this->hasOne(Terminal::class, 'id', 'terminal_id');
     }
 
     /**
@@ -271,7 +283,7 @@ class Order extends Model implements Statusable, Typeable
     }
 
     /**
-     * Run commission pay for this order.
+     * Pay commissions for this order.
      *
      * @return  void
      *

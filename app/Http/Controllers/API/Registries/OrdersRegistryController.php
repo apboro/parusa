@@ -44,15 +44,25 @@ class OrdersRegistryController extends ApiController
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $query = Order::query()
-            ->with(['type', 'status', 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade', 'partner', 'position', 'position.user', 'position.user.profile'])
+            ->with([
+                'type', 'status',
+                'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade',
+                'partner', 'position', 'position.user', 'position.user.profile', 'terminal'
+            ])
             ->withCount(['tickets'])
-            ->when(!$current->isStaff(), function (Builder $query) use ($current) {
-                $query->where('partner_id', $current->partnerId());
-            })
-            ->when($current->isStaff() && ($request->input('partner_id')), function (Builder $query) use ($request) {
-                $query->where('partner_id', $request->input('partner_id'));
-            })
             ->whereIn('status_id', OrderStatus::order_paid_statuses);
+
+        if ($current->isRepresentative()) {
+            $query->where('partner_id', $current->partnerId());
+        } else if ($current->isStaffTerminal()) {
+            $query->where('terminal_id', $current->terminalId());
+        } else if ($current->isStaffAdmin()) {
+            if ($request->input('partner_id') !== null) {
+                $query->where('partner_id', $request->input('partner_id'));
+            }
+        } else {
+            return APIResponse::error('Неверно заданы параметры');
+        }
 
         // apply filters
         if (!empty($filters['date_from'])) {
@@ -79,13 +89,23 @@ class OrdersRegistryController extends ApiController
         $orders = $query->paginate($request->perPage());
 
         /** @var LengthAwarePaginator $orders */
-        $orders->transform(function (Order $order) {
+        $orders->transform(function (Order $order) use ($current) {
+
+            if ($current->isStaffTerminal()) {
+                $returnable = $order->hasStatus(OrderStatus::terminal_paid) || $order->hasStatus(OrderStatus::terminal_partial_returned);
+            } else if ($current->isRepresentative()) {
+                $returnable = $order->hasStatus(OrderStatus::partner_paid) || $order->hasStatus(OrderStatus::partner_partial_returned);
+            } else {
+                $returnable = false;
+            }
+
             return
                 [
                     'id' => $order->id,
                     'date' => $order->created_at->format('d.m.Y, H:i'),
                     'tickets_total' => $order->getAttribute('tickets_count'),
                     'amount' => $order->tickets->sum('base_price'),
+                    'returnable' => $returnable,
                     'info' => [
                         'buyer_name' => $order->name,
                         'buyer_email' => $order->email,
@@ -95,6 +115,8 @@ class OrdersRegistryController extends ApiController
                         'partner' => $order->partner->name ?? null,
                         'position_id' => $order->position_id,
                         'position_name' => $order->position ? $order->position->user->profile->compactName : null,
+                        'terminal_id' => $order->terminal_id,
+                        'terminal_name' => $order->terminal->name ?? null,
                     ],
                     'tickets' => $order->tickets->map(function (Ticket $ticket) {
                         return [

@@ -1,4 +1,5 @@
 export default [
-    {'title': 'Подбор билетов', 'route': 'tickets-select'},
-    {'title': 'Возврат билетов', 'route': ''},
+    {'title': 'ПОДБОР БИЛЕТОВ', 'route': 'tickets-select'},
+    {'title': 'ВЫКУП БРОНИ', 'route': 'reserves'},
+    {'title': 'ВОЗВРАТ БИЛЕТОВ', 'route': 'return'},
 ];

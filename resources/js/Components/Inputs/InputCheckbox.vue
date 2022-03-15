@@ -17,7 +17,7 @@ export default {
         value: {type: [Number, String, Boolean], default: null},
         valid: {type: Boolean, default: true},
         disabled: {type: Boolean, default: false},
-        label: {type: String, default: false},
+        label: {type: String, default: null},
         small: {type: Boolean, default: false},
     },
 

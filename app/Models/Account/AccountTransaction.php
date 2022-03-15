@@ -191,11 +191,11 @@ class AccountTransaction extends Model implements Statusable, Typeable
             case AccountTransactionType::tickets_buy:
                 return 'Оплата заказа №' . $this->order_id;
             case AccountTransactionType::tickets_buy_return:
-                return '';
+                return 'Возврат билета №' . $this->ticket_id;
             case AccountTransactionType::tickets_sell_commission:
                 return 'Начисление комисионных за продажу билета №' . $this->ticket_id;
             case AccountTransactionType::tickets_sell_commission_return:
-                return '';
+                return 'Возврат комисионных за продажу билета №' . $this->ticket_id;
         }
 
         return null;

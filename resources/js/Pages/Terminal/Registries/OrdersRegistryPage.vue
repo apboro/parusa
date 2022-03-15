@@ -1,17 +1,17 @@
 <template>
     <LayoutPage :title="$route.meta['title']">
-        <PartnerOrderRegistry/>
+        <OrderRegistry/>
     </LayoutPage>
 </template>
 
 <script>
 import LayoutPage from "@/Components/Layout/LayoutPage";
-import PartnerOrderRegistry from "@/Pages/Partner/Registries/Parts/PartnerOrderRegistry";
+import OrderRegistry from "@/Pages/Parts/Registries/OrderRegistry";
 
 export default {
     components: {
+        OrderRegistry,
         LayoutPage,
-        PartnerOrderRegistry,
     },
 }
 </script>

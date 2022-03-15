@@ -78,7 +78,9 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::terminal_wait_for_pay => ['name' => 'Ожидает оплаты'],
             TicketStatus::terminal_finishing => ['name' => 'Печать'],
             TicketStatus::terminal_paid => ['name' => 'Оплачен'],
+            TicketStatus::terminal_returned => ['name' => 'Оформлен возврат'],
             TicketStatus::terminal_canceled => ['name' => 'Оплачен'],
+            TicketStatus::terminal_wait_for_return => ['name' => 'Ожидает возврата'],
             TicketStatus::expired => ['name' => 'Отменён'],
             // использован после просрочки
         ],
@@ -87,11 +89,15 @@ class StatusesSeeder extends GenericSeeder
             OrderStatus::partner_reserve => ['name' => 'Бронь'],
             OrderStatus::partner_paid => ['name' => 'Оплачен'],
             OrderStatus::partner_returned => ['name' => 'Оформлен возврат'],
+            OrderStatus::partner_partial_returned => ['name' => 'Оформлен частичный возврат'],
             OrderStatus::terminal_creating => ['name' => 'Новый'],
             OrderStatus::terminal_wait_for_pay => ['name' => 'Ожидает оплаты'],
             OrderStatus::terminal_finishing => ['name' => 'Завершение оформления'],
             OrderStatus::terminal_paid => ['name' => 'Оплачен'],
             OrderStatus::terminal_canceled => ['name' => 'Отменён'],
+            OrderStatus::terminal_returned => ['name' => 'Оформлен возврат'],
+            OrderStatus::terminal_partial_returned => ['name' => 'Оформлен частичный возврат'],
+            OrderStatus::terminal_wait_for_return => ['name' => 'Ожидает возврата'],
         ],
 
         TerminalStatus::class => [

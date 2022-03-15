@@ -22,7 +22,7 @@ export default [
     {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки'}},
 
     {path: '/registry/orders', name: 'orders-registry', component: () => import('@/Pages/Admin/Registries/OrdersRegistryPage'), meta: {title: 'Реестр заказов'}},
-    {path: '/registry/orders/:id', name: 'order-info', component: () => import("@/Pages/Admin/Registries/OrderInfoPage"), meta: {title: 'Заказ'}},
+    {path: '/registry/orders/:id', name: 'order-info', component: () => import("@/Pages/Admin/Registries/OrderPage"), meta: {title: 'Заказ'}},
     {path: '/registry/tickets', name: 'tickets-registry', component: () => import('@/Pages/Admin/Registries/TicketsRegistryPage'), meta: {title: 'Реестр билетов'}},
     {path: '/registry/tickets/:id', name: 'ticket-info', component: () => import("@/Pages/Admin/Registries/TicketInfoPage"), meta: {title: 'Билет'}},
     {path: '/registry/reserves', name: 'reserves-registry', component: () => import('@/Pages/Admin/Registries/ReservesRegistryPage'), meta: {title: 'Реестр броней'}},

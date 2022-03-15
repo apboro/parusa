@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Factories\Sails;
+namespace Database\Factories\Excursions;
 
 use App\Models\Dictionaries\ExcursionStatus;
-use App\Models\Sails\Excursion;
+use App\Models\Excursions\Excursion;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

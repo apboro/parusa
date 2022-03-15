@@ -39,7 +39,7 @@
             }"
                     @change="sub_tab = $event"
                 />
-                <order-registry v-if="sub_tab === 'sales'" :partner-id="partnerId"/>
+                <AdminOrderRegistry v-if="sub_tab === 'sales'" :partner-id="partnerId"/>
                 <tickets-registry v-if="sub_tab === 'tickets'" :partner-id="partnerId"/>
                 <reserves-registry v-if="sub_tab === 'reserves'" :partner-id="partnerId"/>
             </container>
@@ -57,13 +57,14 @@ import ActionsMenu from "../../../../Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "../../../../Components/Layout/LayoutRoutedTabs";
 import PartnerInfo from "../../../../Parts/Partners/Partner/PartnerInfo";
 import PartnerRepresentatives from "../../../../Parts/Partners/Partner/PartnerRepresentatives";
-import OrderRegistry from "../../../Parts/Registries/OrderRegistry";
 import Container from "../../../../Components/GUI/GuiContainer";
 import TicketsRegistry from "../../../Parts/Registries/TicketsRegistry";
 import ReservesRegistry from "../../../Parts/Registries/ReservesRegistry";
 import LayoutTabs from "../../../../Components/GUI/GuiTabs";
 import PartnerTicketRates from "../../../../Parts/Partners/Partner/PartnerTicketRates";
 import PartnerAccount from "../../../../Parts/Partners/Partner/PartnerAccount";
+
+import AdminOrderRegistry from "@/Pages/Admin/Registries/Parts/AdminOrderRegistry";
 
 export default {
     components: {
@@ -73,13 +74,14 @@ export default {
         ReservesRegistry,
         TicketsRegistry,
         Container,
-        OrderRegistry,
         Page,
         PageTitleBar,
         ActionsMenu,
         LayoutRoutedTabs,
         PartnerInfo,
         PartnerRepresentatives,
+
+        AdminOrderRegistry,
     },
 
     mixins: [DeleteEntry],

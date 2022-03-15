@@ -33,7 +33,7 @@ export default {
         errors: {type: Array, default: null},
         hideTitle: {type: Boolean, default: false},
 
-        label: {type: String, default: false},
+        label: {type: String, default: null},
         value: {type: [Number, String, Boolean], default: null},
 
         small: {type: Boolean, default: false},

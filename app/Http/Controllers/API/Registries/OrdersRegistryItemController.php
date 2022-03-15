@@ -5,10 +5,10 @@ namespace App\Http\Controllers\API\Registries;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Tickets\Order;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -18,21 +18,42 @@ class OrdersRegistryItemController extends ApiController
     {
         $current = Currents::get($request);
 
-        $order = Order::query()
+        $query = Order::query()
             ->where('id', $request->input('id'))
-            ->when(!$current->isStaff(), function (Builder $query) use ($current) {
-                $query->where('partner_id', $current->partnerId());
-            })
-            ->with(['status', 'type', 'tickets.grade', 'partner', 'position.user.profile', 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier'])
-            ->first();
+            ->with([
+                'status', 'type', 'tickets.grade', 'partner', 'position.user.profile', 'terminal',
+                'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier',
+            ]);
+
+        if ($current->isRepresentative()) {
+            $query->where('partner_id', $current->partnerId());
+        } else if ($current->isStaffTerminal()) {
+            $query->where('terminal_id', $current->terminalId());
+        } else if ($current->isStaffAdmin()) {
+            if ($request->input('partner_id')) {
+                $query->where('partner_id', $request->input('partner_id'));
+            }
+        } else {
+            return APIResponse::error('Неверно заданы параметры');
+        }
+
+        /** @var ?Order $order */
+        $order = $query->first();
 
         if ($order === null) {
             return APIResponse::error('Заказ не найден');
         }
 
-        /** @var Order $order */
 
         $reserveValidUntil = $order->reserveValidUntil();
+
+        if ($current->isStaffTerminal()) {
+            $returnable = $order->hasStatus(OrderStatus::terminal_paid) || $order->hasStatus(OrderStatus::terminal_partial_returned);
+        } else if ($current->isRepresentative()) {
+            $returnable = $order->hasStatus(OrderStatus::partner_paid) || $order->hasStatus(OrderStatus::partner_partial_returned);
+        } else {
+            $returnable = false;
+        }
 
         return APIResponse::response([
             'status' => $order->status->name,
@@ -41,7 +62,8 @@ class OrdersRegistryItemController extends ApiController
             'date' => $order->created_at->format('d.m.Y'),
             'time' => $order->created_at->format('H:i'),
             'type' => $order->type->name,
-            'partner' => $order->partner->name,
+            'terminal' => $order->terminal->name ?? null,
+            'partner' => $order->partner->name ?? null,
             'position' => $order->position->user->profile->fullName,
             'tickets' => $order->tickets->map(function (Ticket $ticket) {
                 return [
@@ -54,6 +76,7 @@ class OrdersRegistryItemController extends ApiController
                     'pier' => $ticket->trip->startPier->name,
                     'grade' => $ticket->grade->name,
                     'status' => $ticket->status->name,
+                    'returnable' => in_array($ticket->status_id, TicketStatus::ticket_returnable_statuses, true),
                 ];
             }),
             'total' => $order->tickets->sum('base_price'),
@@ -62,6 +85,9 @@ class OrdersRegistryItemController extends ApiController
             'email' => $order->email,
             'phone' => $order->phone,
             'can_buy' => !$current->isStaff(),
+            'can_return' => $current->isRepresentative() || $current->isStaffTerminal(),
+            'returnable' => $returnable,
+            'is_actual' => in_array($order->status_id, OrderStatus::order_returnable_statuses, true),
         ]);
     }
 }

@@ -31,27 +31,38 @@ class TicketStatus extends AbstractDictionary
     public const terminal_wait_for_pay = 41;
     public const terminal_finishing = 45;
     public const terminal_paid = 50;
+    public const terminal_wait_for_return = 53;
+    public const terminal_returned = 52;
     public const terminal_canceled = 51;
 
 
     /** @var int The ticket had expired */
     public const expired = 255;
 
-    public const countable = [
+    public const ticket_countable_statuses = [
         self::partner_reserve,
         self::partner_paid,
         self::terminal_creating,
         self::terminal_wait_for_pay,
         self::terminal_finishing,
         self::terminal_paid,
+        self::terminal_wait_for_return,
     ];
 
-    public const ticket_sold_statuses = [
+    public const ticket_had_payed_statuses = [
         self::partner_paid,
+        self::partner_returned,
         self::terminal_paid,
+        self::terminal_returned,
     ];
 
     public const ticket_reserved_statuses = [
         self::partner_reserve,
+    ];
+
+    public const ticket_returnable_statuses = [
+        self::partner_paid,
+        self::terminal_paid,
+        self::terminal_wait_for_return,
     ];
 }

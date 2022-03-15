@@ -186,6 +186,36 @@ class Currents
     }
 
     /**
+     * Whether is representative position.
+     *
+     * @return  bool
+     */
+    public function isRepresentative(): bool
+    {
+        return $this->position() && !$this->position()->is_staff && $this->partnerId() !== null;
+    }
+
+    /**
+     * Whether is staff position with admin roel.
+     *
+     * @return  bool
+     */
+    public function isStaffAdmin(): bool
+    {
+        return $this->position() && $this->position()->is_staff && $this->role() && $this->role()->matches(Role::admin);
+    }
+
+    /**
+     * Whether is staff position with terminal role.
+     *
+     * @return  bool
+     */
+    public function isStaffTerminal(): bool
+    {
+        return $this->position() && $this->position()->is_staff && $this->role() && $this->terminalId() && $this->role()->matches(Role::terminal);
+    }
+
+    /**
      * Get user id.
      *
      * @return  int|null

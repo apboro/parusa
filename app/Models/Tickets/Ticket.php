@@ -12,6 +12,7 @@ use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Model;
+use App\Models\Positions\Position;
 use App\Models\Sails\Trip;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
@@ -175,6 +176,84 @@ class Ticket extends Model implements Statusable
             'ticket_id' => $this->id,
             'commission_type' => $rate->commission_type,
             'commission_value' => $rate->commission_value,
+        ]));
+    }
+
+    /**
+     * Refund commission for this ticket.
+     *
+     * @param Position|null $committer
+     * @param string|null $reason
+     *
+     * @return  void
+     *
+     * @throws AccountException
+     */
+    public function refundTicket(?Position $committer = null, string $reason = null): void
+    {
+        if (!in_array($this->status_id, TicketStatus::ticket_returnable_statuses, true)) {
+            return;
+        }
+
+        $partner = $this->order->partner;
+
+        if ($partner === null) {
+            return;
+        }
+
+        $partner->account->attachTransaction(new AccountTransaction([
+            'type_id' => AccountTransactionType::tickets_buy_return,
+            'status_id' => AccountTransactionStatus::accepted,
+            'timestamp' => Carbon::now(),
+            'amount' => $this->base_price ?? 0,
+            'ticket_id' => $this->id,
+            'committer_id' => $committer->id ?? null,
+            'comments' => $reason,
+        ]));
+    }
+
+    /**
+     * Refund commission for this ticket.
+     *
+     * @param Position|null $committer
+     *
+     * @return  void
+     *
+     * @throws AccountException
+     */
+    public function refundCommission(?Position $committer = null): void
+    {
+        if (!in_array($this->status_id, TicketStatus::ticket_returnable_statuses, true)) {
+            return;
+        }
+
+        $partner = $this->order->partner;
+
+        if ($partner === null) {
+            return;
+        }
+
+        /** @var AccountTransaction $transaction */
+        $transaction = $partner->account->transactions()
+            ->where([
+                'ticket_id' => $this->id,
+                'type_id' => AccountTransactionType::tickets_sell_commission,
+            ])
+            ->first();
+
+        if ($transaction === null) {
+            throw new AccountException('Транзакция по зачислению средств не найдена.');
+        }
+
+        $partner->account->attachTransaction(new AccountTransaction([
+            'type_id' => AccountTransactionType::tickets_sell_commission_return,
+            'status_id' => AccountTransactionStatus::accepted,
+            'timestamp' => Carbon::now(),
+            'amount' => $transaction->amount,
+            'ticket_id' => $this->id,
+            'commission_type' => $transaction->commission_type,
+            'commission_value' => $transaction->commission_value,
+            'committer_id' => $committer->id ?? null,
         ]));
     }
 }

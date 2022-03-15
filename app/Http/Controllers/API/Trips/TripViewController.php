@@ -37,7 +37,7 @@ class TripViewController extends ApiController
             'sale_status' => $trip->saleStatus->name,
             'sale_status_id' => $trip->sale_status_id,
             'tickets_total' => $trip->tickets_total,
-            'tickets_sold' => $trip->tickets()->whereIn('status_id', TicketStatus::ticket_sold_statuses)->count(),
+            'tickets_sold' => $trip->tickets()->whereIn('status_id', TicketStatus::ticket_had_payed_statuses)->count(),
             'tickets_reserved' => $trip->tickets()->whereIn('status_id', TicketStatus::ticket_reserved_statuses)->count(),
             'discount_status' => $trip->discountStatus->name,
             'discount_status_id' => $trip->discount_status_id,

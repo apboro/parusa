@@ -17,7 +17,7 @@ export default {
                             .then((response) => {
                                 this.deleting = false;
                                 this.$toast.success(response.data.message, 5000);
-                                resolve();
+                                resolve(response);
                             })
                             .catch(error => {
                                 this.deleting = false;

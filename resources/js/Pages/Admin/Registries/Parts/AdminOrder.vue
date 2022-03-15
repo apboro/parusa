@@ -1,14 +1,15 @@
 <template>
-    <LayoutPage :title="title" :loading="processing">
+    <LayoutPage :title="title" :loading="processing" :breadcrumbs="breadcrumbs">
         <GuiContainer w-70>
             <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
             <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}</GuiValue>
+            <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }}</GuiValue>
             <GuiValue :title="isReserve ? 'Кем забронировано' : 'Продавец'">{{ info.data['position'] ? info.data['position'] + ', ' : '' }} {{ info.data['partner'] }}</GuiValue>
         </GuiContainer>
 
         <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>
 
-        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve || is_returning">
+        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve">
             <ListTableRow v-for="ticket in info.data['tickets']">
                 <ListTableCell>
                     <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
@@ -31,16 +32,13 @@
                         </GuiIconButton>
                     </div>
                 </ListTableCell>
-                <ListTableCell v-if="is_returning" class="va-middle">
-                    <InputCheckbox v-model="to_return" :value="ticket['id']" :disabled="!ticket['returnable']"/>
-                </ListTableCell>
             </ListTableRow>
             <ListTableRow :no-highlight="true">
                 <ListTableCell colspan="3"/>
                 <ListTableCell><b>Итого: {{ info.data['tickets_count'] }}</b></ListTableCell>
                 <ListTableCell><b>{{ info.data['total'] }} руб.</b></ListTableCell>
                 <ListTableCell/>
-                <ListTableCell v-if="isReserve || is_returning"/>
+                <ListTableCell v-if="isReserve"/>
             </ListTableRow>
         </ListTable>
 
@@ -50,26 +48,18 @@
             <GuiValue :title="'Email'">{{ info.data['email'] }}</GuiValue>
             <GuiValue :title="'Телефон'">{{ info.data['phone'] }}</GuiValue>
         </GuiContainer>
-        <GuiContainer w-50 mt-30 mb-30 inline pl-20 v-if="is_returning">
-            <GuiHeading mb-20>Причина возврата</GuiHeading>
-            <InputText v-model="reason_text"/>
-        </GuiContainer>
 
         <template v-if="info.is_loaded">
             <template v-if="!isReserve">
                 <GuiContainer>
-                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dew">Скачать заказ в PDF</GuiButton>
-                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dew">Отправить клиенту на почту</GuiButton>
-                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dew">Распечатать</GuiButton>
-                    <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
-                    </GuiButton>
-                    <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>
+                    <GuiButton :disabled="!info.data['is_actual']" @clicked="in_dev">Скачать заказ в PDF</GuiButton>
+                    <GuiButton :disabled="!info.data['is_actual']" @clicked="in_dev">Отправить клиенту на почту</GuiButton>
+                    <GuiButton :disabled="!info.data['is_actual']" @clicked="in_dev">Распечатать</GuiButton>
                 </GuiContainer>
             </template>
             <template v-else>
                 <GuiContainer text-right>
-                    <GuiButton @clicked="in_dew" :color="'green'" v-if="info.data['can_buy']">Выкупить бронь</GuiButton>
-                    <GuiButton @clicked="in_dew" :color="'red'">Аннулировать бронь</GuiButton>
+                    <GuiButton @clicked="in_dev" :color="'red'">Аннулировать бронь</GuiButton>
                 </GuiContainer>
             </template>
         </template>
@@ -116,10 +106,6 @@ export default {
 
     data: () => ({
         info: data('/api/registries/order'),
-        is_returning: false,
-        to_return: [],
-        reason_text: null,
-        returning_progress: false,
     }),
 
     computed: {
@@ -131,6 +117,12 @@ export default {
         },
         processing() {
             return this.info.is_loading || this.deleting;
+        },
+        breadcrumbs() {
+            if (this.isReserve) {
+                return [{caption: 'Реестр броней', to: {name: 'reserves-registry'}}];
+            }
+            return [{caption: 'Реестр заказов', to: {name: 'orders-registry'}}];
         }
     },
 
@@ -142,49 +134,19 @@ export default {
     },
 
     methods: {
-        in_dew() {
-            this.$toast.info('Функционал находится в разработке');
+        in_dev() {
+            this.$toast.info('В разработке');
         },
 
-        makeReturn() {
-            if (this.is_returning === false) {
-                this.to_return = [];
-                this.is_returning = true;
+        discardReserve() {
+            if (!this.isReserve) {
                 return;
             }
 
-            if (this.to_return.length === 0) {
-                this.$toast.error('Не выбраны билеты для возврата', 3000);
-                return;
-            }
-            this.$dialog.show('Подтвердите оформление возврата', 'question', 'red', [
-                this.$dialog.button('yes', 'Продолжить', 'red'),
-                this.$dialog.button('no', 'Отмена', 'blue'),
-            ]).then(result => {
-                if (result === 'yes') {
-                    // logic
-                    this.returning_progress = true;
-                    axios.post('/api/order/return', {
-                        id: this.orderId,
-                        tickets: this.to_return,
-                        reason: this.reason_text,
-                    })
-                        .then((response) => {
-                            this.$toast.success(response.data.message, 5000);
-                        })
-                        .catch(error => {
-                            this.$toast.error(error.response.data.message, 5000);
-                        })
-                        .finally(() => {
-                            this.returning_progress = false;
-                        });
-                }
-            });
-        },
+            this.deleteEntry(`Аннулировать бронь №${this.orderId}?`, '/api/order/reserve/cancel', {id: this.orderId})
+                .then(() => {
 
-        cancelReturn() {
-            // todo handle
-            this.is_returning = false;
+                })
         },
 
         removeTicketFromReserve(ticket) {
@@ -192,9 +154,13 @@ export default {
                 return;
             }
 
-            this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {id: ticket['id']})
-                .then(() => {
-                    this.info.load({id: this.orderId});
+            this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {id: this.orderId, ticket_id: ticket['id']})
+                .then(response => {
+                    if (response.data.payload['reserve_cancelled']) {
+
+                    } else {
+                        this.info.load({id: this.orderId});
+                    }
                 })
         },
     }

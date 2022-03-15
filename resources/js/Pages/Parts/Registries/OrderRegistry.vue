@@ -35,7 +35,7 @@
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true">
             <template v-for="order in list.list">
                 <ListTableRow :no-odd-even="true">
-                    <ListTableCell>
+                    <ListTableCell class="bold">
                         <router-link class="link" :to="{name: 'order-info', params: {id: order['id']}}" v-html="highlight(order['id'])"/>
                     </ListTableCell>
                     <ListTableCell>

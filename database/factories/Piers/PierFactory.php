@@ -1,15 +1,14 @@
 <?php
 
-namespace Database\Factories\Sails;
+namespace Database\Factories\Piers;
 
 use App\Models\Dictionaries\PiersStatus;
-use App\Models\Sails\Pier;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PierFactory extends Factory
 {
-    protected $model = Pier::class;
+    protected $model = \App\Models\Piers\Pier::class;
 
     /**
      * Define the model's default state.

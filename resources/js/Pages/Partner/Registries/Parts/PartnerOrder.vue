@@ -1,8 +1,8 @@
 <template>
-    <LayoutPage :title="title" :loading="processing">
+    <LayoutPage :title="title" :loading="processing" :breadcrumbs="breadcrumbs">
         <GuiContainer w-70>
             <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
-            <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}</GuiValue>
+            <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}{{ info.data['terminal'] ? ', ' + info.data['terminal'] : '' }}</GuiValue>
             <GuiValue :title="isReserve ? 'Кем забронировано' : 'Продавец'">{{ info.data['position'] ? info.data['position'] + ', ' : '' }} {{ info.data['partner'] }}</GuiValue>
         </GuiContainer>
 
@@ -131,6 +131,12 @@ export default {
         },
         processing() {
             return this.info.is_loading || this.deleting;
+        },
+        breadcrumbs() {
+            if (this.isReserve) {
+                return [{caption: 'Реестр броней', to: {name: 'reserves-registry'}}];
+            }
+            return [{caption: 'Реестр заказов', to: {name: 'orders-registry'}}];
         }
     },
 
@@ -142,8 +148,8 @@ export default {
     },
 
     methods: {
-        in_dew() {
-            this.$toast.info('Функционал находится в разработке');
+        in_dev() {
+            this.$toast.info('В разработке');
         },
 
         makeReturn() {
@@ -171,20 +177,28 @@ export default {
                     })
                         .then((response) => {
                             this.$toast.success(response.data.message, 5000);
+                            this.info.load({id: this.orderId});
                         })
                         .catch(error => {
                             this.$toast.error(error.response.data.message, 5000);
                         })
                         .finally(() => {
                             this.returning_progress = false;
+                            this.is_returning = false;
                         });
                 }
             });
         },
 
-        cancelReturn() {
-            // todo handle
-            this.is_returning = false;
+        discardReserve() {
+            if (!this.isReserve) {
+                return;
+            }
+
+            this.deleteEntry(`Аннулировать бронь №${this.orderId}?`, '/api/order/reserve/cancel', {id: this.orderId})
+                .then(() => {
+
+                })
         },
 
         removeTicketFromReserve(ticket) {
@@ -192,9 +206,13 @@ export default {
                 return;
             }
 
-            this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {id: ticket['id']})
-                .then(() => {
-                    this.info.load({id: this.orderId});
+            this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {id: this.orderId, ticket_id: ticket['id']})
+                .then(response => {
+                    if (response.data.payload['reserve_cancelled']) {
+
+                    } else {
+                        this.info.load({id: this.orderId});
+                    }
                 })
         },
     }

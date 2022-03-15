@@ -23,6 +23,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class TerminalMakeOrderController extends ApiEditController
 {
@@ -32,8 +33,6 @@ class TerminalMakeOrderController extends ApiEditController
      * @param Request $request
      *
      * @return  JsonResponse
-     *
-     * @throws AccountException
      */
     public function make(Request $request): JsonResponse
     {
@@ -132,29 +131,27 @@ class TerminalMakeOrderController extends ApiEditController
         }
 
         try {
-            // create order
-            $order = Order::make(
-                OrderType::terminal,
-                $tickets,
-                $status_id,
-                $partnerId,
-                $position->id,
-                $terminal->id,
-                $data['email'] ?? null,
-                $data['name'] ?? null,
-                $data['phone'] ?? null
-            );
+            DB::transaction(function () use (&$order, $tickets, $status_id, $partnerId, $position, $terminal, $current){
+                // create order
+                $order = Order::make(
+                    OrderType::terminal,
+                    $tickets,
+                    $status_id,
+                    $partnerId,
+                    $position->id,
+                    $terminal->id,
+                    $data['email'] ?? null,
+                    $data['name'] ?? null,
+                    $data['phone'] ?? null
+                );
 
-            // clear cart
-            PositionOrderingTicket::query()->where(['position_id' => $position->id, 'terminal_id' => $terminal->id])->delete();
-        } catch (Exception $exception) {
-            return APIResponse::error($exception->getMessage());
-        }
+                // clear cart
+                PositionOrderingTicket::query()->where(['position_id' => $position->id, 'terminal_id' => $terminal->id])->delete();
 
-        // send order to POS
-        try {
-            LifePosSales::send($order, $terminal, $current->position());
-            $order->setStatus(OrderStatus::terminal_wait_for_pay);
+                // send order to POS
+                LifePosSales::send($order, $terminal, $current->position());
+                $order->setStatus(OrderStatus::terminal_wait_for_pay);
+            });
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }

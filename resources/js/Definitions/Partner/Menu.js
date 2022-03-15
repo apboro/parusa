@@ -3,7 +3,7 @@ export default [
         'title': 'БИЛЕТЫ', 'route': '',
         'items': [
             {'title': 'Подбор билетов', 'route': 'tickets-select'},
-            {'title': 'Возврат билетов', 'route': ''},
+            {'title': 'Возврат билетов', 'route': 'return'},
         ]
     },
     {

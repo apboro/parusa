@@ -1,6 +1,6 @@
 <template>
     <label class="checkbox" :class="{'checkbox__disabled': disabled, 'checkbox__error': !valid}">
-        <input class="checkbox__input" type="checkbox"
+        <input class="checkbox__input" type="radio"
                v-model="proxyValue"
                :value="value"
                :disabled="disabled"
@@ -26,7 +26,7 @@ export default {
         small: {type: Boolean, default: false},
     },
 
-    emits: ['update:modelValue'],
+    emits: ['update:modelValue', 'change'],
 
     computed: {
         proxyValue: {
@@ -95,9 +95,9 @@ $input_error_color: #FF1E00 !default;
     }
 
     &__disabled &__check {
-        border-color: transparentize($input_disabled_color, 0.5) !important;
+        border-color: $input_disabled_color !important;
         color: $input_disabled_color !important;
-        background-color: transparentize($input_disabled_color, 0.75) !important;
+        background-color: transparent !important;
     }
 
     &__input:checked + &__check {
@@ -111,7 +111,7 @@ $input_error_color: #FF1E00 !default;
     }
 
     &__label {
-        margin: 0 7px 0 7px;
+        margin: 0 5px;
         font-size: 16px;
         font-family: $project_font;
         line-height: $base_size_unit;
