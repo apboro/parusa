@@ -13,7 +13,7 @@ class LifePosInitCallbacks extends Command
      *
      * @var string
      */
-    protected $signature = 'lifepos:callback';
+    protected $signature = 'lifepos:callback:set';
 
     /**
      * The console command description.

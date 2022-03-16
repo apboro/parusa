@@ -63,12 +63,14 @@ class ReservesRegistryController extends ApiController
 
         // apply search
         if ($terms = $request->search()) {
-            $query->where(function (Builder $query) use ($terms) {
-                $query
-                    ->whereIn('id', $terms)
-                    ->orWhereHas('tickets', function (Builder $query) use ($terms) {
+            $query->where(function (Builder $query) use ($terms, $current) {
+                $query->whereIn('id', $terms);
+                // disable reserved tickets number search for terminal users
+                if (!$current->isStaffTerminal()) {
+                    $query->orWhereHas('tickets', function (Builder $query) use ($terms) {
                         $query->whereIn('id', $terms);
                     });
+                }
             });
         }
 
@@ -83,7 +85,7 @@ class ReservesRegistryController extends ApiController
                     'date' => $order->created_at->format('d.m.Y, H:i'),
                     'tickets_total' => $order->getAttribute('tickets_count'),
                     'amount' => $order->tickets->sum('base_price'),
-                    'valid_before' => $validUntil ? $validUntil->format('d.m.Y, H:i'):null,
+                    'valid_before' => $validUntil ? $validUntil->format('d.m.Y, H:i') : null,
                     'info' => [
                         'buyer_name' => $order->name,
                         'buyer_email' => $order->email,

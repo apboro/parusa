@@ -128,6 +128,7 @@ class PartnerMakeOrderController extends ApiEditController
                     'status_id' => AccountTransactionStatus::accepted,
                     'timestamp' => Carbon::now(),
                     'amount' => $totalAmount,
+                    'committer_id' => $current->positionId(),
                 ]));
             }
             // create order

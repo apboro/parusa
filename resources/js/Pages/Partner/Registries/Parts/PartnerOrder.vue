@@ -58,9 +58,9 @@
         <template v-if="info.is_loaded">
             <template v-if="!isReserve">
                 <GuiContainer>
-                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dew">Скачать заказ в PDF</GuiButton>
-                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dew">Отправить клиенту на почту</GuiButton>
-                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dew">Распечатать</GuiButton>
+                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dev">Скачать заказ в PDF</GuiButton>
+                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dev">Отправить клиенту на почту</GuiButton>
+                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dev">Распечатать</GuiButton>
                     <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
                     </GuiButton>
                     <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>
@@ -68,8 +68,8 @@
             </template>
             <template v-else>
                 <GuiContainer text-right>
-                    <GuiButton @clicked="in_dew" :color="'green'" v-if="info.data['can_buy']">Выкупить бронь</GuiButton>
-                    <GuiButton @clicked="in_dew" :color="'red'">Аннулировать бронь</GuiButton>
+                    <GuiButton @clicked="order" :color="'green'" v-if="info.data['can_buy']">Выкупить бронь</GuiButton>
+                    <GuiButton @clicked="discardReserve" :color="'red'">Аннулировать бронь</GuiButton>
                 </GuiContainer>
             </template>
         </template>
@@ -120,6 +120,7 @@ export default {
         to_return: [],
         reason_text: null,
         returning_progress: false,
+        ordering: false,
     }),
 
     computed: {
@@ -130,7 +131,7 @@ export default {
             return Boolean(this.info.data['is_reserve']);
         },
         processing() {
-            return this.info.is_loading || this.deleting;
+            return this.info.is_loading || this.deleting || this.ordering;
         },
         breadcrumbs() {
             if (this.isReserve) {
@@ -190,6 +191,10 @@ export default {
             });
         },
 
+        cancelReturn() {
+            this.is_returning = false;
+        },
+
         discardReserve() {
             if (!this.isReserve) {
                 return;
@@ -197,7 +202,7 @@ export default {
 
             this.deleteEntry(`Аннулировать бронь №${this.orderId}?`, '/api/order/reserve/cancel', {id: this.orderId})
                 .then(() => {
-
+                    this.$router.push({name: 'reserves-registry'});
                 })
         },
 
@@ -209,11 +214,34 @@ export default {
             this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {id: this.orderId, ticket_id: ticket['id']})
                 .then(response => {
                     if (response.data.payload['reserve_cancelled']) {
-
+                        this.$router.push({name: 'reserves-registry'});
                     } else {
                         this.info.load({id: this.orderId});
                     }
                 })
+        },
+
+        order() {
+            this.$dialog.show('Выкупить бронь и оплатить с лицевого счёта?', 'question', 'orange', [
+                this.$dialog.button('ok', 'Продолжить', 'orange'),
+                this.$dialog.button('cancel', 'Отмена'),
+            ], 'center')
+                .then((result) => {
+                    if (result === 'ok') {
+                        this.ordering = true;
+                        axios.post('/api/order/reserve/order', {id: this.orderId})
+                            .then((response) => {
+                                this.$toast.success(response.data['message']);
+                                this.info.load({id: this.orderId});
+                            })
+                            .catch(error => {
+                                this.$toast.error(error.response.data['message']);
+                            })
+                            .finally(() => {
+                                this.ordering = false;
+                            })
+                    }
+                });
         },
     }
 }

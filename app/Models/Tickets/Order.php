@@ -12,6 +12,7 @@ use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\TicketGrade;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Model;
@@ -112,7 +113,8 @@ class Order extends Model implements Statusable, Typeable
      */
     public function tickets(): HasMany
     {
-        return $this->hasMany(Ticket::class, 'order_id', 'id');
+        return $this->hasMany(Ticket::class, 'order_id', 'id')
+            ->whereNotIn('status_id', TicketStatus::ticket_cancelled_statuses);
     }
 
     /**

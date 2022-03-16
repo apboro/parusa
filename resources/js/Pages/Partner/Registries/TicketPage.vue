@@ -1,13 +1,13 @@
 <template>
-    <TicketInfo :ticket-id="ticketId"/>
+    <PartnerTicket :ticket-id="ticketId"/>
 </template>
 
 <script>
-import TicketInfo from "@/Pages/Parts/Registries/TicketInfo";
+import PartnerTicket from "@/Pages/Partner/Registries/Parts/PartnerTicket";
 
 export default {
     components: {
-        TicketInfo,
+        PartnerTicket,
     },
 
     computed: {

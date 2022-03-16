@@ -47,7 +47,7 @@ class OrdersRegistryController extends ApiController
             ->with([
                 'type', 'status',
                 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade',
-                'partner', 'position', 'position.user', 'position.user.profile', 'terminal'
+                'partner', 'position', 'position.user', 'position.user.profile', 'terminal',
             ])
             ->withCount(['tickets'])
             ->whereIn('status_id', OrderStatus::order_paid_statuses);
@@ -77,12 +77,13 @@ class OrdersRegistryController extends ApiController
 
         // apply search
         if ($terms = $request->search()) {
-            $query->where(function (Builder $query) use ($terms) {
-                $query
-                    ->whereIn('id', $terms)
-                    ->orWhereHas('tickets', function (Builder $query) use ($terms) {
+            $query->where(function (Builder $query) use ($terms, $current) {
+                $query->whereIn('id', $terms);
+                if (!$current->isStaffTerminal()) {
+                    $query->orWhereHas('tickets', function (Builder $query) use ($terms) {
                         $query->whereIn('id', $terms);
                     });
+                }
             });
         }
 

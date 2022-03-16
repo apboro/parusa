@@ -11,9 +11,6 @@
                 </layout-user-menu>
             </template>
         </layout-header>
-        <GuiContainer mt-20 mb-20>
-            <TerminalHeaderWidget/>
-        </GuiContainer>
         <router-view/>
     </div>
     <div id="toaster" class="toaster"></div>

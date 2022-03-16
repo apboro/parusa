@@ -1,5 +1,5 @@
 <template>
-    <div class="balance-widget" v-if="!$route.meta['hideWidget']">
+    <div class="balance-widget">
         <router-link :to="{name: 'order'}" class="balance-widget__item">
             <div class="balance-widget__item-wrapper">
                 <span class="balance-widget__item-title">Текущий заказ</span>

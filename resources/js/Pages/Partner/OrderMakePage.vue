@@ -205,8 +205,7 @@ export default {
                     if (result === 'ok') {
                         this.form.options['mode'] = 'order';
                         this.form.save()
-                            .then((values, payload) => {
-                                console.log(values, payload);
+                            .then(() => {
                                 this.$store.dispatch('partner/refresh');
                                 this.$router.push({name: 'order-info', params: {id: this.form.payload['order_id']}});
                             });

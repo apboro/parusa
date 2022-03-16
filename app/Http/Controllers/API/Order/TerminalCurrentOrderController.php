@@ -30,7 +30,7 @@ class TerminalCurrentOrderController extends ApiController
     {
         $current = Currents::get($request);
 
-        if (!$current->isStaff() || $current->terminal() === null || $current->role() === null || !$current->role()->matches(Role::terminal)) {
+        if (!$current->isStaffTerminal()) {
             return APIResponse::error('Вы не можете отправить заказ в оплату.');
         }
 
@@ -40,15 +40,13 @@ class TerminalCurrentOrderController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        if (!$order->hasStatus(OrderStatus::terminal_creating)) {
+        if (!$order->hasStatus(OrderStatus::terminal_creating) && !$order->hasStatus(OrderStatus::terminal_creating_from_reserve)) {
             return APIResponse::error('Невозможно отправить текущий заказ в оплату.');
         }
 
         try {
-            if ($order->external_id === null) {
-                LifePosSales::send($order, $current->terminal(), $current->position());
-            }
-            $order->setStatus(OrderStatus::terminal_wait_for_pay);
+            LifePosSales::send($order, $current->terminal(), $current->position());
+            $order->setStatus($order->hasStatus(OrderStatus::terminal_creating) ? OrderStatus::terminal_wait_for_pay : OrderStatus::terminal_wait_for_pay_from_reserve);
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
@@ -71,12 +69,14 @@ class TerminalCurrentOrderController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        if (!$order->hasStatus(OrderStatus::terminal_wait_for_pay)) {
+        if (!$order->hasStatus(OrderStatus::terminal_wait_for_pay) && !$order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve)) {
             return APIResponse::error('Невозможно. Текущеий заказ не ожидает оплаты.');
         }
 
         try {
-            $order->setStatus(OrderStatus::terminal_creating);
+            $order->hasStatus(OrderStatus::terminal_wait_for_pay)
+                ? $order->setStatus(OrderStatus::terminal_creating)
+                : $order->setStatus(OrderStatus::terminal_creating_from_reserve);
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
@@ -138,34 +138,32 @@ class TerminalCurrentOrderController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        if (!$order->hasStatus(OrderStatus::terminal_creating)) {
+        if (!$order->hasStatus(OrderStatus::terminal_creating) && !$order->hasStatus(OrderStatus::terminal_creating_from_reserve)) {
             return APIResponse::error('Нельзя удалить заказ.');
         }
 
         $order->loadMissing('tickets');
 
+        $fromReserve = $order->hasStatus(OrderStatus::terminal_creating_from_reserve);
+
         try {
             if ($order->external_id !== null) {
                 LifePosSales::cancel($order);
-                DB::transaction(static function () use ($order) {
-                    $order->tickets->map(function (Ticket $ticket) {
-                        $ticket->setStatus(TicketStatus::terminal_canceled);
-                    });
-                    $order->setStatus(OrderStatus::terminal_canceled);
-                });
-            } else {
-                DB::transaction(static function () use ($order) {
-                    $order->tickets->map(function (Ticket $ticket) {
-                        $ticket->delete();
-                    });
-                    $order->delete();
-                });
             }
+
+            DB::transaction(static function () use ($order, $fromReserve) {
+                $order->tickets->map(function (Ticket $ticket) use ($fromReserve) {
+                    $ticket->setStatus($fromReserve ? OrderStatus::partner_reserve : OrderStatus::terminal_canceled);
+                });
+
+                $order->setStatus($fromReserve ? OrderStatus::partner_reserve : OrderStatus::terminal_canceled);
+            });
+
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::formSuccess('Заказ удалён.');
+        return APIResponse::formSuccess('Заказ расформирован.');
     }
 
     /**
@@ -184,7 +182,7 @@ class TerminalCurrentOrderController extends ApiController
         }
 
         return APIResponse::response([
-            'waiting_for_pay' => $order->hasStatus(OrderStatus::terminal_wait_for_pay),
+            'waiting_for_pay' => $order->hasStatus(OrderStatus::terminal_wait_for_pay) || $order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve),
         ]);
     }
 

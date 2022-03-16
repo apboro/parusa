@@ -173,7 +173,7 @@ export default {
         },
 
         back() {
-            this.$router.push({name: 'tickets-select'});
+            this.$router.push({name: 'home'});
         },
 
         remove(ticket_id) {

@@ -1,159 +1,246 @@
 <template>
-    <LayoutPage :title="$route.meta['title']">
-        <GuiText mt-20 mb-10>Поиск</GuiText>
-        <GuiContainer w-500px flex mb-20>
-            <div class="inline grow">
-                <InputSearch v-model="list.search"
-                             :placeholder="'Введите номер заказа или билета'"
-                             @search="search"
-                />
-            </div>
-            <GuiButton :class="'ml-15'" @click="search" :disabled="list.search === null">Найти</GuiButton>
+    <LayoutPage :title="title" :loading="processing" :breadcrumbs="breadcrumbs">
+        <GuiContainer w-70>
+            <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
+            <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}{{ info.data['terminal'] ? ', ' + info.data['terminal'] : '' }}</GuiValue>
+            <GuiValue :title="isReserve ? 'Кем забронировано' : 'Продавец'">{{ info.data['position'] ? info.data['position'] + ', ' : '' }} {{ info.data['partner'] }}</GuiValue>
         </GuiContainer>
 
-        <LoadingProgress :loading="processing">
-            <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true">
-                <template v-for="order in list.list">
-                    <ListTableRow :no-odd-even="true" :no-highlight="true">
-                        <ListTableCell :class="'bold'">
-                            <router-link class="link" :to="{name: 'order-info', params: {id: order['id']}}" v-html="highlight(order['id'])"/>
-                        </ListTableCell>
-                        <ListTableCell>
-                            {{ order['date'] }}
-                        </ListTableCell>
-                        <ListTableCell>
-                            <span class="link" @click="showInfo(order)">Информация</span>
-                        </ListTableCell>
-                        <ListTableCell>
-                            {{ order['tickets_total'] }}
-                        </ListTableCell>
-                        <ListTableCell>
-                            {{ order['amount'] }} руб.
-                        </ListTableCell>
-                        <ListTableCell style="padding-top: 5px; padding-bottom: 5px">
-                            <GuiButton @click="makeReturn(order)">Оформить возврат</GuiButton>
-                        </ListTableCell>
-                    </ListTableRow>
-                    <ListTableRow :no-odd-even="true" :no-highlight="true">
-                        <ListTableCell colspan="6">
-                            <table class="details-table">
-                                <thead>
-                                <tr>
-                                    <td v-for="(cell, key) in ['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус билета']" :key="key"
-                                    >{{ cell }}
-                                    </td>
-                                </tr>
-                                </thead>
-                                <tr v-for="(ticket, key) in order['tickets']" :key="key">
-                                    <td class="p-5">
-                                        <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}" v-html="highlight(ticket['id'])"/>
-                                    </td>
-                                    <td class="p-5">
-                                        <div>{{ ticket['trip_date'] }}</div>
-                                        <div>{{ ticket['trip_time'] }}</div>
-                                    </td>
-                                    <td class="p-5">
-                                        <div>{{ ticket['excursion'] }}</div>
-                                        <div>{{ ticket['pier'] }}</div>
-                                    </td>
-                                    <td class="p-5">{{ ticket['type'] }}</td>
-                                    <td class="p-5">{{ ticket['amount'] }} руб.</td>
-                                    <td class="p-5">
-                                        <div>{{ ticket['status'] }}</div>
-                                        <div v-if="ticket['used']">Использован {{ ticket['used'] }}</div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </ListTableCell>
-                    </ListTableRow>
-                </template>
-            </ListTable>
+        <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>
 
-            <GuiMessage v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
+        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve || is_returning">
+            <ListTableRow v-for="ticket in info.data['tickets']">
+                <ListTableCell>
+                    <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
+                </ListTableCell>
+                <ListTableCell>
+                    <div>{{ ticket['trip_start_date'] }}</div>
+                    <div>{{ ticket['trip_start_time'] }}</div>
+                </ListTableCell>
+                <ListTableCell>
+                    <div>{{ ticket['excursion'] }}</div>
+                    <div>{{ ticket['pier'] }}</div>
+                </ListTableCell>
+                <ListTableCell>{{ ticket['grade'] }}</ListTableCell>
+                <ListTableCell>{{ ticket['base_price'] }} руб.</ListTableCell>
+                <ListTableCell>{{ ticket['status'] }}</ListTableCell>
+                <ListTableCell v-if="isReserve" class="va-middle">
+                    <div>
+                        <GuiIconButton :title="'Удалить из брони'" :border="false" :color="'red'" @click="removeTicketFromReserve(ticket)">
+                            <IconCross/>
+                        </GuiIconButton>
+                    </div>
+                </ListTableCell>
+                <ListTableCell v-if="is_returning" class="va-middle">
+                    <InputCheckbox v-model="to_return" :value="ticket['id']" :disabled="!ticket['returnable']"/>
+                </ListTableCell>
+            </ListTableRow>
+            <ListTableRow :no-highlight="true">
+                <ListTableCell colspan="3"/>
+                <ListTableCell><b>Итого: {{ info.data['tickets_count'] }}</b></ListTableCell>
+                <ListTableCell><b>{{ info.data['total'] }} руб.</b></ListTableCell>
+                <ListTableCell/>
+                <ListTableCell v-if="isReserve || is_returning"/>
+            </ListTableRow>
+        </ListTable>
 
-            <GuiPagination v-if="list.is_loaded" :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
-        </LoadingProgress>
+        <GuiContainer w-50 mt-30 mb-30 inline>
+            <GuiHeading mb-20>Информация о плательщике</GuiHeading>
+            <GuiValue :title="'Имя'">{{ info.data['name'] }}</GuiValue>
+            <GuiValue :title="'Email'">{{ info.data['email'] }}</GuiValue>
+            <GuiValue :title="'Телефон'">{{ info.data['phone'] }}</GuiValue>
+        </GuiContainer>
+        <GuiContainer w-50 mt-30 mb-30 inline pl-20 v-if="is_returning">
+            <GuiHeading mb-20>Причина возврата</GuiHeading>
+            <InputText v-model="reason_text"/>
+        </GuiContainer>
 
-        <PopUp :title="'Информация о заказе'" ref="info" :close-on-overlay="true">
-            <template v-if="info">
-                <GuiValue :title="'Имя'">{{ info['buyer_name'] }}</GuiValue>
-                <GuiValue :title="'Email'">{{ info['buyer_email'] }}</GuiValue>
-                <GuiValue :title="'Телефон'">{{ info['buyer_phone'] }}</GuiValue>
-                <GuiValue :title="'Способ продажи'">{{ info['order_type'] }}</GuiValue>
-                <GuiValue :dots="info['position_name'] !== null" :title="'Партнёр'">{{ info['partner'] }}</GuiValue>
-                <GuiValue v-if="info['position_name'] !== null" :dots="false" :title="'Продавец'">{{ info['position_name'] }}</GuiValue>
+        <template v-if="info.is_loaded">
+            <template v-if="!isReserve">
+                <GuiContainer>
+                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dev">Скачать заказ в PDF</GuiButton>
+                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dev">Отправить клиенту на почту</GuiButton>
+                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dev">Распечатать</GuiButton>
+                    <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
+                    </GuiButton>
+                    <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>
+                </GuiContainer>
             </template>
-        </PopUp>
+            <template v-else>
+                <GuiContainer text-right>
+                    <GuiButton @clicked="order" :color="'green'" v-if="info.data['can_buy']">Выкупить бронь</GuiButton>
+                    <GuiButton @clicked="discardReserve" :color="'red'">Аннулировать бронь</GuiButton>
+                </GuiContainer>
+            </template>
+        </template>
     </LayoutPage>
 </template>
 
 <script>
+import data from "@/Core/Data";
 import LayoutPage from "@/Components/Layout/LayoutPage";
 import GuiContainer from "@/Components/GUI/GuiContainer";
-import InputSearch from "@/Components/Inputs/InputSearch";
-import list from "@/Core/List";
-import GuiText from "@/Components/GUI/GuiText";
-import GuiButton from "@/Components/GUI/GuiButton";
-import LoadingProgress from "@/Components/LoadingProgress";
+import GuiValue from "@/Components/GUI/GuiValue";
+import GuiHeading from "@/Components/GUI/GuiHeading";
 import ListTable from "@/Components/ListTable/ListTable";
 import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
-import GuiExpand from "@/Components/GUI/GuiExpand";
-import GuiMessage from "@/Components/GUI/GuiMessage";
-import GuiPagination from "@/Components/GUI/GuiPagination";
-import PopUp from "@/Components/PopUp";
-import GuiValue from "@/Components/GUI/GuiValue";
+import GuiButton from "@/Components/GUI/GuiButton";
+import GuiIconButton from "@/Components/GUI/GuiIconButton";
+import IconCross from "@/Components/Icons/IconCross";
+import InputCheckbox from "@/Components/Inputs/InputCheckbox";
+import InputText from "@/Components/Inputs/InputText";
+import DeleteEntry from "@/Mixins/DeleteEntry";
 
 export default {
     components: {
-        GuiValue,
-        PopUp,
-        GuiPagination,
-        GuiMessage,
-        GuiExpand,
+        InputText,
+        InputCheckbox,
+        IconCross,
+        GuiIconButton,
+        GuiButton,
         ListTableCell,
         ListTableRow,
         ListTable,
-        LoadingProgress,
-        GuiButton,
-        GuiText,
-        InputSearch,
+        GuiHeading,
+        GuiValue,
         GuiContainer,
         LayoutPage,
     },
 
+    mixins: [DeleteEntry],
+
+    data: () => ({
+        info: data('/api/registries/order'),
+        is_returning: false,
+        to_return: [],
+        reason_text: null,
+        returning_progress: false,
+        ordering: false,
+    }),
+
     computed: {
+        orderId() {
+            return Number(this.$route.params.id);
+        },
+        title() {
+            return (this.info.data['is_reserve'] ? 'Бронь' : 'Заказ') + ' №' + this.orderId;
+        },
+        isReserve() {
+            return Boolean(this.info.data['is_reserve']);
+        },
         processing() {
-            return false;
+            return this.info.is_loading || this.deleting || this.ordering;
+        },
+        breadcrumbs() {
+            if (this.isReserve) {
+                return [{caption: 'Реестр броней', to: {name: 'reserves-registry'}}];
+            }
+            return [{caption: 'Реестр заказов', to: {name: 'orders-registry'}}];
         }
     },
 
-    data: () => ({
-        list: list('/api/registries/orders'),
-        info: null,
-    }),
+    created() {
+        this.info.load({id: this.orderId});
+        if (this.$route.query['return']) {
+            this.is_returning = true;
+        }
+    },
 
     methods: {
-        search() {
-            if (this.list.search !== null) {
-                this.list.load();
+        in_dev() {
+            this.$toast.info('В разработке');
+        },
+
+        makeReturn() {
+            if (this.is_returning === false) {
+                this.to_return = [];
+                this.is_returning = true;
+                return;
             }
+
+            if (this.to_return.length === 0) {
+                this.$toast.error('Не выбраны билеты для возврата', 3000);
+                return;
+            }
+            this.$dialog.show('Подтвердите оформление возврата', 'question', 'red', [
+                this.$dialog.button('yes', 'Продолжить', 'red'),
+                this.$dialog.button('no', 'Отмена', 'blue'),
+            ]).then(result => {
+                if (result === 'yes') {
+                    // logic
+                    this.returning_progress = true;
+                    axios.post('/api/order/return', {
+                        id: this.orderId,
+                        tickets: this.to_return,
+                        reason: this.reason_text,
+                    })
+                        .then((response) => {
+                            this.$toast.success(response.data.message, 5000);
+                            this.info.load({id: this.orderId});
+                        })
+                        .catch(error => {
+                            this.$toast.error(error.response.data.message, 5000);
+                        })
+                        .finally(() => {
+                            this.returning_progress = false;
+                            this.is_returning = false;
+                        });
+                }
+            });
         },
 
-        showInfo(order) {
-            this.info = order['info'];
-            this.$refs.info.show()
+        cancelReturn() {
+            this.is_returning = false;
+        },
+
+        discardReserve() {
+            if (!this.isReserve) {
+                return;
+            }
+
+            this.deleteEntry(`Аннулировать бронь №${this.orderId}?`, '/api/order/reserve/cancel', {id: this.orderId})
                 .then(() => {
-                    this.info = null;
+                    this.$router.push({name: 'reserves-registry'});
+                })
+        },
+
+        removeTicketFromReserve(ticket) {
+            if (!this.isReserve) {
+                return;
+            }
+
+            this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {id: this.orderId, ticket_id: ticket['id']})
+                .then(response => {
+                    if (response.data.payload['reserve_cancelled']) {
+                        this.$router.push({name: 'reserves-registry'});
+                    } else {
+                        this.info.load({id: this.orderId});
+                    }
+                })
+        },
+
+        order() {
+            this.$dialog.show('Выкупить бронь и оплатить с лицевого счёта?', 'question', 'orange', [
+                this.$dialog.button('ok', 'Продолжить', 'orange'),
+                this.$dialog.button('cancel', 'Отмена'),
+            ], 'center')
+                .then((result) => {
+                    if (result === 'ok') {
+                        this.ordering = true;
+                        axios.post('/api/order/reserve/order', {id: this.orderId})
+                            .then((response) => {
+                                this.$toast.success(response.data['message']);
+                                this.info.load({id: this.orderId});
+                            })
+                            .catch(error => {
+                                this.$toast.error(error.response.data['message']);
+                            })
+                            .finally(() => {
+                                this.ordering = false;
+                            })
+                    }
                 });
-        },
-
-        makeReturn(order) {
-            this.$router.push({name: 'order-info', params: {id: order['id']}, query: {return: 1}});
-        },
-
-        highlight(text) {
-            return this.$highlight(String(text), String(this.list.search), true);
         },
     }
 }

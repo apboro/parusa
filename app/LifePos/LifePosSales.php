@@ -26,9 +26,6 @@ class LifePosSales
      */
     public static function send(Order $order, Terminal $terminal, Position $position): void
     {
-        if ($order->external_id !== null) {
-            throw new RuntimeException('Зтот заказ уже отправллен в оплату');
-        }
         if (empty($terminal->outlet_id)) {
             throw new RuntimeException('Не задан внешний ID точки продаж для ' . $terminal->name);
         }

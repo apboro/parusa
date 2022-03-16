@@ -1,18 +1,16 @@
 <template>
-    <LayoutPage :title="title" :loading="processing" :breadcrumbs="breadcrumbs">
+    <LayoutPage :title="title" :loading="processing" :breadcrumbs="[{caption: 'Реестр броней', to: {name: 'reserve-search'}}]">
         <GuiContainer w-70>
-            <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
-            <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}</GuiValue>
-            <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }}</GuiValue>
-            <GuiValue :title="isReserve ? 'Кем забронировано' : 'Продавец'">{{ info.data['position'] ? info.data['position'] + ', ' : '' }} {{ info.data['partner'] }}</GuiValue>
+            <GuiValue :title="'Статус'">{{ info.data['status'] }}<b> до {{ info.data['valid_until'] }}</b></GuiValue>
+            <GuiValue :title="'Кем забронировано'">{{ info.data['position'] ? info.data['position'] + ', ' : '' }} {{ info.data['partner'] }}</GuiValue>
         </GuiContainer>
 
-        <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>
+        <GuiHeading mt-30 mb-30>Состав брони</GuiHeading>
 
-        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve">
+        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="true">
             <ListTableRow v-for="ticket in info.data['tickets']">
                 <ListTableCell>
-                    <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
+                    {{ ticket['id'] }}
                 </ListTableCell>
                 <ListTableCell>
                     <div>{{ ticket['trip_start_date'] }}</div>
@@ -25,7 +23,7 @@
                 <ListTableCell>{{ ticket['grade'] }}</ListTableCell>
                 <ListTableCell>{{ ticket['base_price'] }} руб.</ListTableCell>
                 <ListTableCell>{{ ticket['status'] }}</ListTableCell>
-                <ListTableCell v-if="isReserve" class="va-middle">
+                <ListTableCell class="va-middle">
                     <div>
                         <GuiIconButton :title="'Удалить из брони'" :border="false" :color="'red'" @click="removeTicketFromReserve(ticket)">
                             <IconCross/>
@@ -37,8 +35,7 @@
                 <ListTableCell colspan="3"/>
                 <ListTableCell><b>Итого: {{ info.data['tickets_count'] }}</b></ListTableCell>
                 <ListTableCell><b>{{ info.data['total'] }} руб.</b></ListTableCell>
-                <ListTableCell/>
-                <ListTableCell v-if="isReserve"/>
+                <ListTableCell colspan="2"/>
             </ListTableRow>
         </ListTable>
 
@@ -50,18 +47,12 @@
         </GuiContainer>
 
         <template v-if="info.is_loaded">
-            <template v-if="!isReserve">
-                <GuiContainer>
-                    <GuiButton :disabled="!info.data['is_actual']" @clicked="in_dev">Скачать заказ в PDF</GuiButton>
-                    <GuiButton :disabled="!info.data['is_actual']" @clicked="in_dev">Отправить клиенту на почту</GuiButton>
-                    <GuiButton :disabled="!info.data['is_actual']" @clicked="in_dev">Распечатать</GuiButton>
-                </GuiContainer>
-            </template>
-            <template v-else>
-                <GuiContainer text-right>
-                    <GuiButton @clicked="discardReserve" :color="'red'">Аннулировать бронь</GuiButton>
-                </GuiContainer>
-            </template>
+            <GuiContainer text-right>
+                <GuiButton @clicked="order" :color="'green'" v-if="info.data['can_buy']">Сформировать заказ</GuiButton>
+                <!--
+                <GuiButton @clicked="discardReserve" :color="'red'">Аннулировать бронь</GuiButton>
+                -->
+            </GuiContainer>
         </template>
     </LayoutPage>
 </template>
@@ -98,39 +89,27 @@ export default {
         LayoutPage,
     },
 
-    props: {
-        orderId: {type: Number, required: true},
-    },
-
     mixins: [DeleteEntry],
 
     data: () => ({
         info: data('/api/registries/order'),
+        ordering: false,
     }),
 
     computed: {
-        title() {
-            return (this.info.data['is_reserve'] ? 'Бронь' : 'Заказ') + ' №' + this.orderId;
+        orderId() {
+            return Number(this.$route.params.id);
         },
-        isReserve() {
-            return Boolean(this.info.data['is_reserve']);
+        title() {
+            return 'Бронь №' + this.orderId;
         },
         processing() {
-            return this.info.is_loading || this.deleting;
+            return this.info.is_loading || this.deleting || this.ordering;
         },
-        breadcrumbs() {
-            if (this.isReserve) {
-                return [{caption: 'Реестр броней', to: {name: 'reserves-registry'}}];
-            }
-            return [{caption: 'Реестр заказов', to: {name: 'orders-registry'}}];
-        }
     },
 
     created() {
-        this.info.load({id: this.orderId});
-        if (this.$route.query['return']) {
-            this.is_returning = true;
-        }
+        this.info.load({id: this.orderId, reserve: true});
     },
 
     methods: {
@@ -138,30 +117,47 @@ export default {
             this.$toast.info('В разработке');
         },
 
-        discardReserve() {
-            if (!this.isReserve) {
-                return;
-            }
-
-            this.deleteEntry(`Аннулировать бронь №${this.orderId}?`, '/api/order/reserve/cancel', {id: this.orderId})
+        /**
+         discardReserve() {
+            this.deleteEntry(`Аннулировать бронь №${this.orderId}?`, '/api/order/reserve/cancel', {id: this.orderId, reserve: true})
                 .then(() => {
-                    this.$router.push({name: 'reserves-registry'});
+                    this.$router.push({name: 'reserve-search'});
+                })
+        },
+         **/
+
+        removeTicketFromReserve(ticket) {
+            this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {id: this.orderId, ticket_id: ticket['id'], reserve: true})
+                .then(response => {
+                    if (response.data.payload['reserve_cancelled']) {
+                        this.$router.push({name: 'reserve-search'});
+                    } else {
+                        this.info.load({id: this.orderId, reserve: true});
+                    }
                 })
         },
 
-        removeTicketFromReserve(ticket) {
-            if (!this.isReserve) {
-                return;
-            }
-
-            this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {id: this.orderId, ticket_id: ticket['id']})
-                .then(response => {
-                    if (response.data.payload['reserve_cancelled']) {
-                        this.$router.push({name: 'reserves-registry'});
-                    } else {
-                        this.info.load({id: this.orderId});
+        order() {
+            this.$dialog.show('Сформировать заказ для передачи в оплату?', 'question', 'orange', [
+                this.$dialog.button('ok', 'Продолжить', 'orange'),
+                this.$dialog.button('cancel', 'Отмена'),
+            ], 'center')
+                .then((result) => {
+                    if (result === 'ok') {
+                        this.ordering = true;
+                        axios.post('/api/order/reserve/accept', {id: this.orderId})
+                            .then((response) => {
+                                this.$toast.success(response.data['message']);
+                                this.$router.push({name: 'order'});
+                            })
+                            .catch(error => {
+                                this.$toast.error(error.response.data['message']);
+                            })
+                            .finally(() => {
+                                this.ordering = false;
+                            })
                     }
-                })
+                });
         },
     }
 }

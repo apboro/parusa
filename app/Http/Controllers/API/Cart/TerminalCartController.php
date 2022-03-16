@@ -33,7 +33,7 @@ class TerminalCartController extends ApiEditController
     {
         $current = Currents::get($request);
 
-        if ((null === ($position = $current->position())) || !$current->isStaff() || $current->role() === null || !$current->role()->matches(Role::terminal)) {
+        if (!$current->position() || !$current->isStaffTerminal()) {
             return APIResponse::error('Вы не можете оформлять заказы.');
         }
 
@@ -57,7 +57,7 @@ class TerminalCartController extends ApiEditController
             ];
         });
 
-        $tickets = $position->ordering()
+        $tickets = $current->position()->ordering()
             ->where('terminal_id', $current->terminalId())
             ->with(['grade', 'trip', 'trip.excursion', 'trip.startPier'])
             ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
@@ -104,14 +104,14 @@ class TerminalCartController extends ApiEditController
             'order_total' => $order ? $order->total() : null,
             'order_tickets' => $orderTickets,
             'actions' => [
-                'start_payment' => $order && $order->hasStatus(OrderStatus::terminal_creating),
-                'cancel_order' => $order && $order->hasStatus(OrderStatus::terminal_creating),
-                'cancel_payment' => $order && $order->hasStatus(OrderStatus::terminal_wait_for_pay),
+                'start_payment' => $order && ($order->hasStatus(OrderStatus::terminal_creating) || $order->hasStatus(OrderStatus::terminal_creating_from_reserve)),
+                'cancel_order' => $order && ($order->hasStatus(OrderStatus::terminal_creating) || $order->hasStatus(OrderStatus::terminal_creating_from_reserve)),
+                'cancel_payment' => $order && ($order->hasStatus(OrderStatus::terminal_wait_for_pay) || $order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve)),
                 'print' => $order && $order->hasStatus(OrderStatus::terminal_finishing),
                 'finish' => $order && $order->hasStatus(OrderStatus::terminal_finishing),
             ],
             'status' => [
-                'waiting_for_payment' => $order && $order->hasStatus(OrderStatus::terminal_wait_for_pay),
+                'waiting_for_payment' => $order && ($order->hasStatus(OrderStatus::terminal_wait_for_pay) || $order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve)),
                 'finishing' => $order && $order->hasStatus(OrderStatus::terminal_finishing),
             ],
         ], []);

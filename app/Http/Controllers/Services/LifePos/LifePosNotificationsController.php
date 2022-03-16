@@ -91,7 +91,7 @@ class LifePosNotificationsController extends ApiController
                 $payment->external_id = $input['sale']['guid'];
                 $payment->save();
 
-                if ($order && $order->hasStatus(OrderStatus::terminal_wait_for_pay)) {
+                if ($order && ($order->hasStatus(OrderStatus::terminal_wait_for_pay) || $order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve))) {
 
                     $order->setStatus(OrderStatus::terminal_finishing);
                     $order->tickets->map(function (Ticket $ticket) {

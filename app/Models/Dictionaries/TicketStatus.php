@@ -26,9 +26,12 @@ class TicketStatus extends AbstractDictionary
     public const partner_reserve = 1;
     public const partner_paid = 11;
     public const partner_returned = 21;
+    public const partner_reserve_canceled = 22;
 
     public const terminal_creating = 31;
+    public const terminal_creating_from_reserve = 32;
     public const terminal_wait_for_pay = 41;
+    public const terminal_wait_for_pay_from_reserve = 42;
     public const terminal_finishing = 45;
     public const terminal_paid = 50;
     public const terminal_wait_for_return = 53;
@@ -64,5 +67,10 @@ class TicketStatus extends AbstractDictionary
         self::partner_paid,
         self::terminal_paid,
         self::terminal_wait_for_return,
+    ];
+
+    public const ticket_cancelled_statuses = [
+        self::partner_reserve_canceled,
+        self::terminal_canceled,
     ];
 }
