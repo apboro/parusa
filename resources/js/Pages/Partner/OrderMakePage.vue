@@ -27,7 +27,7 @@
                     <template v-if="ticket['available']">
                         <td class="bold no-wrap">{{ ticket['base_price'] }} руб.</td>
                         <td>
-                            <FormNumber :form="form" :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true" :min="0" :hide-title="true"/>
+                            <FormNumber :form="form" :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true" :min="0" :hide-title="true" />
                         </td>
                         <td class="bold no-wrap">
                             {{ multiply(ticket['base_price'], form.values['tickets.' + ticket['id'] + '.quantity']) }} руб.
@@ -161,6 +161,19 @@ export default {
 
         back() {
             this.$router.push({name: 'tickets-select'});
+        },
+
+        quantityChange(id, value) {
+            if (isNaN(value) || value === null) {
+                return;
+            }
+            axios.post('/api/cart/partner/quantity', {id: id, value: value})
+                .then(() => {
+                    this.$store.dispatch('partner/refresh');
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data['message']);
+                })
         },
 
         remove(ticket_id) {
