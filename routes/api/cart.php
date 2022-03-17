@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/cart/partner', [PartnerCartController::class, 'get'])->middleware(['allow:partner']);
 Route::post('/cart/partner/add', [PartnerCartController::class, 'add'])->middleware(['allow:partner']);
-Route::post('/cart/partner/quantity', [TerminalCartController::class, 'quantity'])->middleware(['allow:partner']);
+Route::post('/cart/partner/quantity', [PartnerCartController::class, 'quantity'])->middleware(['allow:partner']);
 Route::post('/cart/partner/remove', [PartnerCartController::class, 'remove'])->middleware(['allow:partner']);
 
 Route::post('/cart/terminal', [TerminalCartController::class, 'get'])->middleware(['allow:staff_terminal']);

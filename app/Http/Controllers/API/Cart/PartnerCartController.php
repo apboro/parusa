@@ -4,10 +4,12 @@ namespace App\Http\Controllers\API\Cart;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Sails\Trip;
+use App\Models\Tickets\Order;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Exception;
@@ -30,11 +32,11 @@ class PartnerCartController extends ApiEditController
     {
         $current = Currents::get($request);
 
-        if ((null === ($position = $current->position())) || ($current->partner() === null)) {
+        if ($current->position() === null || !$current->isRepresentative()) {
             return APIResponse::error('Вы не можете оформлять заказы.');
         }
 
-        $tickets = $position->ordering()
+        $tickets = $current->position()->ordering()
             ->whereNull('terminal_id')
             ->with(['grade', 'trip', 'trip.excursion', 'trip.startPier'])
             ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
@@ -87,7 +89,7 @@ class PartnerCartController extends ApiEditController
     {
         $current = Currents::get($request);
 
-        if ((null === ($position = $current->position())) || ($current->partner() === null)) {
+        if ($current->position() === null || !$current->isRepresentative()) {
             return APIResponse::error('Вы не можете оформлять заказы.');
         }
 
@@ -133,9 +135,9 @@ class PartnerCartController extends ApiEditController
                     return APIResponse::error('Ошибка. Неверные тарифы.');
                 }
                 /** @var PositionOrderingTicket $ticket */
-                $ticket = $position->ordering()
+                $ticket = $current->position()->ordering()
                     ->where(['trip_id' => $trip->id, 'grade_id' => $grade_id, 'terminal_id' => $current->terminalId()])
-                    ->firstOrNew(['position_id' => $position->id, 'trip_id' => $trip->id, 'grade_id' => $grade_id, 'terminal_id' => $current->terminalId()]);
+                    ->firstOrNew(['position_id' => $current->positionId(), 'trip_id' => $trip->id, 'grade_id' => $grade_id, 'terminal_id' => $current->terminalId()]);
 
                 $ticket->quantity += $quantity;
                 $count += $quantity;
@@ -160,6 +162,48 @@ class PartnerCartController extends ApiEditController
         }
 
         return APIResponse::formSuccess('Билеты добавлены в заказ');
+    }
+
+    /**
+     * Update tickets quantity in cart.
+     *
+     * @param Request $request
+     *
+     * @return  JsonResponse
+     */
+    public function quantity(Request $request): JsonResponse
+    {
+        $current = Currents::get($request);
+
+        if ($current->position() === null || !$current->isRepresentative()) {
+            return APIResponse::error('Вы не можете оформлять заказы.');
+        }
+
+        if (Order::query()
+                ->where(['position_id' => $current->positionId(), 'terminal_id' => null])
+                ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
+                ->count() > 0
+        ) {
+            return APIResponse::error('Другой заказ уже находится в оформлении.');
+        }
+
+        /** @var PositionOrderingTicket $ticket */
+        $ticket = $current->position()->ordering()->with(['trip'])->where(['id' => $request->input('id')])->first();
+
+        $quantity = $request->input('value');
+
+        if ($ticket === null) {
+            return APIResponse::error('Билет не найден.');
+        }
+
+        if ($ticket->trip->tickets()->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
+            throw new RuntimeException('Недостаточно свободных мест на теплоходе.');
+        }
+
+        $ticket->quantity = $quantity;
+        $ticket->save();
+
+        return APIResponse::formSuccess('Количество билетов обновлено');
     }
 
     /**

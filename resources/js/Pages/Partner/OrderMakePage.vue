@@ -27,7 +27,9 @@
                     <template v-if="ticket['available']">
                         <td class="bold no-wrap">{{ ticket['base_price'] }} руб.</td>
                         <td>
-                            <FormNumber :form="form" :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true" :min="0" :hide-title="true" />
+                            <FormNumber :form="form" :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true" :min="0" :hide-title="true"
+                                        @change="(value) => quantityChange(ticket['id'], value)"
+                            />
                         </td>
                         <td class="bold no-wrap">
                             {{ multiply(ticket['base_price'], form.values['tickets.' + ticket['id'] + '.quantity']) }} руб.
