@@ -10,6 +10,7 @@
         :disabled-options="disabledOptions"
         :identifier="identifier"
         :show="show"
+        :multi="multi"
         :search="search"
         :top="top"
         :right="right"
@@ -44,6 +45,8 @@ export default {
         right: {type: Boolean, default: false},
         center: {type: Boolean, default: false},
         small: {type: Boolean, default: false},
+
+        multi: {type: Boolean, default: false},
 
         dictionary: String,
         fresh: {type: Boolean, default: false},

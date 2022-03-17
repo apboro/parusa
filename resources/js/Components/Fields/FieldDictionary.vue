@@ -13,6 +13,7 @@
             :identifier="identifier"
             :show="show"
             :search="search"
+            :multi="multi"
             :top="top"
             :right="right"
             :center="center"
@@ -49,6 +50,8 @@ export default {
         disabledOptions: {type: Boolean, default: false},
         identifier: {type: String, default: 'id'},
         show: {type: String, default: 'name'},
+
+        multi: {type: Boolean, default: false},
 
         search: {type: Boolean, default: false},
         top: {type: Boolean, default: false},

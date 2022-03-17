@@ -1,10 +1,18 @@
 <template>
     <InputWrapper class="input-dropdown" :dirty="isDirty" :disabled="disabled" :valid="valid" :has-focus="dropped" :label="false"
-                  :class="{'input-dropdown__disabled': disabled}"
+                  :class="{'input-dropdown__disabled': disabled, 'input-dropdown__multiple': multi}"
     >
-        <span class="input-dropdown__value"
-              :class="{'input-dropdown__value-placeholder': this.modelValue === null && !this.hasNull, 'input-dropdown__value-small': small}"
-              :title="value" @click="toggle">{{ value }}</span>
+        <span v-if="isEmpty" class="input-dropdown__value"
+              :class="{'input-dropdown__value-placeholder': isEmpty && !hasNull, 'input-dropdown__value-small': small}"
+              @click="toggle">{{ placeholder }}</span>
+        <span v-else-if="!multi" class="input-dropdown__value" :class="{'input-dropdown__value-small': small}" :title="value" @click="toggle">{{ value }}</span>
+        <div v-else class="input-dropdown__values" @click="toggle">
+            <span class="input-dropdown__values-item" v-for="(val, key) in selectedValues" :key="key"
+            >{{ val['value'] }}
+                <span class="input-dropdown__values-item-remove" @click="removeValue(val['key'])"></span>
+            </span>
+        </div>
+
         <span class="input-dropdown__toggle" :class="{'input-dropdown__toggle-expanded': dropped}" @click.capture="toggle"><IconDropdown/></span>
         <div class="input-dropdown__list"
              :class="{'input-dropdown__list-shown': dropped, 'input-dropdown__list-top': top, 'input-dropdown__list-right': right, 'input-dropdown__list-center': center}"
@@ -14,7 +22,7 @@
                 <InputSearch v-model="terms" @change="updateHeight" @click.stop="false" ref="search"/>
             </div>
             <scroll-box :mode="'vertical'" :scrollable-class="'input-dropdown__list-wrapper'" v-if="dropped">
-                <span class="input-dropdown__list-item" v-if="hasNull"
+                <span class="input-dropdown__list-item" v-if="hasNull && !multi"
                       :class="{'input-dropdown__list-item-current' : modelValue === null}" @click="value = null">{{ placeholder }}</span>
                 <span class="input-dropdown__list-item" v-for="(val, key) in displayableOptions"
                       :class="{'input-dropdown__list-item-current' : isCurrent(val['key'])}"
@@ -30,6 +38,7 @@ import IconDropdown from "@/Components/Icons/IconDropdown";
 import ScrollBox from "@/Components/ScrollBox";
 import InputSearch from "@/Components/Inputs/InputSearch";
 import InputWrapper from "@/Components/Inputs/Helpers/InputWrapper";
+import clone from "@/Core/Helpers/Clone";
 
 export default {
     props: {
@@ -46,6 +55,8 @@ export default {
         disabledOptions: {type: Boolean, default: false},
         identifier: {type: String, default: null},
         show: {type: String, default: null},
+
+        multi: {type: Boolean, default: false},
 
         search: {type: Boolean, default: false},
         top: {type: Boolean, default: false},
@@ -69,35 +80,54 @@ export default {
     data: () => ({
         dropped: false,
         dropping: false,
+        removing: false,
         terms: null,
     }),
 
     computed: {
         isDirty() {
-            return this.original !== this.modelValue;
+            return JSON.stringify(this.original) !== JSON.stringify(this.modelValue);
+        },
+        isEmpty() {
+            return !(this.modelValue !== null && (this.multi ? this.modelValue.length !== 0 : this.modelValue !== ''));
         },
         displayableOptions() {
             let options = [];
-            this.options.map((option, key) => {
-                if (typeof option === "object" && option !== null && this.identifier !== null && this.show !== null &&
-                    typeof option[this.identifier] !== "undefined" && typeof option[this.show] !== "undefined"
-                ) {
-                    const value = option[this.show];
-                    if (
-                        (this.disabledOptions || typeof option['enabled'] === "undefined" || Boolean(option['enabled']) === true) &&
-                        (!this.search || empty(this.terms) || String(value).toLowerCase().search(this.terms.toLowerCase()) !== -1)
+            if (this.options !== null) {
+                this.options.map((option, key) => {
+                    if (typeof option === "object" && option !== null && this.identifier !== null && this.show !== null &&
+                        typeof option[this.identifier] !== "undefined" && typeof option[this.show] !== "undefined"
                     ) {
-                        options.push({key: key, value: value});
+                        const value = option[this.show];
+                        if (
+                            (this.disabledOptions || typeof option['enabled'] === "undefined" || Boolean(option['enabled']) === true) &&
+                            (!this.search || empty(this.terms) || String(value).toLowerCase().search(this.terms.toLowerCase()) !== -1) &&
+                            (!this.multi || this.modelValue === null || typeof this.modelValue === "object" && this.modelValue.indexOf(option[this.identifier]) === -1)
+                        ) {
+                            options.push({key: key, value: value});
+                        }
+                    } else {
+                        if (!this.multi || this.modelValue !== null && typeof this.modelValue === "object" && this.modelValue.indexOf(option) === -1) {
+                            options.push({key: key, value: option});
+                        }
                     }
-                } else {
-                    options.push({key: key, value: option});
-                }
-            });
+                });
+            }
             return options;
         },
         value: {
             get() {
-                if (this.modelValue === null) return this.placeholder;
+                if (this.multi) {
+                    if (this.identifier !== null && this.show !== null && !empty(this.options) && this.modelValue !== null && typeof this.modelValue === "object") {
+                        let current = [];
+                        this.options.map(option => {
+                            if (this.modelValue.indexOf(option[this.identifier]) !== -1) {
+                                current.push(option[this.show]);
+                            }
+                        });
+                        return current;
+                    }
+                }
                 if (this.identifier !== null && this.show !== null && !empty(this.options)) {
                     let current = null;
                     this.options.some(option => (option[this.identifier] === this.modelValue) && ((current = option[this.show]) || true));
@@ -106,9 +136,9 @@ export default {
                 return this.modelValue;
             },
             set(key) {
-                let value;
+                let value, to_set;
                 if (key === null) {
-                    value = null;
+                    value = this.multi ? [] : null;
                 } else {
                     value = this.options[key];
                     if (typeof value === "object" && value !== null &&
@@ -116,11 +146,45 @@ export default {
                         typeof value[this.identifier] !== "undefined") {
                         value = value[this.identifier];
                     }
+                    if (this.multi) {
+                        to_set = clone(this.modelValue);
+                        if (typeof to_set === "object" && to_set !== null) {
+                            to_set.push(value);
+                            to_set.sort();
+                        } else {
+                            to_set = [value];
+                        }
+                    } else {
+                        to_set = value;
+                    }
                 }
-                this.$emit('update:modelValue', value);
-                this.$emit('change', value, this.name);
+                this.$emit('update:modelValue', to_set);
+                this.$emit('change', to_set, this.name);
                 this.close();
             }
+        },
+        selectedValues() {
+            let selected = [];
+            if (empty(this.options) || empty(this.modelValue)) {
+                return selected;
+            }
+            this.options.map((option, key) => {
+                if (
+                    typeof option === "object" && option !== null &&
+                    this.identifier !== null && this.show !== null &&
+                    typeof option[this.identifier] !== "undefined" && typeof option[this.show] !== "undefined"
+                ) {
+                    if (this.modelValue.indexOf(option[this.identifier]) >= 0) {
+                        selected.push({key: key, value: option[this.show]});
+                    }
+                } else {
+                    if (this.modelValue.indexOf(option) >= 0) {
+                        selected.push({key: key, value: option});
+                    }
+                }
+            });
+
+            return selected;
         },
     },
 
@@ -144,6 +208,10 @@ export default {
         },
         toggle() {
             if (this.disabled) return;
+            if (this.removing) {
+                this.removing = false;
+                return;
+            }
             if (this.dropped === true) {
                 this.close();
             } else {
@@ -156,6 +224,26 @@ export default {
                 });
                 document.addEventListener('click', this.close);
             }
+        },
+        removeValue(key) {
+            this.removing = true;
+            let value = this.options[key];
+
+            if (typeof value === "object" && value !== null &&
+                this.identifier !== null && this.show !== null &&
+                typeof value[this.identifier] !== "undefined") {
+                value = value[this.identifier];
+            }
+
+            let to_set = clone(this.modelValue);
+            const index = to_set.indexOf(value);
+            if (index !== -1) {
+                to_set.splice(index, 1);
+            }
+
+            this.$emit('update:modelValue', to_set);
+            this.$emit('change', to_set, this.name);
+            this.close();
         },
         close() {
             if (this.dropping === true) {
@@ -192,12 +280,19 @@ $input_placeholder_color: #757575 !default;
 $input_background_color: #ffffff !default;
 $base_primary_color: #0D74D7 !default;
 $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
+$input_border_color: #b7b7b7 !default;
+$input_remove_color: #FF1E00 !default;
 
 .input-dropdown {
     height: $base_size_unit;
 
     &:not(&__disabled) {
         cursor: pointer;
+    }
+
+    &__multiple {
+        height: unset;
+        min-height: $base_size_unit;
     }
 
     &__value {
@@ -223,20 +318,80 @@ $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
         }
     }
 
-    &__toggle {
+    &__values {
+        display: flex;
+        flex-grow: 1;
+        flex-wrap: wrap;
+        box-sizing: border-box;
+        padding: 2px;
         align-items: center;
+        color: inherit;
+
+        &-item {
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+            font-family: $project_font;
+            color: inherit;
+            border: 1px solid transparentize($input_border_color, 0.5);
+            background-color: $input_background_color;
+            height: $base_size_unit - 10px;
+            box-sizing: border-box;
+            border-radius: 4px;
+            margin: 2px;
+            padding: 0 0 0 8px;
+
+            &-remove {
+                display: inline-block;
+                width: math.div($base_size_unit, 2);
+                height: 100%;
+                cursor: pointer;
+                margin: 0 0 0 2px;
+                position: relative;
+                transition: opacity $animation $animation_time;
+                opacity: 0.6;
+
+                &:hover {
+                    opacity: 1;
+                }
+
+                &:before, &:after {
+                    content: '';
+                    width: 50%;
+                    height: 2px;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    background-color: $input_remove_color;
+                }
+
+                &:before {
+                    transform: translate(-50%, -50%) rotate(-45deg);
+                }
+
+                &:after {
+                    transform: translate(-50%, -50%) rotate(45deg);
+                }
+            }
+        }
+    }
+
+    &__toggle {
+        align-items: flex-start;
         box-sizing: border-box;
         cursor: inherit;
         display: flex;
         flex-grow: 0;
         flex-shrink: 0;
-        height: 100%;
         justify-content: center;
         padding: math.div($base_size_unit, 4);
         width: $base_size_unit * 0.75;
+        position: relative;
 
         & > svg {
             transition: transform $animation $animation_time;
+            position: relative;
+            top: 4px;
         }
 
         &-expanded {

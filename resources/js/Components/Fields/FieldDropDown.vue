@@ -11,6 +11,7 @@
             :disabled-options="disabledOptions"
             :identifier="identifier"
             :show="show"
+            :multi="multi"
             :search="search"
             :top="top"
             :right="right"
@@ -50,6 +51,8 @@ export default {
         identifier: {type: String, default: null},
         show: {type: String, default: null},
         hasNull: {type: Boolean, default: false},
+
+        multi: {type: Boolean, default: false},
 
         search: {type: Boolean, default: false},
         top: {type: Boolean, default: false},

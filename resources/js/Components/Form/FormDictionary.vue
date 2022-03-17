@@ -15,6 +15,7 @@
         :has-null="hasNull"
         :identifier="identifier"
         :show="show"
+        :multi="multi"
         :search="search"
         :placeholder="placeholder"
         :top="top"
@@ -41,6 +42,7 @@ export default {
         hasNull: {type: Boolean, default: false},
         identifier: {type: String, default: 'id'},
         show: {type: String, default: 'name'},
+        multi: {type: Boolean, default: false},
         search: {type: Boolean, default: false},
         placeholder: {type: String, default: null},
         top: {type: Boolean, default: false},

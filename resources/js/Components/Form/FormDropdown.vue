@@ -13,6 +13,7 @@
         :has-null="hasNull"
         :identifier="identifier"
         :show="show"
+        :multi="multi"
         :search="search"
         :placeholder="placeholder"
         :top="top"
@@ -42,6 +43,8 @@ export default {
 
         identifier: {type: String, default: null},
         show: {type: String, default: null},
+
+        multi: {type: Boolean, default: false},
 
         search: {type: Boolean, default: false},
         top: {type: Boolean, default: false},
