@@ -21,6 +21,7 @@ class CreateTerminalsTable extends Migration
             $table->unsignedBigInteger('pier_id');
 
             $table->string('workplace_id')->nullable();
+            $table->string('outlet_id')->nullable();
 
             $table->timestamps();
 

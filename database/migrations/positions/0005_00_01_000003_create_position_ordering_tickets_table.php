@@ -16,6 +16,7 @@ class CreatePositionOrderingTicketsTable extends Migration
         Schema::create('position_ordering_tickets', static function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('position_id');
+            $table->unsignedBigInteger('terminal_id')->nullable();
 
             $table->unsignedBigInteger('trip_id');
             $table->unsignedSmallInteger('grade_id');
@@ -27,6 +28,7 @@ class CreatePositionOrderingTicketsTable extends Migration
             $table->foreign('position_id')->references('id')->on('positions')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreign('trip_id')->references('id')->on('trips')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreign('grade_id')->references('id')->on('dictionary_ticket_grades')->restrictOnDelete()->restrictOnUpdate();
+            $table->foreign('terminal_id')->references('id')->on('terminals')->cascadeOnUpdate()->cascadeOnDelete();
         });
     }
 

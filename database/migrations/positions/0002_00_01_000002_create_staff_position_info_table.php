@@ -15,6 +15,7 @@ class CreateStaffPositionInfoTable extends Migration
     {
         Schema::create('staff_position_info', static function (Blueprint $table) {
             $table->unsignedBigInteger('position_id')->unique()->primary();
+            $table->string('external_id')->nullable();
 
             $table->string('email');
             $table->string('work_phone')->nullable();

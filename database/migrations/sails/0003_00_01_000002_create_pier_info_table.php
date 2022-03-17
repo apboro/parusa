@@ -11,12 +11,13 @@ class CreatePierInfoTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('pier_info', function (Blueprint $table) {
             $table->unsignedBigInteger('pier_id')->primary();
 
             $table->string('work_time')->nullable();
+            $table->string('phone')->nullable();
 
             $table->string('address')->nullable();
             $table->string('latitude')->nullable();
