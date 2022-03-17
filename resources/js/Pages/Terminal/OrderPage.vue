@@ -1,5 +1,5 @@
 <template>
-    <Order :returnable="true" :printable="false"/>
+    <Order :returnable="false" :printable="true"/>
 </template>
 
 <script>

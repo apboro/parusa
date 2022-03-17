@@ -30,7 +30,9 @@
                         <FormNumber :form="form" :name="'tickets.' + ticket['id'] + '.price'" :hide-title="true"/>
                     </td>
                     <td>
-                        <FormNumber :form="form" :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true" :min="0" :hide-title="true"/>
+                        <FormNumber :form="form" :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true" :min="0" :hide-title="true"
+                                    @change="(value) => quantityChange(ticket['id'], value)"
+                        />
                     </td>
                     <td class="bold no-wrap">
                         {{ multiply(ticket['base_price'], form.values['tickets.' + ticket['id'] + '.quantity']) }} руб.
@@ -70,7 +72,7 @@
         </GuiContainer>
 
         <GuiContainer w-70 mt-30 inline text-right>
-            <GuiButton @click="order" :color="'green'" :disabled="!canOrder">Отправить в оплату</GuiButton>
+            <GuiButton @click="order" :color="'green'" :disabled="!canOrder">Оплатить через терминал</GuiButton>
         </GuiContainer>
     </template>
     <template v-else>
@@ -181,15 +183,29 @@ export default {
                 .then(() => {
                     this.data['tickets'] = this.data['tickets'].filter(ticket => ticket['id'] !== ticket_id);
                     this.form.unset('tickets.' + ticket_id + '.quantity');
+                    this.form.unset('tickets.' + ticket_id + '.price');
                     this.$store.dispatch('terminal/refresh');
                 });
+        },
+
+        quantityChange(id, value) {
+            if (isNaN(value) || value === null) {
+                return;
+            }
+            axios.post('/api/cart/terminal/quantity', {id: id, value: value})
+                .then(() => {
+                    this.$store.dispatch('terminal/refresh');
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data['message']);
+                })
         },
 
         order() {
             if (!this.canOrder || !this.form.validate()) {
                 return;
             }
-            this.$dialog.show('Завершить оформление заказа и отправить в оплату?', 'question', 'orange', [
+            this.$dialog.show('Завершить оформление заказа и отправить в оплату через терминал?', 'question', 'orange', [
                 this.$dialog.button('ok', 'Продолжить', 'orange'),
                 this.$dialog.button('cancel', 'Отмена'),
             ], 'center')

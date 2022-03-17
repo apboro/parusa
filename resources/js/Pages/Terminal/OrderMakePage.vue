@@ -1,7 +1,7 @@
 <template>
-    <LayoutPage :title="$route.meta['title']" :loading="processing">
+    <LayoutPage :title="title" :loading="processing">
 
-        <OrderMakeProcess v-if="data.is_loaded && data.data['has_order']" :data="data.data" @update="data.load()"/>
+        <OrderMakeProcess v-if="data.is_loaded && data.data['has_order']" :data="data.data" @update="data.load()" :external-processing="processing"/>
 
         <OrderMakeCart v-else-if="data.is_loaded" :data="data.data" @order="data.load()"/>
 
@@ -28,6 +28,13 @@ export default {
     computed: {
         processing() {
             return Boolean(this.data.is_loading);
+        },
+        title() {
+            if (!this.data.is_loaded) return 'Оформлние заказа';
+            if (this.data.data['status']['creating']) return 'Оформление заказа';
+            if (this.data.data['status']['created']) return 'Оплата заказа';
+            if (this.data.data['status']['waiting_for_payment']) return 'Приём оплаты через терминал';
+            if (this.data.data['status']['finishing']) return 'Печать билетов';
         },
     },
 

@@ -48,7 +48,7 @@
 
         <template v-if="info.is_loaded">
             <GuiContainer text-right>
-                <GuiButton @clicked="order" :color="'green'" v-if="info.data['can_buy']">Сформировать заказ</GuiButton>
+                <GuiButton @clicked="order" :color="'green'" v-if="info.data['can_buy']">Выкупить бронь</GuiButton>
                 <!--
                 <GuiButton @clicked="discardReserve" :color="'red'">Аннулировать бронь</GuiButton>
                 -->
@@ -138,7 +138,7 @@ export default {
         },
 
         order() {
-            this.$dialog.show('Сформировать заказ для передачи в оплату?', 'question', 'orange', [
+            this.$dialog.show('Выкупить бронь?', 'question', 'orange', [
                 this.$dialog.button('ok', 'Продолжить', 'orange'),
                 this.$dialog.button('cancel', 'Отмена'),
             ], 'center')

@@ -12,7 +12,7 @@
         </GuiContainer>
 
         <LoadingProgress :loading="processing">
-            <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true">
+            <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
                 <template v-for="order in list.list">
                     <ListTableRow :no-odd-even="true" :no-highlight="true">
                         <ListTableCell :class="'bold'">
@@ -32,9 +32,6 @@
                         </ListTableCell>
                         <ListTableCell>
                             {{ order['valid_before'] }}
-                        </ListTableCell>
-                        <ListTableCell style="padding-top: 5px; padding-bottom: 5px">
-                            <GuiButton @click="makeReturn(order)">Выкупить</GuiButton>
                         </ListTableCell>
                     </ListTableRow>
                     <ListTableRow :no-odd-even="true" :no-highlight="true">

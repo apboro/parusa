@@ -1,46 +1,53 @@
 <template>
-    <GuiHeading mt-20 bold>Заказ №{{ data['order_id'] }}</GuiHeading>
-    <LoadingProgress :loading="processing">
-        <table class="order-table">
-            <thead>
-            <tr>
-                <th>№ билета</th>
-                <th>Дата</th>
-                <th>Время</th>
-                <th>Экскурсия</th>
-                <th>Причал</th>
-                <th>Тип билета</th>
-                <th>Цена, руб</th>
-            </tr>
-            </thead>
-            <tr v-for="ticket in data['order_tickets']">
-                <td>{{ ticket['id'] }}</td>
-                <td>{{ ticket['trip_start_date'] }}</td>
-                <td>{{ ticket['trip_start_time'] }}</td>
-                <td>
-                    <div>{{ ticket['excursion'] }}</div>
-                </td>
-                <td>{{ ticket['pier'] }}</td>
-                <td>{{ ticket['grade'] }}</td>
-                <td>{{ ticket['base_price'] }}</td>
-            </tr>
-        </table>
-        <GuiHeading mt-20 bold right>Итого: {{ data['order_total'] }} руб.</GuiHeading>
-        <GuiContainer mt-30>
-            <GuiButton :color="'green'" :disabled="!data['actions']['start_payment']" @clicked="sendPayment">Отправить в оплату</GuiButton>
-            <GuiButton :color="'red'" :disabled="!data['actions']['cancel_order']" @clicked="deleteOrder">Отменить заказ</GuiButton>
+    <LoadingProgress :loading="processing && !externalProcessing">
+        <GuiHeading mt-20 bold>Заказ №{{ data['order_id'] }}</GuiHeading>
+
+        <GuiText v-if="data['status']['created'] && data['is_reserve']" mt-30 mb-30>
+            Сформирован заказ №{{ data['order_id'] }} из брони №{{ data['order_id'] }}
+        </GuiText>
+
+        <template v-if="data['status']['created']">
+            <table class="order-table">
+                <thead>
+                <tr>
+                    <th>№ билета</th>
+                    <th>Дата</th>
+                    <th>Время</th>
+                    <th>Экскурсия</th>
+                    <th>Причал</th>
+                    <th>Тип билета</th>
+                    <th>Цена, руб</th>
+                </tr>
+                </thead>
+                <tr v-for="ticket in data['order_tickets']">
+                    <td>{{ ticket['id'] }}</td>
+                    <td>{{ ticket['trip_start_date'] }}</td>
+                    <td>{{ ticket['trip_start_time'] }}</td>
+                    <td>
+                        <div>{{ ticket['excursion'] }}</div>
+                    </td>
+                    <td>{{ ticket['pier'] }}</td>
+                    <td>{{ ticket['grade'] }}</td>
+                    <td>{{ ticket['base_price'] }}</td>
+                </tr>
+            </table>
+            <GuiHeading mt-20 bold right>Итого: {{ data['order_total'] }} руб.</GuiHeading>
+        </template>
+
+        <GuiContainer mt-30 text-right v-if="data['status']['created']">
+            <GuiButton :color="'green'" :disabled="!data['actions']['start_payment']" @clicked="sendPayment">Оплатить через терминал</GuiButton>
+            <GuiButton :color="'red'" :disabled="!data['actions']['cancel_order']" @clicked="deleteOrder">Аннулировать заказ</GuiButton>
         </GuiContainer>
-        <GuiContainer mt-30>
-            <LoadingProgress :loading="true" v-if="data['status']['waiting_for_payment']">
-                <GuiMessage>Ожидание оплаты</GuiMessage>
-            </LoadingProgress>
+
+        <GuiMessage v-if="data['status']['waiting_for_payment']">Заказ отправлен на терминал. Идёт оплата...</GuiMessage>
+        <GuiContainer mt-30 text-right v-if="data['status']['waiting_for_payment']">
             <GuiButton :color="'red'" :disabled="!data['actions']['cancel_payment']" @clicked="cancelPayment">Отмена оплаты</GuiButton>
         </GuiContainer>
-        <GuiContainer mt-30>
-            <GuiButton :color="'greed'" :disabled="!data['actions']['print']">Печать билетов</GuiButton>
-        </GuiContainer>
-        <GuiContainer mt-30>
-            <GuiButton :color="'greed'" :disabled="!data['actions']['finish']" @clicked="closeOrder">Закрыть заказ</GuiButton>
+
+        <GuiMessage v-if="data['status']['finishing']">Заказ оплачен.</GuiMessage>
+        <GuiContainer mt-30 text-right v-if="data['status']['finishing']">
+            <GuiButton :color="'green'" :disabled="!data['actions']['print']">Печать билетов</GuiButton>
+            <GuiButton :disabled="!data['actions']['finish']" @clicked="closeOrder">Закрыть заказ</GuiButton>
         </GuiContainer>
     </LoadingProgress>
 </template>
@@ -51,15 +58,18 @@ import GuiContainer from "@/Components/GUI/GuiContainer";
 import GuiButton from "@/Components/GUI/GuiButton";
 import LoadingProgress from "@/Components/LoadingProgress";
 import GuiMessage from "@/Components/GUI/GuiMessage";
+import GuiText from "@/Components/GUI/GuiText";
 
 export default {
     props: {
         data: {type: Object, required: true},
+        externalProcessing: {type: Boolean, default: false},
     },
 
     emits: ['update'],
 
     components: {
+        GuiText,
         GuiMessage,
         LoadingProgress,
         GuiButton,
@@ -71,6 +81,7 @@ export default {
         processing: false,
         interval: null,
         print_fired: false,
+        order_cancelling: false,
     }),
 
     mounted() {
@@ -82,9 +93,13 @@ export default {
         this.interval = null;
     },
 
+    computed() {
+
+    },
+
     methods: {
         handleInterval() {
-            if (this.data['status']['waiting_for_payment']) {
+            if (this.data['status']['waiting_for_payment'] && !this.order_cancelling) {
                 axios.post('/api/order/terminal/status', {})
                     .then(response => {
                         if (response.data.data['waiting_for_pay'] === false) {
@@ -99,18 +114,24 @@ export default {
                     })
             }
         },
-        cancelPayment() {
-            this.runAction('/api/order/terminal/cancel');
-        },
+
         sendPayment() {
+            this.order_cancelling = false;
             this.runAction('/api/order/terminal/send');
         },
+
+        cancelPayment() {
+            this.order_cancelling = true;
+            this.runAction('/api/order/terminal/cancel');
+        },
+
         closeOrder() {
             this.runAction('/api/order/terminal/close');
         },
+
         deleteOrder() {
-            this.$dialog.show('Расформировать заказ?', 'question', 'red', [
-                this.$dialog.button('yes', 'Расформировать', 'red'),
+            this.$dialog.show('Аннулировать заказ?', 'question', 'red', [
+                this.$dialog.button('yes', 'Продолжить', 'red'),
                 this.$dialog.button('no', 'Отмена', 'blue'),
             ]).then(result => {
                 if (result === 'yes') {
@@ -118,14 +139,14 @@ export default {
                 }
             });
         },
+
         runAction(url) {
             if (this.processing) {
                 return;
             }
             this.processing = true;
             axios.post(url, {})
-                .then(response => {
-                    this.$toast.success(response.data.message, 5000);
+                .then(() => {
                     this.$emit('update');
                 })
                 .catch(error => {

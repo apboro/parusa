@@ -74,6 +74,9 @@ class TerminalCurrentOrderController extends ApiController
         }
 
         try {
+            if ($order->external_id !== null) {
+                LifePosSales::cancel($order);
+            }
             $order->hasStatus(OrderStatus::terminal_wait_for_pay)
                 ? $order->setStatus(OrderStatus::terminal_creating)
                 : $order->setStatus(OrderStatus::terminal_creating_from_reserve);
@@ -147,10 +150,6 @@ class TerminalCurrentOrderController extends ApiController
         $fromReserve = $order->hasStatus(OrderStatus::terminal_creating_from_reserve);
 
         try {
-            if ($order->external_id !== null) {
-                LifePosSales::cancel($order);
-            }
-
             DB::transaction(static function () use ($order, $fromReserve) {
                 $order->tickets->map(function (Ticket $ticket) use ($fromReserve) {
                     $ticket->setStatus($fromReserve ? OrderStatus::partner_reserve : OrderStatus::terminal_canceled);

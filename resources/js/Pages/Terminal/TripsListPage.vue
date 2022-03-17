@@ -1,7 +1,4 @@
 <template>
-    <GuiContainer mt-20 mb-20>
-        <TerminalHeaderWidget/>
-    </GuiContainer>
     <LayoutPage :loading="list.is_loading" :title="$route.meta['title']">
         <LayoutFilters>
             <LayoutFiltersItem :class="'w-25'" :title="'Дата'">
@@ -117,12 +114,9 @@ import ListTableCell from "@/Components/ListTable/ListTableCell";
 import GuiButton from "@/Components/GUI/GuiButton";
 import TicketsSelect from "@/Pages/Terminal/Parts/TicketsSelect";
 import GuiContainer from "@/Components/GUI/GuiContainer";
-import TerminalHeaderWidget from "@/Apps/TerminalHeaderWidget";
-
 
 export default {
     components: {
-        TerminalHeaderWidget,
         GuiContainer,
         TicketsSelect,
         GuiButton,

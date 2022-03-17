@@ -69,33 +69,56 @@ class LifePosSales
         }
 
         try {
-            $result = $client->post("/v4/orgs/{$orgId}/deals/sales", [
-                'json' => [
-                    "outlet" => ["guid" => $terminal->outlet_id],
-                    "workplace" => ["guid" => $terminal->workplace_id],
-                    "number" => $order->id,
-                    "opened_by" => ["guid" => $position->staffInfo->external_id ?? null],
-                    "opened_at" => $order->created_at,
-                    "status" => "Opened",
-                    "total_sum" => ["value" => $total * 100, "currency" => "RUB"],
-                    'positions' => $tickets,
-                ],
-            ]);
+            if ($order->external_id === null) {
+                $result = $client->post("/v4/orgs/{$orgId}/deals/sales", [
+                    'json' => [
+                        "outlet" => ["guid" => $terminal->outlet_id],
+                        "workplace" => ["guid" => $terminal->workplace_id],
+                        "number" => $order->id,
+                        "opened_by" => ["guid" => $position->staffInfo->external_id ?? null],
+                        "opened_at" => $order->created_at,
+                        "status" => "Opened",
+                        "total_sum" => ["value" => $total * 100, "currency" => "RUB"],
+                        'positions' => $tickets,
+                    ],
+                ]);
+            } else {
+                $result = $client->patch("/v4/orgs/{$orgId}/deals/sales/{$order->external_id}", [
+                    'json' => [
+                        ["op" => "replace", "path" => "outlet", "value" => ["guid" => $terminal->outlet_id]],
+                        ["op" => "replace", "path" => "workplace", "value" => ["guid" => $terminal->workplace_id]],
+                        ["op" => "replace", "path" => "status", "value" => "Opened"],
+                        ["op" => "replace", "path" => "total_sum", "value" => ["value" => $total * 100, "currency" => "RUB"]],
+                        ["op" => "replace", "path" => "positions", "value" => $tickets],
+                    ],
+                ]);
+            }
         } catch (GuzzleException|Exception $exception) {
             throw new RuntimeException('LifePos: ' . $exception->getMessage());
         }
 
-        try {
-            if ($result->getStatusCode() !== 201) {
+        if ($order->external_id === null && $result->getStatusCode() === 201) {
+            try {
                 $response = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
-                throw new RuntimeException('LifePos response: ' . $response['message']);
+                $order->external_id = $response['guid'];
+                $order->save();
+            } catch (JsonException $exception) {
+                throw new RuntimeException('LifePos response parsing error: ' . $exception->getMessage());
             }
+            return;
+        }
+
+        if ($order->external_id !== null && $result->getStatusCode() === 204) {
+            return;
+        }
+
+        try {
             $response = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
             throw new RuntimeException('LifePos response parsing error: ' . $exception->getMessage());
         }
-        $order->external_id = $response['guid'];
-        $order->save();
+
+        throw new RuntimeException('LifePos error response: ' . $response['message']);
     }
 
     /**

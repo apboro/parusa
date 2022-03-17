@@ -31,28 +31,32 @@ class TerminalInfoController extends ApiController
             ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
             ->first();
 
-        $orderAmount = $current->position()->ordering()
-            ->where('terminal_id', $terminalId)
-            ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
-            ->where('trips.start_at', '>', Carbon::now())
-            ->leftJoin('excursions', 'excursions.id', '=', 'trips.excursion_id')
-            ->leftJoin('tickets_rates_list', function (JoinClause $join) {
-                $join
-                    ->on('tickets_rates_list.excursion_id', '=', 'excursions.id')
-                    ->on(DB::raw('date(tickets_rates_list.start_at)'), '<=', DB::raw('date(trips.start_at)'))
-                    ->on(DB::raw('date(tickets_rates_list.end_at)'), '>=', DB::raw('date(trips.start_at)'));
-            })
-            ->leftJoin('ticket_rates', function (JoinClause $join) {
-                $join->on('ticket_rates.rate_id', '=', 'tickets_rates_list.id')
-                    ->on('ticket_rates.grade_id', '=', 'position_ordering_tickets.grade_id');
-            })
-            ->select(DB::raw('sum(position_ordering_tickets.quantity * ticket_rates.base_price) as total'))
-            ->value('total');
-        $orderAmount = PriceConverter::storeToPrice($orderAmount ?? 0);
+        if($processing) {
+            $orderAmount = $processing->total();
+        } else {
+            $orderAmount = $current->position()->ordering()
+                ->where('terminal_id', $terminalId)
+                ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
+                ->where('trips.start_at', '>', Carbon::now())
+                ->leftJoin('excursions', 'excursions.id', '=', 'trips.excursion_id')
+                ->leftJoin('tickets_rates_list', function (JoinClause $join) {
+                    $join
+                        ->on('tickets_rates_list.excursion_id', '=', 'excursions.id')
+                        ->on(DB::raw('date(tickets_rates_list.start_at)'), '<=', DB::raw('date(trips.start_at)'))
+                        ->on(DB::raw('date(tickets_rates_list.end_at)'), '>=', DB::raw('date(trips.start_at)'));
+                })
+                ->leftJoin('ticket_rates', function (JoinClause $join) {
+                    $join->on('ticket_rates.rate_id', '=', 'tickets_rates_list.id')
+                        ->on('ticket_rates.grade_id', '=', 'position_ordering_tickets.grade_id');
+                })
+                ->select(DB::raw('sum(position_ordering_tickets.quantity * ticket_rates.base_price) as total'))
+                ->value('total');
+            $orderAmount = PriceConverter::storeToPrice($orderAmount ?? 0);
+        }
 
         return APIResponse::response([
             'order_amount' => $orderAmount,
-            'current' => $processing ? $processing->status->name : null,
+            'current' => $processing ? $processing->status->name : 'Создание заказа',
         ]);
     }
 }

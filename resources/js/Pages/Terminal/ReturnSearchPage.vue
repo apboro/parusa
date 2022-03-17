@@ -12,7 +12,7 @@
         </GuiContainer>
 
         <LoadingProgress :loading="processing">
-            <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true">
+            <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="false">
                 <template v-for="order in list.list">
                     <ListTableRow :no-odd-even="true" :no-highlight="true">
                         <ListTableCell :class="'bold'">
@@ -30,9 +30,6 @@
                         <ListTableCell>
                             {{ order['amount'] }} руб.
                         </ListTableCell>
-                        <ListTableCell style="padding-top: 5px; padding-bottom: 5px">
-                            <GuiButton @click="makeReturn(order)">Оформить возврат</GuiButton>
-                        </ListTableCell>
                     </ListTableRow>
                     <ListTableRow :no-odd-even="true" :no-highlight="true">
                         <ListTableCell colspan="6">
@@ -45,7 +42,7 @@
                                 </tr>
                                 </thead>
                                 <tr v-for="(ticket, key) in order['tickets']" :key="key">
-                                    <td class="p-5">{{ ticket['id'] }}</td>
+                                    <td class="p-5"><span v-html="highlight(ticket['id'])"/></td>
                                     <td class="p-5">
                                         <div>{{ ticket['trip_date'] }}</div>
                                         <div>{{ ticket['trip_time'] }}</div>

@@ -117,7 +117,7 @@ class Ticket extends Model implements Statusable
      */
     public function getBasePriceAttribute(?int $value): ?float
     {
-        return $value ? PriceConverter::storeToPrice($value) : null;
+        return $value !== null ? PriceConverter::storeToPrice($value) : null;
     }
 
     /**

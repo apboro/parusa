@@ -77,9 +77,9 @@ class OrdersRegistryController extends ApiController
 
         // apply search
         if ($terms = $request->search()) {
-            $query->where(function (Builder $query) use ($terms, $current) {
+            $query->where(function (Builder $query) use ($terms, $current, $request) {
                 $query->whereIn('id', $terms);
-                if (!$current->isStaffTerminal()) {
+                if (!$current->isStaffTerminal() || !$request->input('only_orders')) {
                     $query->orWhereHas('tickets', function (Builder $query) use ($terms) {
                         $query->whereIn('id', $terms);
                     });

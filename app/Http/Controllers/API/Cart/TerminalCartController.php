@@ -103,6 +103,7 @@ class TerminalCartController extends ApiEditController
             'order_status' => $order ? $order->status->name : null,
             'order_total' => $order ? $order->total() : null,
             'order_tickets' => $orderTickets,
+            'is_reserve' => $order && ($order->hasStatus(OrderStatus::terminal_creating_from_reserve) || $order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve)),
             'actions' => [
                 'start_payment' => $order && ($order->hasStatus(OrderStatus::terminal_creating) || $order->hasStatus(OrderStatus::terminal_creating_from_reserve)),
                 'cancel_order' => $order && ($order->hasStatus(OrderStatus::terminal_creating) || $order->hasStatus(OrderStatus::terminal_creating_from_reserve)),
@@ -111,6 +112,8 @@ class TerminalCartController extends ApiEditController
                 'finish' => $order && $order->hasStatus(OrderStatus::terminal_finishing),
             ],
             'status' => [
+                'creating' => $order === null,
+                'created' => $order && ($order->hasStatus(OrderStatus::terminal_creating) || $order->hasStatus(OrderStatus::terminal_creating_from_reserve)),
                 'waiting_for_payment' => $order && ($order->hasStatus(OrderStatus::terminal_wait_for_pay) || $order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve)),
                 'finishing' => $order && $order->hasStatus(OrderStatus::terminal_finishing),
             ],
@@ -128,15 +131,12 @@ class TerminalCartController extends ApiEditController
     {
         $current = Currents::get($request);
 
-        if ((null === ($position = $current->position())) || ($current->isStaff() && ($current->role() === null || !$current->role()->matches(Role::terminal)))) {
+        if ($current->position() === null || !$current->isStaffTerminal()) {
             return APIResponse::error('Вы не можете оформлять заказы.');
         }
 
-        if (
-            $current->role() !== null
-            && $current->terminal() !== null
-            && $current->role()->matches(Role::terminal)
-            && Order::query()->where(['position_id' => $position->id, 'terminal_id' => $current->terminalId()])
+        if ($current->isStaffTerminal() && Order::query()
+                ->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
                 ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
                 ->count() > 0
         ) {
@@ -185,9 +185,9 @@ class TerminalCartController extends ApiEditController
                     return APIResponse::error('Ошибка. Неверные тарифы.');
                 }
                 /** @var PositionOrderingTicket $ticket */
-                $ticket = $position->ordering()
+                $ticket = $current->position()->ordering()
                     ->where(['trip_id' => $trip->id, 'grade_id' => $grade_id, 'terminal_id' => $current->terminalId()])
-                    ->firstOrNew(['position_id' => $position->id, 'trip_id' => $trip->id, 'grade_id' => $grade_id, 'terminal_id' => $current->terminalId()]);
+                    ->firstOrNew(['position_id' => $current->positionId(), 'trip_id' => $trip->id, 'grade_id' => $grade_id, 'terminal_id' => $current->terminalId()]);
 
                 $ticket->quantity += $quantity;
                 $count += $quantity;
@@ -215,6 +215,48 @@ class TerminalCartController extends ApiEditController
     }
 
     /**
+     * Update tickets quantity in cart.
+     *
+     * @param Request $request
+     *
+     * @return  JsonResponse
+     */
+    public function quantity(Request $request): JsonResponse
+    {
+        $current = Currents::get($request);
+
+        if ($current->position() === null || !$current->isStaffTerminal()) {
+            return APIResponse::error('Вы не можете оформлять заказы.');
+        }
+
+        if (Order::query()
+                ->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
+                ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
+                ->count() > 0
+        ) {
+            return APIResponse::error('Другой заказ уже находится в оформлении.');
+        }
+
+        /** @var PositionOrderingTicket $ticket */
+        $ticket = $current->position()->ordering()->with(['trip'])->where(['id' => $request->input('id')])->first();
+
+        $quantity = $request->input('value');
+
+        if ($ticket === null) {
+            return APIResponse::error('Билет не найден.');
+        }
+
+        if ($ticket->trip->tickets()->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
+            throw new RuntimeException('Недостаточно свободных мест на теплоходе.');
+        }
+
+        $ticket->quantity = $quantity;
+        $ticket->save();
+
+        return APIResponse::formSuccess('Количество билетов обновлено');
+    }
+
+    /**
      * Remove ticket from cart.
      *
      * @param Request $request
@@ -225,13 +267,13 @@ class TerminalCartController extends ApiEditController
     {
         $current = Currents::get($request);
 
-        if ((null === ($position = $current->position())) || !$current->isStaff() || $current->role() === null || !$current->role()->matches(Role::terminal)) {
+        if (!$current->isStaffTerminal()) {
             return APIResponse::error('ВЫ не можете оформлять заказы.');
         }
 
         $id = $request->input('ticket_id');
 
-        PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id, 'terminal_id' => $current->terminalId()])->delete();
+        PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])->delete();
 
         return APIResponse::formSuccess('Билет удалён из заказа.');
     }
