@@ -17,6 +17,9 @@ mix
     .js('resources/js/terminal.js', 'js').vue()
     .sass('resources/css/app.scss', 'css')
 
+    .js('resources/js/showcase.js', 'js').vue()
+    .js('resources/js/checkout.js', 'js').vue()
+
     .webpackConfig(require('./webpack.config.js'));
 
 if (mix.inProduction()) {

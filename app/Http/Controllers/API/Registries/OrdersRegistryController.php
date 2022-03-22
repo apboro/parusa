@@ -50,7 +50,7 @@ class OrdersRegistryController extends ApiController
                 'partner', 'position', 'position.user', 'position.user.profile', 'terminal',
             ])
             ->withCount(['tickets'])
-            ->whereIn('status_id', OrderStatus::order_paid_statuses);
+            ->whereIn('status_id', OrderStatus::order_had_paid_statuses);
 
         if ($current->isRepresentative()) {
             $query->where('partner_id', $current->partnerId());

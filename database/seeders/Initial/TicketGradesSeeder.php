@@ -16,13 +16,12 @@ class TicketGradesSeeder extends GenericSeeder
      */
     protected array $data = [
         TicketGrade::class => [
+            TicketGrade::adult => ['name' => 'Взрослый', 'order' => 0, 'locked' => true],
             TicketGrade::guide => ['name' => 'Гид', 'order' => 5, 'locked' => true],
-
-            1000 => ['name' => 'Взрослый', 'order' => 0],
-            1001 => ['name' => 'Пенсионный', 'order' => 1],
-            1002 => ['name' => 'Студенческий', 'order' => 2],
-            1003 => ['name' => 'Школьный', 'order' => 3],
-            1004 => ['name' => 'Детский (до 1 года)', 'order' => 4],
+            1000 => ['name' => 'Пенсионный', 'order' => 1],
+            1001 => ['name' => 'Студенческий', 'order' => 2],
+            1002 => ['name' => 'Школьный', 'order' => 3],
+            1003 => ['name' => 'Детский (до 1 года)', 'order' => 4],
         ],
     ];
 }

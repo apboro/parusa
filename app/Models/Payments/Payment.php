@@ -9,6 +9,8 @@ use Carbon\Carbon;
  * @property int $id
  * @property string $gate
  * @property int $order_id
+ * @property int $status_id
+ * @property ?int $parent_id
  * @property string $fiscal
  * @property int $total
  * @property int $by_card

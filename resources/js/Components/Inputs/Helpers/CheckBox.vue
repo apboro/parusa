@@ -8,7 +8,8 @@
         <span class="checkbox__check">
             <IconCheck class="checkbox__check-checked"/>
         </span>
-        <span class="checkbox__label" :class="{'checkbox__label-small': small}">{{ label }}</span>
+        <span class="checkbox__label" v-if="!label" :class="{'checkbox__label-small': small}"><slot/></span>
+        <span class="checkbox__label" v-else :class="{'checkbox__label-small': small}">{{ label }}</span>
     </label>
 </template>
 
@@ -36,7 +37,7 @@ export default {
             set(value) {
                 this.$emit('update:modelValue', value);
             }
-        }
+        },
     }
 }
 </script>
@@ -55,7 +56,6 @@ $input_error_color: #FF1E00 !default;
 
 .checkbox {
     height: 100%;
-    max-height: $base_size_unit;
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -81,6 +81,7 @@ $input_error_color: #FF1E00 !default;
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
 
         &-checked {
             color: inherit;
@@ -114,9 +115,7 @@ $input_error_color: #FF1E00 !default;
         margin: 0 7px 0 7px;
         font-size: 16px;
         font-family: $project_font;
-        line-height: $base_size_unit;
         display: inline-block;
-        height: 100%;
         color: $input_color;
         position: relative;
         top: 1px;

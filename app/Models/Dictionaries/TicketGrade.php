@@ -13,6 +13,9 @@ class TicketGrade extends AbstractDictionary
     /** @var int The id of guide ticket grade */
     public const guide = 1;
 
+    /** @var int The id of adult ticket grade */
+    public const adult = 2;
+
     /** @var string Referenced table */
     protected $table = 'dictionary_ticket_grades';
 

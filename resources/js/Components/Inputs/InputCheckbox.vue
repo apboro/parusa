@@ -1,6 +1,8 @@
 <template>
     <div class="input-checkbox">
-        <CheckBox class="input-checkbox__input" :value="value" v-model="proxyValue" :valid="valid" :label="label" :disabled="disabled" :small="small"/>
+        <CheckBox class="input-checkbox__input" :value="value" v-model="proxyValue" :valid="valid" :label="label" :disabled="disabled" :small="small">
+            <slot/>
+        </CheckBox>
     </div>
 </template>
 
@@ -50,7 +52,9 @@ export default {
 $base_size_unit: 35px !default;
 
 .input-checkbox {
-    height: $base_size_unit;
+    min-height: $base_size_unit;
+    display: flex;
+    align-items: center;
 
     &__input {
         width: 100%;

@@ -20,7 +20,7 @@ const router = createRouter({
     routes: routes,
 })
 
-const store = createStore({
+const terminalStore = createStore({
     modules: {
         dictionary: DictionaryStore,
         terminal: TerminalStore,
@@ -32,7 +32,7 @@ let user = typeof window.user === "undefined" ? null : JSON.parse(window.user);
 const app = createApp(App, {menu: menu, user: user});
 
 app.use(router);
-app.use(store);
+app.use(terminalStore);
 app.use(Toast);
 app.use(Dialog);
 app.use(Highlight);

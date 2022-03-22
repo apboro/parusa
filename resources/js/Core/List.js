@@ -59,7 +59,7 @@ const list = function (url, options = {}, pagination = true) {
                         this.list = response.data.list;
                         this.titles = typeof response.data.titles !== "undefined" ? response.data.titles : {};
                         this.pagination = typeof response.data.pagination !== "undefined" ? response.data.pagination : null;
-                        this.filters = typeof response.data.filters !== "undefined" && response.data.filters !== null ? response.data.filters : {};
+                        this.filters = typeof response.data.filters !== "undefined" && response.data.filters !== null && Object.keys(response.data.filters).length > 0 ? response.data.filters : {};
                         this.filters_original = typeof response.data.filters_original !== "undefined" && response.data.filters_original !== null ? response.data.filters_original : {};
                         this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
                         this.is_loaded = true;
@@ -79,6 +79,10 @@ const list = function (url, options = {}, pagination = true) {
                         this.is_loading = false;
                     });
             });
+        },
+
+        hasItems() {
+            return this.is_loaded && this.list && this.list.length > 0;
         },
 
         /**

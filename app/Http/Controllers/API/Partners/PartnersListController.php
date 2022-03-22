@@ -14,7 +14,7 @@ use App\Models\Positions\Position;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PartnersListController extends ApiController
 {
@@ -84,7 +84,7 @@ class PartnersListController extends ApiController
         // current page automatically resolved from request via `page` parameter
         $partners = $query->orderBy('name')->paginate($request->perPage(10, $this->rememberKey));
 
-        /** @var Collection $partners */
+        /** @var LengthAwarePaginator $partners */
         $partners->transform(function (Partner $partner) {
             $representatives = [];
             foreach ($partner->positions as $position) {
@@ -109,17 +109,19 @@ class PartnersListController extends ApiController
         // available types ids
         $types = Partner::query()->select('type_id')->distinct()->pluck('type_id')->toArray();
 
-        return APIResponse::paginationListOld($partners, [
-            'name' => 'Название партнера',
-            'representatives' => 'Представители партнера',
-            'type' => 'Тип партнера',
-            'balance' => 'Лицевой счет',
-            'limit' => 'Лимит',
-        ], [
-            'available_types' => $types,
-            'filters' => $filters,
-            'filters_original' => $this->defaultFilters,
-        ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
+        return APIResponse::list($partners,
+            [
+                'name' => 'Название партнера',
+                'representatives' => 'Представители партнера',
+                'type' => 'Тип партнера',
+                'balance' => 'Лицевой счет',
+                'limit' => 'Лимит',
+            ],
+            $filters,
+            $this->defaultFilters,
+            [
+                'available_types' => $types,
+            ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 
 }

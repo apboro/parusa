@@ -18,7 +18,11 @@ class CreatePaymentsTable extends Migration
             $table->string('gate');
             $table->unsignedInteger('order_id');
 
+            $table->unsignedTinyInteger('status_id');
+            $table->unsignedBigInteger('parent_id')->nullable();
+
             $table->string('fiscal')->nullable();
+
 
             $table->unsignedInteger('total');
             $table->unsignedInteger('by_card');

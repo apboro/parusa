@@ -34,5 +34,6 @@
         "moment": "^2.29.1"
     },
     "dependencies": {
+        "vuex-persistedstate": "^4.1.0"
     }
 }

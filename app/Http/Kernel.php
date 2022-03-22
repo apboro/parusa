@@ -7,6 +7,8 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Http\Middleware\AnyCors;
+use App\Http\Middleware\ExternalProtect;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\VerifyCsrfToken;
@@ -66,7 +68,16 @@ class Kernel extends HttpKernel
 //            'throttle:api',
             SubstituteBindings::class,
         ],
-
+        'showcase' => [
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            AnyCors::class,
+        ],
+        'checkout' => [
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            AnyCors::class,
+        ],
     ];
 
     /**
@@ -88,5 +99,6 @@ class Kernel extends HttpKernel
         'verified' => EnsureEmailIsVerified::class,
 
         'allow' => Allow::class,
+        'external.protect' => ExternalProtect::class,
     ];
 }

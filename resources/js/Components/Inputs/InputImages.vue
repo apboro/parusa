@@ -57,7 +57,6 @@ export default {
 
     methods: {
         handleFile(e) {
-            console.log(e);
             this.processFiles(e.target.files);
             e.target.value = '';
         },

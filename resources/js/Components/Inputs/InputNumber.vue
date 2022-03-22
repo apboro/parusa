@@ -9,7 +9,7 @@
         </span>
         <input
             class="input-number__input"
-            :class="{'input-number__input-small': small}"
+            :class="{'input-number__input-small': small, 'input-number__input-quantity': quantity}"
             :value="modelValue"
             :type="'number'"
             :disabled="disabled"
@@ -123,6 +123,11 @@ $input_active_color: #0f82f1 !default;
             font-size: 14px;
         }
 
+        &-quantity {
+            padding: 0;
+            text-align: center;
+        }
+
         &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
             color: $input_placeholder_color;
             opacity: 1; /* Firefox */
@@ -170,14 +175,6 @@ $input_active_color: #0f82f1 !default;
             color: $input_disabled_color;
             cursor: not-allowed;
         }
-    }
-
-    &__decrease {
-        margin-right: 3px;
-    }
-
-    &__increase {
-        margin-left: 3px;
     }
 }
 </style>

@@ -18,7 +18,7 @@ class TicketStatus extends AbstractDictionary
      *
      * 1-30 for partners
      * 31-60 for ticket office
-     * 61-90 for sites
+     * 61-90 for showcase
      * 91-120 qr code link
      * 121-255 - reserved
      */
@@ -38,8 +38,13 @@ class TicketStatus extends AbstractDictionary
     public const terminal_returned = 52;
     public const terminal_canceled = 51;
 
+    public const showcase_creating = 61;
+    public const showcase_wait_for_pay = 62;
+    public const showcase_paid = 71;
+    public const showcase_returned = 81;
+    public const showcase_canceled = 90;
 
-    /** @var int The ticket had expired */
+    public const used = 254;
     public const expired = 255;
 
     public const ticket_countable_statuses = [
@@ -50,13 +55,18 @@ class TicketStatus extends AbstractDictionary
         self::terminal_finishing,
         self::terminal_paid,
         self::terminal_wait_for_return,
+        self::showcase_creating,
+        self::showcase_wait_for_pay,
+        self::showcase_paid,
     ];
 
-    public const ticket_had_payed_statuses = [
+    public const ticket_had_paid_statuses = [
         self::partner_paid,
         self::partner_returned,
         self::terminal_paid,
         self::terminal_returned,
+        self::showcase_paid,
+        self::showcase_returned,
     ];
 
     public const ticket_reserved_statuses = [
@@ -72,5 +82,6 @@ class TicketStatus extends AbstractDictionary
     public const ticket_cancelled_statuses = [
         self::partner_reserve_canceled,
         self::terminal_canceled,
+        self::showcase_canceled,
     ];
 }

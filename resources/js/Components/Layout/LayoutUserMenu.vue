@@ -58,6 +58,7 @@ export default {
 </script>
 
 <style lang="scss">
+@use "sass:math";
 @import "../variables";
 
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
@@ -85,7 +86,7 @@ $base_primary_hover_color: #1e87f0 !default;
 
     &-icon {
         height: $page_header_height;
-        padding: $page_header_height / 4 8px;
+        padding: math.div($page_header_height, 4) 8px;
         box-sizing: border-box;
         color: $base_gray_color;
 

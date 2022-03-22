@@ -81,10 +81,16 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::terminal_wait_for_pay_from_reserve => ['name' => 'Ожидает оплаты'],
             TicketStatus::terminal_finishing => ['name' => 'Печать'],
             TicketStatus::terminal_paid => ['name' => 'Оплачен'],
+            TicketStatus::terminal_wait_for_return => ['name' => 'Ожидает возврата'],
             TicketStatus::terminal_returned => ['name' => 'Оформлен возврат'],
             TicketStatus::terminal_canceled => ['name' => 'Оплачен'],
-            TicketStatus::terminal_wait_for_return => ['name' => 'Ожидает возврата'],
-            TicketStatus::expired => ['name' => 'Отменён'],
+            TicketStatus::showcase_creating => ['name' => 'Оформление'],
+            TicketStatus::showcase_wait_for_pay => ['name' => 'Ожидает оплаты'],
+            TicketStatus::showcase_paid => ['name' => 'Оплачен'],
+            TicketStatus::showcase_returned => ['name' => 'Оформлен возврат'],
+            TicketStatus::showcase_canceled => ['name' => 'Отменён'],
+            TicketStatus::used => ['name' => 'Использован'],
+            TicketStatus::expired => ['name' => 'Просрочен'],
             // использован после просрочки
         ],
 
@@ -104,6 +110,12 @@ class StatusesSeeder extends GenericSeeder
             OrderStatus::terminal_returned => ['name' => 'Оформлен возврат'],
             OrderStatus::terminal_partial_returned => ['name' => 'Оформлен частичный возврат'],
             OrderStatus::terminal_wait_for_return => ['name' => 'Ожидает возврата'],
+            OrderStatus::showcase_creating => ['name' => 'Оформление'],
+            OrderStatus::showcase_wait_for_pay => ['name' => 'Ожидает оплаты'],
+            OrderStatus::showcase_paid => ['name' => 'Оплачен'],
+            OrderStatus::showcase_returned => ['name' => 'Оформлен возврат'],
+            OrderStatus::showcase_partial_returned => ['name' => 'Оформлен частичный возврат'],
+            OrderStatus::showcase_canceled => ['name' => 'Отменён'],
         ],
 
         TerminalStatus::class => [

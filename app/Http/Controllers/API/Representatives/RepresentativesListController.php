@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Partners\Representatives;
+namespace App\Http\Controllers\API\Representatives;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
@@ -12,9 +12,9 @@ use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
-class RepresentativeListController extends ApiController
+class RepresentativesListController extends ApiController
 {
     protected string $rememberKey = CookieKeys::representatives_list;
 
@@ -67,7 +67,7 @@ class RepresentativeListController extends ApiController
         // current page automatically resolved from request via `page` parameter
         $users = $query->paginate($request->perPage(10, $this->rememberKey));
 
-        /** @var Collection $users */
+        /** @var LengthAwarePaginator $users */
         $users->transform(function (User $user) {
             $profile = $user->profile;
 
@@ -98,11 +98,13 @@ class RepresentativeListController extends ApiController
             ];
         });
 
-        return APIResponse::paginationListOld($users, [
-            'name' => 'ФИО представителя',
-            'position' => 'Компания-партнер, должность',
-            'contacts' => 'Контакты',
-            'access' => 'Доступ в систему',
-        ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
+        return APIResponse::list($users,
+            [
+                'name' => 'ФИО представителя',
+                'position' => 'Компания-партнер, должность',
+                'contacts' => 'Контакты',
+                'access' => 'Доступ в систему',
+            ]
+        )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }

@@ -7,6 +7,7 @@
             :mask="'+{7} (000) 000-00-00'"
             radix="."
             :placeholder="placeholderProxy"
+            :autocomplete="autocomplete"
             @focus="focus"
             @blur="blur"
             @update:masked="typed"
@@ -56,7 +57,6 @@ export default {
 
     watch: {
         modelValue(value) {
-            console.log(this.innerChange, value);
             if (!this.innerChange) {
                 this.innerValue = value === null ? '' : value;
                 return;

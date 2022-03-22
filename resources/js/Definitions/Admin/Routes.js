@@ -2,13 +2,9 @@ import NotFound from "../../Pages/NotFound";
 
 import SettingsPage from "../../Pages/Admin/Settings/SettingsPage";
 
-import TicketRefundsListPage from "../../Pages/Admin/TicketRefundsListPage";
-
-import PartnersListPage from "../../Pages/Admin/Partner/Partner/PartnersListPage";
 import PartnerCardPage from "../../Pages/Admin/Partner/Partner/PartnerCardPage";
 import PartnerEditPage from "../../Pages/Admin/Partner/Partner/PartnerEditPage";
 
-import RepresentativesListPage from "../../Pages/Admin/Partner/Representatives/RepresentativesListPage";
 import RepresentativeCardPage from "../../Pages/Admin/Partner/Representatives/RepresentativeCardPage";
 import RepresentativeEditPage from "../../Pages/Admin/Partner/Representatives/RepresentativeEditPage";
 
@@ -27,26 +23,21 @@ export default [
     {path: '/registry/tickets/:id', name: 'ticket-info', component: () => import("@/Pages/Admin/Registries/TicketInfoPage"), meta: {title: 'Билет'}},
     {path: '/registry/reserves', name: 'reserves-registry', component: () => import('@/Pages/Admin/Registries/ReservesRegistryPage'), meta: {title: 'Реестр броней'}},
 
-    /**
-     * Staff
-     */
     {path: '/staff', name: 'staff-list', component: () => import('@/Pages/Admin/Staff/StaffListPage'), meta: {title: 'Сотрудники'}},
     {path: '/staff/:id', name: 'staff-view', component: () => import('@/Pages/Admin/Staff/StaffViewPage'), meta: {title: 'Просмотр сотрудника'}},
     {path: '/staff/:id/edit', name: 'staff-edit', component: () => import('@/Pages/Admin/Staff/StaffEditPage'), meta: {title: 'Редактирование сотрудника'}},
 
-    {path: '/partners', name: 'partners-list', component: PartnersListPage, meta: {title: 'Компании-партнёры'}},
+    {path: '/partners', name: 'partners-list', component: () => import('@/Pages/Admin/Partners/PartnersListPage'), meta: {title: 'Компании-партнёры'}},
     {path: '/partners/:id', name: 'partners-view', component: PartnerCardPage, meta: {title: 'Просмотр партнёра'}},
     {path: '/partners/:id/edit', name: 'partners-edit', component: PartnerEditPage, meta: {title: 'Редактирование партнёра'}},
 
-    {path: '/representatives', name: 'representatives-list', component: RepresentativesListPage, meta: {title: 'Представители'}},
+    {path: '/representatives', name: 'representatives-list', component: () => import('@/Pages/Admin/Representatives/RepresentativesListPage'), meta: {title: 'Представители'}},
     {path: '/representatives/:id', name: 'representatives-view', component: RepresentativeCardPage, meta: {title: 'Просмотр представителя'}},
     {path: '/representatives/:id/edit', name: 'representatives-edit', component: RepresentativeEditPage, meta: {title: 'Редактирование представителя'}},
 
     {path: '/terminals', name: 'terminals-list', component: () => import('@/Pages/Admin/Terminals/TerminalsListPage'), meta: {title: 'Мобильные кассы'}},
     {path: '/terminals/:id', name: 'terminals-view', component: () => import('@/Pages/Admin/Terminals/TerminalsViewPage'), meta: {title: 'Просмотр мобильной кассы'}},
     {path: '/terminals/:id/edit', name: 'terminals-edit', component: () => import('@/Pages/Admin/Terminals/TerminalsEditPage'), meta: {title: 'Редактирование мобильной кассы'}},
-
-    {path: '/ticket-refund', name: 'ticket-refund-list', component: TicketRefundsListPage, meta: {title: 'Возврат билетов'}},
 
     /**
      * Sails part

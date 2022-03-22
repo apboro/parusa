@@ -1,17 +1,26 @@
 <template>
     <div class="application">
-        <layout-header :user="user">
-            <template v-slot:menu>
-                <layout-menu :menu="menu"/>
+        <LayoutHeader :user="user">
+            <template #menu>
+                <LayoutMenu :menu="menu"/>
             </template>
-            <template v-slot:personal>
-                <layout-user-menu :user="user">
+            <template #widgets>
+                <LayoutHeaderWidget :route="{name: 'order'}" :subtitle="'Текущий заказ'" :sum="loaded ? order_amount + ' руб.' : '—'">
+                    <template #icon>
+                        <IconBoxOffice/>
+                    </template>
+                </LayoutHeaderWidget>
+            </template>
+            <template #personal>
+                <LayoutUserMenu :user="user">
                     <span class="link" v-if="user.positions" @click="change">Сменить компанию</span>
                     <span class="link" @click="logout">Выход</span>
-                </layout-user-menu>
+                </LayoutUserMenu>
             </template>
-        </layout-header>
+        </LayoutHeader>
+
         <router-view/>
+
     </div>
     <div id="toaster" class="toaster"></div>
     <div id="dialogs" class="dialogs"></div>
@@ -21,10 +30,10 @@
 import LayoutHeader from "@/Components/Layout/LayoutHeader";
 import LayoutMenu from "@/Components/Layout/LayoutMenu";
 import LayoutUserMenu from "@/Components/Layout/LayoutUserMenu";
-import Container from "@/Components/GUI/GuiContainer";
-import GuiContainer from "@/Components/GUI/GuiContainer";
-import TerminalHeaderWidget from "@/Apps/TerminalHeaderWidget";
-import PopUp from "@/Components/PopUp"; // add for style import todo fix when use
+import LayoutHeaderWidget from "@/Components/Layout/LayoutHeaderWidget";
+import IconBoxOffice from "@/Components/Icons/IconBoxOffice";
+import PopUp from "@/Components/PopUp";
+import {mapState} from "vuex"; // add for style import todo fix when use
 
 export default {
     props: {
@@ -33,27 +42,42 @@ export default {
     },
 
     components: {
-        TerminalHeaderWidget,
-        GuiContainer,
-        Container,
-        LayoutUserMenu,
         LayoutHeader,
         LayoutMenu,
+        LayoutUserMenu,
+        LayoutHeaderWidget,
+        IconBoxOffice,
+
         PopUp, // add for style import todo fix when use
     },
 
-    created() {
+    computed: {
+        ...mapState('terminal', {
+            loaded: state => state.loaded,
+            order_amount: state => state.order_amount,
+            current: state => state.current,
+        }),
+    },
 
+    data: () => ({
+        updater: null,
+    }),
+
+    created() {
+        this.refresh();
+        this.updater = setInterval(this.refresh, 15000);
     },
 
     methods: {
+        refresh() {
+            this.$store.dispatch('terminal/refresh');
+        },
         logout() {
             axios.post('/logout', {})
                 .then(() => {
                     window.location.href = '/';
                 });
         },
-
         change() {
             axios.post('/login/change', {})
                 .then(() => {

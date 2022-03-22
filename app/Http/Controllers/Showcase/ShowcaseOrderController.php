@@ -1,0 +1,172 @@
+<?php
+
+namespace App\Http\Controllers\Showcase;
+
+use App\Http\APIResponse;
+use App\Http\Controllers\ApiEditController;
+use App\Http\Middleware\ExternalProtect;
+use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\TicketStatus;
+use App\Models\Dictionaries\TripSaleStatus;
+use App\Models\Dictionaries\TripStatus;
+use App\Models\Partner\Partner;
+use App\Models\Sails\Trip;
+use App\Models\Tickets\Order;
+use App\Models\Tickets\Ticket;
+use App\Models\Tickets\TicketRate;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Crypt;
+use JsonException;
+
+class ShowcaseOrderController extends ApiEditController
+{
+    /**
+     * Initial data for showcase application.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @throws JsonException
+     */
+    public function order(Request $request): JsonResponse
+    {
+        $cookies = $request->cookie(ExternalProtect::COOKIE_NAME);
+        try {
+            $cookies = json_decode($cookies, true, 512, JSON_THROW_ON_ERROR);
+        } catch (Exception $exception) {
+            return response()->json(['message' => 'Ошибка сессии.'], 400);
+        }
+
+        /** @var Trip $trip */
+        $trip = Trip::query()
+            ->where('id', $request->input('trip'))
+            ->where('start_at', '>', Carbon::now())
+            ->whereIn('status_id', [TripStatus::regular])
+            ->whereIn('sale_status_id', [TripSaleStatus::selling])
+            ->whereHas('excursion.ratesLists', function (Builder $query) {
+                $query
+                    ->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
+                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)');
+            })
+            ->first();
+
+        if ($trip === null) {
+            return APIResponse::error('Нет продажи билетов на этот рейс.');
+        }
+
+        $flat = $request->input('data');
+        $data = Arr::undot($flat);
+        $count = count($data['rate'] ?? []);
+
+        if ($count === 0) {
+            return APIResponse::error('Нельзя оформить заказ без билетов.');
+        }
+
+        $grades = array_keys($data['rate']);
+        $count = 0;
+
+        $rules = ['name' => 'required', 'email' => 'required|email|bail', 'phone' => 'required'];
+        $titles = ['name' => 'Имя', 'email' => 'Email', 'phone' => 'Телефон'];
+
+        foreach ($grades as $grade) {
+            $count += $data['rate'][$grade]['quantity'];
+            $rules["rate.$grade.quantity"] = 'nullable|integer|min:0|bail';
+            $titles["rate.$grade.quantity"] = 'Количество';
+        }
+
+        if ($errors = $this->validate($data, $rules, $titles)) {
+            return APIResponse::validationError($errors);
+        }
+
+        if ($count === 0) {
+            $errors = [];
+            foreach ($grades as $grade) {
+                $errors["rate.$grade.quantity"] = ['Не выбрано количество'];
+            }
+            return APIResponse::validationError($errors);
+        }
+
+        $rates = $trip->excursion->rateForDate($trip->start_at);
+        if ($rates === null) {
+            return APIResponse::error('Нет продажи билетов на этот рейс.');
+        }
+
+        $tickets = [];
+
+        foreach ($data['rate'] as $gradeId => $grade) {
+            if ($grade['quantity'] > 0) {
+                // get rate
+                /** @var TicketRate */
+                $rate = $rates->rates->where('grade_id', $gradeId)->first();
+                if ($rate === null) {
+                    return APIResponse::error('Нет продажи билетов на этот рейс.');
+                }
+                for ($i = 1; $i <= $grade['quantity']; $i++) {
+                    $ticket = new Ticket([
+                        'trip_id' => $trip->id,
+                        'grade_id' => $gradeId,
+                        'status_id' => TicketStatus::showcase_creating,
+                    ]);
+                    $tickets[] = $ticket;
+                }
+            }
+        }
+
+        /** @var ?Partner $partner */
+        $partner = $cookies['partner'] ? Partner::query()->where('id', $cookies['partner'])->first() : null;
+        $media = $cookies['media'] ?? null;
+
+        if ($media === 'qr') {
+            $orderType = OrderType::qr_code;
+        } else if ($partner !== null) {
+            $orderType = OrderType::partner_site;
+        } else {
+            $orderType = OrderType::site;
+        }
+
+        try {
+            // create order
+            $order = Order::make(
+                $orderType,
+                $tickets,
+                OrderStatus::showcase_creating,
+                $partner->id ?? null,
+                null,
+                null,
+                $data['email'],
+                $data['name'],
+                $data['phone']
+            );
+        } catch (Exception $exception) {
+            return APIResponse::error($exception->getMessage());
+        }
+
+        $orderSecret = json_encode([
+            'id' => $order->id,
+            'ts' => Carbon::now(),
+            'ua' => $request->userAgent(),
+            'ip' => $request->ip(),
+            'ref' => $request->header('referer'),
+        ], JSON_THROW_ON_ERROR);
+
+        // clear media and partner cookie after successful order.
+        $cookie = [
+            'ip' => $request->ip(),
+            'user-agent' => $request->userAgent(),
+        ];
+
+        return response()->json([
+            'payload' => [
+                'id' => $order->id,
+                'payment_page' => 'http://127.0.0.1:8000/checkout.html',
+                'order' => Crypt::encrypt($orderSecret),
+            ],
+        ])->withCookie(cookie(ExternalProtect::COOKIE_NAME, json_encode($cookie, JSON_THROW_ON_ERROR)));
+    }
+}
