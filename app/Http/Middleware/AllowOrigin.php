@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class AnyCors
+class AllowOrigin
 {
     public const COOKIE_NAME = 'ap-showcase-session';
 
@@ -18,7 +18,6 @@ class AnyCors
      *
      * @param Request $request
      * @param Closure $next
-     * @param mixed ...$rules
      *
      * @return  mixed
      *
@@ -26,7 +25,8 @@ class AnyCors
     public function handle(Request $request, Closure $next)
     {
         return $next($request)
-            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Origin', $request->header('access-control-allow-origin', '*'))
+            ->header('Access-Control-Allow-Credentials', 'true')
             ->header('Access-Control-Allow-Methods', 'POST');
     }
 }

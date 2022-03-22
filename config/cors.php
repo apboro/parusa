@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie', 'showcase/*'],
+    'paths' => ['api/*', 'checkout/*'],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['POST'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['http://127.0.0.1:8000', 'https://parusa.opxcms.com', 'https://cp.parus-a.ru', 'https://parus-a.ru'],
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +29,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => 'true',
 
 ];

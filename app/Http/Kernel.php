@@ -7,7 +7,7 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
-use App\Http\Middleware\AnyCors;
+use App\Http\Middleware\AllowOrigin;
 use App\Http\Middleware\ExternalProtect;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
@@ -41,7 +41,6 @@ class Kernel extends HttpKernel
     protected $middleware = [
         // \App\Http\Middleware\TrustHosts::class,
         TrustProxies::class,
-        HandleCors::class,
         PreventRequestsDuringMaintenance::class,
         ValidatePostSize::class,
         TrimStrings::class,
@@ -55,6 +54,7 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
+            HandleCors::class,
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
             StartSession::class,
@@ -64,6 +64,7 @@ class Kernel extends HttpKernel
             SubstituteBindings::class,
         ],
         'api' => [
+            HandleCors::class,
             EnsureFrontendRequestsAreStateful::class,
 //            'throttle:api',
             SubstituteBindings::class,
@@ -71,12 +72,13 @@ class Kernel extends HttpKernel
         'showcase' => [
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
-            AnyCors::class,
+            AllowOrigin::class,
         ],
         'checkout' => [
+            HandleCors::class,
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
-            AnyCors::class,
+            AllowOrigin::class,
         ],
     ];
 

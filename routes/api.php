@@ -3,7 +3,8 @@
 use App\Http\Controllers\API\NotFoundController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::prefix('api')->middleware(['api', 'auth:sanctum'])->group(function () {
+
     require base_path('routes/api/dictionaries.php');
 
     require base_path('routes/api/trips.php'); // todo check
@@ -24,6 +25,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     require base_path('routes/api/account.php'); // todo check
     require base_path('routes/api/staff_settings.php'); // todo check
 
+    Route::any('{any}', [NotFoundController::class, 'notFound'])->where('any', '.*');
 });
 
-Route::any('{any}', [NotFoundController::class, 'notFound'])->where('any', '.*');

@@ -44,6 +44,16 @@ class ShowcaseInitController extends ApiController
             'programs' => $programs->toArray(),
             'date_from' => Carbon::now()->format('Y-m-d'),
             'date_to' => null,
-        ])->withCookie(cookie(ExternalProtect::COOKIE_NAME, json_encode($cookie, JSON_THROW_ON_ERROR)));
+        ])->withCookie(cookie(
+            ExternalProtect::COOKIE_NAME,
+            json_encode($cookie, JSON_THROW_ON_ERROR),
+            0,
+            null,
+            null,
+            true,
+            true,
+            false,
+            'None'
+        ));
     }
 }
