@@ -336,7 +336,6 @@ export default {
             this.getInfo();
         },
         daysChanged() {
-            console.log('c');
             this.days_error = false;
         },
         getInfo() {
