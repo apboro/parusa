@@ -47,6 +47,9 @@ class LifePosNotificationsController extends ApiController
             }
         } catch (Exception $exception) {
             Log::channel('payments')->error($exception->getMessage());
+            if(!empty($input)) {
+                Log::channel('payments')->info('Request content: ' . json_encode($input));
+            }
         }
 
         return response([
