@@ -71,7 +71,7 @@ export default {
     },
 
     data: () => ({
-        base_url: 'http://127.0.0.1:8000', // without trailing slash
+        base_url: 'https://parusa.opxcms.com', // without trailing slash
         is_initializing: true,
         has_error: false,
         error_message: null,

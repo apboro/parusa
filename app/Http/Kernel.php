@@ -5,9 +5,9 @@ namespace App\Http;
 use App\Http\Middleware\Allow;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\HandleShowcaseCors;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
-use App\Http\Middleware\AllowOrigin;
 use App\Http\Middleware\ExternalProtect;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
@@ -39,6 +39,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
+        HandleShowcaseCors::class,
         // \App\Http\Middleware\TrustHosts::class,
         TrustProxies::class,
         PreventRequestsDuringMaintenance::class,
@@ -70,15 +71,14 @@ class Kernel extends HttpKernel
             SubstituteBindings::class,
         ],
         'showcase' => [
+            HandleShowcaseCors::class,
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
-            AllowOrigin::class,
         ],
         'checkout' => [
             HandleCors::class,
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
-            AllowOrigin::class,
         ],
     ];
 

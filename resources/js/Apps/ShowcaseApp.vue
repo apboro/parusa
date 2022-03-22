@@ -30,7 +30,7 @@ export default {
 
     data: () => ({
         partner: null,
-        base_url: 'http://127.0.0.1:8000', // without trailing slash
+        base_url: 'https://parusa.opxcms.com', // without trailing slash
 
         is_initializing: true,
         is_queued: false,
@@ -63,7 +63,6 @@ export default {
             const urlParams = new URLSearchParams(window.location.search);
             const partner = urlParams.get('partner');
             const media = urlParams.get('media');
-
             axios.post(this.base_url + '/showcase/init', {partner: partner ? partner : this.partner, media: media})
                 .then(response => {
                     this.today = response.data['today'];
@@ -81,7 +80,7 @@ export default {
         },
 
         getList(search) {
-            if(this.is_initializing) {
+            if (this.is_initializing) {
                 setTimeout(() => this.getList(search), 300);
                 this.is_queued = true;
                 return;
@@ -105,7 +104,7 @@ export default {
         },
 
         getTrip(id) {
-            if(this.is_initializing) {
+            if (this.is_initializing) {
                 setTimeout(() => this.getTrip(id), 300);
                 this.is_queued = true;
                 return;
