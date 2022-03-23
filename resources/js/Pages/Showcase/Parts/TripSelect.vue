@@ -130,6 +130,10 @@ export default {
         },
     },
 
+    mounted() {
+        this.$emit('select', null);
+    },
+
     methods: {
         setDay(direction) {
             this.$refs.date.addDays(direction);

@@ -82,7 +82,11 @@ export default {
         },
         select(trip_id) {
             this.$store.commit('showcase/trip_id', trip_id);
-            this.$emit('select', trip_id);
+            if (trip_id !== null) {
+                this.$emit('select', trip_id);
+            } else {
+                this.$emit('find', this.search);
+            }
         },
         storeSecret(secret) {
 
