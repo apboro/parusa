@@ -11,15 +11,15 @@ class CreateUserContactsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('user_contacts', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id')->index();
+        Schema::create('user_contacts', static function (Blueprint $table) {
+            $table->unsignedSmallInteger('id', true);
+            $table->unsignedSmallInteger('user_id')->index();
 
             $table->string('title');
 
-            $table->unsignedInteger('type_id');
+            $table->unsignedSmallInteger('type_id');
 
             $table->string('value');
             $table->string('additional')->nullable();
@@ -38,7 +38,7 @@ class CreateUserContactsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('user_contacts');
     }

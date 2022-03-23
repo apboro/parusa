@@ -17,7 +17,7 @@ class CreateTripChainsTable extends Migration
     public function up(): void
     {
         Schema::create('trip_chains', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedInteger('id', true);
             $table->timestamps();
         });
     }

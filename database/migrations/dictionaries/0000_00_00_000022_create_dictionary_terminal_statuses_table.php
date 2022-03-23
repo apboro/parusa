@@ -14,10 +14,10 @@ class CreateDictionaryTerminalStatusesTable extends Migration
     public function up(): void
     {
         Schema::create('dictionary_terminal_statuses', static function (Blueprint $table) {
-            $table->increments('id');
+            $table->unsignedTinyInteger('id', true);
             $table->string('name');
             $table->boolean('enabled')->nullable()->default(true);
-            $table->integer('order')->nullable()->default(0);
+            $table->unsignedTinyInteger('order')->nullable()->default(0);
 
             $table->timestamps();
         });

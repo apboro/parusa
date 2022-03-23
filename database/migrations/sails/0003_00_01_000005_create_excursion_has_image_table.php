@@ -11,11 +11,11 @@ class CreateExcursionHasImageTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('excursion_has_image', function (Blueprint $table) {
-            $table->unsignedBigInteger('excursion_id');
-            $table->unsignedBigInteger('image_id');
+        Schema::create('excursion_has_image', static function (Blueprint $table) {
+            $table->unsignedSmallInteger('excursion_id');
+            $table->unsignedInteger('image_id');
 
             $table->foreign('excursion_id')->references('id')->on('excursions')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('image_id')->references('id')->on('images')->restrictOnDelete()->restrictOnUpdate();
@@ -27,7 +27,7 @@ class CreateExcursionHasImageTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('excursion_has_image');
     }

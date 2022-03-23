@@ -12,18 +12,18 @@ class CreateUsersTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('users', static function (Blueprint $table) {
 
-            $table->id();
+            $table->unsignedSmallInteger('id', true);
 
             $table->string('login')->unique()->nullable();
             $table->string('password')->nullable();
 
             $table->rememberToken();
 
-            $table->unsignedInteger('status_id')->default(UserStatus::default);
+            $table->unsignedTinyInteger('status_id')->default(UserStatus::default);
 
             $table->timestamps();
 
@@ -36,7 +36,7 @@ class CreateUsersTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('users');
     }

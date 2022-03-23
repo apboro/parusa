@@ -15,13 +15,13 @@ class CreateTicketsTable extends Migration
     {
         Schema::create('tickets', static function (Blueprint $table) {
 
-            $table->increments('id');
-            $table->unsignedSmallInteger('status_id');
+            $table->unsignedInteger('id', true);
+            $table->unsignedTinyInteger('status_id');
             $table->unsignedInteger('order_id');
 
-            $table->unsignedBigInteger('trip_id');
+            $table->unsignedInteger('trip_id');
             $table->unsignedSmallInteger('grade_id');
-            $table->unsignedMediumInteger('base_price');
+            $table->unsignedInteger('base_price');
 
             $table->timestamps();
 

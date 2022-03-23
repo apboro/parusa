@@ -14,8 +14,8 @@ class CreateTerminalUsersTable extends Migration
     public function up(): void
     {
         Schema::create('terminal_users', static function (Blueprint $table) {
-            $table->unsignedBigInteger('terminal_id');
-            $table->unsignedBigInteger('position_id');
+            $table->unsignedSmallInteger('terminal_id');
+            $table->unsignedSmallInteger('position_id');
 
             $table->foreign('terminal_id')->references('id')->on('terminals')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('position_id')->references('id')->on('positions')->cascadeOnDelete()->cascadeOnUpdate();

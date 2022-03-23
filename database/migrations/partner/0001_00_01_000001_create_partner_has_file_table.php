@@ -14,8 +14,8 @@ class CreatePartnerHasFileTable extends Migration
     public function up(): void
     {
         Schema::create('partner_has_file', static function (Blueprint $table) {
-            $table->unsignedBigInteger('partner_id');
-            $table->unsignedBigInteger('file_id');
+            $table->unsignedSmallInteger('partner_id');
+            $table->unsignedInteger('file_id');
 
             $table->foreign('partner_id')->references('id')->on('partners')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('file_id')->references('id')->on('files')->restrictOnDelete()->restrictOnUpdate();

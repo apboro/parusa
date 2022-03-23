@@ -11,10 +11,10 @@ class CreateImagesTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('images', function (Blueprint $table) {
-            $table->id();
+        Schema::create('images', static function (Blueprint $table) {
+            $table->unsignedInteger('id', true);
             $table->string('hash');
             $table->string('disk');
             $table->string('filename');
@@ -33,7 +33,7 @@ class CreateImagesTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('images');
     }

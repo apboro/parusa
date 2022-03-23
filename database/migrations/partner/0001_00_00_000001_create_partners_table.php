@@ -12,17 +12,17 @@ class CreatePartnersTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('partners', function (Blueprint $table) {
+        Schema::create('partners', static function (Blueprint $table) {
 
-            $table->id();
+            $table->unsignedSmallInteger('id', true);
 
             $table->string('name');
 
-            $table->unsignedInteger('type_id');
+            $table->unsignedSmallInteger('type_id');
 
-            $table->unsignedInteger('status_id')->default(PartnerStatus::default);
+            $table->unsignedTinyInteger('status_id')->default(PartnerStatus::default);
 
             $table->timestamps();
 
@@ -36,7 +36,7 @@ class CreatePartnersTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('partners');
     }

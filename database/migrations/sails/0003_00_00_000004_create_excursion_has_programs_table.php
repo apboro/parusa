@@ -12,12 +12,12 @@ class CreateExcursionHasProgramsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('excursion_has_programs', function (Blueprint $table) {
+        Schema::create('excursion_has_programs', static function (Blueprint $table) {
 
-            $table->unsignedBigInteger('excursion_id');
-            $table->unsignedInteger('program_id');
+            $table->unsignedSmallInteger('excursion_id');
+            $table->unsignedSmallInteger('program_id');
 
             $table->foreign('excursion_id')->references('id')->on('excursions')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('program_id')->references('id')->on('dictionary_excursion_programs')->restrictOnDelete()->restrictOnUpdate();
@@ -29,7 +29,7 @@ class CreateExcursionHasProgramsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('excursion_has_programs');
     }

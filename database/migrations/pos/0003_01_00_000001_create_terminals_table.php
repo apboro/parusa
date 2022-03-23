@@ -15,10 +15,10 @@ class CreateTerminalsTable extends Migration
     public function up(): void
     {
         Schema::create('terminals', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedSmallInteger('id', true);
 
-            $table->unsignedInteger('status_id')->default(TerminalStatus::default);
-            $table->unsignedBigInteger('pier_id');
+            $table->unsignedTinyInteger('status_id')->default(TerminalStatus::default);
+            $table->unsignedSmallInteger('pier_id');
 
             $table->string('workplace_id')->nullable();
             $table->string('outlet_id')->nullable();

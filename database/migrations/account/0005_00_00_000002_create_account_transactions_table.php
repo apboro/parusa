@@ -16,21 +16,21 @@ class CreateAccountTransactionsTable extends Migration
     {
         Schema::create('account_transactions', static function (Blueprint $table) {
 
-            $table->id();
+            $table->increments('id');
 
-            $table->unsignedBigInteger('account_id')->index();
+            $table->unsignedSmallInteger('account_id')->index();
 
-            $table->unsignedInteger('type_id');
-            $table->unsignedInteger('status_id')->default(AccountTransactionStatus::default);
+            $table->unsignedTinyInteger('type_id');
+            $table->unsignedTinyInteger('status_id')->default(AccountTransactionStatus::default);
 
-            $table->unsignedBigInteger('amount');
+            $table->unsignedInteger('amount');
 
             $table->dateTime('timestamp');
 
             $table->string('reason')->nullable();
             $table->date('reason_date')->nullable();
 
-            $table->unsignedBigInteger('committer_id')->nullable();
+            $table->unsignedSmallInteger('committer_id')->nullable();
 
             $table->unsignedInteger('order_id')->nullable();
             $table->unsignedInteger('ticket_id')->nullable();

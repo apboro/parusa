@@ -11,13 +11,13 @@ class CreatePartnerProfilesTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('partner_profiles', function (Blueprint $table) {
+        Schema::create('partner_profiles', static function (Blueprint $table) {
 
-            $table->unsignedBigInteger('partner_id')->unique()->primary();
+            $table->unsignedSmallInteger('partner_id')->unique()->primary();
 
-            $table->unsignedInteger('tickets_for_guides')->default(0);
+            $table->unsignedSmallInteger('tickets_for_guides')->default(0);
 
             $table->boolean('can_reserve_tickets')->nullable()->default(true);
 
@@ -34,7 +34,7 @@ class CreatePartnerProfilesTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('partner_profiles');
     }

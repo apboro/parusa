@@ -11,13 +11,13 @@ class CreateDictionaryPartnerStatusesTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('dictionary_partner_statuses', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('dictionary_partner_statuses', static function (Blueprint $table) {
+            $table->unsignedTinyInteger('id', true);
             $table->string('name');
             $table->boolean('enabled')->nullable()->default(true);
-            $table->integer('order')->nullable()->default(0);
+            $table->unsignedTinyInteger('order')->nullable()->default(0);
 
             $table->timestamps();
         });
@@ -28,7 +28,7 @@ class CreateDictionaryPartnerStatusesTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('dictionary_partner_statuses');
     }

@@ -12,13 +12,13 @@ class CreateExcursionsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('excursions', function (Blueprint $table) {
-            $table->id();
+        Schema::create('excursions', static function (Blueprint $table) {
+            $table->unsignedSmallInteger('id', true);
 
             $table->string('name');
-            $table->unsignedInteger('status_id')->default(ExcursionStatus::default);
+            $table->unsignedTinyInteger('status_id')->default(ExcursionStatus::default);
 
             $table->timestamps();
 
@@ -31,7 +31,7 @@ class CreateExcursionsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('excursions');
     }

@@ -17,7 +17,7 @@ class CreateDictionaryTicketGradesTable extends Migration
             $table->unsignedSmallInteger('id', true)->from(1000);
             $table->string('name');
             $table->boolean('enabled')->nullable()->default(true);
-            $table->integer('order')->nullable()->default(0);
+            $table->unsignedTinyInteger('order')->nullable()->default(0);
             $table->boolean('locked')->nullable()->default(false);
 
             $table->timestamps();

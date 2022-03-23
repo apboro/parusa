@@ -15,10 +15,10 @@ class CreateTicketPartnerRatesTable extends Migration
     {
         Schema::create('ticket_partner_rates', static function (Blueprint $table) {
 
-            $table->id();
+            $table->unsignedInteger('id', true);
 
-            $table->unsignedBigInteger('rate_id');
-            $table->unsignedBigInteger('partner_id');
+            $table->unsignedInteger('rate_id');
+            $table->unsignedSmallInteger('partner_id');
 
             $table->enum('commission_type', ['fixed', 'percents']);
             $table->unsignedInteger('commission_value');

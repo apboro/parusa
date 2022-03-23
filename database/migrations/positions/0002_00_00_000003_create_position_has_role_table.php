@@ -14,8 +14,8 @@ class CreatePositionHasRoleTable extends Migration
     public function up(): void
     {
         Schema::create('position_has_role', static function (Blueprint $table) {
-            $table->unsignedBigInteger('position_id')->index();
-            $table->unsignedInteger('role_id')->index();
+            $table->unsignedSmallInteger('position_id')->index();
+            $table->unsignedSmallInteger('role_id')->index();
 
             $table->foreign('position_id')->references('id')->on('positions')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('role_id')->references('id')->on('dictionary_roles')->restrictOnDelete()->restrictOnUpdate();

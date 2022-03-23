@@ -14,8 +14,8 @@ class CreateTripChainHasTripTable extends Migration
     public function up(): void
     {
         Schema::create('trip_chain_has_trip', static function (Blueprint $table) {
-            $table->unsignedBigInteger('chain_id');
-            $table->unsignedBigInteger('trip_id');
+            $table->unsignedInteger('chain_id');
+            $table->unsignedInteger('trip_id');
 
             $table->foreign('chain_id')->references('id')->on('trip_chains')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('trip_id')->references('id')->on('trips')->cascadeOnDelete()->cascadeOnDelete();

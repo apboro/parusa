@@ -12,13 +12,13 @@ class CreatePiersTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('piers', function (Blueprint $table) {
-            $table->id();
+        Schema::create('piers', static function (Blueprint $table) {
+            $table->unsignedSmallInteger('id', true);
 
             $table->string('name');
-            $table->unsignedInteger('status_id')->default(PiersStatus::default);
+            $table->unsignedTinyInteger('status_id')->default(PiersStatus::default);
 
             $table->timestamps();
 
@@ -31,7 +31,7 @@ class CreatePiersTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('piers');
     }

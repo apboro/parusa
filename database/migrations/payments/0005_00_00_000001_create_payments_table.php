@@ -14,12 +14,12 @@ class CreatePaymentsTable extends Migration
     public function up(): void
     {
         Schema::create('payments', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedInteger('id', true);
             $table->string('gate');
             $table->unsignedInteger('order_id');
 
             $table->unsignedTinyInteger('status_id');
-            $table->unsignedBigInteger('parent_id')->nullable();
+            $table->unsignedSmallInteger('parent_id')->nullable();
 
             $table->string('fiscal')->nullable();
 

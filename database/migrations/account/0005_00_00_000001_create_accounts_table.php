@@ -15,9 +15,9 @@ class CreateAccountsTable extends Migration
     {
         Schema::create('accounts', static function (Blueprint $table) {
 
-            $table->id();
+            $table->unsignedSmallInteger('id', true);
 
-            $table->unsignedBigInteger('partner_id')->index();
+            $table->unsignedSmallInteger('partner_id')->index();
 
             $table->bigInteger('amount')->default(0);
             $table->bigInteger('limit')->default(0);

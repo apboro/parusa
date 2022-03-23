@@ -11,18 +11,18 @@ class CreateDictionaryAccountTransactionTypesTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('dictionary_account_transaction_types', function (Blueprint $table) {
+        Schema::create('dictionary_account_transaction_types', static function (Blueprint $table) {
 
-            $table->increments('id');
+            $table->unsignedTinyInteger('id', true);
             $table->string('name');
             $table->boolean('enabled')->nullable()->default(true);
-            $table->integer('order')->nullable()->default(0);
+            $table->unsignedTinyInteger('order')->nullable()->default(0);
 
-            $table->smallInteger('sign');
+            $table->tinyInteger('sign');
 
-            $table->unsignedInteger('parent_type_id')->nullable();
+            $table->unsignedTinyInteger('parent_type_id')->nullable();
             $table->boolean('final')->nullable()->default(true);
             $table->string('next_title')->nullable()->default(null);
 
@@ -43,7 +43,7 @@ class CreateDictionaryAccountTransactionTypesTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('dictionary_account_transaction_types');
     }

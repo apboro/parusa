@@ -12,20 +12,20 @@ class CreateShipsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('ships', function (Blueprint $table) {
-            $table->id();
+        Schema::create('ships', static function (Blueprint $table) {
+            $table->unsignedSmallInteger('id', true);
 
             $table->string('name');
             $table->boolean('enabled')->nullable()->default(true);
-            $table->integer('order')->nullable()->default(0);
+            $table->unsignedSmallInteger('order')->nullable()->default(0);
 
-            $table->unsignedInteger('status_id')->default(ShipStatus::default); // ready to move ships from dictionaries
-            $table->unsignedInteger('type_id')->nullable(); // ready to move ships from dictionaries
+            $table->unsignedTinyInteger('status_id')->default(ShipStatus::default); // ready to move ships from dictionaries
+            $table->unsignedSmallInteger('type_id')->nullable(); // ready to move ships from dictionaries
 
             $table->string('owner');
-            $table->smallInteger('capacity', false, true);
+            $table->unsignedSmallInteger('capacity');
             $table->text('description')->nullable();
 
             $table->timestamps();
@@ -40,7 +40,7 @@ class CreateShipsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('ships');
     }

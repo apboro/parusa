@@ -17,25 +17,25 @@ class CreateTripsTable extends Migration
     public function up(): void
     {
         Schema::create('trips', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedInteger('id', true);
 
             $table->dateTime('start_at');
             $table->dateTime('end_at');
 
-            $table->unsignedBigInteger('start_pier_id');
-            $table->unsignedBigInteger('end_pier_id');
+            $table->unsignedSmallInteger('start_pier_id');
+            $table->unsignedSmallInteger('end_pier_id');
 
-            $table->unsignedBigInteger('ship_id');
-            $table->unsignedBigInteger('excursion_id');
+            $table->unsignedSmallInteger('ship_id');
+            $table->unsignedSmallInteger('excursion_id');
 
-            $table->unsignedInteger('status_id')->default(TripStatus::default);
-            $table->unsignedInteger('sale_status_id')->default(TripSaleStatus::default);
+            $table->unsignedTinyInteger('status_id')->default(TripStatus::default);
+            $table->unsignedTinyInteger('sale_status_id')->default(TripSaleStatus::default);
 
-            $table->unsignedInteger('tickets_total');
+            $table->unsignedSmallInteger('tickets_total');
 
-            $table->unsignedInteger('discount_status_id')->default(TripDiscountStatus::default);
+            $table->unsignedTinyInteger('discount_status_id')->default(TripDiscountStatus::default);
 
-            $table->unsignedInteger('cancellation_time');
+            $table->unsignedSmallInteger('cancellation_time');
 
             $table->timestamps();
 

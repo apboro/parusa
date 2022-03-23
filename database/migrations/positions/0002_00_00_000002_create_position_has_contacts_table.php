@@ -14,8 +14,8 @@ class CreatePositionHasContactsTable extends Migration
     public function up(): void
     {
         Schema::create('position_has_contacts', static function (Blueprint $table) {
-            $table->unsignedBigInteger('position_id')->index();
-            $table->unsignedBigInteger('contact_id')->index();
+            $table->unsignedSmallInteger('position_id')->index();
+            $table->unsignedSmallInteger('contact_id')->index();
 
             $table->foreign('position_id')->references('id')->on('positions')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('contact_id')->references('id')->on('user_contacts')->restrictOnUpdate()->restrictOnUpdate();

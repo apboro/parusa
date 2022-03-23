@@ -14,11 +14,11 @@ class CreatePositionOrderingTicketsTable extends Migration
     public function up(): void
     {
         Schema::create('position_ordering_tickets', static function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('position_id');
-            $table->unsignedBigInteger('terminal_id')->nullable();
+            $table->unsignedInteger('id', true);
+            $table->unsignedSmallInteger('position_id');
+            $table->unsignedSmallInteger('terminal_id')->nullable();
 
-            $table->unsignedBigInteger('trip_id');
+            $table->unsignedInteger('trip_id');
             $table->unsignedSmallInteger('grade_id');
 
             $table->unsignedSmallInteger('quantity');

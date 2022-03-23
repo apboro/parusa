@@ -14,10 +14,10 @@ class CreateDictionaryTicketStatusesTable extends Migration
     public function up(): void
     {
         Schema::create('dictionary_ticket_statuses', static function (Blueprint $table) {
-            $table->unsignedSmallInteger('id', true);
+            $table->unsignedTinyInteger('id', true);
             $table->string('name');
             $table->boolean('enabled')->nullable()->default(true);
-            $table->integer('order')->nullable()->default(0);
+            $table->unsignedTinyInteger('order')->nullable()->default(0);
 
             $table->timestamps();
         });

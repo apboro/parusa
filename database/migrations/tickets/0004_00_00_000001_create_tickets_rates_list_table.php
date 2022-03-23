@@ -18,8 +18,8 @@ class CreateTicketsRatesListTable extends Migration
     {
         Schema::create('tickets_rates_list', static function (Blueprint $table) {
 
-            $table->id();
-            $table->unsignedBigInteger('excursion_id');
+            $table->unsignedSmallInteger('id', true);
+            $table->unsignedSmallInteger('excursion_id');
 
             $table->date('start_at');
             $table->date('end_at');

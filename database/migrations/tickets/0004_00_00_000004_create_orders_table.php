@@ -15,14 +15,14 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', static function (Blueprint $table) {
 
-            $table->increments('id');
+            $table->unsignedInteger('id', true);
             $table->string('external_id')->nullable();
             $table->unsignedTinyInteger('status_id');
             $table->unsignedTinyInteger('type_id');
-            $table->unsignedBigInteger('partner_id')->nullable();
-            $table->unsignedBigInteger('position_id')->nullable();
-            $table->unsignedBigInteger('terminal_id')->nullable();
-            $table->unsignedBigInteger('terminal_position_id')->nullable();
+            $table->unsignedSmallInteger('partner_id')->nullable();
+            $table->unsignedSmallInteger('position_id')->nullable();
+            $table->unsignedSmallInteger('terminal_id')->nullable();
+            $table->unsignedSmallInteger('terminal_position_id')->nullable();
 
             $table->string('name')->nullable();
             $table->string('email')->nullable();

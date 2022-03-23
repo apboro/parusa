@@ -16,13 +16,13 @@ class CreatePositionsTable extends Migration
     public function up(): void
     {
         Schema::create('positions', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedSmallInteger('id', true);
 
-            $table->unsignedInteger('status_id')->default(PositionStatus::default);
-            $table->unsignedInteger('access_status_id')->default(PositionAccessStatus::default);
+            $table->unsignedTinyInteger('status_id')->default(PositionStatus::default);
+            $table->unsignedTinyInteger('access_status_id')->default(PositionAccessStatus::default);
 
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('partner_id')->nullable();
+            $table->unsignedSmallInteger('user_id');
+            $table->unsignedSmallInteger('partner_id')->nullable();
 
             $table->string('title')->nullable();
             $table->boolean('is_staff')->nullable()->default(false);

@@ -11,11 +11,11 @@ class CreateUserProfilesTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('user_profiles', function (Blueprint $table) {
+        Schema::create('user_profiles', static function (Blueprint $table) {
 
-            $table->unsignedBigInteger('user_id')->unique()->primary();
+            $table->unsignedSmallInteger('user_id')->unique()->primary();
 
             $table->string('lastname');
             $table->string('firstname');
@@ -50,7 +50,7 @@ class CreateUserProfilesTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('user_profiles');
     }

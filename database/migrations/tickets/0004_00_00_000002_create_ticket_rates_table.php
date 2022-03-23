@@ -15,9 +15,9 @@ class CreateTicketRatesTable extends Migration
     {
         Schema::create('ticket_rates', static function (Blueprint $table) {
 
-            $table->id();
+            $table->unsignedInteger('id', true);
 
-            $table->unsignedBigInteger('rate_id');
+            $table->unsignedSmallInteger('rate_id');
 
             $table->unsignedSmallInteger('grade_id');
 

@@ -11,13 +11,13 @@ class CreateDictionaryTripDiscountStatusesTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('dictionary_trip_discount_statuses', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('dictionary_trip_discount_statuses', static function (Blueprint $table) {
+            $table->unsignedTinyInteger('id', true);
             $table->string('name');
             $table->boolean('enabled')->nullable()->default(true);
-            $table->integer('order')->nullable()->default(0);
+            $table->unsignedTinyInteger('order')->nullable()->default(0);
 
             $table->timestamps();
         });
@@ -28,7 +28,7 @@ class CreateDictionaryTripDiscountStatusesTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('trip_discount_statuses');
     }

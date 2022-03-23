@@ -11,11 +11,11 @@ class CreatePierHasImageTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('pier_has_image', function (Blueprint $table) {
-            $table->unsignedBigInteger('pier_id');
-            $table->unsignedBigInteger('image_id');
+        Schema::create('pier_has_image', static function (Blueprint $table) {
+            $table->unsignedSmallInteger('pier_id');
+            $table->unsignedInteger('image_id');
 
             $table->foreign('pier_id')->references('id')->on('piers')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('image_id')->references('id')->on('images')->restrictOnDelete()->restrictOnUpdate();
@@ -27,7 +27,7 @@ class CreatePierHasImageTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('pier_has_image');
     }

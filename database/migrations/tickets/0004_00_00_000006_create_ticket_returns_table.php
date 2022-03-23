@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDictionaryRolesTable extends Migration
+class CreateTicketReturnsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,16 @@ class CreateDictionaryRolesTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('dictionary_roles', static function (Blueprint $table) {
-            $table->unsignedSmallInteger('id', true);
-            $table->string('name');
-            $table->boolean('enabled')->nullable()->default(true);
-            $table->unsignedSmallInteger('order')->nullable()->default(0);
+        Schema::create('ticket_returns', static function (Blueprint $table) {
+
+            $table->increments('id');
+            $table->unsignedInteger('ticket_id');
+
+            $table->string('reason');
 
             $table->timestamps();
+
+            $table->foreign('ticket_id')->references('id')->on('tickets')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 
@@ -30,6 +33,6 @@ class CreateDictionaryRolesTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dictionary_roles');
+        Schema::dropIfExists('ticket_returns');
     }
 }

@@ -11,12 +11,12 @@ class CreateExcursionInfoTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('excursion_info', function (Blueprint $table) {
-            $table->unsignedBigInteger('excursion_id')->primary();
+        Schema::create('excursion_info', static function (Blueprint $table) {
+            $table->unsignedSmallInteger('excursion_id')->primary();
 
-            $table->integer('duration');
+            $table->unsignedSmallInteger('duration');
             $table->text('announce')->nullable();
             $table->text('description')->nullable();
 
@@ -31,7 +31,7 @@ class CreateExcursionInfoTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('excursion_info');
     }
