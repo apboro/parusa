@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Checkout;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Http\Middleware\ExternalProtect;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Tickets\Order;
@@ -100,32 +99,26 @@ class CheckoutInitController extends ApiController
     protected function signedPayment(Order $order): array
     {
         $payment = [
-            'cost' => $order->total(),
-            'name' => 'order' . $order->id,
-            'email' => $order->email,
-            'phone_number' => preg_replace('/\D/', '', $order->phone),
-            'order_id' => $order->id,
-            'service_id' => env('LIFE_PAY_IE_SERVICE_ID'),
+            'cost' => (string)$order->total(),
             'version' => '2.0',
+            'name' => 'Заказ №' . $order->id,
+            'service_id' => env('LIFE_PAY_IE_SERVICE_ID'),
+            'email' => $order->email,
+            'order_id' => $order->id,
+            'comment' => 'Оплата заказа №' . $order->id,
+            // 'payment_type' => 'spg_test',
+            // 'invoice_data' => '{"items":[{"name":"Покупка электронного билета", "price":1865.00, "unit":"piece", "quantity":1, "sum":1865.00, "vat_mode":"none"}]}',
         ];
 
         $url = 'https://partner.life-pay.ru/alba/input/';
         $check = $this->sign($payment, $url);
 
-        $payment['url'] = $url;
-        $payment['check'] = $check;
-
-        return $payment;
+        return array_merge($payment, [
+            'check' => $check,
+            'url' => $url,
+        ]);
     }
 
-    /**
-     * Make payment signature.
-     *
-     * @param array $params
-     * @param string $url
-     *
-     * @return  string
-     */
     protected function sign(array $params, string $url): string
     {
         ksort($params, SORT_LOCALE_STRING);
@@ -136,17 +129,11 @@ class CheckoutInitController extends ApiController
 
         $data = implode("\n", ['POST', $host, $path, $this->httpQueryRFC3986($params)]);
 
-        return base64_encode(hash_hmac("sha256", $data, env('LIFE_PAY_IE_SECRET'), true));
+        $secret = env('LIFE_PAY_IE_SECRET');
+
+        return base64_encode(hash_hmac("sha256", $data, $secret, true));
     }
 
-    /**
-     * Make query string.
-     *
-     * @param array $data
-     * @param string $separator
-     *
-     * @return  string
-     */
     protected function httpQueryRFC3986(array $data, string $separator = '&'): string
     {
         $arguments = [];
