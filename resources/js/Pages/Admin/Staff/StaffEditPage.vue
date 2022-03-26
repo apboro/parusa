@@ -4,7 +4,6 @@
                 :link="{name: 'staff-list'}"
                 :link-title="'К списку сотрудников'"
     >
-
         <GuiContainer mt-30>
             <FormString :form="form" :name="'last_name'"/>
             <FormString :form="form" :name="'first_name'"/>

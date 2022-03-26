@@ -65,6 +65,10 @@ export default {
         }
     },
 
+    created() {
+        this.innerValue = this.modelValue === null ? '' : this.modelValue;
+    },
+
     methods: {
         focus() {
             this.focused = true;
@@ -73,7 +77,7 @@ export default {
             this.focused = false;
         },
         typed(value) {
-            if(!this.innerInitialized) {
+            if (!this.innerInitialized) {
                 this.innerInitialized = true;
                 return;
             }
@@ -82,7 +86,7 @@ export default {
             }
         },
         complete(value) {
-            if(!this.innerInitialized) {
+            if (!this.innerInitialized) {
                 this.innerInitialized = true;
                 return;
             }

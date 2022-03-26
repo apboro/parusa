@@ -60,7 +60,7 @@ export default {
     methods: {
         updateForm() {
             this.form.reset();
-            this.form.set('login', this.data['email'], 'required|min:6', 'Логин', true);
+            this.form.set('login', this.data['email'], 'required|min:6|bail', 'Логин', true);
             this.form.set('password', null, 'required|min:6|bail', 'Новый пароль', true);
             this.form.set('password_confirmation', null, 'same:password', 'Подтверждение пароля', true);
             this.form.load();
@@ -76,7 +76,8 @@ export default {
                     this.access_updating = true;
                     axios.post('/api/staff/access/release', {id: this.staffId})
                         .then(response => {
-                            this.$emit('update', response.data.payload)
+                            this.$emit('update', response.data.payload);
+                            this.updateForm();
                             this.$toast.success(response.data.message, 3000);
                         })
                         .catch(error => {
