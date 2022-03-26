@@ -2,7 +2,9 @@
 
 namespace App\Models\Partner;
 
+use App\Models\Dictionaries\PartnerStatus;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 trait PartnerAsDictionary
 {
@@ -12,7 +14,7 @@ trait PartnerAsDictionary
             ->select([
                 'id',
                 'name',
-                'status_id as enabled', // TODO subselect status_id === PartnerStatus::active
+                DB::raw('IF(status_id = ' . PartnerStatus::active . ', true, false) as enabled'),
                 'name as order',
                 'created_at',
                 'updated_at',
