@@ -35,17 +35,19 @@
                 <div class="ap-checkout__contact">Телефон: {{ order['phone'] }}</div>
                 <div class="ap-checkout__countdown">Время на оплату: {{ remind }}</div>
                 <div class="ap-checkout__actions">
-                    <form method="POST" accept-charset="UTF-8" :action="payment['url']" id="ap-checkout-form">
+                    <form method="POST" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" :action="payment['url']" id="ap-checkout-form">
                         <input type="hidden" name="cost" :value="payment['cost']"/>
                         <input type="hidden" name="name" :value="payment['name']"/>
-                        <input type="hidden" name="email" :value="payment['email']" />
-                        <input type="hidden" name="phone_number" :value="payment['phone_number']" />
-                        <input type="hidden" name="order_id" :value="payment['order_id']"/>
+                        <input type="hidden" name="email" :value="payment['email']"/>
+                        <input type="hidden" name="comment" :value="payment['comment']"/>
+                        <input type="hidden" name="payment_type" :value="payment['payment_type']"/>
+                        <input type="hidden" name="invoice_data" :value="payment['invoice_data']"/>
                         <input type="hidden" name="service_id" :value="payment['service_id']"/>
+                        <input type="hidden" name="order_id" :value="payment['order_id']"/>
                         <input type="hidden" name="version" :value="payment['version']"/>
                         <input type="hidden" name="check" :value="payment['check']"/>
 
-                        <input type="image" id="a1lite_button" style="border: 0;" src="https://partner.life-pay.ru/gui/images/a1lite_buttons/button_large.png" value="Оплатить" />
+                        <input type="image" id="a1lite_button" style="border: 0;" src="https://partner.life-pay.ru/gui/images/a1lite_buttons/button_large.png" value="Оплатить"/>
                     </form>
                 </div>
             </template>
@@ -71,7 +73,8 @@ export default {
     },
 
     data: () => ({
-        base_url: 'https://parusa.opxcms.com', // without trailing slash
+        // base_url: 'https://parusa.opxcms.com', // without trailing slash
+        base_url: 'http://127.0.0.1:8000', // without trailing slash
         is_initializing: true,
         has_error: false,
         error_message: null,
@@ -110,7 +113,7 @@ export default {
 
             this.is_initializing = true;
 
-            axios.post(this.base_url + '/checkout/init', {order: order})
+            axios.post(this.base_url + '/checkout/init?XDEBUG_SESSION_START=PHPSTORM', {order: order})
                 .then(response => {
                     this.order = response.data['order'];
                     this.payment = response.data['payment'];

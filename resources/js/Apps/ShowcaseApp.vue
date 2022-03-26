@@ -1,6 +1,8 @@
 <template>
     <LoadingProgress :loading="is_initializing || is_queued || is_loading" :opacity="100">
-        <GuiMessage v-if="has_error">Ошибка: {{ error_message }}</GuiMessage>
+        <template v-if="has_error">
+            <GuiMessage>Ошибка: {{ error_message }}</GuiMessage>
+        </template>
         <MainPage v-else
                   :partner="partner"
                   :base_url="base_url"
@@ -22,15 +24,16 @@
 import MainPage from "@/Pages/Showcase/MainPage";
 import LoadingProgress from "@/Components/LoadingProgress";
 import GuiMessage from "@/Components/GUI/GuiMessage";
+import GuiButton from "@/Components/GUI/GuiButton";
 
 export default {
     name: "ShowcaseApp",
 
-    components: {GuiMessage, LoadingProgress, MainPage},
+    components: {GuiButton, GuiMessage, LoadingProgress, MainPage},
 
     data: () => ({
         partner: null,
-        base_url: 'https://parusa.opxcms.com', // without trailing slash
+        base_url: 'http://127.0.0.1:8000', // without trailing slash
 
         is_initializing: true,
         is_queued: false,
@@ -79,6 +82,11 @@ export default {
                 });
         },
 
+        reset() {
+            this.$store.commit('showcase/trip_id', null);
+            this.init();
+        },
+
         getList(search) {
             if (this.is_initializing) {
                 setTimeout(() => this.getList(search), 300);
@@ -95,7 +103,9 @@ export default {
                 })
                 .catch(error => {
                     this.error_message = error.response.data['message'];
+                    console.log(this.error_message);
                     this.has_error = true;
+                    this.reset();
                 })
                 .finally(() => {
                     this.is_loading = false;
@@ -120,7 +130,9 @@ export default {
                 })
                 .catch(error => {
                     this.error_message = error.response.data['message'];
+                    console.log(this.error_message);
                     this.has_error = true;
+                    this.reset();
                 })
                 .finally(() => {
                     this.is_loading = false;
