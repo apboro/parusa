@@ -29,10 +29,9 @@
 
         <template v-if="info.is_loaded && !isReserve">
             <GuiContainer>
-                <GuiButton @click="in_dew">Скачать билет в PDF</GuiButton>
-                <GuiButton @click="in_dew">Отправить клиенту на почту</GuiButton>
-                <GuiButton @click="in_dew">Распечатать</GuiButton>
-                <GuiButton @click="in_dew" :color="'red'">Оформить возврат</GuiButton>
+                <GuiButton @clicked="downloadTicket">Скачать билет в PDF</GuiButton>
+                <GuiButton @clicked="emailTicket" :disabled="!info.data['email']">Отправить клиенту на почту</GuiButton>
+                <GuiButton @clicked="printTicket">Распечатать</GuiButton>
             </GuiContainer>
         </template>
     </LayoutPage>
@@ -45,6 +44,8 @@ import GuiContainer from "@/Components/GUI/GuiContainer";
 import GuiValue from "@/Components/GUI/GuiValue";
 import GuiHeading from "@/Components/GUI/GuiHeading";
 import GuiButton from "@/Components/GUI/GuiButton";
+import {saveAs} from "file-saver";
+import printJS from 'print-js';
 
 export default {
     components: {
@@ -77,8 +78,55 @@ export default {
     },
 
     methods: {
-        in_dew() {
-            this.$toast.info('Функционал находится в разработке');
+        downloadTicket() {
+            axios.post('/api/registries/ticket/download', {id: this.ticketId})
+                .then(response => {
+                    let ticket = atob(response.data.data['ticket']);
+                    let byteNumbers = new Array(ticket.length);
+                    for (let i = 0; i < ticket.length; i++) {
+                        byteNumbers[i] = ticket.charCodeAt(i);
+                    }
+                    let byteArray = new Uint8Array(byteNumbers);
+                    let blob = new Blob([byteArray], {type: "application/pdf;charset=utf-8"});
+
+                    saveAs(blob, response.data.data['file_name'], {autoBom: true});
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data['message']);
+                });
+        },
+        emailTicket() {
+            this.$dialog.show('Отправить билет на почту "' + this.info.data['email'] + '"?', 'question', 'orange', [
+                this.$dialog.button('yes', 'Продолжить', 'orange'),
+                this.$dialog.button('no', 'Отмена', 'blue'),
+            ]).then(result => {
+                if (result === 'yes') {
+                    axios.post('/api/registries/ticket/send', {id: this.ticketId})
+                        .then(response => {
+                            this.$toast.success(response.data['message']);
+                        })
+                        .catch(error => {
+                            this.$toast.error(error.response.data['message']);
+                        });
+                }
+            });
+        },
+        printTicket() {
+            axios.post('/api/registries/ticket/download', {id: this.ticketId})
+                .then(response => {
+                    let ticket = atob(response.data.data['ticket']);
+                    let byteNumbers = new Array(ticket.length);
+                    for (let i = 0; i < ticket.length; i++) {
+                        byteNumbers[i] = ticket.charCodeAt(i);
+                    }
+                    let byteArray = new Uint8Array(byteNumbers);
+                    let blob = new Blob([byteArray], {type: "application/pdf;charset=utf-8"});
+                    let pdfUrl = URL.createObjectURL(blob);
+                    printJS(pdfUrl);
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data['message']);
+                });
         },
     }
 }

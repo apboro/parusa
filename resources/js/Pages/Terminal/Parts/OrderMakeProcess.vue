@@ -46,7 +46,7 @@
 
         <GuiMessage v-if="data['status']['finishing']">Заказ оплачен.</GuiMessage>
         <GuiContainer mt-30 text-right v-if="data['status']['finishing']">
-            <GuiButton :color="'green'" :disabled="!data['actions']['print']">Печать билетов</GuiButton>
+            <GuiButton :color="'green'" :disabled="!data['actions']['print']" @clicked="printOrder">Печать билетов</GuiButton>
             <GuiButton :disabled="!data['actions']['finish']" @clicked="closeOrder">Закрыть заказ</GuiButton>
         </GuiContainer>
     </LoadingProgress>
@@ -59,6 +59,7 @@ import GuiButton from "@/Components/GUI/GuiButton";
 import LoadingProgress from "@/Components/LoadingProgress";
 import GuiMessage from "@/Components/GUI/GuiMessage";
 import GuiText from "@/Components/GUI/GuiText";
+import printJS from "print-js";
 
 export default {
     props: {
@@ -105,7 +106,7 @@ export default {
                         if (response.data.data['waiting_for_pay'] === false) {
                             this.$emit('update');
                             if (!this.print_fired) {
-                                this.$toast.info('Print!');
+                                this.printOrder();
                             }
                         }
                     })
@@ -154,6 +155,24 @@ export default {
                 })
                 .finally(() => {
                     this.processing = false;
+                });
+        },
+
+        printOrder() {
+            axios.post('/api/registries/order/print', {id: this.data['order_id'] })
+                .then(response => {
+                    let order = atob(response.data.data['order']);
+                    let byteNumbers = new Array(order.length);
+                    for (let i = 0; i < order.length; i++) {
+                        byteNumbers[i] = order.charCodeAt(i);
+                    }
+                    let byteArray = new Uint8Array(byteNumbers);
+                    let blob = new Blob([byteArray], {type: "application/pdf;charset=utf-8"});
+                    let pdfUrl = URL.createObjectURL(blob);
+                    printJS(pdfUrl);
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data['message']);
                 });
         },
     }

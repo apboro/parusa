@@ -34,6 +34,8 @@
         "moment": "^2.29.1"
     },
     "dependencies": {
-        "vuex-persistedstate": "^4.1.0"
+        "vuex-persistedstate": "^4.1.0",
+        "file-saver": "^2.0.5",
+        "print-js": "^1.6.0"
     }
 }

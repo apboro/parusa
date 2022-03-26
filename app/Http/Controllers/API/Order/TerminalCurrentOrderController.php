@@ -46,7 +46,14 @@ class TerminalCurrentOrderController extends ApiController
 
         try {
             LifePosSales::send($order, $current->terminal(), $current->position());
-            $order->setStatus($order->hasStatus(OrderStatus::terminal_creating) ? OrderStatus::terminal_wait_for_pay : OrderStatus::terminal_wait_for_pay_from_reserve);
+            $onTerminal = $order->hasStatus(OrderStatus::terminal_creating);
+            DB::transaction(static function () use ($order, $onTerminal) {
+                foreach ($order->tickets as $ticket) {
+                    /** @var Ticket $ticket */
+                    $ticket->setStatus($onTerminal ? TicketStatus::terminal_wait_for_pay : TicketStatus::terminal_wait_for_pay_from_reserve);
+                }
+                $order->setStatus($onTerminal ? OrderStatus::terminal_wait_for_pay : OrderStatus::terminal_wait_for_pay_from_reserve);
+            });
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
@@ -77,9 +84,14 @@ class TerminalCurrentOrderController extends ApiController
             if ($order->external_id !== null) {
                 LifePosSales::cancel($order);
             }
-            $order->hasStatus(OrderStatus::terminal_wait_for_pay)
-                ? $order->setStatus(OrderStatus::terminal_creating)
-                : $order->setStatus(OrderStatus::terminal_creating_from_reserve);
+            $onTerminal = $order->hasStatus(OrderStatus::terminal_wait_for_pay);
+            DB::transaction(static function () use ($order, $onTerminal) {
+                foreach ($order->tickets as $ticket) {
+                    /** @var Ticket $ticket */
+                    $ticket->setStatus($onTerminal ? TicketStatus::terminal_creating : TicketStatus::terminal_creating_from_reserve);
+                }
+                $order->setStatus($onTerminal ? OrderStatus::terminal_creating : OrderStatus::terminal_creating_from_reserve);
+            });
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
