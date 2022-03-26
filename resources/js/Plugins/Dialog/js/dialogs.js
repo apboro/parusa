@@ -56,7 +56,7 @@ const DialogPlugin = function (_options) {
         return dialog.promise;
     };
 
-    this.show = (message, type, color, buttons, buttons_align = 'right') => {
+    this.show = (message, type, color, buttons, buttons_align = 'center') => {
         return this._show(message, type, color, buttons, buttons_align);
     };
 
