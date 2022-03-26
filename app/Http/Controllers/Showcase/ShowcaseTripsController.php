@@ -111,6 +111,11 @@ class ShowcaseTripsController extends ApiController
             ->with(['startPier', 'excursion', 'excursion.info', 'excursion.programs'])
             ->first();
 
+        if($trip === null) {
+            return response()->json([
+                'message' => 'Пордажа билетов на этот рейс не осуществляется.'
+            ], 404);
+        }
         $rates = $trip->excursion->rateForDate($trip->start_at);
 
         if ($rates !== null) {

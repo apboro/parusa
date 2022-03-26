@@ -31,9 +31,6 @@
                     </div>
                 </div>
             </div>
-            <div class="ap-showcase__actions">
-                <GuiButton @click="unselect">Подобрать другой рейс</GuiButton>
-            </div>
         </div>
 
         <template v-if="has_error === false">
@@ -100,6 +97,9 @@
         </template>
         <template v-else>
             <GuiMessage>{{ error_message }}</GuiMessage>
+            <div class="ap-showcase__actions">
+                <GuiButton @click="unselect">Подобрать другой рейс</GuiButton>
+            </div>
         </template>
     </div>
 </template>
