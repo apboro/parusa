@@ -5,9 +5,6 @@ import SettingsPage from "../../Pages/Admin/Settings/SettingsPage";
 import PartnerCardPage from "../../Pages/Admin/Partner/Partner/PartnerCardPage";
 import PartnerEditPage from "../../Pages/Admin/Partner/Partner/PartnerEditPage";
 
-import RepresentativeCardPage from "../../Pages/Admin/Partner/Representatives/RepresentativeCardPage";
-import RepresentativeEditPage from "../../Pages/Admin/Partner/Representatives/RepresentativeEditPage";
-
 import DictionariesPage from "../../Pages/Admin/Dictionaries/DictionariesPage";
 
 import TestPage from "@/Pages/Admin/TestPage";
@@ -32,8 +29,8 @@ export default [
     {path: '/partners/:id/edit', name: 'partners-edit', component: PartnerEditPage, meta: {title: 'Редактирование партнёра'}},
 
     {path: '/representatives', name: 'representatives-list', component: () => import('@/Pages/Admin/Representatives/RepresentativesListPage'), meta: {title: 'Представители'}},
-    {path: '/representatives/:id', name: 'representatives-view', component: RepresentativeCardPage, meta: {title: 'Просмотр представителя'}},
-    {path: '/representatives/:id/edit', name: 'representatives-edit', component: RepresentativeEditPage, meta: {title: 'Редактирование представителя'}},
+    {path: '/representatives/:id', name: 'representatives-view', component: () => import('@/Pages/Admin/Representatives/RepresentativeViewPage'), meta: {title: 'Просмотр представителя'}},
+    {path: '/representatives/:id/edit', name: 'representatives-edit', component: () => import('@/Pages/Admin/Representatives/RepresentativeEditPage'), meta: {title: 'Редактирование представителя'}},
 
     {path: '/terminals', name: 'terminals-list', component: () => import('@/Pages/Admin/Terminals/TerminalsListPage'), meta: {title: 'Мобильные кассы'}},
     {path: '/terminals/:id', name: 'terminals-view', component: () => import('@/Pages/Admin/Terminals/TerminalsViewPage'), meta: {title: 'Просмотр мобильной кассы'}},
@@ -58,12 +55,6 @@ export default [
      * Dictionaries
      */
     {path: '/dictionaries', name: 'dictionaries', component: DictionariesPage, meta: {title: 'Справочники'}},
-
-
-    /**
-     * Order
-     */
-
 
     {path: '/test', name: 'test', component: TestPage, meta: {title: 'Страница для тестов'}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},

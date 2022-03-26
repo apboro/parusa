@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Partners\Representatives;
+namespace App\Http\Controllers\API\Representatives;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
@@ -69,7 +69,7 @@ class RepresentativeEditController extends ApiEditController
                 'patronymic' => $profile->patronymic,
                 'default_position_title' => $profile->default_position_title,
 
-                'birthdate' => $profile->birthdate ? $profile->birthdate->format('d.m.Y') : null,
+                'birthdate' => $profile->birthdate ? $profile->birthdate->format('Y-m-d') : null,
                 'gender' => $profile->gender,
 
                 'email' => $profile->email,

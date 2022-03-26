@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Partners\Representatives;
+namespace App\Http\Controllers\API\Representatives;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
@@ -13,7 +13,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class RepresentativePositionsController extends ApiEditController
+class RepresentativePositionController extends ApiEditController
 {
     protected array $rules = [
         'partner_id' => 'required',
@@ -45,25 +45,32 @@ class RepresentativePositionsController extends ApiEditController
             return APIResponse::formError($data, $this->rules, $this->titles, $errors);
         }
 
-        if (($userId = $request->input('representative_id')) === null || null === ($user = User::query()->where('id', $userId)->first())) {
+        /** @var User $user */
+        if (($userId = $request->input('id')) === null || null === ($user = User::query()->where('id', $userId)->first())) {
             return APIResponse::notFound('Представитель не найден');
         }
 
+        /** @var Partner $partner */
         if (null === ($partner = Partner::query()->where('id', $data['partner_id'])->first())) {
             return APIResponse::notFound('Партнёр не найден');
         }
 
+        $positionId = $request->input('position_id');
 
-        /** @var User $user */
-        /** @var Partner $partner */
-        /** @var Position $position */
-        $position = Position::query()->where(['partner_id' => $partner->id, 'user_id' => $user->id])->first();
-
-        if ($position !== null) {
-            return APIResponse::error('Представитель уже привязан к этой организации.');
+        if ($positionId === 0) {
+            /** @var Position $position */
+            $position = Position::query()->where(['partner_id' => $partner->id, 'user_id' => $user->id, 'is_staff' => false])->first();
+            if ($position !== null) {
+                return APIResponse::error('Представитель уже привязан к этой организации.');
+            }
+            $position = new Position;
+        } else {
+            $position = Position::query()->where(['id' => $positionId, 'partner_id' => $partner->id, 'user_id' => $user->id, 'is_staff' => false])->first();
+            if ($position === null) {
+                return APIResponse::error('Привязка представителя к организации не найдена.');
+            }
         }
 
-        $position = new Position;
         $position->user_id = $user->id;
         $position->partner_id = $partner->id;
         $position->title = $data['title'];
@@ -75,7 +82,7 @@ class RepresentativePositionsController extends ApiEditController
         $position->info->save();
 
         return APIResponse::formSuccess(
-            $position->wasRecentlyCreated ? 'Представитель прикреплйм' : 'Запись обновлена',
+            $position->wasRecentlyCreated ? 'Представитель прикреплён' : 'Запись обновлена',
             [
                 'id' => $user->id,
                 'positions' => $user->positions->map(function (Position $position) {
@@ -108,7 +115,6 @@ class RepresentativePositionsController extends ApiEditController
         $id = $request->input('id');
 
         if ($id === null || null === (User::query()
-                ->with(['positions'])
                 ->where('id', $id)
                 ->first())
         ) {
@@ -118,7 +124,7 @@ class RepresentativePositionsController extends ApiEditController
         $positionId = $request->input('position_id');
 
         if ($positionId === null || null === ($position = Position::query()
-                ->where(['id' => $positionId, 'user_id' => $id])->first())
+                ->where(['id' => $positionId, 'user_id' => $id, 'is_staff' => false])->first())
         ) {
             return APIResponse::notFound('Привязка пользователя к организации не найдена');
         }
@@ -133,6 +139,6 @@ class RepresentativePositionsController extends ApiEditController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response([], [], 'Представитель откреплён');
+        return APIResponse::formSuccess('Представитель откреплён');
     }
 }

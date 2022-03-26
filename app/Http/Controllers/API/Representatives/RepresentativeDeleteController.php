@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Partners\Representatives;
+namespace App\Http\Controllers\API\Representatives;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;

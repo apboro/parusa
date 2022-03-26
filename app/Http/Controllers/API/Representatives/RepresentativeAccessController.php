@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Partners\Representatives;
+namespace App\Http\Controllers\API\Representatives;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
@@ -42,10 +42,13 @@ class RepresentativeAccessController extends ApiEditController
         $user->password = null;
         $user->save();
 
-        return APIResponse::response([
-            'has_access' => false,
-            'login' => null,
-        ], [], 'Доступ в систему для представителя закрыт');
+        return APIResponse::formSuccess(
+            'Доступ в систему для представителя закрыт',
+            [
+                'has_access' => false,
+                'login' => null,
+            ]
+        );
     }
 
     /**
