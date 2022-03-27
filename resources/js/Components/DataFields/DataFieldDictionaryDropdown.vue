@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import FieldDictionaryDropDown from "../Fields/FieldDictionaryDropDown";
+import FieldDictionaryDropDown from "../FieldsOld/FieldDictionaryDropDown";
 import empty from "@/Core/Helpers/Empty";
 
 export default {

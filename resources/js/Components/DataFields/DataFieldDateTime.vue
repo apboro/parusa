@@ -16,7 +16,7 @@
 
 <script>
 import empty from "@/Core/Helpers/Empty";
-import FieldDateTime from "../Fields/FieldDateTime";
+import FieldDateTime from "../FieldsOld/FieldDateTime";
 
 export default {
     props: {

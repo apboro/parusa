@@ -20,7 +20,7 @@
 
 <script>
 import empty from "@/Core/Helpers/Empty";
-import FieldDropDown from "../Fields/FieldDropDown";
+import FieldDropDown from "../FieldsOld/FieldDropDown";
 
 export default {
     props: {

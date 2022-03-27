@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import FieldTextArea from "../Fields/FieldTextArea";
+import FieldTextArea from "../FieldsOld/FieldTextArea";
 import empty from "@/Core/Helpers/Empty";
 
 export default {

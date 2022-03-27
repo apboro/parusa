@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import FieldDate from "../Fields/FieldDate";
+import FieldDate from "../FieldsOld/FieldDate";
 import empty from "@/Core/Helpers/Empty";
 
 export default {

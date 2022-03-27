@@ -19,7 +19,7 @@
 
 <script>
 import empty from "@/Core/Helpers/Empty";
-import FieldMaskedInput from "../Fields/FieldMaskedInput";
+import FieldMaskedInput from "../FieldsOld/FieldMaskedInput";
 
 export default {
     props: {

@@ -73,7 +73,11 @@ export default {
                     this.$refs.popup.process(false);
                 });
             return false;
-        }
+        },
+
+        process(value) {
+            this.$refs.popup.process(value);
+        },
     }
 }
 </script>

@@ -1,52 +1,46 @@
 <template>
-    <div class="base-files"
-         :class="{'base-files__not-valid': !valid, 'base-files__differs': changed}"
-    >
-        <div class="base-files__container">
-            <base-files-file v-for="(file, key) in modelValue"
-                             :key="key"
-                             :index="key"
-                             :type="file.type"
-                             :name="file.name"
-                             :size="file.size"
-                             @discard="discard"
-            ></base-files-file>
-            <label class="base-files__add" v-if="canAdd">
-                <icon-plus :class="'base-files__add-icon'"/>
+    <InputWrapper class="input-files" :label="false" :dirty="isDirty" :disabled="disabled" :valid="valid">
+        <div class="input-files__container">
+            <FilesFile v-for="(file, key) in modelValue"
+                       :key="key"
+                       :index="key"
+                       :type="file.type"
+                       :name="file.name"
+                       :size="file.size"
+                       @discard="discard"
+            ></FilesFile>
+            <label class="input-files__add" v-if="canAdd">
+                <IconPlusCircle :class="'input-files__add-icon'"/>
                 <template v-if="canAddCount === 1">
-                    <input class="base-files__add-input" type="file" accept="*" @change="handleFile">
+                    <input class="input-files__add-input" type="file" :accept="acceptable.join(',')" @change="handleFile">
                 </template>
                 <template v-else>
-                    <input class="base-files__add-input" type="file" accept="*" multiple @change="handleFile">
+                    <input class="input-files__add-input" type="file" :accept="acceptable.join(',')" multiple @change="handleFile">
                 </template>
             </label>
         </div>
-    </div>
+    </InputWrapper>
 </template>
 
 <script>
 import clone from "@/Core/Helpers/Clone";
-import IconPlus from "../Icons/IconPlusCircle";
-import BaseFilesFile from "./Parts/BaseFilesFile";
+import InputWrapper from "@/Components/Inputs/Helpers/InputWrapper";
+import IconPlusCircle from "@/Components/Icons/IconPlusCircle";
+import FilesFile from "@/Components/Inputs/Helpers/FilesFile";
 
 export default {
-    components: {
-        BaseFilesFile,
-        IconPlus,
-    },
+    components: {FilesFile, InputWrapper, IconPlusCircle},
     props: {
-        modelValue: {type: Array, default: () => ([])},
         name: String,
-        original: {type: Array, default: () => ([])},
-
-        required: {type: Boolean, default: false},
-        disabled: {type: Boolean, default: false},
+        modelValue: {type: Array, default: null},
+        original: {type: Array, default: null},
         valid: {type: Boolean, default: true},
+        disabled: {type: Boolean, default: false},
 
         maxFiles: {type: Number, default: 0},
     },
 
-    emits: ['update:modelValue', 'changed'],
+    emits: ['update:modelValue', 'change'],
 
     computed: {
         filesCount() {
@@ -58,7 +52,7 @@ export default {
         canAddCount() {
             return this.maxFiles === 0 ? 0 : this.maxFiles - this.filesCount;
         },
-        changed() {
+        isDirty() {
             return JSON.stringify(this.original) !== JSON.stringify(this.modelValue);
         },
         acceptable() {
@@ -82,7 +76,7 @@ export default {
                 'image/jpg',
                 'image/png',
             ];
-        }
+        },
     },
 
     methods: {
@@ -94,6 +88,7 @@ export default {
         processFiles(files) {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
+
                 if (this.acceptable.indexOf(file.type) === -1) {
                     let extension = file.name.split('.');
                     extension = typeof extension[1] !== "undefined" ? '"' + extension[1] + '" ' : null;
@@ -123,7 +118,7 @@ export default {
                             let value = clone(this.modelValue);
                             value.push(val);
                             this.$emit('update:modelValue', value);
-                            this.$emit('changed', this.name, value);
+                            this.$emit('change', value, this.name);
                         }
                     }
                 })(val);
@@ -136,8 +131,64 @@ export default {
             let value = clone(this.modelValue);
             value.splice(index, 1);
             this.$emit('update:modelValue', value);
-            this.$emit('changed', this.name, value);
+            this.$emit('change', value, this.name);
         },
     }
 }
 </script>
+
+<style lang="scss">
+@import "../variables";
+
+$base_size_unit: 35px !default;
+$animation_time: 150ms !default;
+$animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
+$input_background_color: #ffffff !default;
+$input_active_color: #0f82f1 !default;
+$input_hover_color: #6fb4f7 !default;
+
+.input-files {
+    &__add {
+        display: inline-flex;
+        position: relative;
+        vertical-align: top;
+        width: $base_size_unit * 4;
+        height: $base_size_unit * 4;
+        box-sizing: border-box;
+        padding: 5px;
+        margin: 5px;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid $input_active_color;
+        background-color: $input_background_color;
+        color: $input_active_color;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: color $animation $animation_time, border-color $animation $animation_time;
+
+        &:hover {
+            border-color: $input_hover_color;
+            color: $input_hover_color;
+        }
+
+        &-icon {
+            width: 50%;
+            height: 50%;
+            color: inherit;
+        }
+
+        &-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            -moz-opacity: 0;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            font-size: 150px;
+            height: 30px;
+            z-index: -1;
+        }
+    }
+}
+</style>

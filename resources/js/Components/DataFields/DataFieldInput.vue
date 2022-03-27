@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import FieldInput from "../Fields/FieldInput";
+import FieldInput from "../FieldsOld/FieldInput";
 import empty from "@/Core/Helpers/Empty";
 
 export default {
