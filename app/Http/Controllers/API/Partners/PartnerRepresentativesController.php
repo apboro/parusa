@@ -13,7 +13,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class PartnerRepresentativePositionsController extends ApiEditController
+class PartnerRepresentativesController extends ApiEditController
 {
     protected array $rules = [
         'representative_id' => 'required',
@@ -45,24 +45,32 @@ class PartnerRepresentativePositionsController extends ApiEditController
             return APIResponse::formError($data, $this->rules, $this->titles, $errors);
         }
 
+        /** @var User $user */
         if (null === ($user = User::query()->where('id', $data['representative_id'])->first())) {
             return APIResponse::notFound('Представитель не найден');
         }
 
+        /** @var Partner $partner */
         if (($partnerId = $request->input('partner_id')) === null || null === ($partner = Partner::query()->where('id', $partnerId)->first())) {
             return APIResponse::notFound('Партнёр не найден');
         }
 
-        /** @var User $user */
-        /** @var Partner $partner */
-        /** @var Position $position */
-        $position = Position::query()->where(['partner_id' => $partner->id, 'user_id' => $user->id])->first();
+        $positionId = $request->input('position_id');
 
-        if ($position !== null) {
-            return APIResponse::error('Представитель уже привязан к этой организации.');
+        if ($positionId === 0) {
+            /** @var Position $position */
+            $position = Position::query()->where(['partner_id' => $partner->id, 'user_id' => $user->id, 'is_staff' => false])->first();
+            if ($position !== null) {
+                return APIResponse::error('Представитель уже привязан к этой организации.');
+            }
+            $position = new Position;
+        } else {
+            $position = Position::query()->where(['id' => $positionId, 'partner_id' => $partner->id, 'user_id' => $user->id, 'is_staff' => false])->first();
+            if ($position === null) {
+                return APIResponse::error('Привязка представителя к организации не найдена.');
+            }
         }
 
-        $position = new Position;
         $position->user_id = $user->id;
         $position->partner_id = $partner->id;
         $position->title = $data['title'];
@@ -73,7 +81,7 @@ class PartnerRepresentativePositionsController extends ApiEditController
         $position->info->email = $data['email'];
         $position->info->save();
 
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             $position->wasRecentlyCreated ? 'Представитель прикреплён' : 'Запись обновлена',
             [
                 'id' => $partner->id,

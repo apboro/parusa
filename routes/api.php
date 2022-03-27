@@ -19,7 +19,7 @@ Route::prefix('api')->middleware(['api', 'auth:sanctum'])->group(function () {
 
     require base_path('routes/api/staff.php');
     require base_path('routes/api/partners.php'); // todo check
-    require base_path('routes/api/representatives.php'); // todo check
+    require base_path('routes/api/representatives.php');
     require base_path('routes/api/terminals.php');
 
     require base_path('routes/api/account.php'); // todo check

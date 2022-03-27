@@ -2,9 +2,6 @@ import NotFound from "../../Pages/NotFound";
 
 import SettingsPage from "../../Pages/Admin/Settings/SettingsPage";
 
-import PartnerCardPage from "../../Pages/Admin/Partner/Partner/PartnerCardPage";
-import PartnerEditPage from "../../Pages/Admin/Partner/Partner/PartnerEditPage";
-
 import DictionariesPage from "../../Pages/Admin/Dictionaries/DictionariesPage";
 
 import TestPage from "@/Pages/Admin/TestPage";
@@ -25,8 +22,8 @@ export default [
     {path: '/staff/:id/edit', name: 'staff-edit', component: () => import('@/Pages/Admin/Staff/StaffEditPage'), meta: {title: 'Редактирование сотрудника'}},
 
     {path: '/partners', name: 'partners-list', component: () => import('@/Pages/Admin/Partners/PartnersListPage'), meta: {title: 'Компании-партнёры'}},
-    {path: '/partners/:id', name: 'partners-view', component: PartnerCardPage, meta: {title: 'Просмотр партнёра'}},
-    {path: '/partners/:id/edit', name: 'partners-edit', component: PartnerEditPage, meta: {title: 'Редактирование партнёра'}},
+    {path: '/partners/:id', name: 'partners-view', component: () => import('@/Pages/Admin/Partners/PartnerViewPage'), meta: {title: 'Просмотр партнёра'}},
+    {path: '/partners/:id/edit', name: 'partners-edit', component: () => import('@/Pages/Admin/Partners/PartnerEditPage'), meta: {title: 'Редактирование партнёра'}},
 
     {path: '/representatives', name: 'representatives-list', component: () => import('@/Pages/Admin/Representatives/RepresentativesListPage'), meta: {title: 'Представители'}},
     {path: '/representatives/:id', name: 'representatives-view', component: () => import('@/Pages/Admin/Representatives/RepresentativeViewPage'), meta: {title: 'Просмотр представителя'}},

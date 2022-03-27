@@ -23,19 +23,19 @@ class PartnerDeleteController extends ApiController
     {
         $id = $request->input('id');
 
+        /** @var Partner $partner */
         if ($id === null || null === ($partner = Partner::query()->where('id', $id)->first())) {
             return APIResponse::notFound('Партнёр не найден');
         }
 
         try {
-            /** @var Partner $partner */
             $partner->delete();
         } catch (QueryException $exception) {
-            return APIResponse::error('Невозможно удалить партнёра. Есть блокирующие связи.');
+            return APIResponse::error('Невозможно удалить компанию-партнёра. Есть блокирующие связи.', ['error' => $exception->getMessage()]);
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response([], [], 'Партнёр удален');
+        return APIResponse::success('Компания-партнёр удалена');
     }
 }

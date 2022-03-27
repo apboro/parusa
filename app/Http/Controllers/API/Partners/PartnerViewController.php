@@ -12,7 +12,7 @@ use App\Models\Positions\Position;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class PartnerCardController extends ApiController
+class PartnerViewController extends ApiController
 {
     public function get(Request $request): JsonResponse
     {

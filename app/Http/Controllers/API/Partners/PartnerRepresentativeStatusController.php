@@ -22,36 +22,30 @@ class PartnerRepresentativeStatusController extends ApiController
      */
     public function setStatus(Request $request): JsonResponse
     {
-        $id = $request->input('id');
-
-        if ($id === null || null === ($partner = Partner::query()->where('id', $id)->first())) {
-            return APIResponse::notFound('Партнёр не найден');
-        }
-
-        /** @var Partner $partner */
-
-        $positionId = $request->input('position_id');
-
-        if ($positionId === null || null === ($position = Position::query()
-                ->where(['id' => $positionId, 'partner_id' => $partner->id])->first())
-        ) {
-            return APIResponse::notFound('Привязка пользователя к организации не найдена');
-        }
+        $id = $request->input('position_id');
 
         /** @var Position $position */
+        if ($id === null || null === ($position = Position::query()
+                ->where(['id' => $id, 'is_staff' => false])
+                ->first())
+        ) {
+            return APIResponse::notFound('Привязка представителя к организации не найдена.');
+        }
 
         try {
-            $position->setAccessStatus((int)$request->input('status_id'));
+            $position->setAccessStatus((int)$request->input('data.status_id'));
             $position->load('accessStatus');
         } catch (WrongPositionAccessStatusException $e) {
             return APIResponse::error('Неверный статус доступа представителя');
         }
 
-        return APIResponse::response([
-            'position_id' => $position->id,
-            'status' => $position->accessStatus->name,
-            'status_id' => $position->access_status_id,
-            'active' => $position->hasStatus(PositionAccessStatus::active, 'access_status_id'),
-        ], [], 'Статус доступа представителя обновлён');
+        return APIResponse::success(
+            'Статус доступа представителя обновлён',
+            [
+                'position_id' => $position->id,
+                'status' => $position->accessStatus->name,
+                'status_id' => $position->access_status_id,
+                'active' => $position->hasStatus(PositionAccessStatus::active, 'access_status_id'),
+            ]);
     }
 }
