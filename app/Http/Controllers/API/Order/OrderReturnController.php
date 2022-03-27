@@ -99,6 +99,6 @@ class OrderReturnController extends ApiController
             return APIResponse::error('Неверно заданы параметры');
         }
 
-        return APIResponse::formSuccess($successMessage);
+        return APIResponse::success($successMessage);
     }
 }

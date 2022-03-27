@@ -212,7 +212,7 @@ class APIResponse
      *
      * @return  JsonResponse
      */
-    public static function formSuccess(string $message, array $payload = []): JsonResponse
+    public static function success(string $message, array $payload = []): JsonResponse
     {
         return response()->json([
             'status' => 'OK',

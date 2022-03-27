@@ -58,7 +58,7 @@ class TerminalCurrentOrderController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::formSuccess('Заказ отправлен в оплату.');
+        return APIResponse::success('Заказ отправлен в оплату.');
     }
 
     /**
@@ -96,7 +96,7 @@ class TerminalCurrentOrderController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::formSuccess('Оплата отменена.');
+        return APIResponse::success('Оплата отменена.');
     }
 
     /**
@@ -135,7 +135,7 @@ class TerminalCurrentOrderController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::formSuccess('Заказ закрыт.');
+        return APIResponse::success('Заказ закрыт.');
     }
 
     /**
@@ -174,7 +174,7 @@ class TerminalCurrentOrderController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::formSuccess('Заказ расформирован.');
+        return APIResponse::success('Заказ расформирован.');
     }
 
     /**

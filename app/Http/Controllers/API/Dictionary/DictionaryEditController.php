@@ -128,7 +128,7 @@ class DictionaryEditController extends ApiEditController
         $item->save();
         $item->refresh();
 
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             $item->wasRecentlyCreated ? "Запись в словаре \"$title\" добавлена" : "Запись в словаре \"$title\" обновлена",
             $item->toArray()
         );

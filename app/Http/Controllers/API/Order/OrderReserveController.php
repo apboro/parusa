@@ -44,7 +44,7 @@ class OrderReserveController extends ApiController
         // delete order
         $order->setStatus(OrderStatus::partner_reserve_canceled);
 
-        return APIResponse::formSuccess('Бронь аннулирована.');
+        return APIResponse::success('Бронь аннулирована.');
     }
 
     /**
@@ -89,7 +89,7 @@ class OrderReserveController extends ApiController
         if (!$hasActual) {
             $order->setStatus(OrderStatus::partner_reserve_canceled);
         }
-        return APIResponse::formSuccess('Билет удалён из брони.' . (!$hasActual ? ' Бронь расформирована.' : ''), [
+        return APIResponse::success('Билет удалён из брони.' . (!$hasActual ? ' Бронь расформирована.' : ''), [
             'reserve_cancelled' => !$hasActual,
         ]);
     }
@@ -142,7 +142,7 @@ class OrderReserveController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::formSuccess('Заказ оплачен.');
+        return APIResponse::success('Заказ оплачен.');
     }
 
     /**
@@ -190,7 +190,7 @@ class OrderReserveController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::formSuccess('Заказ сформирован.');
+        return APIResponse::success('Заказ сформирован.');
     }
 
     /**

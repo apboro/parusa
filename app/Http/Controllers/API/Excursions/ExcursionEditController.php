@@ -105,7 +105,7 @@ class ExcursionEditController extends ApiEditController
 
         $excursion->programs()->sync($data['programs']);
 
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             $excursion->wasRecentlyCreated ? 'Экскурсия добавлена' : 'Данные экскурсии обновлены',
             [
                 'id' => $excursion->id,

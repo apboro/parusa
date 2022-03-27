@@ -37,12 +37,17 @@ class RepresentativeAccessController extends ApiEditController
         }
 
         /** @var User $user */
+        if ($user->id === $request->user()->id) {
+            return APIResponse::error('Вы не можете отключить себе доступ.');
+        }
+
+        /** @var User $user */
 
         $user->login = null;
         $user->password = null;
         $user->save();
 
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             'Доступ в систему для представителя закрыт',
             [
                 'has_access' => false,
@@ -77,7 +82,7 @@ class RepresentativeAccessController extends ApiEditController
         $user->password = Hash::make($data['password']);
         $user->save();
 
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             'Доступ в систему для представителя открыт',
             [
                 'has_access' => true,

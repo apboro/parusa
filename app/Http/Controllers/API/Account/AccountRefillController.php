@@ -93,7 +93,7 @@ class AccountRefillController extends ApiEditController
             ]);
         }
 
-        return APIResponse::formSuccess('Данные обновлены', [
+        return APIResponse::success('Данные обновлены', [
             'id' => $partner->id,
         ]);
     }

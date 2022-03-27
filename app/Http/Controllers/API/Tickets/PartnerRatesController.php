@@ -199,7 +199,7 @@ class PartnerRatesController extends ApiEditController
                 $query->where('partner_id', $partner->id);
             })->first();
 
-        return APIResponse::formSuccess('Специальные условия обновлены',
+        return APIResponse::success('Специальные условия обновлены',
             [
                 'rate' => $this->rateListToArray($ratesList),
                 'excursion_id' => $excursionId,

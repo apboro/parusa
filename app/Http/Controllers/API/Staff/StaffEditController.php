@@ -156,7 +156,7 @@ class StaffEditController extends ApiEditController
         $info->external_id = $data['external_id'];
         $info->save();
 
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             $user->wasRecentlyCreated ? 'Сотрудник добавлен' : 'Данные сотрудника обновлены',
             [
                 'id' => $user->id,

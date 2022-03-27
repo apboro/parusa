@@ -211,7 +211,7 @@ class TerminalCartController extends ApiEditController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::formSuccess('Билеты добавлены в заказ');
+        return APIResponse::success('Билеты добавлены в заказ');
     }
 
     /**
@@ -253,7 +253,7 @@ class TerminalCartController extends ApiEditController
         $ticket->quantity = $quantity;
         $ticket->save();
 
-        return APIResponse::formSuccess('Количество билетов обновлено');
+        return APIResponse::success('Количество билетов обновлено');
     }
 
     /**
@@ -275,6 +275,6 @@ class TerminalCartController extends ApiEditController
 
         PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])->delete();
 
-        return APIResponse::formSuccess('Билет удалён из заказа.');
+        return APIResponse::success('Билет удалён из заказа.');
     }
 }

@@ -85,7 +85,7 @@ class TerminalEditController extends ApiEditController
         $terminal->setStatus($data['status_id'], false);
         $terminal->save();
 
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             $terminal->wasRecentlyCreated ? 'Касса добавлена' : 'Данные кассы обновлены',
             [
                 'id' => $terminal->id,

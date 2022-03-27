@@ -45,7 +45,7 @@ class StaffAccessController extends ApiEditController
         $user->password = null;
         $user->save();
 
-        return APIResponse::formSuccess('Доступ закрыт',
+        return APIResponse::success('Доступ закрыт',
             [
                 'has_access' => false,
                 'login' => null,
@@ -79,7 +79,7 @@ class StaffAccessController extends ApiEditController
         $user->password = Hash::make($data['password']);
         $user->save();
 
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             'Доступ открыт',
             [
                 'has_access' => true,

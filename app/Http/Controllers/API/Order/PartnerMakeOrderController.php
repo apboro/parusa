@@ -160,6 +160,6 @@ class PartnerMakeOrderController extends ApiEditController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::formSuccess($successMessage, ['order_id' => $order->id]);
+        return APIResponse::success($successMessage, ['order_id' => $order->id]);
     }
 }

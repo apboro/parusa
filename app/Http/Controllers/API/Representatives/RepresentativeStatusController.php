@@ -38,7 +38,7 @@ class RepresentativeStatusController extends ApiController
             return APIResponse::error('Неверный статус доступа представителя');
         }
 
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             'Статус доступа представителя обновлён',
             [
                 'position_id' => $position->id,

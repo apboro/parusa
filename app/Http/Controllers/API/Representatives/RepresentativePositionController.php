@@ -81,7 +81,7 @@ class RepresentativePositionController extends ApiEditController
         $position->info->email = $data['email'];
         $position->info->save();
 
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             $position->wasRecentlyCreated ? 'Представитель прикреплён' : 'Запись обновлена',
             [
                 'id' => $user->id,
@@ -139,6 +139,6 @@ class RepresentativePositionController extends ApiEditController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::formSuccess('Представитель откреплён');
+        return APIResponse::success('Представитель откреплён');
     }
 }

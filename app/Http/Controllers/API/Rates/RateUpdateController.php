@@ -145,7 +145,7 @@ class RateUpdateController extends ApiEditController
 
         $ratesList->refresh();
 
-        return APIResponse::formSuccess($ratesList->wasRecentlyCreated ? 'Тариф добавлен' : 'Тариф изменён',
+        return APIResponse::success($ratesList->wasRecentlyCreated ? 'Тариф добавлен' : 'Тариф изменён',
             [
                 'rate' => $this->rateToArray($ratesList, true),
             ]

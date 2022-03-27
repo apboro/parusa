@@ -97,6 +97,6 @@ class SettingsController extends ApiEditController
 
         Settings::save();
 
-        return APIResponse::formSuccess('Настройки сохранены');
+        return APIResponse::success('Настройки сохранены');
     }
 }

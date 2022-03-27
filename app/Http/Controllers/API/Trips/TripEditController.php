@@ -151,7 +151,7 @@ class TripEditController extends ApiEditController
                 $message = "Добавлено $count рейсов.";
             }
 
-            return APIResponse::formSuccess($message, ['id' => $trip->id, 'title' => $trip->name]);
+            return APIResponse::success($message, ['id' => $trip->id, 'title' => $trip->name]);
         }
 
         // Edit
@@ -255,7 +255,7 @@ class TripEditController extends ApiEditController
         // response
 
         $count = count($editedIds);
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             $count === 1 ? 'Данные рейса обновлены.' : "Данные обновлены для $count рейсов.",
             [
                 'trips' => $tripsToEdit,

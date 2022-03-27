@@ -137,7 +137,7 @@ class RepresentativeEditController extends ApiEditController
 
         $profile->save();
 
-        return APIResponse::formSuccess(
+        return APIResponse::success(
             $user->wasRecentlyCreated ? 'Представитель добавлен' : 'Данные представителя обновлены',
             [
                 'id' => $user->id,

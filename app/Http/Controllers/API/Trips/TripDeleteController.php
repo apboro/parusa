@@ -81,7 +81,7 @@ class TripDeleteController extends ApiController
                 }
             }
 
-            return APIResponse::formSuccess("Рейс №$id удалён." . (isset($newChainTripsCount) ? " $newChainTripsCount рейсов перенесено в новую цепочку." : ''));
+            return APIResponse::success("Рейс №$id удалён." . (isset($newChainTripsCount) ? " $newChainTripsCount рейсов перенесено в новую цепочку." : ''));
         }
 
         // Delete chained trips
@@ -159,6 +159,6 @@ class TripDeleteController extends ApiController
             $chain->delete();
         }
 
-        return APIResponse::formSuccess("Удалёно $deleteCount рейсов." . (isset($newChainTripsCount) ? " $newChainTripsCount рейсов перенесено в новую цепочку." : ''));
+        return APIResponse::success("Удалёно $deleteCount рейсов." . (isset($newChainTripsCount) ? " $newChainTripsCount рейсов перенесено в новую цепочку." : ''));
     }
 }

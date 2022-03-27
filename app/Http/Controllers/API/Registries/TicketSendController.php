@@ -36,7 +36,7 @@ class TicketSendController extends ApiController
 
         Notification::sendNow(new EmailReceiver($ticket->order->email, $ticket->order->name), new TicketNotification($ticket));
 
-        return APIResponse::formSuccess("Билет отправлен на почту {$ticket->order->email}");
+        return APIResponse::success("Билет отправлен на почту {$ticket->order->email}");
     }
 
     /**

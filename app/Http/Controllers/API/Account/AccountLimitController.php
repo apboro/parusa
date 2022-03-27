@@ -45,7 +45,7 @@ class AccountLimitController extends ApiEditController
         $partner->account->limit = $data['limit'];
         $partner->account->save();
 
-        return APIResponse::formSuccess('Данные обновлены', [
+        return APIResponse::success('Данные обновлены', [
             'id' => $partner->id,
             'limit' => $partner->account->limit,
         ]);
