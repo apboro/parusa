@@ -28,20 +28,19 @@ class Allow
         }
 
         $current = Currents::get($request);
-        $isStaff = $current->isStaff();
 
         foreach ($rules as $rule) {
             $set = explode('_', $rule);
-            if ($set[0] === 'partner' && !$isStaff) {
+            if ($set[0] === 'partner' && $current->isRepresentative()) {
                 return $next($request);
             }
-            if ($set[0] === 'staff' && $isStaff && !isset($set[1])) {
+            if ($set[0] === 'staff' && !isset($set[1]) && $current->isStaff()) {
                 return $next($request);
             }
-            if ($set[0] === 'staff' && $isStaff && isset($set[1]) && $set[1] === 'admin' && $current->role() && $current->role()->matches(Role::admin)) {
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'admin' && $current->isStaffAdmin()) {
                 return $next($request);
             }
-            if ($set[0] === 'staff' && $isStaff && isset($set[1]) && $set[1] === 'terminal' && $current->role() && $current->role()->matches(Role::terminal)) {
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'terminal' && $current->isStaffTerminal()) {
                 return $next($request);
             }
         }
