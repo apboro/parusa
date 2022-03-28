@@ -1,10 +1,13 @@
 <template>
-    <GuiContainer p-20 mt-15 bm-15 border>
+    <GuiContainer p-20 mt-5 bm-15 border>
         <GuiHeading flex items-center mb-15>
-            <GuiHeading bold grow>
+            <div class="bold text-lg">
                 <GuiActivityIndicator :active="rate['archive'] ? false : (rate['current'] ? true : null)"/>
                 {{ rate['start'] }} - {{ rate['end'] }}
-            </GuiHeading>
+            </div>
+            <div class="grow">
+                <span v-if="overridable && overridden" class="ml-15 text-lg flex items-center"><IconExclamation :class="'w-20px h-20px mr-10 text-orange'"/>Действуют индивидуальные условия</span>
+            </div>
             <slot/>
         </GuiHeading>
         <table class="rate-table">
@@ -14,6 +17,7 @@
                 <th>Базовая стоимость билета, руб.</th>
                 <th>Минимальный и максимальный диапазон стоимости билета, руб.<sup>1</sup></th>
                 <th colspan="2">Комиссионное вознаграждение партнёров за продажу билета, руб.<sup>2</sup></th>
+                <th v-if="overridable" colspan="2">Специальные условия</th>
             </tr>
             </thead>
             <tbody>
@@ -21,10 +25,22 @@
                 <td>{{ gradeName(item['grade_id']) }}</td>
                 <td>{{ item['base_price'] }} руб.</td>
                 <td>{{ item['min_price'] }} - {{ item['max_price'] }} руб.</td>
-                <td v-if="item['commission_type'] === 'percents'">{{ item['commission_value'] }}%</td>
-                <td v-else>фикс.</td>
-                <td v-if="item['commission_type'] === 'percents'">{{ Math.floor(item['commission_value'] * item['base_price']) / 100 }} руб.</td>
-                <td v-else>{{ item['commission_value'] }} руб.</td>
+
+                <td v-if="item['commission_type'] === 'percents'" :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['commission_value'] }}%</td>
+                <td v-else :class="{'line-through': item['partner_commission_type'] !== null}">фикс.</td>
+
+                <td v-if="item['commission_type'] === 'percents'" :class="{'line-through': item['partner_commission_type'] !== null}">{{ Math.floor(item['commission_value'] * item['base_price']) / 100 }} руб.</td>
+                <td v-else :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['commission_value'] }} руб.</td>
+
+                <template v-if="overridable">
+                    <td v-if="item['partner_commission_type'] === 'percents'">{{ item['partner_commission_value'] }}%</td>
+                    <td v-else-if="item['partner_commission_type'] === 'fixed'">фикс.</td>
+                    <td v-else>—</td>
+
+                    <td v-if="item['partner_commission_type'] === 'percents'">{{ Math.floor(item['partner_commission_value'] * item['base_price']) / 100 }} руб.</td>
+                    <td v-else-if="item['partner_commission_type'] === 'fixed'">{{ item['partner_commission_value'] }} руб.</td>
+                    <td v-else>—</td>
+                </template>
             </tr>
             </tbody>
         </table>
@@ -35,33 +51,37 @@
 import GuiContainer from "@/Components/GUI/GuiContainer";
 import GuiHeading from "@/Components/GUI/GuiHeading";
 import GuiActivityIndicator from "@/Components/GUI/GuiActivityIndicator";
+import IconExclamation from "@/Components/Icons/IconExclamation";
 
 export default {
     components: {
+        IconExclamation,
         GuiActivityIndicator,
         GuiHeading,
         GuiContainer
-
     },
 
     props: {
         rate: {type: Object, required: true},
         today: {type: [Object, String], default: null},
+        overridable: {type: Boolean, default: false},
     },
 
     computed: {
         orders() {
-            if (!this.$store.getters['dictionary/ready']('ticket_grades')) {
+            if (this.$store.getters['dictionary/ready']('ticket_grades') === null) {
                 return null;
             }
 
             let orders = {};
-            this.$store.getters['dictionary/dictionary']('ticket_grades').map(item => {
-                orders[item['id']] = item['order'];
-            });
+            const dict = this.$store.getters['dictionary/dictionary']('ticket_grades');
+            if (dict !== null) {
+                dict.map(item => {
+                    orders[item['id']] = item['order'];
+                });
+            }
             return orders;
         },
-
         rates() {
             if (this.orders === null) {
                 return [];
@@ -71,6 +91,9 @@ export default {
                 let bc = typeof this.orders[b['grade_id']] !== "undefined" ? this.orders[b['grade_id']] : 0;
                 return ac - bc;
             });
+        },
+        overridden() {
+            return this.rate['overridden'];
         },
     },
 
@@ -83,13 +106,16 @@ export default {
     methods: {
         gradeName(id) {
             let name = null;
-            this.$store.getters['dictionary/dictionary']('ticket_grades').some(item => {
-                if (item['id'] === id) {
-                    name = item['name'];
-                    return true;
-                }
-                return false;
-            });
+            const dict = this.$store.getters['dictionary/dictionary']('ticket_grades');
+            if (dict !== null) {
+                dict.some(item => {
+                    if (item['id'] === id) {
+                        name = item['name'];
+                        return true;
+                    }
+                    return false;
+                });
+            }
             return name;
         },
     }
