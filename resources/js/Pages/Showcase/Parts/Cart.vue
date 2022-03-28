@@ -302,7 +302,7 @@ $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Ne
             }
         }
 
-        &:deep .input-field {
+        &:deep(.input-field) {
             flex-direction: column;
         }
     }

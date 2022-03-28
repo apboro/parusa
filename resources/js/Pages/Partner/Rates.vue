@@ -1,16 +1,16 @@
 <template>
-    <page :title="$route.meta['title']">
-        <partner-ticket-rates :partner-id="0" :editable="false"/>
-    </page>
+    <LayoutPage :title="$route.meta['title']">
+        <PartnerTicketRates/>
+    </LayoutPage>
 </template>
 
 <script>
-import Page from "@/Layouts/Page";
-import PartnerTicketRates from "@/Pages/Admin/Partners/Parts/PartnerTicketRates";
+import PartnerTicketRates from "@/Pages/Partner/Parts/PartnerTicketRates";
+import LayoutPage from "@/Components/Layout/LayoutPage";
 
 export default {
     components: {
-        Page,
+        LayoutPage,
         PartnerTicketRates,
     }
 }

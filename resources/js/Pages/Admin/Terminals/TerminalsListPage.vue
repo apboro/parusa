@@ -40,7 +40,7 @@
 
         <GuiMessage border v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
 
-        <GuiPagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
+        <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
     </LayoutPage>
 </template>
 
@@ -56,7 +56,7 @@ import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
 import GuiActivityIndicator from "@/Components/GUI/GuiActivityIndicator";
 import GuiMessage from "@/Components/GUI/GuiMessage";
-import GuiPagination from "@/Components/GUI/GuiPagination";
+import Pagination from "@/Components/Pagination";
 
 export default {
     components: {
@@ -69,7 +69,7 @@ export default {
         ListTableRow,
         ListTableCell,
         GuiActivityIndicator,
-        GuiPagination,
+        Pagination,
         GuiMessage,
     },
 

@@ -90,7 +90,7 @@
 
         <GuiMessage v-else-if="list.loaded">Ничего не найдено</GuiMessage>
 
-        <GuiPagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
+        <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
         <TicketsSelect ref="select_popup"/>
     </LayoutPage>
@@ -107,7 +107,7 @@ import InputDate from "@/Components/Inputs/InputDate";
 import IconForward from "@/Components/Icons/IconForward";
 import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown";
 import GuiMessage from "@/Components/GUI/GuiMessage";
-import GuiPagination from "@/Components/GUI/GuiPagination";
+import Pagination from "@/Components/Pagination";
 import ListTable from "@/Components/ListTable/ListTable";
 import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
@@ -122,7 +122,7 @@ export default {
         ListTableCell,
         ListTableRow,
         ListTable,
-        GuiPagination,
+        Pagination,
         GuiMessage,
         DictionaryDropDown,
         IconForward,

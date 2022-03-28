@@ -91,7 +91,7 @@
 
         <GuiMessage v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
 
-        <GuiPagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
+        <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
         <PopUp :title="'Информация о заказе'" ref="info" :close-on-overlay="true">
             <template v-if="info">
@@ -118,7 +118,7 @@ import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
 import GuiExpand from "@/Components/GUI/GuiExpand";
 import GuiMessage from "@/Components/GUI/GuiMessage";
-import GuiPagination from "@/Components/GUI/GuiPagination";
+import Pagination from "@/Components/Pagination";
 import PopUp from "@/Components/PopUp";
 import GuiValue from "@/Components/GUI/GuiValue";
 import InputDate from "@/Components/Inputs/InputDate";
@@ -140,7 +140,7 @@ export default {
         ListTableCell,
         GuiExpand,
         GuiMessage,
-        GuiPagination,
+        Pagination,
         PopUp,
         GuiValue,
     },

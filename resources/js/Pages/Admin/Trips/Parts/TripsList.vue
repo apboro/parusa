@@ -101,7 +101,7 @@
 
         <GuiMessage border v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
 
-        <GuiPagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
+        <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
         <FormPopUp :title="form_title"
                    :form="form"
@@ -132,7 +132,7 @@ import GuiIconButton from "@/Components/GUI/GuiIconButton";
 import IconBackward from "@/Components/Icons/IconBackward";
 import IconForward from "@/Components/Icons/IconForward";
 import GuiMessage from "@/Components/GUI/GuiMessage";
-import GuiPagination from "@/Components/GUI/GuiPagination";
+import Pagination from "@/Components/Pagination";
 import ListTable from "@/Components/ListTable/ListTable";
 import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
@@ -165,7 +165,7 @@ export default {
         GuiActionsMenu,
         IconExclamation,
         GuiMessage,
-        GuiPagination,
+        Pagination,
         TripDeletePopup,
     },
 

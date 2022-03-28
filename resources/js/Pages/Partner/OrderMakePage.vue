@@ -270,7 +270,7 @@ $base_black_color: #1e1e1e !default;
         width: 140px;
     }
 
-    &:deep .input-number__input {
+    &:deep(.input-number__input) {
         text-align: center;
     }
 

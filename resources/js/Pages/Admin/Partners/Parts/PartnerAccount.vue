@@ -91,7 +91,7 @@
                 </ListTableRow>
             </ListTable>
             <GuiMessage v-else-if="list.is_loaded">Нет операций за выбранный период</GuiMessage>
-            <GuiPagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
+            <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
         </GuiContainer>
 
 
@@ -155,7 +155,7 @@ import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown";
 import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import ListTable from "@/Components/ListTable/ListTable";
 import GuiMessage from "@/Components/GUI/GuiMessage";
-import GuiPagination from "@/Components/GUI/GuiPagination";
+import Pagination from "@/Components/Pagination";
 import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
 import GuiHint from "@/Components/GUI/GuiHint";
@@ -188,7 +188,7 @@ export default {
         GuiHint,
         ListTableCell,
         ListTableRow,
-        GuiPagination,
+        Pagination,
         GuiMessage,
         ListTable,
         GuiActionsMenu,

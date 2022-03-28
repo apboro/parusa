@@ -15,8 +15,8 @@
             <tr>
                 <th>Тип билета</th>
                 <th>Базовая стоимость билета, руб.</th>
-                <th>Минимальный и максимальный диапазон стоимости билета, руб.<sup>1</sup></th>
-                <th colspan="2">Комиссионное вознаграждение партнёров за продажу билета, руб.<sup>2</sup></th>
+                <th v-if="minMax">Минимальный и максимальный диапазон стоимости билета, руб.<sup v-if="hints===true">1</sup></th>
+                <th colspan="2">Комиссионное вознаграждение партнёров за продажу билета, руб.<sup v-if="hints===true">2</sup></th>
                 <th v-if="overridable" colspan="2">Специальные условия</th>
             </tr>
             </thead>
@@ -24,12 +24,14 @@
             <tr v-for="item in rates">
                 <td>{{ gradeName(item['grade_id']) }}</td>
                 <td>{{ item['base_price'] }} руб.</td>
-                <td>{{ item['min_price'] }} - {{ item['max_price'] }} руб.</td>
+                <td v-if="minMax">{{ item['min_price'] }} - {{ item['max_price'] }} руб.</td>
 
                 <td v-if="item['commission_type'] === 'percents'" :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['commission_value'] }}%</td>
                 <td v-else :class="{'line-through': item['partner_commission_type'] !== null}">фикс.</td>
 
-                <td v-if="item['commission_type'] === 'percents'" :class="{'line-through': item['partner_commission_type'] !== null}">{{ Math.floor(item['commission_value'] * item['base_price']) / 100 }} руб.</td>
+                <td v-if="item['commission_type'] === 'percents'" :class="{'line-through': item['partner_commission_type'] !== null}">
+                    {{ Math.floor(item['commission_value'] * item['base_price']) / 100 }} руб.
+                </td>
                 <td v-else :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['commission_value'] }} руб.</td>
 
                 <template v-if="overridable">
@@ -65,6 +67,8 @@ export default {
         rate: {type: Object, required: true},
         today: {type: [Object, String], default: null},
         overridable: {type: Boolean, default: false},
+        hints: {type: Boolean, default: true},
+        minMax: {type: Boolean, default: true},
     },
 
     computed: {

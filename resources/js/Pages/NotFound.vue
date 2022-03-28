@@ -1,17 +1,17 @@
 <template>
-    <page>
-        <message text-red>Страница не найдена.</message>
-    </page>
+    <LayoutPage>
+        <GuiMessage text-red>Страница не найдена.</GuiMessage>
+    </LayoutPage>
 </template>
 
 <script>
-import Page from "@/Layouts/Page";
-import Message from "@/Components/GUI/GuiMessage";
+import LayoutPage from "@/Components/Layout/LayoutPage";
+import GuiMessage from "@/Components/GUI/GuiMessage";
 
 export default {
     components: {
-        Message,
-        Page,
+        GuiMessage,
+        LayoutPage,
     }
 }
 </script>
