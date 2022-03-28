@@ -1,31 +1,24 @@
 <template>
-    <page>
-        <template v-slot:header>
-            <page-title-bar :title="$route.meta['title']"/>
-        </template>
+    <LayoutPage :title="$route.meta['title']">
+        <LayoutRoutedTabs :tabs="{general: 'Основные'}" @change="tab = $event"/>
 
-        <layout-routed-tabs :tabs="{
-            general: 'Основные'
-        }" @change="tab = $event"/>
+        <GeneralSettings v-if="tab === 'general'"/>
 
-        <general-settings v-if="tab === 'general'"/>
-
-    </page>
+    </LayoutPage>
 </template>
 
 <script>
 
-import Page from "../../../Layouts/Page";
-import PageTitleBar from "../../../Layouts/Parts/PageTitleBar";
-import LayoutRoutedTabs from "../../../Components/Layout/LayoutRoutedTabs";
-import GeneralSettings from "../../../Parts/Settings/GeneralSettings";
+
+import LayoutPage from "@/Components/Layout/LayoutPage";
+import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
+import GeneralSettings from "@/Pages/Admin/Settings/Parts/GeneralSettings";
 
 export default {
     components: {
         GeneralSettings,
         LayoutRoutedTabs,
-        Page,
-        PageTitleBar,
+        LayoutPage
     },
 
     data: () => ({

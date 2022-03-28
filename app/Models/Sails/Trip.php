@@ -79,9 +79,9 @@ class Trip extends Model implements Statusable
      *
      * @return  int
      */
-    public function getCancellationTimeAttribute($value): int
+    public function getCancellationTimeAttribute($value): ?int
     {
-        return $this->exists ? $value : Settings::get('default_cancellation_time', Settings::int);
+        return $this->exists ? $value : Settings::get('default_cancellation_time', null, Settings::int);
     }
 
     /**

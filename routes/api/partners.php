@@ -27,13 +27,13 @@ Route::post('/partners/representative/status', [PartnerRepresentativeStatusContr
 
 Route::post('/partners/delete', [PartnerDeleteController::class, 'delete'])->middleware('allow:staff_admin');
 
+Route::get('/partners/files/{file}', [PartnerDocumentController::class, 'get'])->middleware('allow:staff_admin,partner');
 
 
 
 
 
 
-Route::get('/partners/files/{file}', [PartnerDocumentController::class, 'get'])->middleware('auth:sanctum');
 
 Route::post('/partners/partner/view', [PartnerSelfController::class, 'get'])->middleware(['allow:partner']);
 Route::post('/partners/partner/info', [PartnerInfoController::class, 'get'])->middleware(['allow:partner']);

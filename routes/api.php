@@ -10,11 +10,11 @@ Route::prefix('api')->middleware(['api', 'auth:sanctum'])->group(function () {
     require base_path('routes/api/trips.php'); // todo check
     require base_path('routes/api/piers.php');
     require base_path('routes/api/excursions.php');
-    require base_path('routes/api/rates.php');
+    require base_path('routes/api/rates.php'); // todo check
 
     require base_path('routes/api/registries.php'); // todo check
 
-    require base_path('routes/api/cart.php'); // todo check
+    require base_path('routes/api/cart.php');
     require base_path('routes/api/order.php'); // todo check
 
     require base_path('routes/api/staff.php');
@@ -23,7 +23,7 @@ Route::prefix('api')->middleware(['api', 'auth:sanctum'])->group(function () {
     require base_path('routes/api/terminals.php');
 
     require base_path('routes/api/account.php'); // todo check
-    require base_path('routes/api/staff_settings.php'); // todo check
+    require base_path('routes/api/settings.php');
 
     Route::any('{any}', [NotFoundController::class, 'notFound'])->where('any', '.*');
 });
