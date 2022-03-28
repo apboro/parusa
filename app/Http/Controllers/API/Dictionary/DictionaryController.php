@@ -30,6 +30,7 @@ use App\Models\Partner\Partner;
 use App\Models\Piers\Pier;
 use App\Models\POS\TerminalPositions;
 use App\Models\Ships\Ship;
+use App\Models\User\Helpers\Currents;
 use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -38,44 +39,32 @@ use Illuminate\Http\Request;
 class DictionaryController extends ApiController
 {
     protected array $dictionaries = [
-        'user_statuses' => UserStatus::class,
-        'user_contact_types' => UserContactType::class,
-
-        'partner_types' => PartnerType::class,
-        'partner_statuses' => PartnerStatus::class,
-
-        'position_statuses' => PositionStatus::class,
-        'position_access_statuses' => PositionAccessStatus::class,
-        'roles' => Role::class,
-
-        'partners' => Partner::class,
-        'representatives' => User::class,
-
-        'ships' => Ship::class,
-        'ships_statuses' => ShipStatus::class,
-
-        'piers' => Pier::class,
-        'pier_statuses' => PiersStatus::class,
-
-        'excursions' => Excursion::class,
-        'excursion_statuses' => ExcursionStatus::class,
-
-        'excursion_programs' => ExcursionProgram::class,
-
-        'trip_statuses' => TripStatus::class,
-        'trip_sale_statuses' => TripSaleStatus::class,
-        'trip_discount_statuses' => TripDiscountStatus::class,
-
-        'ticket_grades' => TicketGrade::class,
-
-        'transaction_types' => AccountTransactionType::class,
-        'transaction_primary_types' => AccountTransactionTypePrimary::class,
-        'transaction_refill_types' => AccountTransactionTypeRefill::class,
-
-        'order_types' => OrderType::class,
-
-        'terminal_statuses' => TerminalStatus::class,
-        'terminal_positions' => TerminalPositions::class,
+        'user_statuses' => ['class' => UserStatus::class, 'allow' => 'staff_admin'],
+        'user_contact_types' => ['class' => UserContactType::class, 'allow' => 'staff_admin'],
+        'partner_types' => ['class' => PartnerType::class, 'allow' => 'staff_admin'],
+        'partner_statuses' => ['class' => PartnerStatus::class, 'allow' => 'staff_admin'],
+        'position_statuses' => ['class' => PositionStatus::class, 'allow' => 'staff_admin'],
+        'position_access_statuses' => ['class' => PositionAccessStatus::class, 'allow' => 'staff_admin'],
+        'roles' => ['class' => Role::class, 'allow' => 'staff_admin'],
+        'partners' => ['class' => Partner::class, 'allow' => 'staff_admin'],
+        'representatives' => ['class' => User::class, 'allow' => 'staff_admin'],
+        'ships' => ['class' => Ship::class, 'allow' => 'staff_admin'],
+        'ships_statuses' => ['class' => ShipStatus::class, 'allow' => 'staff_admin'],
+        'piers' => ['class' => Pier::class, 'allow' => 'staff_admin'],
+        'pier_statuses' => ['class' => PiersStatus::class, 'allow' => 'staff_admin'],
+        'excursions' => ['class' => Excursion::class, 'allow' => 'staff_admin'],
+        'excursion_statuses' => ['class' => ExcursionStatus::class, 'allow' => 'staff_admin'],
+        'excursion_programs' => ['class' => ExcursionProgram::class, 'allow' => 'staff_admin'],
+        'trip_statuses' => ['class' => TripStatus::class, 'allow' => 'staff_admin'],
+        'trip_sale_statuses' => ['class' => TripSaleStatus::class, 'allow' => 'staff_admin'],
+        'trip_discount_statuses' => ['class' => TripDiscountStatus::class, 'allow' => 'staff_admin'],
+        'ticket_grades' => ['class' => TicketGrade::class, 'allow' => 'staff_admin'],
+        'transaction_types' => ['class' => AccountTransactionType::class, 'allow' => 'staff_admin'],
+        'transaction_primary_types' => ['class' => AccountTransactionTypePrimary::class, 'allow' => 'staff_admin'],
+        'transaction_refill_types' => ['class' => AccountTransactionTypeRefill::class, 'allow' => 'staff_admin'],
+        'order_types' => ['class' => OrderType::class, 'allow' => 'staff_admin'],
+        'terminal_statuses' => ['class' => TerminalStatus::class, 'allow' => 'staff_admin'],
+        'terminal_positions' => ['class' => TerminalPositions::class, 'allow' => 'staff_admin'],
     ];
 
     /**
@@ -93,8 +82,17 @@ class DictionaryController extends ApiController
             return APIResponse::notFound("Справочник $name не найден");
         }
 
+        $dictionary = $this->dictionaries[$name];
+
+        if (!empty($dictionary['allow'])) {
+            $current = Currents::get($request);
+            if (!$this->isAllowed($current, $dictionary['allow'])) {
+                return APIResponse::forbidden("Нет прав на просмотр справочника $name");
+            }
+        }
+
         /** @var AbstractDictionary $class */
-        $class = $this->dictionaries[$name];
+        $class = $dictionary['class'];
 
         if (method_exists($class, 'asDictionary')) {
             $query = $class::asDictionary();
@@ -115,5 +113,40 @@ class DictionaryController extends ApiController
         $dictionary = $query->orderBy('order')->orderBy('name')->get();
 
         return APIResponse::listOld($dictionary, null, null, $actual);
+    }
+
+    /**
+     * Check ability to view dictionary.
+     *
+     * @param Currents $current
+     * @param string|null $abilities
+     *
+     * @return  bool
+     */
+    public function isAllowed(Currents $current, ?string $abilities): bool
+    {
+        if (empty($abilities)) {
+            return true;
+        }
+
+        $rules = explode(',', $abilities);
+
+        foreach ($rules as $rule) {
+            $set = explode('_', $rule);
+            if ($set[0] === 'partner' && $current->isRepresentative()) {
+                return true;
+            }
+            if ($set[0] === 'staff' && !isset($set[1]) && $current->isStaff()) {
+                return true;
+            }
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'admin' && $current->isStaffAdmin()) {
+                return true;
+            }
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'terminal' && $current->isStaffTerminal()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
