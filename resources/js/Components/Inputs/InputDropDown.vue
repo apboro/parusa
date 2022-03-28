@@ -138,7 +138,7 @@ export default {
             set(key) {
                 let value, to_set;
                 if (key === null) {
-                    value = this.multi ? [] : null;
+                    to_set = this.multi ? [] : null;
                 } else {
                     value = this.options[key];
                     if (typeof value === "object" && value !== null &&
