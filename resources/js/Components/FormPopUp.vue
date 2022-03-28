@@ -14,6 +14,7 @@
 
 <script>
 import PopUp from "@/Components/PopUp";
+import clone from "@/Core/Helpers/Clone";
 
 export default {
     components: {PopUp},
@@ -40,10 +41,12 @@ export default {
 
     data: () => ({
         resolve_function: null,
+        opts: null,
     }),
 
     methods: {
-        show() {
+        show(options = null) {
+            this.opts = options;
             this.$refs.popup.show();
             return new Promise(resolve => {
                 this.resolve_function = resolve;
@@ -63,7 +66,13 @@ export default {
                 return false;
             }
             this.$refs.popup.process(true);
-            this.form.save(this.options)
+            let options = clone(this.options);
+            if (this.opts !== null) {
+                Object.keys(this.opts).map(key => {
+                    options[key] = this.opts[key];
+                });
+            }
+            this.form.save(options)
                 .then((payload) => {
                     this.$refs.popup.hide();
                     this.resolve_function(payload)
