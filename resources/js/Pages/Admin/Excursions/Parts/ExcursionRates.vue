@@ -8,8 +8,8 @@
             условиям.
         </GuiHint>
 
-        <GuiHeading bold>Действующий тариф</GuiHeading>
-        <GuiMessage text-red border mt-15 v-if="currentRate === null">Действующий тариф не задан</GuiMessage>
+        <GuiHeading bold mb-10>Действующий тариф</GuiHeading>
+        <GuiMessage text-red border mt-5 v-if="currentRate === null">Действующий тариф не задан</GuiMessage>
         <TicketRate v-else :rate="currentRate">
             <GuiActionsMenu :title="null" v-if="editable">
                 <span class="link" @click="edit(currentRate)">Редактировать</span>
@@ -25,8 +25,8 @@
             вознаграждения ведётся по этой колонке.
         </GuiHint>
 
-        <GuiHeading bold mt-30>Будущие тарифы</GuiHeading>
-        <GuiMessage text-red border mt-15 v-if="comingRates.length === 0">Будущих тарифов нет</GuiMessage>
+        <GuiHeading bold mt-30 mb-10>Будущие тарифы</GuiHeading>
+        <GuiMessage text-red border mt-5 v-if="comingRates.length === 0">Будущих тарифов нет</GuiMessage>
         <TicketRate v-else v-for="rate in comingRates" :rate="rate">
             <GuiActionsMenu :title="null" v-if="editable">
                 <span class="link" @click="edit(rate)">Редактировать</span>
@@ -35,10 +35,10 @@
             </GuiActionsMenu>
         </TicketRate>
 
-        <GuiHeading bold mt-30>Прошлые тарифы
+        <GuiHeading bold mt-30 mb-10>Прошлые тарифы
             <GuiExpand @expand="archive = $event"/>
         </GuiHeading>
-        <GuiMessage border mt-15 v-if="archive && archivedRates.length === 0">Прошлых тарифов нет</GuiMessage>
+        <GuiMessage border mt-5 v-if="archive && archivedRates.length === 0">Прошлых тарифов нет</GuiMessage>
         <TicketRate v-else-if="archive" v-for="rate in archivedRates" :rate="rate">
             <GuiActionsMenu :title="null" v-if="editable">
                 <span class="link" @click="edit(rate)">Редактировать</span>

@@ -21,22 +21,21 @@
 
             <PartnerInfo v-if="tab === 'details'" :data="data.data" :partner-id="partnerId" :editable="true" @update="update"/>
             <PartnerRepresentatives v-if="tab === 'representatives'" :data="data.data" :partner-id="partnerId" :editable="true" @update="update"/>
-            <!--            <partner-account v-if="tab === 'account'" :partner-id="partnerId" :editable="true"/>-->
-            <!--            <partner-ticket-rates v-if="tab === 'rates'" :partner-id="partnerId" :editable="true"/>-->
+            <PartnerAccount v-if="tab === 'account'" :partner-id="partnerId" :editable="true"/>
+            <PartnerTicketRates v-if="tab === 'rates'" :partner-id="partnerId" :editable="true"/>
             <GuiContainer v-if="tab === 'sale_registry'">
                 <GuiTabs :initial="'sales'" :tabs="{sales: 'Реестр заказов',tickets: 'Реестр билетов',reserves: 'Реестр броней'}" @change="sub_tab = $event"/>
-                <!--                <AdminOrderRegistry v-if="sub_tab === 'sales'" :partner-id="partnerId"/>-->
-                <!--                <tickets-registry v-if="sub_tab === 'tickets'" :partner-id="partnerId"/>-->
-                <!--                <reserves-registry v-if="sub_tab === 'reserves'" :partner-id="partnerId"/>-->
+                <AdminOrderRegistry v-if="sub_tab === 'sales'" :partner-id="partnerId"/>
+                <AdminTicketsRegistry v-if="sub_tab === 'tickets'" :partner-id="partnerId"/>
+                <AdminReservesRegistry v-if="sub_tab === 'reserves'" :partner-id="partnerId"/>
             </GuiContainer>
         </template>
     </LayoutPage>
 </template>
 
 <script>
-import DeleteEntry from "../../../Mixins/DeleteEntry";
 import data from "@/Core/Data";
-
+import DeleteEntry from "@/Mixins/DeleteEntry";
 import AdminOrderRegistry from "@/Pages/Admin/Registries/Parts/AdminOrderRegistry";
 import LayoutPage from "@/Components/Layout/LayoutPage";
 import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
@@ -45,9 +44,17 @@ import GuiContainer from "@/Components/GUI/GuiContainer";
 import GuiTabs from "@/Components/GUI/GuiTabs";
 import PartnerInfo from "@/Pages/Admin/Partners/Parts/PartnerInfo";
 import PartnerRepresentatives from "@/Pages/Admin/Partners/Parts/PartnerRepresentatives";
+import PartnerAccount from "@/Pages/Admin/Partners/Parts/PartnerAccount";
+import AdminTicketsRegistry from "@/Pages/Admin/Registries/Parts/AdminTicketsRegistry";
+import AdminReservesRegistry from "@/Pages/Admin/Registries/Parts/AdminReservesRegistry";
+import PartnerTicketRates from "@/Pages/Admin/Partners/Parts/PartnerTicketRates";
 
 export default {
     components: {
+        PartnerTicketRates,
+        AdminReservesRegistry,
+        AdminTicketsRegistry,
+        PartnerAccount,
         PartnerRepresentatives,
         PartnerInfo,
         GuiTabs,

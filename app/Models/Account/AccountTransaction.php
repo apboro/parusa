@@ -41,7 +41,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property AccountTransactionStatus $status
  * @property Position|null $committer
  *
- * @property-read string $reasonTitle
+ * @property-read string|null $reasonTitle
+ * @property-read array|null $reasonRaw
  */
 class AccountTransaction extends Model implements Statusable, Typeable
 {
@@ -196,6 +197,61 @@ class AccountTransaction extends Model implements Statusable, Typeable
                 return 'Начисление комисионных за продажу билета №' . $this->ticket_id;
             case AccountTransactionType::tickets_sell_commission_return:
                 return 'Возврат комисионных за продажу билета №' . $this->ticket_id;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get reason full title.
+     *
+     * @return  array|null
+     */
+    public function getReasonRawAttribute(): ?array
+    {
+        switch ($this->type_id) {
+            case AccountTransactionType::account_refill_invoice:
+                return [
+                    'title' => "Пополнение лицевого счёта банковским переводом по счёту №$this->reason от " . $this->reason_date->format('d.m.Y'),
+                    'caption' => null,
+                    'object' => null,
+                    'object_id' => null,
+                ];
+            case AccountTransactionType::account_refill_cash:
+                return [
+                    'title' => 'Пополнение лицевого счёта наличными',
+                    'caption' => null,
+                    'object' => null,
+                    'object_id' => null,
+                ];
+            case AccountTransactionType::tickets_buy:
+                return [
+                    'title' => 'Оплата',
+                    'caption' => 'заказа №' . $this->order_id,
+                    'object' => 'order',
+                    'object_id' => $this->order_id,
+                ];
+            case AccountTransactionType::tickets_buy_return:
+                return [
+                    'title' => 'Возврат',
+                    'caption' => 'билета №' . $this->ticket_id,
+                    'object' => 'ticket',
+                    'object_id' => $this->ticket_id,
+                ];
+            case AccountTransactionType::tickets_sell_commission:
+                return [
+                    'title' => 'Начисление комисионных за продажу',
+                    'caption' => 'билета №' . $this->ticket_id,
+                    'object' => 'ticket',
+                    'object_id' => $this->ticket_id,
+                ];
+            case AccountTransactionType::tickets_sell_commission_return:
+                return [
+                    'title' => 'Возврат комисионных за продажу',
+                    'caption' => 'билета №' . $this->ticket_id,
+                    'object' => 'ticket',
+                    'object_id' => $this->ticket_id,
+                ];
         }
 
         return null;

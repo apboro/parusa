@@ -13,10 +13,10 @@
         <table class="excursion-rate-table">
             <thead>
             <tr>
-                <th class="w-140px"></th>
-                <th class="p-10 w-140px">Базовая стоимость (БС) билетов, руб.</th>
-                <th class="p-10 w-280px" colspan="2">Минимальный и максимальный диапазон стоимости билетов, руб.</th>
-                <th class="p-10 w-280px" colspan="3">Комиссионное вознаграждение партнёров за продажу билетов, руб.</th>
+                <th class="w-15"></th>
+                <th class="p-10 w-15">Базовая стоимость (БС) билетов, руб.</th>
+                <th class="p-10 w-30" colspan="2">Минимальный и максимальный диапазон стоимости билетов, руб.</th>
+                <th class="p-10 w-40" colspan="3">Комиссионное вознаграждение партнёров за продажу билетов, руб.</th>
             </tr>
             </thead>
             <tbody>
@@ -36,7 +36,7 @@
                 <td>
                     <FormNumber :form="form" :name="'rates.' + key + '.max_price'" :hide-title="true" :small="true"/>
                 </td>
-                <td>
+                <td class="w-15">
                     <FormDropdown :form="form" :name="'rates.' + key + '.commission_type'"
                                   :identifier="'id'"
                                   :show="'name'"
@@ -49,7 +49,7 @@
                                   ]"
                     />
                 </td>
-                <td>
+                <td class="w-15">
                     <FormNumber :form="form" :name="'rates.' + key + '.commission_value'" :hide-title="true" :small="true"/>
                 </td>
                 <td class="pl-10 pt-15" v-if="form.values['rates.' + key + '.commission_type'] === 'fixed'">
@@ -137,8 +137,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
-
+<style lang="scss" scoped>
 $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
 $base_black_color: #1e1e1e !default;
 
@@ -147,6 +146,7 @@ $base_black_color: #1e1e1e !default;
     font-family: $project_font;
     border-collapse: collapse;
     margin: 10px 0 0;
+    width: 990px;
 
     & thead {
         color: #424242;
@@ -170,11 +170,6 @@ $base_black_color: #1e1e1e !default;
     }
 
     & tr {
-
-    }
-
-    & .input-field {
-        width: 170px;
 
     }
 

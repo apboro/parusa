@@ -12,7 +12,7 @@ use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class TransactionsListController extends ApiController
 {
@@ -49,8 +49,8 @@ class TransactionsListController extends ApiController
 
         $query = $account->transactions()->with(['committer', 'committer.user.profile']);
 
-        $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('d.m.Y');
-        $this->defaultFilters['date_to'] = Carbon::now()->format('d.m.Y');
+        $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('Y-m-d');
+        $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d');
 
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
@@ -82,19 +82,21 @@ class TransactionsListController extends ApiController
 
         $pageTotal = 0;
 
-        /** @var Collection $transactions */
+        /** @var LengthAwarePaginator $transactions */
         $transactions->transform(function (AccountTransaction $transaction) use (&$pageTotal) {
             $pageTotal += $transaction->type->sign * $transaction->amount;
             return [
                 'id' => $transaction->id,
                 'sign' => $transaction->type->sign,
-                'date' => $transaction->timestamp->format('d.m.Y H:i'),
+                'timestamp' => $transaction->timestamp->format('d.m.Y H:i'),
+                'date' => $transaction->timestamp->format('Y-m-d'),
                 'type_id' => $transaction->type_id,
                 'type' => $transaction->type->name,
                 'amount' => $transaction->amount,
                 'reason' => $transaction->reason,
-                'reason_date' => $transaction->reason_date ? $transaction->reason_date->format('d.m.Y H:i') : null,
+                'reason_date' => $transaction->reason_date ? $transaction->reason_date->format('Y-m-d') : null,
                 'reason_title' => $transaction->reasonTitle,
+                'reason_raw' => $transaction->reasonRaw,
                 'comments' => $transaction->comments,
                 'operator' => $transaction->committer ? $transaction->committer->user->profile->compactName : null,
                 'editable' => $transaction->type->editable,
@@ -110,26 +112,29 @@ class TransactionsListController extends ApiController
 
         $total = $account->calcAmount($toDate, $fromDate, $transactionTypes);
 
-        return APIResponse::paginationListOld($transactions, [
-            'date' => 'Дата и время операции',
-            'type' => 'Тип операции',
-            'amount' => 'Сумма, руб.',
-            'reason' => 'Основание',
-            'operator' => 'Оператор',
-        ], [
-            'filters' => $filters,
-            'filters_original' => $this->defaultFilters,
-            'selected_page_total' => $pageTotal,
-            'selected_total' => $total,
-            'balance' => $account->amount,
-            'limit' => $account->limit,
-            'period_start_amount' => $periodStartAmount,
-            'period_end_amount' => $periodEndAmount,
-            'period_income_amount' => $periodEndAmount - $periodStartAmount,
-            'period_sell_amount' => 0,
-            'period_commission_amount' => 0,
-            'period_sell_orders' => 0,
-            'period_sell_tickets' => 0,
-        ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
+        return APIResponse::list(
+            $transactions,
+            [
+                'date' => 'Дата и время операции',
+                'type' => 'Тип операции',
+                'amount' => 'Сумма, руб.',
+                'reason' => 'Основание',
+                'operator' => 'Оператор',
+            ],
+            $filters,
+            $this->defaultFilters,
+            [
+                'selected_page_total' => $pageTotal,
+                'selected_total' => $total,
+                'balance' => $account->amount,
+                'limit' => $account->limit,
+                'period_start_amount' => $periodStartAmount,
+                'period_end_amount' => $periodEndAmount,
+                'period_income_amount' => $periodEndAmount - $periodStartAmount,
+                'period_sell_amount' => 0,
+                'period_commission_amount' => 0,
+                'period_sell_orders' => 0,
+                'period_sell_tickets' => 0,
+            ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }

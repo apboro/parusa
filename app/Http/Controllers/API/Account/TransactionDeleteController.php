@@ -41,6 +41,6 @@ class TransactionDeleteController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response([], [], 'Операция удалена');
+        return APIResponse::success('Операция удалена');
     }
 }

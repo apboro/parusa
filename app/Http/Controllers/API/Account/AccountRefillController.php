@@ -9,6 +9,7 @@ use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class AccountRefillController extends ApiEditController
 {
     protected array $rules = [
         'type_id' => 'required',
-        'amount' => 'required|numeric|gt:zero',
+        'amount' => 'required|numeric|min:1',
         'timestamp' => 'required',
     ];
 
@@ -49,7 +50,6 @@ class AccountRefillController extends ApiEditController
         $transaction = AccountTransaction::query()->where('id', $transactionId)->first();
 
         $data = $this->getData($request);
-        $data['zero'] = 0;
 
         /** @var AccountTransactionType $type */
         $type = AccountTransactionType::get($data['type_id']);
@@ -71,10 +71,17 @@ class AccountRefillController extends ApiEditController
             return APIResponse::formError($data, $this->rules, $this->titles, $errors);
         }
 
+        $timestamp = Carbon::parse($data['timestamp']);
+        if ($timestamp->isToday()) {
+            $now = Carbon::now();
+            $timestamp->hours($now->hour);
+            $timestamp->minutes($now->minute);
+        }
+
         if (!$transaction) {
             $partner->account->attachTransaction(new AccountTransaction([
                 'type_id' => $data['type_id'],
-                'timestamp' => $data['timestamp'],
+                'timestamp' => $timestamp,
                 'amount' => $data['amount'],
                 'reason' => $type->has_reason ? $data['reason'] : null,
                 'reason_date' => $type->has_reason_date ? $data['reason_date'] : null,
@@ -84,7 +91,7 @@ class AccountRefillController extends ApiEditController
         } else {
             $partner->account->updateTransaction($transaction, [
                 'type_id' => $data['type_id'],
-                'timestamp' => $data['timestamp'],
+                'timestamp' => $timestamp,
                 'amount' => $data['amount'],
                 'reason' => $type->has_reason ? $data['reason'] : null,
                 'reason_date' => $type->has_reason_date ? $data['reason_date'] : null,

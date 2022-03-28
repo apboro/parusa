@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Tickets;
+namespace App\Http\Controllers\API\Rates;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
@@ -9,65 +9,14 @@ use App\Models\Partner\Partner;
 use App\Models\Tickets\TicketPartnerRate;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
-use App\Models\User\User;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
-class PartnerRatesController extends ApiEditController
+class RateOverrideController extends ApiEditController
 {
-    /**
-     * Get rates for all excursions for partner.
-     *
-     * @param Request $request
-     *
-     * @return  JsonResponse
-     */
-    public function get(Request $request): JsonResponse
-    {
-        /** @var User $user */
-        $user = $request->user();
-        $current = $user->current($request);
-
-        if (($position = $current->position()) && $position->is_staff) {
-            $id = $request->input('id');
-        } else {
-            $id = $position->partner_id;
-        }
-
-        if (!isset($id) || null === ($partner = Partner::query()->where('id', $id)->first())) {
-            return APIResponse::notFound('Партнёр не найден');
-        }
-        /** @var Partner $partner */
-
-        $excursions = Excursion::query()
-            ->with('ratesLists', static function (HasMany $query) {
-                $query->orderBy('start_at');
-            })
-            ->with('ratesLists.rates')
-            ->with('ratesLists.rates.partnerRates', static function (HasMany $query) use ($partner) {
-                $query->where('partner_id', $partner->id);
-            })
-            ->orderBy('name')
-            ->get();
-
-        /** @var \App\Models\Excursions\Excursion $excursion */
-        $excursions = $excursions->map(function (Excursion $excursion) {
-            return [
-                'id' => $excursion->id,
-                'name' => $excursion->name,
-                'rates' => $excursion->ratesLists->map(function (TicketsRatesList $ratesList) {
-                    return $this->rateListToArray($ratesList);
-                }),
-            ];
-        });
-
-        return APIResponse::response($excursions, [
-            'today' => Carbon::now()->format('d.m.Y'),
-        ]);
-    }
+    use RateToArray;
 
     /**
      * Update rate.
@@ -76,17 +25,17 @@ class PartnerRatesController extends ApiEditController
      *
      * @return  JsonResponse
      */
-    public function update(Request $request): JsonResponse
+    public function override(Request $request): JsonResponse
     {
-        if (null === ($partnerId = $request->input('partnerId')) || null === ($partner = Partner::query()->where('id', $partnerId)->first())) {
+        if (null === ($partnerId = $request->input('partner_id')) || null === ($partner = Partner::query()->where('id', $partnerId)->first())) {
             return APIResponse::notFound('Партнёр не найден');
         }
 
-        if (null === ($excursionId = $request->input('excursionId')) || null === (Excursion::query()->where('id', $excursionId)->first())) {
+        if (null === ($excursionId = $request->input('excursion_id')) || null === (Excursion::query()->where('id', $excursionId)->first())) {
             return APIResponse::notFound('Экскурсия не найдена');
         }
 
-        if (null === ($rateId = $request->input('rateId')) || null === ($ratesList = TicketsRatesList::query()->where('id', $rateId)->first())) {
+        if (null === ($rateId = $request->input('rate_id')) || null === ($ratesList = TicketsRatesList::query()->where('id', $rateId)->first())) {
             return APIResponse::notFound('Тариф не найден');
         }
 
@@ -201,7 +150,7 @@ class PartnerRatesController extends ApiEditController
 
         return APIResponse::success('Специальные условия обновлены',
             [
-                'rate' => $this->rateListToArray($ratesList),
+                'rate' => $this->rateToArray($ratesList),
                 'excursion_id' => $excursionId,
                 'debug' => [
                     'created' => $created,
@@ -214,44 +163,44 @@ class PartnerRatesController extends ApiEditController
         );
     }
 
-    /**
-     * Format rates list for output.
-     *
-     * @param TicketsRatesList $ratesList
-     *
-     * @return  array
-     */
-    protected function rateListToArray(TicketsRatesList $ratesList): array
-    {
-        $overridden = false;
-
-        $list = [
-            'id' => $ratesList->id,
-            'start_at' => $ratesList->start_at->format('d.m.Y'),
-            'end_at' => $ratesList->end_at->format('d.m.Y'),
-            'caption' => $ratesList->caption,
-            'rates' => $ratesList->rates->map(static function (TicketRate $rate) use (&$overridden) {
-                /** @var TicketPartnerRate $partnerRate */
-                $partnerRate = $rate->partnerRates->count() === 1 ? $rate->partnerRates[0] : null;
-                $overridden = $overridden || $partnerRate !== null;
-
-                return [
-                    'id' => $rate->id,
-                    'rate_id' => $rate->rate_id,
-                    'grade_id' => $rate->grade_id,
-                    'base_price' => $rate->base_price,
-                    'min_price' => $rate->min_price,
-                    'max_price' => $rate->max_price,
-                    'commission_type' => $rate->commission_type,
-                    'commission_value' => $rate->commission_value,
-                    'partner_commission_type' => $partnerRate->commission_type ?? null,
-                    'partner_commission_value' => $partnerRate->commission_value ?? null,
-                ];
-            }),
-        ];
-
-        $list['overridden'] = $overridden;
-
-        return $list;
-    }
+//    /**
+//     * Format rates list for output.
+//     *
+//     * @param TicketsRatesList $ratesList
+//     *
+//     * @return  array
+//     */
+//    protected function rateListToArray(TicketsRatesList $ratesList): array
+//    {
+//        $overridden = false;
+//
+//        $list = [
+//            'id' => $ratesList->id,
+//            'start_at' => $ratesList->start_at->format('d.m.Y'),
+//            'end_at' => $ratesList->end_at->format('d.m.Y'),
+//            'caption' => $ratesList->caption,
+//            'rates' => $ratesList->rates->map(static function (TicketRate $rate) use (&$overridden) {
+//                /** @var TicketPartnerRate $partnerRate */
+//                $partnerRate = $rate->partnerRates->count() === 1 ? $rate->partnerRates[0] : null;
+//                $overridden = $overridden || $partnerRate !== null;
+//
+//                return [
+//                    'id' => $rate->id,
+//                    'rate_id' => $rate->rate_id,
+//                    'grade_id' => $rate->grade_id,
+//                    'base_price' => $rate->base_price,
+//                    'min_price' => $rate->min_price,
+//                    'max_price' => $rate->max_price,
+//                    'commission_type' => $rate->commission_type,
+//                    'commission_value' => $rate->commission_value,
+//                    'partner_commission_type' => $partnerRate->commission_type ?? null,
+//                    'partner_commission_value' => $partnerRate->commission_value ?? null,
+//                ];
+//            }),
+//        ];
+//
+//        $list['overridden'] = $overridden;
+//
+//        return $list;
+//    }
 }
