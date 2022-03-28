@@ -104,10 +104,10 @@ class TransactionsListController extends ApiController
             ];
         });
 
-        $fromDate = Carbon::parse($filters['date_from'])->hour(0)->minute(0)->second(-1);
+        $fromDate = Carbon::parse($filters['date_from'])->hour(0)->minute(0);
         $toDate = Carbon::parse($filters['date_to'])->hour(23)->minute(59)->second(59);
 
-        $periodStartAmount = $account->calcAmount($fromDate);
+        $periodStartAmount = $account->calcAmount($fromDate->clone()->addDays(-1));
         $periodEndAmount = $account->calcAmount($toDate);
 
         $total = $account->calcAmount($toDate, $fromDate, $transactionTypes);
@@ -128,6 +128,8 @@ class TransactionsListController extends ApiController
                 'selected_total' => $total,
                 'balance' => $account->amount,
                 'limit' => $account->limit,
+                'date_from' => $fromDate->format('d.m.Y'),
+                'date_to' => $toDate->format('d.m.Y'),
                 'period_start_amount' => $periodStartAmount,
                 'period_end_amount' => $periodEndAmount,
                 'period_income_amount' => $periodEndAmount - $periodStartAmount,

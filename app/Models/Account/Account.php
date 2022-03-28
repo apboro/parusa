@@ -240,20 +240,20 @@ class Account extends Model
         $total = $this->transactions()
             ->whereIn('type_id', $refill)
             ->when($upToDate, function (Builder $query) use ($upToDate) {
-                $query->where('timestamp', '<=', $upToDate);
+                $query->whereDate('timestamp', '<=', $upToDate);
             })
             ->when($fromDate, function (Builder $query) use ($fromDate) {
-                $query->where('timestamp', '>=', $fromDate);
+                $query->whereDate('timestamp', '>=', $fromDate);
             })
             ->sum('amount');
 
         $total -= $this->transactions()
             ->whereIn('type_id', $withdrawal)
             ->when($upToDate, function (Builder $query) use ($upToDate) {
-                $query->where('timestamp', '<=', $upToDate);
+                $query->whereDate('timestamp', '<=', $upToDate);
             })
             ->when($fromDate, function (Builder $query) use ($fromDate) {
-                $query->where('timestamp', '>=', $fromDate);
+                $query->whereDate('timestamp', '>=', $fromDate);
             })
             ->sum('amount');
 
