@@ -15,12 +15,14 @@ class TripViewController extends ApiController
     {
         $id = $request->input('id');
 
+        /** @var Trip $trip */
         if ($id === null ||
             null === ($trip = Trip::query()->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus', 'discountStatus'])->where('id', $id)->first())) {
             return APIResponse::notFound('Рейс не найден');
         }
 
-        /** @var Trip $trip */
+        $ticketsCountable = $trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count();
+        $ticketsReserved = $trip->tickets()->whereIn('status_id', TicketStatus::ticket_reserved_statuses)->count();
 
         $values = [
             'id' => $trip->id,
@@ -37,8 +39,8 @@ class TripViewController extends ApiController
             'sale_status' => $trip->saleStatus->name,
             'sale_status_id' => $trip->sale_status_id,
             'tickets_total' => $trip->tickets_total,
-            'tickets_sold' => $trip->tickets()->whereIn('status_id', TicketStatus::ticket_had_paid_statuses)->count(),
-            'tickets_reserved' => $trip->tickets()->whereIn('status_id', TicketStatus::ticket_reserved_statuses)->count(),
+            'tickets_sold' => $ticketsCountable - $ticketsReserved,
+            'tickets_reserved' => $ticketsReserved,
             'discount_status' => $trip->discountStatus->name,
             'discount_status_id' => $trip->discount_status_id,
             'cancellation_time' => $trip->cancellation_time,

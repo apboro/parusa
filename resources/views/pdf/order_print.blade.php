@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Tickets\Order;
+use App\Models\Order\Order;
 
 /** @var Order $order */
 ?>

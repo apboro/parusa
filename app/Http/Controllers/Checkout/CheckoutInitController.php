@@ -6,7 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
-use App\Models\Tickets\Order;
+use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use Carbon\Carbon;
 use Exception;

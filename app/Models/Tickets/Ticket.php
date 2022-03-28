@@ -12,6 +12,7 @@ use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Model;
+use App\Models\Order\Order;
 use App\Models\Positions\Position;
 use App\Models\Sails\Trip;
 use App\Traits\HasStatus;

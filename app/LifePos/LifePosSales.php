@@ -2,9 +2,9 @@
 
 namespace App\LifePos;
 
+use App\Models\Order\Order;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
-use App\Models\Tickets\Order;
 use App\Models\Tickets\Ticket;
 use Exception;
 use GuzzleHttp\Client;
@@ -17,7 +17,7 @@ class LifePosSales
     /**
      * Send order to LifePos.
      *
-     * @param Order $order
+     * @param \App\Models\Order\Order $order
      * @param Terminal $terminal
      * @param Position $position
      *
@@ -124,7 +124,7 @@ class LifePosSales
     /**
      * Remove order from LifePos.
      *
-     * @param Order $order
+     * @param \App\Models\Order\Order $order
      *
      * @return  void
      * @throws JsonException
@@ -169,7 +169,7 @@ class LifePosSales
     /**
      * Send order to LifePos.
      *
-     * @param Order $order
+     * @param \App\Models\Order\Order $order
      * @param array $tickets
      * @param Terminal $terminal
      * @param Position $position

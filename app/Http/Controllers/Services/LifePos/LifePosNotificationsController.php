@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Services\LifePos;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Order\Order;
 use App\Models\Payments\Payment;
-use App\Models\Tickets\Order;
 use App\Models\Tickets\Ticket;
 use Exception;
 use Illuminate\Http\Request;
@@ -83,7 +83,7 @@ class LifePosNotificationsController extends ApiController
         // update order status and payment data
         try {
             if (isset($input['sale']['guid'])) {
-                /** @var Order $order */
+                /** @var \App\Models\Order\Order $order */
                 $order = Order::query()->where('external_id', $input['sale']['guid'])->first();
 
                 // add payment

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API\Registries;
 use App\Helpers\OrderPdf;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Models\Tickets\Order;
+use App\Models\Order\Order;
 use App\Models\User\Helpers\Currents;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -62,7 +62,7 @@ class OrderRenderController extends ApiController
     /**
      * @param Request $request
      *
-     * @return Order
+     * @return \App\Models\Order\Order
      */
     protected function order(Request $request): ?Order
     {

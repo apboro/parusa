@@ -9,7 +9,7 @@ use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
-use App\Models\Tickets\Order;
+use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
@@ -56,7 +56,7 @@ class OrderReserveController extends ApiController
      */
     public function remove(Request $request): JsonResponse
     {
-        /** @var ?Order $order */
+        /** @var ?\App\Models\Order\Order $order */
         $order = $this->getOrder($request);
 
         if ($order === null) {
@@ -214,7 +214,7 @@ class OrderReserveController extends ApiController
             return null;
         }
 
-        /** @var ?Order $order */
+        /** @var ?\App\Models\Order\Order $order */
         /** @noinspection PhpUnnecessaryLocalVariableInspection */
         /** @noinspection OneTimeUseVariablesInspection */
         $order = $query->first();

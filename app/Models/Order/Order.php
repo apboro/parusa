@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Tickets;
+namespace App\Models\Order;
 
 use App\Exceptions\Account\AccountException;
 use App\Exceptions\Tickets\WrongOrderException;
@@ -19,6 +19,8 @@ use App\Models\Model;
 use App\Models\Partner\Partner;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
+use App\Models\Tickets\Ticket;
+use App\Models\Tickets\TicketRate;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use Carbon\Carbon;
@@ -243,7 +245,7 @@ class Order extends Model implements Statusable, Typeable
 
             // check quantity
             if (!isset($available[$trip->id])) {
-                $available[$trip->id] = $trip->tickets_total - $trip->tickets()->count();
+                $available[$trip->id] = $trip->tickets_total - $trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count();
             }
             if ($available[$trip->id]-- <= 0) {
                 throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Недостаточно свободных мест на рейсе.');

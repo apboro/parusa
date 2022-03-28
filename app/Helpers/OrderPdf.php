@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Models\Tickets\Order;
+use App\Models\Order\Order;
 use Illuminate\Support\Facades\View;
 
 class OrderPdf
@@ -10,7 +10,7 @@ class OrderPdf
     /**
      * Ticket standard PDF.
      *
-     * @param Order $order
+     * @param \App\Models\Order\Order $order
      *
      * @return string|null
      */
@@ -36,7 +36,7 @@ class OrderPdf
     /**
      * Generate ticket PDF.
      *
-     * @param Order $order
+     * @param \App\Models\Order\Order $order
      * @param $paperSize
      * @param string $orientation
      * @param string $template

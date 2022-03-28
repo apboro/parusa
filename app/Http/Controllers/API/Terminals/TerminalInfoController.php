@@ -6,7 +6,7 @@ use App\Helpers\PriceConverter;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\OrderStatus;
-use App\Models\Tickets\Order;
+use App\Models\Order\Order;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Illuminate\Database\Query\JoinClause;

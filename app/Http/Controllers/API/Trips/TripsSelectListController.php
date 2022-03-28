@@ -8,6 +8,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\TicketGrade;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Sails\Trip;
@@ -61,7 +62,9 @@ class TripsSelectListController extends ApiController
 
         $query = Trip::query()
             ->with(['startPier', 'excursion', 'excursion.programs', 'excursion.ratesLists'])
-            ->withCount(['tickets'])
+            ->withCount(['tickets' => function (Builder $query) {
+                $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
+            }])
             // filter actual trips
             ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)

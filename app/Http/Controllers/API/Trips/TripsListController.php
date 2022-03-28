@@ -6,9 +6,11 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -48,7 +50,9 @@ class TripsListController extends ApiController
             ->with(['chains' => function (BelongsToMany $query) {
                 $query->withCount('trips');
             }])
-            ->withCount(['chains', 'tickets'])
+            ->withCount(['chains', 'tickets' => function(Builder $query) {
+                $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
+            }])
             ->orderBy('start_at');
 
         // apply filters

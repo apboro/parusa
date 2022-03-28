@@ -6,9 +6,8 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\LifePos\LifePosSales;
 use App\Models\Dictionaries\OrderStatus;
-use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\TicketStatus;
-use App\Models\Tickets\Order;
+use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Exception;
@@ -203,7 +202,7 @@ class TerminalCurrentOrderController extends ApiController
      * @param Request $request
      * @param Currents|null $current
      *
-     * @return  Order
+     * @return  \App\Models\Order\Order
      * @throw InvalidArgumentException
      */
     protected function getOrder(Request $request, ?Currents $current = null): Order
@@ -216,7 +215,7 @@ class TerminalCurrentOrderController extends ApiController
             throw new InvalidArgumentException('Неверно заданы параметры');
         }
 
-        /** @var ?Order $order */
+        /** @var ?\App\Models\Order\Order $order */
         $order = Order::query()->with(['tickets'])
             ->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
             ->whereIn('status_id', OrderStatus::terminal_processing_statuses)

@@ -5,11 +5,11 @@ namespace App\Http\Controllers\API\Cart;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\OrderStatus;
-use App\Models\Dictionaries\Role;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
+use App\Models\Order\Order;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Sails\Trip;
-use App\Models\Tickets\Order;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
@@ -199,7 +199,7 @@ class TerminalCartController extends ApiEditController
         try {
             DB::transaction(static function () use ($ordering, $count, $trip) {
                 // check total quantities
-                if ($trip->tickets()->count() + $count > $trip->tickets_total) {
+                if ($trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $count > $trip->tickets_total) {
                     throw new RuntimeException('Недостаточно свободных мест на теплоходе.');
                 }
                 foreach ($ordering as $ticket) {
@@ -246,7 +246,7 @@ class TerminalCartController extends ApiEditController
             return APIResponse::error('Билет не найден.');
         }
 
-        if ($ticket->trip->tickets()->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
+        if ($ticket->trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
             throw new RuntimeException('Недостаточно свободных мест на теплоходе.');
         }
 

@@ -8,7 +8,7 @@ use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\TicketStatus;
-use App\Models\Tickets\Order;
+use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Exception;
