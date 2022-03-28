@@ -398,3 +398,141 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+@use "sass:math";
+
+$project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
+$animation_time: 150ms !default;
+$animation: cubic-bezier(0.24, 0.19, 0.28, 1.29) !default;
+$base_size_unit: 35px !default;
+$base_primary_color: #0D74D7 !default;
+$base_primary_hover_color: lighten(#0D74D7, 10%) !default;
+$base_red_color: #EA1B00 !default;
+$base_red_hover_color: lighten(#EA1B00, 5%) !default;
+$base_green_color: #00AF2E !default;
+$base_green_hover_color: lighten(#00AF2E, 5%) !default;
+$base_light_gray_color: #e5e5e5 !default;
+$base_lightest_gray_color: #f7f7f7 !default;
+$base_black_color: #1e1e1e !default;
+$base_text_gray_color: #3f3f3f !default;
+$base_gray_color: #8f8f8f !default;
+
+.drag-item {
+    display: flex;
+    width: 100%;
+    min-height: $base_size_unit;
+    margin: 5px 0;
+    box-sizing: border-box;
+    border: 1px solid $base_light_gray_color;
+    border-radius: 2px;
+    background-color: $base_lightest_gray_color;
+
+    &__dragging {
+        background-color: transparent;
+    }
+
+    &__head {
+        display: inline-flex;
+        width: $base_size_unit;
+        justify-content: center;
+        align-items: center;
+        cursor: grab;
+        color: $base_text_gray_color;
+        flex-grow: 0;
+        flex-shrink: 0;
+        //@include noSelection;
+
+        &-non-draggable {
+            cursor: default;
+            color: $base_gray_color;
+        }
+
+        & > * {
+            height: math.div($base_size_unit, 2);
+        }
+    }
+
+    &__body, &__header {
+        flex-grow: 1;
+        flex-shrink: 0;
+        font-size: 14px;
+        font-family: $project_font;
+        box-sizing: border-box;
+        padding: 5px 15px 5px 0;
+        color: $base_black_color;
+        display: flex;
+
+        &-value {
+            margin: 0 50px 0 10px;
+            padding: 5px 5px 5px 0;
+            min-width: 50px;
+            display: inline-block;
+
+            &-auto {
+                flex: 1;
+                width: min-content;
+                word-break: break-all;
+            }
+        }
+    }
+
+    &__header {
+        padding-left: $base_size_unit;
+        color: $base_text_gray_color;
+    }
+
+    &__actions {
+        flex-grow: 0;
+        flex-shrink: 0;
+        display: inline-flex;
+
+        &-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: $base_size_unit;
+            cursor: pointer;
+            transition: color $animation $animation_time;
+            color: $base_text_gray_color;
+
+            &-on {
+                color: $base_green_color;
+
+                &:hover {
+                    color: $base_green_hover_color;
+                }
+            }
+
+            &-off {
+                color: $base_red_color;
+
+                &:hover {
+                    color: $base_red_hover_color;
+                }
+            }
+
+            &-edit {
+                color: $base_primary_color;
+
+                &:hover {
+                    color: $base_primary_hover_color;
+                }
+            }
+
+            &-remove {
+                color: $base_red_color;
+
+                &:hover {
+                    color: $base_red_hover_color;
+                }
+            }
+
+            & > * {
+                width: $base_size_unit * 0.5;
+                height: $base_size_unit * 0.5;
+            }
+        }
+    }
+}
+</style>

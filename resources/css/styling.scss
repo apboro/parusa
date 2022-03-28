@@ -15,39 +15,39 @@
 }
 
 .text-gray {
-    color: $color_gray;
+    color: $color_gray !important;
 }
 
 .text-green {
-    color: $color_green;
+    color: $color_green !important;
 }
 
 .text-red {
-    color: $color_red;
+    color: $color_red !important;
 }
 
 .text-dark-green {
-    color: $color_dark_green;
+    color: $color_dark_green !important;
 }
 
 .text-dark-red {
-    color: $color_dark_red;
+    color: $color_dark_red !important;
 }
 
 .text-orange {
-    color: $color_orange;
+    color: $color_orange !important;
 }
 
 .text-sm {
-    font-size: 13px;
+    font-size: 13px !important;
 }
 
 .text-md {
-    font-size: 14px;
+    font-size: 14px !important;
 }
 
 .text-lg {
-    font-size: 16px;
+    font-size: 16px !important;
 }
 
 .fl-right {
@@ -105,6 +105,10 @@
 
 .text-right {
     text-align: right;
+}
+
+.justify-end {
+    justify-content: flex-end;
 }
 
 .border {
