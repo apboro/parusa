@@ -56,7 +56,7 @@ class DictionaryController extends ApiController
         'ships_statuses' => ['class' => ShipStatus::class, 'allow' => 'staff_admin'],
         'terminal_positions' => ['class' => TerminalPositions::class, 'allow' => 'staff_admin'],
         'terminal_statuses' => ['class' => TerminalStatus::class, 'allow' => 'staff_admin'],
-        'ticket_grades' => ['class' => TicketGrade::class, 'allow' => 'staff_admin'],
+        'ticket_grades' => ['class' => TicketGrade::class, 'allow' => 'staff_admin,partner'],
         'transaction_primary_types' => ['class' => AccountTransactionTypePrimary::class, 'allow' => 'staff_admin,partner'],
         'transaction_refill_types' => ['class' => AccountTransactionTypeRefill::class, 'allow' => 'staff_admin'],
         'transaction_types' => ['class' => AccountTransactionType::class, 'allow' => 'staff_admin'],

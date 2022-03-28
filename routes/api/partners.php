@@ -1,14 +1,14 @@
 <?php
 
 use App\Http\Controllers\API\Partners\PartnerDeleteController;
+use App\Http\Controllers\API\Partners\PartnerDetailsController;
 use App\Http\Controllers\API\Partners\PartnerEditController;
+use App\Http\Controllers\API\Partners\PartnerInfoController;
 use App\Http\Controllers\API\Partners\PartnerPropertiesController;
 use App\Http\Controllers\API\Partners\PartnerRepresentativesController;
 use App\Http\Controllers\API\Partners\PartnerRepresentativeStatusController;
-use App\Http\Controllers\API\Partners\PartnerDetailsController;
 use App\Http\Controllers\API\Partners\PartnersListController;
 use App\Http\Controllers\API\Partners\PartnerViewController;
-use App\Http\Controllers\PartnerAPI\PartnerInfoController;
 use App\Http\Controllers\Storage\PartnerDocumentController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,9 +30,4 @@ Route::get('/partners/files/{file}', [PartnerDocumentController::class, 'get'])-
 
 Route::post('/partners/details', [PartnerDetailsController::class, 'get'])->middleware(['allow:partner']);
 
-
-
-
 Route::post('/partners/partner/info', [PartnerInfoController::class, 'get'])->middleware(['allow:partner']);
-
-

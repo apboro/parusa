@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\PartnerAPI;
+namespace App\Http\Controllers\API\Partners;
 
 use App\Helpers\PriceConverter;
 use App\Http\APIResponse;

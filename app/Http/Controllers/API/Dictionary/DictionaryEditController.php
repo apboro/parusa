@@ -44,7 +44,8 @@ class DictionaryEditController extends ApiEditController
 
         $all = $class::query()->orderBy('order')->orderBy('name')->get();
 
-        return APIResponse::response($all, [
+        return APIResponse::response([
+            'items' => $all,
             'item_name' => $this->dictionaries[$name]['item_name'],
             'fields' => $this->dictionaries[$name]['fields'],
             'titles' => $this->dictionaries[$name]['titles'],
