@@ -1,15 +1,7 @@
-import NotFound from "../../Pages/NotFound";
-
-import SettingsPage from "../../Pages/Admin/Settings/SettingsPage";
-
-import DictionariesPage from "../../Pages/Admin/Dictionaries/DictionariesPage";
-
-import TestPage from "@/Pages/Admin/TestPage";
-
 export default [
     {path: '/', name: 'home', component: () => import('@/Pages/Admin/Trips/TripsListPage'), meta: {title: 'Список рейсов'}},
 
-    {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки'}},
+    {path: '/settings', name: 'settings', component: () => import('@/Pages/Admin/Settings/SettingsPage'), meta: {title: 'Настройки'}},
 
     {path: '/registry/orders', name: 'orders-registry', component: () => import('@/Pages/Admin/Registries/OrdersRegistryPage'), meta: {title: 'Реестр заказов'}},
     {path: '/registry/orders/:id', name: 'order-info', component: () => import("@/Pages/Admin/Registries/OrderPage"), meta: {title: 'Заказ'}},
@@ -33,9 +25,6 @@ export default [
     {path: '/terminals/:id', name: 'terminals-view', component: () => import('@/Pages/Admin/Terminals/TerminalsViewPage'), meta: {title: 'Просмотр мобильной кассы'}},
     {path: '/terminals/:id/edit', name: 'terminals-edit', component: () => import('@/Pages/Admin/Terminals/TerminalsEditPage'), meta: {title: 'Редактирование мобильной кассы'}},
 
-    /**
-     * Sails part
-     */
     {path: '/piers', name: 'pier-list', component: () => import('@/Pages/Admin/Piers/PiersListPage'), meta: {title: 'Причалы'}},
     {path: '/piers/:id', name: 'pier-view', component: () => import('@/Pages/Admin/Piers/PierViewPage'), meta: {title: 'Просмотр причала'}},
     {path: '/piers/:id/edit', name: 'pier-edit', component: () => import('@/Pages/Admin/Piers/PierEditPage'), meta: {title: 'Редактирование причала'}},
@@ -48,11 +37,7 @@ export default [
     {path: '/trips/:id', name: 'trip-view', component: () => import('@/Pages/Admin/Trips/TripViewPage'), meta: {title: 'Просмотр рейса'}},
     {path: '/trips/:id/edit', name: 'trip-edit', component: () => import('@/Pages/Admin/Trips/TripEditPage'), meta: {title: 'Редактирование рейса'}},
 
-    /**
-     * Dictionaries
-     */
-    {path: '/dictionaries', name: 'dictionaries', component: DictionariesPage, meta: {title: 'Справочники'}},
+    {path: '/dictionaries', name: 'dictionaries', component: () => import('@/Pages/Admin/Dictionaries/DictionariesPage'), meta: {title: 'Справочники'}},
 
-    {path: '/test', name: 'test', component: TestPage, meta: {title: 'Страница для тестов'}},
-    {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
+    {path: '/:pathMatch(.*)*', name: '404', component: () => import('@/Pages/NotFound')},
 ];

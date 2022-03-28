@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\PartnerAPI;
+namespace App\Http\Controllers\API\Partners;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
@@ -13,7 +13,7 @@ use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class PartnerSelfController extends ApiController
+class PartnerDetailsController extends ApiController
 {
     public function get(Request $request): JsonResponse
     {

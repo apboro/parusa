@@ -6,9 +6,8 @@
                 <GuiHeading>{{ list.payload['balance'] }} руб.</GuiHeading>
             </GuiContainer>
             <GuiContainer inline>
-                <GuiHeading text-md mb-10>Лимит по лицевому счёту</GuiHeading>
-                <GuiHeading>{{ list.payload['limit'] }} руб.</GuiHeading>
-                <span class="link text-sm flex mt-10" v-if="editable" @click="limitChange">Изменить</span>
+                <GuiHeading text-md mb-10>Доступный остаток по лицевому счёту</GuiHeading>
+                <GuiHeading>{{ list.payload['balance'] - list.payload['limit'] }} руб.</GuiHeading>
             </GuiContainer>
         </GuiContainer>
 
@@ -36,15 +35,10 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
-            <template #search>
-                <GuiActionsMenu :class="'self-align-end'" :title="'Операции'" v-if="editable">
-                    <span class="link" @click="editRefill(null)">Пополнение счёта</span>
-                </GuiActionsMenu>
-            </template>
         </LayoutFilters>
 
         <GuiContainer w-100>
-            <ListTable v-if="list.list.length > 0" :titles="list.titles" :has-action="editable">
+            <ListTable v-if="list.list.length > 0" :titles="list.titles">
                 <ListTableRow v-for="transaction in list.list">
                     <ListTableCell>
                         {{ transaction['timestamp'] }}
@@ -82,12 +76,6 @@
                     <ListTableCell :nowrap="true">
                         {{ transaction['operator'] }}
                     </ListTableCell>
-                    <ListTableCell v-if="editable">
-                        <GuiActionsMenu :title="null" v-if="transaction['editable'] || transaction['deletable']">
-                            <span class="link" v-if="transaction['editable']" @click="editRefill(transaction)">Редактировать</span>
-                            <span class="link" v-if="transaction['deletable']" @click="remove(transaction)">Удалить</span>
-                        </GuiActionsMenu>
-                    </ListTableCell>
                 </ListTableRow>
             </ListTable>
             <GuiMessage v-else-if="list.is_loaded">Нет операций за выбранный период</GuiMessage>
@@ -116,34 +104,10 @@
             </GuiContainer>
             -->
         </GuiContainer>
-
-        <FormPopUp ref="popup_limit" v-if="editable"
-                   :title="'Лимит по лицевому счёту'"
-                   :form="limit_form"
-                   :options="{id: this.partnerId}"
-        >
-            <FormNumber :form="limit_form" :name="'limit'" :hide-title="true"/>
-        </FormPopUp>
-
-        <FormPopUp ref="popup_refill" v-if="editable"
-                   :title="'Пополнение счёта'"
-                   :form="refill_form"
-                   :options="{partnerId: this.partnerId, transactionId: transaction}"
-        >
-            <GuiContainer w-500px>
-                <FormDictionary :form="refill_form" :dictionary="'transaction_refill_types'" :name="'type_id'" @change="typeChanged" :disabled="transaction !== 0"/>
-                <FormDate :form="refill_form" :name="'timestamp'" v-if="refill_form.values['type_id'] !== null"/>
-                <FormString :form="refill_form" :name="'reason'" v-if="has_reason && refill_form.values['type_id'] !== null"/>
-                <FormDate :form="refill_form" :name="'reason_date'" v-if="has_reason_date && refill_form.values['type_id'] !== null"/>
-                <FormNumber :form="refill_form" :name="'amount'" :type="'number'" v-if="refill_form.values['type_id'] !== null"/>
-                <FormText :form="refill_form" :name="'comments'" v-if="refill_form.values['type_id'] !== null"/>
-            </GuiContainer>
-        </FormPopUp>
     </LoadingProgress>
 </template>
 
 <script>
-import deleteEntry from "@/Mixins/DeleteEntry";
 import list from "@/Core/List";
 import LoadingProgress from "@/Components/LoadingProgress";
 import GuiContainer from "@/Components/GUI/GuiContainer";
@@ -152,7 +116,6 @@ import LayoutFilters from "@/Components/Layout/LayoutFilters";
 import LayoutFiltersItem from "@/Components/Layout/LayoutFiltersItem";
 import InputDate from "@/Components/Inputs/InputDate";
 import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown";
-import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import ListTable from "@/Components/ListTable/ListTable";
 import GuiMessage from "@/Components/GUI/GuiMessage";
 import GuiPagination from "@/Components/GUI/GuiPagination";
@@ -160,30 +123,11 @@ import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
 import GuiHint from "@/Components/GUI/GuiHint";
 import GuiValue from "@/Components/GUI/GuiValue";
-import form from "@/Core/Form";
-import FormPopUp from "@/Components/FormPopUp";
-import FormNumber from "@/Components/Form/FormNumber";
-import FormDictionary from "@/Components/Form/FormDictionary";
-import FormDate from "@/Components/Form/FormDate";
-import FormString from "@/Components/Form/FormString";
-import FormText from "@/Components/Form/FormText";
-
 
 export default {
-    props: {
-        partnerId: {type: Number, required: true},
-        editable: {type: Boolean, default: false},
-    },
-
-    mixins: [deleteEntry],
-
     components: {
-        FormText,
-        FormString,
-        FormDate,
-        FormDictionary,
-        FormNumber,
-        FormPopUp,
+        DictionaryDropDown,
+        InputDate,
         GuiValue,
         GuiHint,
         ListTableCell,
@@ -191,9 +135,6 @@ export default {
         GuiPagination,
         GuiMessage,
         ListTable,
-        GuiActionsMenu,
-        DictionaryDropDown,
-        InputDate,
         LayoutFiltersItem,
         LayoutFilters,
         GuiHeading,
@@ -204,81 +145,10 @@ export default {
 
     data: () => ({
         list: list('/api/account'),
-        limit_form: form(null, '/api/account/limit'),
-
-        refill_form: form(null, '/api/account/refill'),
-        transaction: 0,
-        has_reason: false,
-        has_reason_date: false,
     }),
 
     created() {
-        this.list.options = {id: this.partnerId};
         this.list.initial();
-        this.limit_form.toaster = this.$toast;
-        this.refill_form.toaster = this.$toast;
     },
-
-    methods: {
-        limitChange() {
-            this.limit_form.reset();
-            this.limit_form.set('limit', this.list.payload['limit'], 'required|numeric|bail', 'Допустимый остаток по счёту', true);
-            this.limit_form.load();
-
-            this.$refs.popup_limit.show()
-                .then(result => {
-                    this.list.payload['limit'] = result.payload['limit'];
-                });
-        },
-
-        editRefill(transaction = null) {
-            this.transaction = transaction ? transaction['id'] : 0;
-            this.$store.dispatch('dictionary/refresh', 'transaction_refill_types')
-                .then(() => {
-                    this.refill_form.reset();
-                    this.refill_form.set('type_id', transaction ? transaction['type_id'] : null, 'required', 'Способ пополнения', true);
-                    this.refill_form.set('timestamp', transaction ? transaction['date'] : null, 'required', 'Дата операции', true);
-                    this.refill_form.set('reason', transaction ? transaction['reason'] : null, null, 'Номер счёта', true);
-                    this.refill_form.set('reason_date', transaction ? transaction['reason_date'] : null, null, 'Дата счёта', true);
-                    this.refill_form.set('amount', transaction ? transaction['amount'] : null, 'required|numeric|min:1|bail', 'Сумма', true);
-                    this.refill_form.set('comments', transaction ? transaction['comments'] : null, null, 'Комментарии', true);
-
-                    if (transaction) {
-                        this.typeChanged(transaction['type_id'])
-                    }
-                    this.refill_form.load();
-
-                    this.$refs.popup_refill.show()
-                        .then(() => {
-                            this.list.load();
-                        });
-                });
-        },
-
-        typeChanged(value) {
-            let type = null;
-            this.$store.getters['dictionary/dictionary']('transaction_refill_types').some(item => {
-                if (item['id'] === value) {
-                    type = item;
-                    return true;
-                }
-                return false;
-            });
-            this.refill_form.set('reason', this.refill_form.values['reason'], type['has_reason'] ? 'required' : null, type['reason_title'], true);
-            this.refill_form.set('reason_date', this.refill_form.values['reason_date'], type['has_reason_date'] ? 'required' : null, type['reason_date_title'], true);
-            this.has_reason = Boolean(type['has_reason']);
-            this.has_reason_date = Boolean(type['has_reason_date']);
-        },
-
-        remove(transaction) {
-            this.deleteEntry(
-                'Удалить операцию "' + transaction['type'] + '" от ' + transaction['date'] + '?',
-                '/api/account/delete',
-                {id: transaction.id})
-                .then(() => {
-                    this.list.load();
-                });
-        },
-    }
 }
 </script>

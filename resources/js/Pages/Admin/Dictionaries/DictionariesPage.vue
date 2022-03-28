@@ -1,52 +1,36 @@
 <template>
-    <page :loading="processing">
-        <template v-slot:header>
-            <page-title-bar :title="$route.meta['title']"/>
-        </template>
-
-        <layout-routed-tabs v-if="data.loaded" :tabs="data.data" @change="changeTab"/>
-
-        <dictionary v-if="!processing" :dictionary="current"/>
-    </page>
+    <LayoutPage :loading="processing" :title="$route.meta['title']">
+        <LayoutRoutedTabs v-if="data.is_loaded" :tabs="data.data" @change="current = $event"/>
+        <Dictionary v-if="!processing" :dictionary="current"/>
+    </LayoutPage>
 </template>
 
 <script>
-import genericDataSource from "../../../Helpers/Core/genericDataSource";
-import Page from "../../../Layouts/Page";
-import PageTitleBar from "../../../Layouts/Parts/PageTitleBar";
-import LayoutRoutedTabs from "../../../Components/Layout/LayoutRoutedTabs";
-import Dictionary from "../../../Parts/Dictionaries/Dictionary";
+import data from "@/Core/Data";
+import LayoutPage from "@/Components/Layout/LayoutPage";
+import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
+import Dictionary from "@/Pages/Admin/Dictionaries/Parts/Dictionary";
 
 export default {
     components: {
-        Page,
-        PageTitleBar,
+        LayoutPage,
         LayoutRoutedTabs,
         Dictionary,
     },
 
     data: () => ({
-        initial: null,
+        data: data('/api/dictionaries/index'),
         current: null,
-        data: null,
     }),
 
     computed: {
         processing() {
-            return (this.data.loading || this.current === null);
+            return (this.data.is_loading || this.current === null);
         },
     },
 
     created() {
-        this.data = genericDataSource('/api/dictionaries/index');
-        this.data.onLoad = this.loaded;
         this.data.load();
-    },
-
-    methods: {
-        changeTab(tab) {
-            this.current = tab;
-        },
     }
 }
 </script>

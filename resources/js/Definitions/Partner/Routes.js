@@ -1,6 +1,3 @@
-import NotFound from "../../Pages/NotFound";
-import PartnerSelfPage from "../../Pages/Partner/PartnerSelfPage";
-import Account from "../../Pages/Partner/Account";
 import Rates from "../../Pages/Partner/Rates";
 
 export default [
@@ -16,11 +13,11 @@ export default [
     {path: '/registry/:id', name: 'order-info', component: () => import("@/Pages/Partner/Registries/OrderPage"), meta: {title: 'Заказ'}},
     {path: '/registry/tickets/:id', name: 'ticket-info', component: () => import("@/Pages/Partner/Registries/TicketPage"), meta: {title: 'Билет'}},
 
-    {path: '/company/info', name: 'company-info', component: PartnerSelfPage, meta: {title: 'Карточка партнёра'}},
-    {path: '/company/account', name: 'company-account', component: Account, meta: {title: 'Лицевой счёт'}},
+    {path: '/company/info', name: 'company-info', component: () => import('@/Pages/Partner/PartnerPage'), meta: {title: 'Карточка партнёра'}},
+    {path: '/company/account', name: 'company-account', component: () => import("@/Pages/Partner/AccountPage"), meta: {title: 'Лицевой счёт'}},
     {path: '/company/rates', name: 'company-rates', component: Rates, meta: {title: 'Тарифы и комисионное вознаграждение'}},
 
     {path: '/order', name: 'order', component: () => import("@/Pages/Partner/OrderMakePage"), meta: {title: 'Оформление заказа'}},
 
-    {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
+    {path: '/:pathMatch(.*)*', name: '404', component: () => import('@/Pages/NotFound')},
 ];

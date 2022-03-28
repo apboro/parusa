@@ -89,23 +89,23 @@
 </template>
 
 <script>
-import genericDataSource from "../../Helpers/Core/genericDataSource";
-import Container from "../../Components/GUI/GuiContainer";
-import LoadingProgress from "../../Components/LoadingProgress";
-import Heading from "../../Components/GUI/GuiHeading";
-import IconGripVertical from "../../Components/Icons/IconGripVertical";
-import IconEdit from "../../Components/Icons/IconEdit";
-import IconCross from "../../Components/Icons/IconCross";
-import IconToggleOn from "../../Components/Icons/IconToggleOn";
-import IconToggleOff from "../../Components/Icons/IconToggleOff";
+import genericDataSource from "../../../../Helpers/Core/genericDataSource";
+import Container from "../../../../Components/GUI/GuiContainer";
+import LoadingProgress from "../../../../Components/LoadingProgress";
+import Heading from "../../../../Components/GUI/GuiHeading";
+import IconGripVertical from "../../../../Components/Icons/IconGripVertical";
+import IconEdit from "../../../../Components/Icons/IconEdit";
+import IconCross from "../../../../Components/Icons/IconCross";
+import IconToggleOn from "../../../../Components/Icons/IconToggleOn";
+import IconToggleOff from "../../../../Components/Icons/IconToggleOff";
 import Message from "@/Components/GUI/GuiMessage";
-import DeleteEntry from "../../Mixins/DeleteEntry";
-import PopUp from "../../Components/PopUp";
-import DataFieldInput from "../../Components/DataFields/DataFieldInput";
-import formDataSource from "../../Helpers/Core/formDataSource";
+import DeleteEntry from "../../../../Mixins/DeleteEntry";
+import PopUp from "../../../../Components/PopUp";
+import DataFieldInput from "../../../../Components/DataFields/DataFieldInput";
+import formDataSource from "../../../../Helpers/Core/formDataSource";
 import {parseRules} from "@/Helpers/Core/validator/validator";
-import DataFieldTextArea from "../../Components/DataFields/DataFieldTextArea";
-import IconLock from "../../Components/Icons/IconLock";
+import DataFieldTextArea from "../../../../Components/DataFields/DataFieldTextArea";
+import IconLock from "../../../../Components/Icons/IconLock";
 
 export default {
     components: {

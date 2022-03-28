@@ -152,7 +152,6 @@ export default {
         setDay(increment) {
             this.$refs.date.addDays(increment);
         },
-
         addToOrder(trip) {
             this.$refs.select_popup.handle(trip);
         },

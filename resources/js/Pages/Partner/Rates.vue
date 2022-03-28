@@ -6,7 +6,7 @@
 
 <script>
 import Page from "@/Layouts/Page";
-import PartnerTicketRates from "@/Parts/Partners/Partner/PartnerTicketRates";
+import PartnerTicketRates from "@/Pages/Admin/Partners/Parts/PartnerTicketRates";
 
 export default {
     components: {

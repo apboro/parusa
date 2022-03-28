@@ -199,45 +199,6 @@ export default {
                     this.$emit('update', {positions: positions});
                 });
         },
-        // statusChange(position) {
-        // this.initial_status = Number(position['status_id']);
-        // this.current_status = this.initial_status;
-        // this.popup_title = 'Статус доступа в для представителя "' + position['user'] + '"';
-        // this.$refs.popup.show()
-        //     .then(result => {
-        //         if (result === 'yes') {
-        //             this.$refs.popup.process(true);
-        //             axios.post('/api/partners/representative/status', {id: this.partnerId, position_id: position['position_id'], status_id: this.current_status})
-        //                 .then(response => {
-        //                     this.$toast.success(response.data.message, 2000);
-        //                     const position_id = response.data.data.position_id;
-        //                     this.datasource.data['positions'].some(position => {
-        //                         if (position['position_id'] === position_id) {
-        //                             position.active = response.data.data.active;
-        //                             position.status = response.data.data.status;
-        //                             position.status_id = response.data.data.status_id;
-        //                             return true;
-        //                         }
-        //                         return false;
-        //                     })
-        //                 })
-        //                 .catch(error => {
-        //                     this.$toast.error(error.response.data.message);
-        //                 })
-        //                 .finally(() => {
-        //                     this.initial_status = null;
-        //                     this.current_status = null;
-        //                     this.popup_title = null;
-        //                     this.$refs.popup.hide();
-        //                 })
-        //         } else {
-        //             this.initial_status = null;
-        //             this.current_status = null;
-        //             this.popup_title = null;
-        //             this.$refs.popup.hide();
-        //         }
-        //     });
-        // },
     }
 }
 </script>
