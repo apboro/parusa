@@ -6,7 +6,6 @@
             </template>
             <template v-slot:personal>
                 <layout-user-menu :user="user">
-<!--                    <span class="link">Профиль</span>-->
                     <span class="link" v-if="user.positions" @click="change">Сменить компанию</span>
                     <span class="link" @click="logout">Выход</span>
                 </layout-user-menu>
@@ -22,6 +21,7 @@
 import LayoutHeader from "../Components/Layout/LayoutHeader";
 import LayoutMenu from "../Components/Layout/LayoutMenu";
 import LayoutUserMenu from "../Components/Layout/LayoutUserMenu";
+import PopUp from "@/Components/PopUp";
 
 export default {
     props: {
@@ -33,6 +33,7 @@ export default {
         LayoutUserMenu,
         LayoutHeader,
         LayoutMenu,
+        PopUp,
     },
 
     created() {

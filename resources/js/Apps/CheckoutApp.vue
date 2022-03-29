@@ -39,15 +39,15 @@
                         <input type="hidden" name="cost" :value="payment['cost']"/>
                         <input type="hidden" name="name" :value="payment['name']"/>
                         <input type="hidden" name="email" :value="payment['email']"/>
-                        <input type="hidden" name="comment" :value="payment['comment']"/>
-                        <input type="hidden" name="payment_type" :value="payment['payment_type']"/>
-                        <input type="hidden" name="invoice_data" :value="payment['invoice_data']"/>
                         <input type="hidden" name="service_id" :value="payment['service_id']"/>
                         <input type="hidden" name="order_id" :value="payment['order_id']"/>
                         <input type="hidden" name="version" :value="payment['version']"/>
+                        <input type="hidden" name="comment" :value="payment['comment']"/>
+<!--                        <input type="hidden" name="payment_type" :value="payment['payment_type']"/>-->
+<!--                        <input type="hidden" name="invoice_data" :value="payment['invoice_data']"/>-->
                         <input type="hidden" name="check" :value="payment['check']"/>
 
-                        <input type="image" id="a1lite_button" style="border: 0;" src="https://partner.life-pay.ru/gui/images/a1lite_buttons/button_large.png" value="Оплатить"/>
+                        <input type="submit"/>
                     </form>
                 </div>
             </template>

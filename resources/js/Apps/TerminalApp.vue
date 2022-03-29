@@ -33,7 +33,7 @@ import LayoutUserMenu from "@/Components/Layout/LayoutUserMenu";
 import LayoutHeaderWidget from "@/Components/Layout/LayoutHeaderWidget";
 import IconBoxOffice from "@/Components/Icons/IconBoxOffice";
 import PopUp from "@/Components/PopUp";
-import {mapState} from "vuex"; // add for style import todo fix when use
+import {mapState} from "vuex";
 
 export default {
     props: {
@@ -47,8 +47,7 @@ export default {
         LayoutUserMenu,
         LayoutHeaderWidget,
         IconBoxOffice,
-
-        PopUp, // add for style import todo fix when use
+        PopUp,
     },
 
     computed: {

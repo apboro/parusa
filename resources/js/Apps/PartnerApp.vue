@@ -26,6 +26,7 @@ import LayoutMenu from "@/Components/Layout/LayoutMenu";
 import LayoutUserMenu from "@/Components/Layout/LayoutUserMenu";
 import PartnerHeaderWidget from "@/Apps/PartnerHeaderWidget";
 import Container from "@/Components/GUI/GuiContainer";
+import PopUp from "@/Components/PopUp";
 
 export default {
     props: {
@@ -39,6 +40,7 @@ export default {
         LayoutUserMenu,
         LayoutHeader,
         LayoutMenu,
+        PopUp,
     },
 
     created() {
@@ -48,16 +50,16 @@ export default {
     methods: {
         logout() {
             axios.post('/logout', {})
-            .then(() => {
-                window.location.href = '/';
-            });
+                .then(() => {
+                    window.location.href = '/';
+                });
         },
 
         change() {
             axios.post('/login/change', {})
-            .then(() => {
-                window.location.href = '/';
-            })
+                .then(() => {
+                    window.location.href = '/';
+                })
         }
     },
 }
