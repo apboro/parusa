@@ -66,13 +66,13 @@ export default {
             }
         },
         items() {
-            if (this.ready === null) {
+            if (!this.ready) {
                 return [];
             }
             return this.$store.getters['dictionary/dictionary'](this.dictionary);
         },
         ready() {
-            return this.$store.getters['dictionary/ready'](this.dictionary);
+            return this.$store.getters['dictionary/ready'](this.dictionary) !== null;
         },
     },
 

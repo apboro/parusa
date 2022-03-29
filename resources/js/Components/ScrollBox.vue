@@ -492,6 +492,7 @@
     flex-grow: 1;
     flex-shrink: 1;
     overflow: hidden;
+    height: 100%;
 }
 
 .scroll-box.with-scroll-box-vertical {

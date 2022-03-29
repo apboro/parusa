@@ -1,19 +1,13 @@
 <template>
     <div class="dialogs__overlay" v-if="shown" :class="{'dialogs__overlay-hide': hiding, 'dialogs__overlay-shown': showing}" @click="popupClose">
-
         <div class="dialogs__dialog">
             <LoadingProgress :loading="processing">
-
                 <div class="dialogs__dialog-wrapper">
-
                     <div class="dialogs__dialog-title" v-if="title">{{ title }}</div>
-
                     <div class="dialogs__dialog-message" v-if="message">
                         <div class="dialogs__dialog-message-text">{{ message }}</div>
                     </div>
-
                     <slot/>
-
                     <div class="dialogs__dialog-buttons" :class="'dialogs__dialog-buttons-' + align">
                         <GuiButton v-for="button in buttons"
                                    :color="button.color"
@@ -24,12 +18,9 @@
                             {{ button.caption }}
                         </GuiButton>
                     </div>
-
                 </div>
-
             </LoadingProgress>
         </div>
-
     </div>
 </template>
 
@@ -58,13 +49,16 @@ export default {
     }),
 
     methods: {
-        show() {
+        show(fixed = false) {
             this.processing = false;
             this.showing = true;
             this.hiding = false;
             this.shown = true;
             setTimeout(() => {
                 this.showing = true;
+                if (fixed) {
+                    this.fixSize();
+                }
             }, 100);
             return new Promise(resolve => {
                 this.resolve_function = resolve;
@@ -101,6 +95,14 @@ export default {
                 this.resolve(null);
             }
         },
+
+        fixSize() {
+            const dialog = this.$el.querySelector('.dialogs__dialog');
+            dialog.style.height = null;
+            dialog.style.width = null;
+            dialog.style.height = dialog.clientHeight + 'px';
+            dialog.style.width = dialog.clientWidth + 'px';
+        }
     }
 }
 </script>
@@ -153,12 +155,15 @@ $base_light_gray_color: #e5e5e5 !default;
         box-sizing: border-box;
         padding: 15px;
         box-shadow: $shadow_2;
+        max-height: 95%;
 
         &-wrapper {
             box-sizing: border-box;
             padding: 15px;
             width: 100%;
             height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         &-title {

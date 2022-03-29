@@ -77,6 +77,13 @@ const data = function (url) {
                 }
             }
         },
+
+        reset() {
+            this.data = {};
+            this.payload = {};
+            this.is_loading = false;
+            this.is_loaded = false;
+        }
     };
 
     data.url = url;
