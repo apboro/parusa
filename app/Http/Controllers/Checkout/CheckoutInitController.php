@@ -100,11 +100,11 @@ class CheckoutInitController extends ApiController
     {
         $payment = [
             'cost' => (string)$order->total(),
-            'version' => '2.0',
             'name' => 'Заказ №' . $order->id,
-            'service_id' => env('LIFE_PAY_IE_SERVICE_ID'),
             'email' => $order->email,
+            'service_id' => env('LIFE_PAY_IE_SERVICE_ID'),
             'order_id' => $order->id,
+            'version' => '2.0',
             'comment' => 'Оплата заказа №' . $order->id,
             // 'payment_type' => 'spg_test',
             // 'invoice_data' => '{"items":[{"name":"Покупка электронного билета", "price":1865.00, "unit":"piece", "quantity":1, "sum":1865.00, "vat_mode":"none"}]}',
