@@ -4,11 +4,13 @@
                :options="{id: rateId, excursion_id: excursionId}"
                ref="form_popup"
     >
-        <div class="inline w-450px">
-            <FormDate :form="form" :name="'start_at'"/>
-        </div>
-        <div class="inline w-450px ml-30">
-            <FormDate :form="form" :name="'end_at'" :from="form.values['start_at']"/>
+        <div>
+            <div class="inline w-450px">
+                <FormDate :form="form" :name="'start_at'"/>
+            </div>
+            <div class="inline w-450px ml-30">
+                <FormDate :form="form" :name="'end_at'" :from="form.values['start_at']"/>
+            </div>
         </div>
         <table class="excursion-rate-table">
             <thead>

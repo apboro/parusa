@@ -10,6 +10,9 @@ export default {
         trip_id(state) {
             return state.trip_id;
         },
+        order(state) {
+            return state.order;
+        },
         cart(state) {
             return state.cart;
         },

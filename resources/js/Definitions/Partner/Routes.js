@@ -1,23 +1,30 @@
-import Rates from "../../Pages/Partner/Rates";
+import TripsSelectPage from '@/Pages/Partner/TripsSelectPage';
+import ReturnPage from "@/Pages/Partner/ReturnPage";
+import SettingsPage from '@/Pages/Partner/SettingsPage';
+import OrdersRegistryPage from "@/Pages/Partner/Registries/OrdersRegistryPage";
+import ReservesRegistryPage from "@/Pages/Partner/Registries/ReservesRegistryPage";
+import TicketsRegistryPage from "@/Pages/Partner/Registries/TicketsRegistryPage";
+import OrderPage from "@/Pages/Partner/Registries/OrderPage";
+import TicketPage from "@/Pages/Partner/Registries/TicketPage";
+import PartnerPage from '@/Pages/Partner/PartnerPage';
+import AccountPage from "@/Pages/Partner/AccountPage";
+import Rates from "@/Pages/Partner/Rates";
+import OrderMakePage from "@/Pages/Partner/OrderMakePage";
+import NotFound from '@/Pages/NotFound';
 
 export default [
-    {path: '/', name: 'home', component: () => import('@/Pages/Partner/TripsSelectPage'), meta: {title: 'Подбор билетов'}},
-    {path: '/', name: 'tickets-select', component: () => import('@/Pages/Partner/TripsSelectPage'), meta: {title: 'Подбор билетов'}},
-    {path: '/return', name: 'return', component: () => import("@/Pages/Partner/ReturnPage"), meta: {title: 'Возврат билетов'}},
-
-    {path: '/settings', name: 'settings', component: () => import('@/Pages/Partner/SettingsPage'), meta: {title: 'Настройки'}},
-
-    {path: '/registry/orders', name: 'orders-registry', component: () => import("@/Pages/Partner/Registries/OrdersRegistryPage"), meta: {title: 'Реестр заказов'}},
-    {path: '/registry/reserves', name: 'reserves-registry', component: () => import("@/Pages/Partner/Registries/ReservesRegistryPage"), meta: {title: 'Реестр броней'}},
-    {path: '/registry/tickets', name: 'tickets-registry', component: () => import("@/Pages/Partner/Registries/TicketsRegistryPage"), meta: {title: 'Реестр билетов'}},
-    {path: '/registry/:id', name: 'order-info', component: () => import("@/Pages/Partner/Registries/OrderPage"), meta: {title: 'Заказ'}},
-    {path: '/registry/tickets/:id', name: 'ticket-info', component: () => import("@/Pages/Partner/Registries/TicketPage"), meta: {title: 'Билет'}},
-
-    {path: '/company/info', name: 'company-info', component: () => import('@/Pages/Partner/PartnerPage'), meta: {title: 'Карточка партнёра'}},
-    {path: '/company/account', name: 'company-account', component: () => import("@/Pages/Partner/AccountPage"), meta: {title: 'Лицевой счёт'}},
+    {path: '/', name: 'home', component: TripsSelectPage, meta: {title: 'Подбор билетов'}},
+    {path: '/', name: 'tickets-select', component: TripsSelectPage, meta: {title: 'Подбор билетов'}},
+    {path: '/return', name: 'return', component: ReturnPage, meta: {title: 'Возврат билетов'}},
+    {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки'}},
+    {path: '/registry/orders', name: 'orders-registry', component: OrdersRegistryPage, meta: {title: 'Реестр заказов'}},
+    {path: '/registry/reserves', name: 'reserves-registry', ReservesRegistryPage, meta: {title: 'Реестр броней'}},
+    {path: '/registry/tickets', name: 'tickets-registry', TicketsRegistryPage, meta: {title: 'Реестр билетов'}},
+    {path: '/registry/:id', name: 'order-info', component: OrderPage, meta: {title: 'Заказ'}},
+    {path: '/registry/tickets/:id', name: 'ticket-info', component: TicketPage, meta: {title: 'Билет'}},
+    {path: '/company/info', name: 'company-info', component: PartnerPage, meta: {title: 'Карточка партнёра'}},
+    {path: '/company/account', name: 'company-account', component: AccountPage, meta: {title: 'Лицевой счёт'}},
     {path: '/company/rates', name: 'company-rates', component: Rates, meta: {title: 'Тарифы и комисионное вознаграждение'}},
-
-    {path: '/order', name: 'order', component: () => import("@/Pages/Partner/OrderMakePage"), meta: {title: 'Оформление заказа'}},
-
-    {path: '/:pathMatch(.*)*', name: '404', component: () => import('@/Pages/NotFound')},
+    {path: '/order', name: 'order', component: OrderMakePage, meta: {title: 'Оформление заказа'}},
+    {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 ];

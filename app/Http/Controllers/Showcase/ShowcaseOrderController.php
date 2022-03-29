@@ -164,7 +164,7 @@ class ShowcaseOrderController extends ApiEditController
         return response()->json([
             'payload' => [
                 'id' => $order->id,
-                'payment_page' => 'http://127.0.0.1:8000/checkout.html',
+                'payment_page' => env('SHOWCASE_PAYMENT_PAGE'),
                 'order' => Crypt::encrypt($orderSecret),
             ],
         ])->withCookie(cookie(ExternalProtect::COOKIE_NAME, json_encode($cookie, JSON_THROW_ON_ERROR)));

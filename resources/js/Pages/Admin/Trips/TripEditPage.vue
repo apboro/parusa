@@ -1,6 +1,6 @@
 <template>
     <LayoutPage :loading="processing" :title="form.payload['title']"
-                :breadcrumbs="[{caption: 'Рейсы', to: {name: 'trip-view'}, params: {id: tripId}}]"
+                :breadcrumbs="[{caption: 'Рейсы', to: {name: 'trip-list'}}]"
                 :link="{name: 'trip-list'}"
                 :link-title="'К списку рейсов'"
     >
