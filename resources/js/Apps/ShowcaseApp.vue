@@ -33,7 +33,8 @@ export default {
 
     data: () => ({
         partner: null,
-        base_url: 'http://127.0.0.1:8000', // without trailing slash
+        base_url: 'https://cp.parus-a.ru', // without trailing slash
+        // base_url: 'http://127.0.0.1:8000', // without trailing slash
 
         is_initializing: true,
         is_queued: false,
@@ -56,8 +57,8 @@ export default {
 
     created() {
         const configElement = document.getElementById('ap-showcase-config');
-        const config = JSON.parse(configElement.innerHTML);
-        this.partner = Number(config['partner']);
+        const config = configElement !== null ? JSON.parse(configElement.innerHTML) : null;
+        this.partner = config !== null ? Number(config['partner']) : null;
         this.init();
     },
 
