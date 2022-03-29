@@ -16,7 +16,7 @@
                     <th></th>
                 </tr>
                 </thead>
-                <tr v-for="ticket in data.data['tickets']">
+                <tr v-for="ticket in tickets" :class="{'order-table__first' : ticket['first_in_date'], 'order-table__highlight' : ticket['trip_flag']}">
                     <td>{{ ticket['trip_start_date'] }}</td>
                     <td>{{ ticket['trip_start_time'] }}</td>
                     <td>
@@ -114,9 +114,8 @@ export default {
 
     computed: {
         processing() {
-            return this.data.is_loading || this.form.saving;
+            return this.data.is_loading || this.form.is_saving;
         },
-
         total() {
             if (!this.data.is_loaded || !this.data.data['tickets'] || this.data.data['tickets'].length === 0) {
                 return '—';
@@ -129,7 +128,6 @@ export default {
             });
             return this.multiply(total, 1) + ' руб.';
         },
-
         canOrder() {
             let hasUnavailable = this.data.data['tickets'].some(ticket => !ticket['available']);
             let count = 0;
@@ -137,7 +135,34 @@ export default {
                 count += this.form.values['tickets.' + ticket['id'] + '.quantity'];
             });
             return !hasUnavailable && count > 0;
-        }
+        },
+        tickets() {
+            if (!this.data.data || !this.data.data['tickets'] || !this.data.data['tickets'].length > 0) {
+                return [];
+            }
+            let last_trip = null;
+            let trip_flag = false;
+            let last_date = null;
+            let date_flag = false;
+            return this.data.data['tickets'].map(ticket => {
+                // check trip and date changed
+                ticket['first_in_trip'] = last_trip !== null && ticket['trip_id'] !== last_trip;
+                ticket['first_in_date'] = last_date !== null && ticket['trip_start_date'] !== last_date;
+
+                // add trip and date grouping
+                if (last_trip === null) last_trip = ticket['trip_id'];
+                if (last_date === null) last_date = ticket['trip_start_date'];
+                if (last_trip !== ticket['trip_id']) trip_flag = !trip_flag;
+                if (last_date !== ticket['trip_start_date']) date_flag = !date_flag;
+                ticket['trip_flag'] = trip_flag;
+                ticket['date_flag'] = date_flag;
+
+                last_trip = ticket['trip_id'];
+                last_date = ticket['trip_start_date'];
+
+                return ticket;
+            });
+        },
     },
 
     created() {
@@ -246,6 +271,14 @@ $base_black_color: #1e1e1e !default;
     width: 100%;
     color: $base_black_color;
 
+    &__first {
+        border-top: 1px solid #999999;
+    }
+
+    &__highlight {
+        background-color: #f1f1f1;
+    }
+
     & thead {
         color: #424242;
 
@@ -262,7 +295,7 @@ $base_black_color: #1e1e1e !default;
 
     & td {
         vertical-align: middle;
-        padding: 0 10px;
+        padding: 5px 10px;
         cursor: default;
     }
 

@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Http\Controllers\API\Excursions;
+
+use App\Http\APIResponse;
+use App\Http\Controllers\ApiController;
+use App\Models\Common\Image;
+use App\Models\Dictionaries\ExcursionProgram;
+use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Excursions\Excursion;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class ExcursionInfoController extends ApiController
+{
+    public function info(Request $request): JsonResponse
+    {
+        $id = $request->input('id');
+
+        /** @var Excursion $excursion */
+        if ($id === null ||
+            null === ($excursion = Excursion::query()->with(['status', 'programs'])->where('id', $id)->first())) {
+            return APIResponse::notFound('Экскурсия не найдена');
+        }
+
+        // fill data
+        $values = [
+            'name' => $excursion->name,
+            'status' => $excursion->status->name,
+            'active' => $excursion->hasStatus(ExcursionStatus::active),
+            'images' => $excursion->images->map(function (Image $image) {
+                return 'data:' . $image->mime . ';base64, ' . base64_encode(Storage::disk($image->disk)->get($image->filename));
+            }),
+            'programs' => $excursion->programs->map(function (ExcursionProgram $program) {
+                return $program->name;
+            }),
+            'duration' => $excursion->info->duration,
+            'description' => $excursion->info->description,
+            'announce' => $excursion->info->announce,
+        ];
+
+        // send response
+        return APIResponse::response($values);
+    }
+}

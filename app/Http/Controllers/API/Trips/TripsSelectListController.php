@@ -117,6 +117,7 @@ class TripsSelectListController extends ApiController
                 'programs' => $excursion->programs->map(function (ExcursionProgram $program) {
                     return $program->name;
                 }),
+                'pier_id' => $trip->start_pier_id,
                 'pier' => $trip->startPier->name,
                 'tickets_count' => $trip->getAttribute('tickets_count'),
                 'tickets_total' => $trip->tickets_total,

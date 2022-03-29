@@ -65,11 +65,11 @@
                     <div><span :style="{fontSize: '13px'}">{{ trip['start_date'] }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
-                    <div><b>{{ trip['excursion'] }}</b></div>
+                    <div class="link" @click="excursionInfo(trip['excursion_id'])"><b>{{ trip['excursion'] }}</b></div>
                     <div><span :style="{fontSize: '13px'}">{{ trip['programs'] && trip['programs'].length ? trip['programs'].join(', ') : '' }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
-                    {{ trip['pier'] }}
+                    <span class="link" @click="pierInfo(trip['pier_id'])">{{ trip['pier'] }}</span>
                 </ListTableCell>
                 <ListTableCell>
                     {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})
@@ -93,6 +93,8 @@
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
         <TicketsSelect ref="select_popup"/>
+        <ExcursionInfo ref="excursion_info"/>
+        <PierInfo ref="pier_info"/>
     </LayoutPage>
 </template>
 
@@ -113,10 +115,13 @@ import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
 import GuiButton from "@/Components/GUI/GuiButton";
 import TicketsSelect from "@/Pages/Partner/Parts/TicketsSelect";
-
+import ExcursionInfo from "@/Pages/Partner/Parts/ExcursionInfo";
+import PierInfo from "@/Pages/Partner/Parts/PierInfo";
 
 export default {
     components: {
+        PierInfo,
+        ExcursionInfo,
         TicketsSelect,
         GuiButton,
         ListTableCell,
@@ -137,6 +142,7 @@ export default {
     data: () => ({
         list: list('/api/trips/select'),
         form: null,
+        popup_title: null,
     }),
 
     created() {
@@ -154,6 +160,12 @@ export default {
         },
         addToOrder(trip) {
             this.$refs.select_popup.handle(trip);
+        },
+        excursionInfo(excursion_id) {
+            this.$refs.excursion_info.show(excursion_id);
+        },
+        pierInfo(pier_id) {
+            this.$refs.pier_info.show(pier_id);
         },
     }
 }

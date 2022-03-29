@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\Piers\PierDeleteController;
 use App\Http\Controllers\API\Piers\PierEditController;
+use App\Http\Controllers\API\Piers\PierInfoController;
 use App\Http\Controllers\API\Piers\PierPropertiesController;
 use App\Http\Controllers\API\Piers\PiersListController;
 use App\Http\Controllers\API\Piers\PierViewController;
@@ -15,3 +16,5 @@ Route::post('/piers/get', [PierEditController::class, 'get'])->middleware(['allo
 Route::post('/piers/update', [PierEditController::class, 'update'])->middleware(['allow:staff_admin']);
 
 Route::post('/piers/delete', [PierDeleteController::class, 'delete'])->middleware(['allow:staff_admin']);
+
+Route::post('/piers/info', [PierInfoController::class, 'info'])->middleware(['allow:partner']);
