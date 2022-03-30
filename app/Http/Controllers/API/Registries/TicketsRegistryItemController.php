@@ -24,7 +24,7 @@ class TicketsRegistryItemController extends ApiController
                     $query->where('partner_id', $current->partnerId());
                 });
             })
-            ->with(['status', 'order', 'order.type', 'order.partner', 'order.position.user.profile', 'trip', 'trip.excursion', 'trip.startPier', 'grade'])
+            ->with(['status', 'order', 'order.type', 'order.partner', 'order.position.user.profile', 'trip', 'trip.excursion', 'trip.startPier', 'grade', 'return'])
             ->first();
 
         if ($ticket === null) {

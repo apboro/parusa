@@ -1,6 +1,6 @@
 <template>
     <div>
-        <GuiContainer w-50 mt-30 inline>
+        <GuiContainer mt-30>
             <GuiValue :title="'Номер кассы'">{{ data['id'] }}</GuiValue>
             <GuiValue :title="'Причал'">{{ data['pier'] }}</GuiValue>
             <GuiValue :title="'Адрес'">{{ data['address'] }}</GuiValue>
@@ -8,8 +8,11 @@
                 <span class="link" v-if="editable" @click="statusChange"><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
                 <span v-else><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
             </GuiValue>
+        </GuiContainer>
+        <GuiContainer mt-30>
             <GuiValue :title="'Внешний ID мобильной кассы'">{{ data['workplace_id'] }}</GuiValue>
             <GuiValue :title="'Внешний ID торговой точки'">{{ data['outlet_id'] }}</GuiValue>
+            <!--<GuiValue :title="'Внешний ID организации'">{{ data['organization_id'] }}</GuiValue>-->
         </GuiContainer>
 
         <GuiContainer mt-15 v-if="editable">

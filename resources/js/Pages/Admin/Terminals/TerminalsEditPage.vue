@@ -5,10 +5,13 @@
                 :link-title="'К списку мобильных касс'"
     >
         <GuiContainer mt-30>
-            <FormString :form="form" :name="'workplace_id'"/>
-            <FormString :form="form" :name="'outlet_id'"/>
-            <FormDictionary :form="form" :dictionary="'terminal_statuses'" :name="'status_id'" :fresh="true"/>
             <FormDictionary :form="form" :dictionary="'piers'" :name="'pier_id'" :fresh="true" :search="true"/>
+            <FormDictionary :form="form" :dictionary="'terminal_statuses'" :name="'status_id'" :fresh="true"/>
+        </GuiContainer>
+        <GuiContainer mt-30>
+            <!--<FormString :form="form" :name="'organization_id'"/>-->
+            <FormString :form="form" :name="'outlet_id'"/>
+            <FormString :form="form" :name="'workplace_id'"/>
         </GuiContainer>
 
         <GuiContainer mt-30>
