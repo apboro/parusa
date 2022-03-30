@@ -15,8 +15,8 @@ export default [
     {path: '/reserves/:id', name: 'reserve', component: ReservePage, meta: {title: 'Бронь'}},
     {path: '/return', name: 'return-search', component: ReturnSearchPage, meta: {title: 'Возврат билетов'}},
     {path: '/return/:id', name: 'return', component: ReturnPage, meta: {title: 'Заказ'}},
-    {path: '/registry/orders', name: 'orders-registry', OrdersRegistryPage, meta: {title: 'Реестр заказов'}},
-    {path: '/registry/orders/:id', name: 'order-info', OrderPage, meta: {title: 'Заказ'}},
+    {path: '/registry/orders', name: 'orders-registry', component: OrdersRegistryPage, meta: {title: 'Реестр заказов'}},
+    {path: '/registry/orders/:id', name: 'order-info', component: OrderPage, meta: {title: 'Заказ'}},
 
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 ];
