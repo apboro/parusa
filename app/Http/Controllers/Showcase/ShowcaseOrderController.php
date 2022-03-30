@@ -119,12 +119,13 @@ class ShowcaseOrderController extends ApiEditController
         }
 
         /** @var ?Partner $partner */
-        $partner = $cookies['partner'] ? Partner::query()->where('id', $cookies['partner'])->first() : null;
+        $partner = $cookies['partner_id'] ? Partner::query()->where('id', $cookies['partner_id'])->first() : null;
+        $isPartnerSite = $cookies['is_partner'];
         $media = $cookies['media'] ?? null;
 
         if ($media === 'qr') {
             $orderType = OrderType::qr_code;
-        } else if ($partner !== null) {
+        } else if ($isPartnerSite) {
             $orderType = OrderType::partner_site;
         } else {
             $orderType = OrderType::site;
@@ -152,7 +153,7 @@ class ShowcaseOrderController extends ApiEditController
             'ts' => Carbon::now(),
             'ua' => $request->userAgent(),
             'ip' => $request->ip(),
-            'ref' => $request->header('referer'),
+            'ref' => $request->input('ref'),
         ], JSON_THROW_ON_ERROR);
 
         // clear media and partner cookie after successful order.

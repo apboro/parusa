@@ -39,15 +39,15 @@ use Illuminate\Http\Request;
 class DictionaryController extends ApiController
 {
     protected array $dictionaries = [
-        'excursion_programs' => ['class' => ExcursionProgram::class, 'allow' => 'staff_admin,partner'],
+        'excursion_programs' => ['class' => ExcursionProgram::class, 'allow' => 'staff_admin,staff_terminal,partner'],
         'excursion_statuses' => ['class' => ExcursionStatus::class, 'allow' => 'staff_admin'],
-        'excursions' => ['class' => Excursion::class, 'allow' => 'staff_admin,partner'],
+        'excursions' => ['class' => Excursion::class, 'allow' => 'staff_admin,staff_terminal,partner'],
         'order_types' => ['class' => OrderType::class, 'allow' => 'staff_admin,partner'],
         'partner_statuses' => ['class' => PartnerStatus::class, 'allow' => 'staff_admin'],
         'partner_types' => ['class' => PartnerType::class, 'allow' => 'staff_admin'],
         'partners' => ['class' => Partner::class, 'allow' => 'staff_admin'],
         'pier_statuses' => ['class' => PiersStatus::class, 'allow' => 'staff_admin'],
-        'piers' => ['class' => Pier::class, 'allow' => 'staff_admin,partner'],
+        'piers' => ['class' => Pier::class, 'allow' => 'staff_admin,staff_terminal,partner'],
         'position_access_statuses' => ['class' => PositionAccessStatus::class, 'allow' => 'staff_admin'],
         'position_statuses' => ['class' => PositionStatus::class, 'allow' => 'staff_admin'],
         'representatives' => ['class' => User::class, 'allow' => 'staff_admin'],

@@ -33,7 +33,8 @@ class ShowcaseInitController extends ApiController
         $cookie = [
             'ip' => $request->ip(),
             'user-agent' => $request->userAgent(),
-            'partner' => $originalCookie['partner'] ?? $request->input('partner'),
+            'is_partner' => $originalCookie['partner'] ?? $request->input('is_partner'),
+            'partner_id' => $originalCookie['partner'] ?? $request->input('partner_id'),
             'media' => $originalCookie['media'] ?? $request->input('media'),
         ];
 

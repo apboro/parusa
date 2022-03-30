@@ -9,6 +9,22 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class APIResponse
 {
     /**
+     * Make 301 redirect response.
+     *
+     * @param string $to
+     * @param string|null $message
+     *
+     * @return  JsonResponse
+     */
+    public static function redirect(string $to, ?string $message = 'Перенаправление'): JsonResponse
+    {
+        return response()->json([
+            'message' => $message,
+            'to' => $to,
+        ], 301);
+    }
+
+    /**
      * Make 304 not modified response.
      *
      * @return  JsonResponse
