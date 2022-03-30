@@ -2,14 +2,11 @@
 
 namespace Tests\Relations\Partner;
 
-use App\Exceptions\Partner\WrongPartnerStatusException;
-use App\Exceptions\Partner\WrongPositionStatusException;
-use App\Models\Dictionaries\PartnerStatus;
+use App\Exceptions\Positions\WrongPositionStatusException;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Partner\Partner;
 use App\Models\Partner\PartnerUserPosition;
 use App\Models\User\User;
-use Exception;
 use Illuminate\Database\QueryException;
 use Tests\Relations\StatusTestTrait;
 use Tests\TestCase;
