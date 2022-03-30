@@ -29,7 +29,9 @@ const showcaseStore = createStore({
     })]
 });
 
-const showcaseApp = createApp(ShowcaseApp, {});
+const config = require('config');
+
+const showcaseApp = createApp(ShowcaseApp, {crm_url: config['crm_url'], debug: config['debug']});
 showcaseApp.use(showcaseStore);
 
 document.addEventListener('DOMContentLoaded', () => {

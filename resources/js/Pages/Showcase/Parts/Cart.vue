@@ -31,6 +31,9 @@
                     </div>
                 </div>
             </div>
+            <div class="ap-showcase__actions">
+                <GuiButton @click="unselect">Подобрать другой рейс</GuiButton>
+            </div>
         </div>
 
         <template v-if="has_error === false">
@@ -117,7 +120,8 @@ export default {
     name: "Cart",
     components: {GuiMessage, InputCheckbox, FormPhone, FormString, FormNumber, GuiButton},
     props: {
-        base_url: {type: String, required: true},
+        crm_url: {type: String, required: true},
+        debug: {type: Boolean, default: false},
         tripId: {type: Number, default: null},
         trip: {type: Object, default: null},
     },
@@ -164,7 +168,8 @@ export default {
     }),
 
     created() {
-        this.form = form(null, this.base_url + '/showcase/order', {trip: this.tripId});
+        this.form = form(null, this.crm_url + '/showcase/order' + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : ''),
+            {trip: this.tripId, ref: window.location.href});
     },
 
     mounted() {
@@ -198,12 +203,13 @@ export default {
                 .then(response => {
                     // store order secret
                     const order = response.payload['order'];
-                    this.$emit('order', order);
-
+                    const id = response.payload['id'];
+                    this.$emit('order', order, id);
                     // redirect to payment page
                     const url = response.payload['payment_page'];
-
-                    window.location.href = `${url}?order=${order}`;
+                    setTimeout(() => {
+                        window.location.href = `${url}?order=${order}`;
+                    }, 50);
                 })
                 .catch(error => {
                     this.has_error = true;

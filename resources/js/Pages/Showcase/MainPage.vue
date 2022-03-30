@@ -1,6 +1,18 @@
 <template>
     <div class="ap-showcase">
-        <TripSelect v-if="trip_id === null"
+        <GuiMessage v-if="recently_created">Перенапрваление на оплату</GuiMessage>
+        <Final v-else-if="order !== null"
+               @close="select"
+        />
+        <Cart v-else-if="trip_id !== null"
+              :crm_url="crm_url"
+              :debug="debug"
+              :trip-id="trip_id"
+              :trip="trip"
+              @select="select"
+              @order="storeSecret"
+        />
+        <TripSelect v-else
                     :partner="partner"
                     :today="today"
                     :date="date"
@@ -16,13 +28,6 @@
                     @find="find"
                     @select="select"
         />
-        <Cart v-if="trip_id !== null"
-              :base_url="base_url"
-              :trip-id="trip_id"
-              :trip="trip"
-              @select="select"
-              @order="storeSecret"
-        />
     </div>
 </template>
 
@@ -30,15 +35,20 @@
 import TripSelect from "@/Pages/Showcase/Parts/TripSelect";
 import Cart from "@/Pages/Showcase/Parts/Cart";
 import {mapGetters} from "vuex";
+import Final from "@/Pages/Showcase/Parts/Final";
+import GuiMessage from "@/Components/GUI/GuiMessage";
 
 export default {
     components: {
+        GuiMessage,
+        Final,
         Cart,
         TripSelect,
     },
 
     props: {
-        base_url: {type: String, required: true},
+        crm_url: {type: String, required: true},
+        debug: {type: Boolean, default: false},
         partner: {type: Number, default: null},
         today: {type: String, default: null},
         date: {type: String, default: null},
@@ -58,7 +68,7 @@ export default {
             persons: null,
             programs: null,
         },
-        test: null,
+        recently_created: false,
     }),
 
     watch: {
@@ -68,9 +78,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters('showcase', [
-            'trip_id',
-        ]),
+        ...mapGetters('showcase', ['trip_id', 'order', 'order_id'])
     },
 
     methods: {
@@ -80,7 +88,7 @@ export default {
         updateSearch(key, value) {
             this.search[key] = value;
         },
-        select(trip_id) {
+        select(trip_id = null) {
             this.$store.commit('showcase/trip_id', trip_id);
             if (trip_id !== null) {
                 this.$emit('select', trip_id);
@@ -88,8 +96,10 @@ export default {
                 this.$emit('find', this.search);
             }
         },
-        storeSecret(secret) {
-
+        storeSecret(secret, order_id) {
+            this.$store.commit('showcase/order', secret);
+            this.$store.commit('showcase/order_id', order_id);
+            this.recently_created = true;
         },
     }
 }

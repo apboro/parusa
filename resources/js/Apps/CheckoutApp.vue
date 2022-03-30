@@ -1,6 +1,6 @@
 <template>
     <div class="ap-checkout">
-        <LoadingProgress :loading="is_initializing" :opacity="100">
+        <LoadingProgress :loading="processing" :opacity="100">
             <template v-if="!has_error">
                 <h2 class="ap-checkout__header">Заказ №{{ order['id'] }}</h2>
 
@@ -35,7 +35,7 @@
                 <div class="ap-checkout__contact">Телефон: {{ order['phone'] }}</div>
                 <div class="ap-checkout__countdown">Время на оплату: {{ remind }}</div>
                 <div class="ap-checkout__actions">
-                    <form method="POST" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" :action="payment['url']" id="ap-checkout-form">
+                    <form method="POST" accept-charset="UTF-8" enctype="application/x-www-form-urlencoded" :action="payment['url']" id="ap-checkout-form" ref="form">
                         <input type="hidden" name="cost" :value="payment['cost']"/>
                         <input type="hidden" name="name" :value="payment['name']"/>
                         <input type="hidden" name="email" :value="payment['email']"/>
@@ -43,18 +43,17 @@
                         <input type="hidden" name="order_id" :value="payment['order_id']"/>
                         <input type="hidden" name="version" :value="payment['version']"/>
                         <input type="hidden" name="comment" :value="payment['comment']"/>
-<!--                        <input type="hidden" name="payment_type" :value="payment['payment_type']"/>-->
-<!--                        <input type="hidden" name="invoice_data" :value="payment['invoice_data']"/>-->
+                        <input type="hidden" name="payment_type" :value="payment['payment_type']"/>
                         <input type="hidden" name="check" :value="payment['check']"/>
-
-                        <input type="submit"/>
                     </form>
+                    <!--                    <GuiButton @click="cancel">Отмена</GuiButton>-->
+                    <GuiButton @click="checkout" :color="'green'">Оплатить</GuiButton>
                 </div>
             </template>
 
             <template v-if="has_error">
                 <GuiMessage>{{ error_message }}</GuiMessage>
-                <a class="ap-checkout__link" :href="back_link">Вернуться к оформлению</a>
+                <a class="ap-checkout__link" :href="back_link" v-if="back_link">Вернуться к оформлению</a>
             </template>
         </LoadingProgress>
     </div>
@@ -63,23 +62,30 @@
 <script>
 import LoadingProgress from "@/Components/LoadingProgress";
 import GuiMessage from "@/Components/GUI/GuiMessage";
+import GuiButton from "@/Components/GUI/GuiButton";
 
 export default {
     name: "CheckoutApp",
 
+    props: {
+        crm_url: {type: String, default: 'https://cp.parus-a.ru'},
+        debug: {type: Boolean, default: false},
+    },
+
     components: {
+        GuiButton,
         GuiMessage,
         LoadingProgress,
     },
 
     data: () => ({
-        base_url: 'https://cp.parus-a.ru', // without trailing slash
-        // base_url: 'http://127.0.0.1:8000', // without trailing slash
-        is_initializing: true,
+        processing: true,
+
         has_error: false,
         error_message: null,
         back_link: null,
         order: {},
+        order_encrypted: null,
         payment: {},
         lifetime: null,
         updater: null,
@@ -107,25 +113,39 @@ export default {
     },
 
     methods: {
+        url(path) {
+            return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
+        },
         init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const order = urlParams.get('order');
+            let parameters = {};
+            if (urlParams.has('order')) {
+                parameters['order'] = urlParams.get('order');
+                this.order_encrypted = parameters['order'];
+            } else if (urlParams.has('tid')) {
+                parameters['response'] = {};
+                for (let param of urlParams) {
+                    parameters['response'][param[0]] = param[1];
+                }
+            }
+            this.processing = true;
 
-            this.is_initializing = true;
-
-            axios.post(this.base_url + '/checkout/init?XDEBUG_SESSION_START=PHPSTORM', {order: order})
+            axios.post(this.url('/checkout/handle'), parameters)
                 .then(response => {
                     this.order = response.data['order'];
                     this.payment = response.data['payment'];
                     this.lifetime = response.data['lifetime'];
+                    this.processing = false;
                 })
                 .catch(error => {
                     this.error_message = error.response.data['message'];
-                    this.back_link = error.response.data.payload['backlink'];
                     this.has_error = true;
-                })
-                .finally(() => {
-                    this.is_initializing = false;
+                    if (error.response.status === 301) {
+                        window.location.href = error.response.data['to'];
+                    } else {
+                        this.processing = false;
+                    }
+                    this.back_link = typeof error.response.data.payload['backlink'] !== "undefined" ? error.response.data.payload['backlink'] : null;
                 });
         },
         updateLifetime() {
@@ -139,6 +159,35 @@ export default {
         },
         lifetimeExpired() {
             this.init();
+        },
+        // cancel() {
+        // axios.post(this.url('/checkout/cancel'), {order: order})
+        //     .then(response => {
+        //         this.order = response.data['order'];
+        //         this.payment = response.data['payment'];
+        //         this.lifetime = response.data['lifetime'];
+        //     })
+        //     .catch(error => {
+        //         this.error_message = error.response.data['message'];
+        //         this.back_link = error.response.data.payload['backlink'];
+        //         this.has_error = true;
+        //     })
+        //     .finally(() => {
+        //         this.is_initializing = false;
+        //     });
+        // },
+        checkout() {
+            this.processing = true;
+            axios.post(this.url('/checkout/pay'), {order: this.order_encrypted})
+                .then(() => {
+                    this.$refs.form.submit();
+                })
+                .catch(error => {
+                    this.error_message = error.response.data['message'];
+                    this.back_link = error.response.data.payload['backlink'];
+                    this.has_error = true;
+                    this.processing = false;
+                })
         },
     }
 }

@@ -5,7 +5,8 @@
         </template>
         <MainPage v-else
                   :partner="partner"
-                  :base_url="base_url"
+                  :crm_url="crm_url"
+                  :debug="debug"
                   :today="today"
                   :date="date"
                   :date_from="date_from"
@@ -29,12 +30,17 @@ import GuiButton from "@/Components/GUI/GuiButton";
 export default {
     name: "ShowcaseApp",
 
+    props: {
+        crm_url: {type: String, default: 'https://cp.parus-a.ru'},
+        debug: {type: Boolean, default: false},
+    },
+
     components: {GuiButton, GuiMessage, LoadingProgress, MainPage},
 
     data: () => ({
         partner: null,
-        base_url: 'https://cp.parus-a.ru', // without trailing slash
-        // base_url: 'http://127.0.0.1:8000', // without trailing slash
+        media: null,
+        is_partner_page: true,
 
         is_initializing: true,
         is_queued: false,
@@ -58,34 +64,54 @@ export default {
     created() {
         const configElement = document.getElementById('ap-showcase-config');
         const config = configElement !== null ? JSON.parse(configElement.innerHTML) : null;
-        this.partner = config !== null ? Number(config['partner']) : null;
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (urlParams.has('partner')) {
+            this.partner = Number(urlParams.get('partner'));
+        } else {
+            this.partner = config !== null && typeof config['partner'] !== "undefined" && config['partner'] !== null ? Number(config['partner']) : null;
+        }
+        this.media = urlParams.get('media');
+        if(config !== null && typeof config['partner_site'] !== "undefined" && config['partner_site'] === false) {
+            this.is_partner_page = false;
+        }
+
         this.init();
     },
 
     methods: {
+        url(path) {
+            return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
+        },
         init() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const partner = urlParams.get('partner');
-            const media = urlParams.get('media');
-            axios.post(this.base_url + '/showcase/init', {partner: partner ? partner : this.partner, media: media})
-                .then(response => {
-                    this.today = response.data['today'];
-                    this.date_from = response.data['date_from'];
-                    this.date_to = response.data['date_to'];
-                    this.programs = response.data['programs'];
+            return new Promise((resolve, reject) => {
+                axios.post(this.url('/showcase/init'), {
+                    is_partner: this.is_partner_page,
+                    partner_id: this.partner,
+                    media: this.media
                 })
-                .catch(error => {
-                    this.error_message = error.response.data['message'];
-                    this.has_error = true;
-                })
-                .finally(() => {
-                    this.is_initializing = false;
-                });
+                    .then(response => {
+                        this.today = response.data['today'];
+                        this.date_from = response.data['date_from'];
+                        this.date_to = response.data['date_to'];
+                        this.programs = response.data['programs'];
+                        resolve();
+                    })
+                    .catch(error => {
+                        this.error_message = error.response.data['message'];
+                        console.log(this.error_message);
+                        this.has_error = true;
+                        reject();
+                    })
+                    .finally(() => {
+                        this.is_initializing = false;
+                    });
+            });
         },
 
         reset() {
             this.$store.commit('showcase/trip_id', null);
-            this.init();
+            return this.init();
         },
 
         getList(search) {
@@ -96,7 +122,7 @@ export default {
             }
             this.is_loading = true;
             this.is_trips_loaded = false;
-            axios.post(this.base_url + '/showcase/trips', {search})
+            axios.post(this.url('/showcase/trips'), {search})
                 .then(response => {
                     this.trips = response.data['trips'];
                     this.date = response.data['date'];
@@ -125,15 +151,17 @@ export default {
                 return;
             }
             this.is_loading = true;
-            axios.post(this.base_url + '/showcase/trip', {id: id})
+            axios.post(this.url('/showcase/trip'), {id: id})
                 .then(response => {
                     this.trip = response.data['trip'];
                 })
-                .catch(error => {
-                    this.error_message = error.response.data['message'];
-                    console.log(this.error_message);
-                    this.has_error = true;
-                    this.reset();
+                .catch(() => {
+                    // this.error_message = error.response.data['message'];
+                    // this.has_error = true;
+                    this.reset()
+                        .then(() => {
+                            this.trip = null;
+                        });
                 })
                 .finally(() => {
                     this.is_loading = false;
