@@ -42,13 +42,13 @@ class LifePosNotificationsController extends ApiController
                     $this->handleSaleRefund($input);
                     break;
                 default:
-                    Log::channel('payments')->error("LifePos: unhandled notification [{$input['type_of']}]");
-                    Log::channel('payments')->info(json_encode($input));
+                    Log::channel('lifepos_payments')->error("LifePos: unhandled notification [{$input['type_of']}]");
+                    Log::channel('lifepos_payments')->info(json_encode($input));
             }
         } catch (Exception $exception) {
-            Log::channel('payments')->error($exception->getMessage());
+            Log::channel('lifepos_payments')->error($exception->getMessage());
             if(!empty($input)) {
-                Log::channel('payments')->info('Request content: ' . json_encode($input));
+                Log::channel('lifepos_payments')->info('Request content: ' . json_encode($input));
             }
         }
 
@@ -66,7 +66,7 @@ class LifePosNotificationsController extends ApiController
      */
     protected function handleSale(array $input): void
     {
-        Log::channel('payments')->info(sprintf('LifePos [Sale:%s] status -> %s', $input['guid'], $input['status']));
+        Log::channel('lifepos_payments')->info(sprintf('LifePos [Sale:%s] status -> %s', $input['guid'], $input['status']));
     }
 
     /**
@@ -78,7 +78,7 @@ class LifePosNotificationsController extends ApiController
      */
     protected function handleSalePayment(array $input): void
     {
-        Log::channel('payments')->info(sprintf('LifePos [SalePayment:%s] received total - %s', $input['guid'], $input['total_sum']['value']));
+        Log::channel('lifepos_payments')->info(sprintf('LifePos [SalePayment:%s] received total - %s', $input['guid'], $input['total_sum']['value']));
 
         // update order status and payment data
         try {
@@ -113,11 +113,11 @@ class LifePosNotificationsController extends ApiController
                     $order->setStatus(OrderStatus::terminal_paid);
 
                 } else {
-                    Log::channel('payments')->error(sprintf('LifePos [SalePayment:%s] - order not found', $input['guid']));
+                    Log::channel('lifepos_payments')->error(sprintf('LifePos [SalePayment:%s] - order not found', $input['guid']));
                 }
             }
         } catch (Exception $exception) {
-            Log::channel('payments')->error(sprintf('LifePos [SalePayment:%s] - %s', $input['guid'], $exception->getMessage()));
+            Log::channel('lifepos_payments')->error(sprintf('LifePos [SalePayment:%s] - %s', $input['guid'], $exception->getMessage()));
         }
     }
 
@@ -130,7 +130,7 @@ class LifePosNotificationsController extends ApiController
      */
     protected function handleFiscalDocumentReceipt(array $input): void
     {
-        Log::channel('payments')->info(sprintf('LifePos [FiscalDocumentReceipt:%s] fiscal received', $input['guid']));
+        Log::channel('lifepos_payments')->info(sprintf('LifePos [FiscalDocumentReceipt:%s] fiscal received', $input['guid']));
 
         // store fiscal data
         $print = $input['sources']['print_view'];
@@ -148,7 +148,7 @@ class LifePosNotificationsController extends ApiController
      */
     protected function handleSaleRefund(array $input): void
     {
-        Log::channel('payments')->info(sprintf('LifePos [SaleRefund:%s] for payment %s - returned total: %s', $input['guid'], $input['for_payment']['guid'], $input['total_sum']['value']));
+        Log::channel('lifepos_payments')->info(sprintf('LifePos [SaleRefund:%s] for payment %s - returned total: %s', $input['guid'], $input['for_payment']['guid'], $input['total_sum']['value']));
 
         /** @var Payment|null $parent */
         $parent = Payment::query()->where('external_id', $input['for_payment']['guid'])->first();
@@ -175,7 +175,7 @@ class LifePosNotificationsController extends ApiController
             });
 
         } else {
-            Log::channel('payments')->error(sprintf('LifePos [SaleRefund:%s] - order not found', $input['guid']));
+            Log::channel('lifepos_payments')->error(sprintf('LifePos [SaleRefund:%s] - order not found', $input['guid']));
         }
     }
 }

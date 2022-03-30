@@ -60,9 +60,15 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
         ],
 
-        'payments' => [
+        'lifepos_payments' => [
             'driver' => 'single',
-            'path' => storage_path('logs/payments.log'),
+            'path' => storage_path('logs/lifepos_payments.log'),
+            'level' => 'info',
+        ],
+
+        'lifepay_payments' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/lifepay_payments.log'),
             'level' => 'info',
         ],
 
