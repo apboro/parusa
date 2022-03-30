@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Trip $trip
  * @property TicketGrade $grade
  * @property AccountTransaction $transaction
+ * @property TicketReturn $return
  */
 class Ticket extends Model implements Statusable
 {
@@ -100,13 +101,23 @@ class Ticket extends Model implements Statusable
     }
 
     /**
-     * Relater transaction.
+     * Related transaction.
      *
      * @return  HasOne
      */
     public function transaction(): HasOne
     {
         return $this->hasOne(AccountTransaction::class, 'ticket_id', 'id');
+    }
+
+    /**
+     * Related return.
+     *
+     * @return  HasOne
+     */
+    public function return(): HasOne
+    {
+        return $this->hasOne(TicketReturn::class, 'ticket_id', 'id');
     }
 
     /**

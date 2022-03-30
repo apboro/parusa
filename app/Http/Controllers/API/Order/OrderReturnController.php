@@ -10,6 +10,7 @@ use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
+use App\Models\Tickets\TicketReturn;
 use App\Models\User\Helpers\Currents;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -75,10 +76,11 @@ class OrderReturnController extends ApiController
                             if (!$ticket->hasStatus(TicketStatus::partner_paid)) {
                                 throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
                             }
-                            $ticket->refundTicket($current->position(), $reasonOfReturn);
+                            $ticket->refundTicket($current->position());
                             $ticket->refundCommission($current->position());
                             $ticket->setStatus(TicketStatus::partner_returned);
                             $ticket->save();
+                            $ticket->return()->save(new TicketReturn(['reason' => $reasonOfReturn]));
                         }
                     }
                 });
