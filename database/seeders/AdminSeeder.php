@@ -20,7 +20,7 @@ class AdminSeeder extends Seeder
         /** @var User $admin */
         if (User::query()->where('id', 1)->count() === 0) {
             $admin = User::factory()->create(['login' => 'admin', 'password' => Hash::make('admin')]);
-            $admin->staffPosition()->create(['title' => 'Адмнинстратор', 'is_staff' => true]);
+            $admin->staffPosition()->create(['title' => 'Админинстратор', 'is_staff' => true]);
             $admin->profile()->create(['lastname' => 'Администратор', 'firstname' => 'Администратор', 'gender' => 'male']);
             $admin->staffPosition->roles()->attach(Role::admin);
         }

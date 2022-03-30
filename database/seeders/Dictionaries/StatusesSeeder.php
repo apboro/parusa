@@ -23,15 +23,15 @@ class StatusesSeeder extends GenericSeeder
     protected array $data = [
         UserStatus::class => [
             UserStatus::active => ['name' => 'Действующий'],
-            UserStatus::blocked => ['name' => 'Не действующий'],
+            UserStatus::blocked => ['name' => 'Недействующий'],
         ],
         PartnerStatus::class => [
             PartnerStatus::active => ['name' => 'Действующий'],
-            PartnerStatus::blocked => ['name' => 'Не действующий'],
+            PartnerStatus::blocked => ['name' => 'Недействующий'],
         ],
         PositionStatus::class => [
             PositionStatus::active => ['name' => 'Действующий'],
-            PositionStatus::blocked => ['name' => 'Не действующий'],
+            PositionStatus::blocked => ['name' => 'Недействующий'],
         ],
         PositionAccessStatus::class => [
             PositionAccessStatus::active => ['name' => 'Открыт', 'order' => 1],
@@ -40,15 +40,15 @@ class StatusesSeeder extends GenericSeeder
 
         ExcursionStatus::class => [
             ExcursionStatus::active => ['name' => 'Действующая'],
-            ExcursionStatus::blocked => ['name' => 'Не действующая'],
+            ExcursionStatus::blocked => ['name' => 'Недействующая'],
         ],
         PiersStatus::class => [
             PiersStatus::active => ['name' => 'Действующий'],
-            PiersStatus::blocked => ['name' => 'Не действующий'],
+            PiersStatus::blocked => ['name' => 'Недействующий'],
         ],
         ShipStatus::class => [
             ShipStatus::active => ['name' => 'Действующий'],
-            ShipStatus::blocked => ['name' => 'Не действующий'],
+            ShipStatus::blocked => ['name' => 'Недействующий'],
         ],
         TripStatus::class => [
             TripStatus::regular => ['name' => 'По расписанию'],

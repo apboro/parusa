@@ -29,7 +29,7 @@ abstract class GenericSeeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         if(empty($this->data)) {
             return;
