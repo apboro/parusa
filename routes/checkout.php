@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\Checkout\CheckoutInitController;
+use App\Http\Controllers\Checkout\CheckoutController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/checkout')->middleware(['checkout'])->group(function () {
-    Route::post('/init', [CheckoutInitController::class, 'init']);
-//    Route::post('/order', [ShowcaseOrderController::class, 'order'])->middleware(['external.protect']);
+    Route::post('/handle', [CheckoutController::class, 'handle']);
+    Route::post('/pay', [CheckoutController::class, 'pay']);
 });
