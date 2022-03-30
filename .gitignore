@@ -14,3 +14,9 @@ yarn-error.log
 /.idea
 /.vscode
 identifier.sqlite
+/.bash_history
+/.cache
+/.composer
+/.local
+composer.phar
+/public_html
