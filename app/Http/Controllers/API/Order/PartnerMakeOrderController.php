@@ -78,7 +78,7 @@ class PartnerMakeOrderController extends ApiEditController
         }
 
         if ($errors = $this->validate($data, $rules, $titles)) {
-            return APIResponse::formError($flat, $rules, $titles, $errors);
+            return APIResponse::validationError($errors);
         }
 
         $totalAmount = 0;

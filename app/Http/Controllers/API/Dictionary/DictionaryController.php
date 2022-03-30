@@ -112,7 +112,7 @@ class DictionaryController extends ApiController
 
         $dictionary = $query->orderBy('order')->orderBy('name')->get();
 
-        return APIResponse::listOld($dictionary, null, null, $actual);
+        return APIResponse::response($dictionary, null, null, $actual);
     }
 
     /**

@@ -73,7 +73,7 @@ class RepresentativeAccessController extends ApiEditController
         $data = $this->getData($request);
 
         if ($errors = $this->validate($data, $this->rules, $this->titles)) {
-            return APIResponse::formError($data, $this->rules, $this->titles, $errors);
+            return APIResponse::validationError($errors);
         }
 
         /** @var User $user */

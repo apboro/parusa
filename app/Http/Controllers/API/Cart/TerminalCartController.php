@@ -170,7 +170,7 @@ class TerminalCartController extends ApiEditController
         }
 
         if ($errors = $this->validate($data, $rules, $titles)) {
-            return APIResponse::formError($flat, $rules, $titles, $errors);
+            return APIResponse::validationError($errors);
         }
 
         // add and update tickets in cart

@@ -88,7 +88,7 @@ class SettingsController extends ApiEditController
         $data = $this->getData($request);
 
         if ($errors = $this->validate($data, $this->settings[$section]['rules'], $this->settings[$section]['titles'])) {
-            return APIResponse::formError($data, $this->settings[$section]['rules'], $this->settings[$section]['titles'], $errors);
+            return APIResponse::validationError($errors);
         }
 
         foreach ($this->settings[$section]['fields'] as $key => $type) {

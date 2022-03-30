@@ -68,7 +68,7 @@ class AccountRefillController extends ApiEditController
         }
 
         if ($errors = $this->validate($data, $this->rules, $this->titles)) {
-            return APIResponse::formError($data, $this->rules, $this->titles, $errors);
+            return APIResponse::validationError($errors);
         }
 
         $timestamp = Carbon::parse($data['timestamp']);

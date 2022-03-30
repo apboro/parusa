@@ -73,11 +73,12 @@ class APIResponse
      *
      * @param mixed $data
      * @param null $payload
-     * @param string $message
+     * @param string|null $message
+     * @param Carbon|null $lastModified
      *
      * @return  JsonResponse
      */
-    public static function response($data, $payload = null, string $message = 'Успешно'): JsonResponse
+    public static function response($data, $payload = null, ?string $message = 'Успешно', ?Carbon $lastModified = null): JsonResponse
     {
         return response()->json([
             'message' => $message,
@@ -85,61 +86,6 @@ class APIResponse
             'code' => 200,
             'data' => $data,
             'payload' => $payload,
-        ], 200);
-    }
-
-    /**
-     * Make 200 response with data.
-     *
-     * @param mixed $list
-     * @param array|null $titles
-     * @param array|null $payload
-     * @param Carbon|null $lastModified
-     *
-     * @return  JsonResponse
-     */
-    public static function listOld($list, ?array $titles = null, ?array $payload = null, ?Carbon $lastModified = null): JsonResponse
-    {
-        return response()->json([
-            'status' => 'OK',
-            'code' => 200,
-            'list' => $list,
-            'titles' => $titles,
-            'payload' => $payload,
-        ], 200, self::lastModHeaders($lastModified));
-    }
-
-    /**
-     * Make 200 response with data.
-     *
-     * @param mixed $list
-     * @param array|null $titles
-     * @param array|null $payload
-     * @param Carbon|null $lastModified
-     *
-     * @return  JsonResponse
-     */
-    public static function paginationListOld($list, ?array $titles = null, ?array $payload = null, ?Carbon $lastModified = null): JsonResponse
-    {
-        if (!is_array($list) && method_exists($list, 'toArray')) {
-            $list = $list->toArray();
-        }
-
-        return response()->json([
-            'status' => 'OK',
-            'message' => 'OK',
-            'code' => 200,
-            'list' => $list['data'],
-            'titles' => $titles,
-            'payload' => $payload,
-            'pagination' => [
-                'current_page' => $list['current_page'],
-                'last_page' => $list['last_page'],
-                'from' => $list['from'] ?? 0,
-                'to' => $list['to'] ?? 0,
-                'total' => $list['total'],
-                'per_page' => $list['per_page'],
-            ],
         ], 200, self::lastModHeaders($lastModified));
     }
 
@@ -220,31 +166,6 @@ class APIResponse
             'code' => 200,
             'payload' => $payload,
         ], 200);
-    }
-
-    /**
-     * Make 422 form validation error response with data and payload.
-     *
-     * @param array $values
-     * @param array $rules
-     * @param array $titles
-     * @param array $errors
-     * @param mixed $payload
-     *
-     * @return  JsonResponse
-     */
-    public static function formError(array $values, array $rules, array $titles, array $errors = [], array $payload = []): JsonResponse
-    {
-        return response()->json([
-            'message' => 'Не все поля корректно заполнены',
-            'status' => 'Validation error',
-            'code' => 422,
-            'values' => $values,
-            'rules' => $rules,
-            'titles' => $titles,
-            'errors' => $errors,
-            'payload' => $payload,
-        ], 422);
     }
 
     /**

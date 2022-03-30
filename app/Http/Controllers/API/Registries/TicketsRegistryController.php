@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
@@ -50,6 +51,7 @@ class TicketsRegistryController extends ApiController
 
         $query = Ticket::query()
             ->with(['status', 'order', 'order.type', 'order.partner', 'order.position', 'order.position.user.profile', 'transaction', 'grade', 'trip', 'trip.startPier', 'trip.excursion'])
+            ->whereIn('status_id', array_merge(TicketStatus::ticket_had_paid_statuses, TicketStatus::ticket_reserved_statuses))
             ->when($partnerId, function (Builder $query) use ($partnerId) {
                 $query->whereHas('order', function (Builder $query) use ($partnerId) {
                     $query->where('partner_id', $partnerId);
@@ -123,7 +125,7 @@ class TicketsRegistryController extends ApiController
                 'excursion' => $ticket->trip->excursion->name,
                 'pier' => $ticket->trip->startPier->name,
                 'order_type' => $ticket->order->type->name,
-                'partner' => $ticket->order->partner->name,
+                'partner' => $ticket->order->partner->name ?? null,
                 'sale_by' => $ticket->order->position ? $ticket->order->position->user->profile->compactName : null,
                 'return_up_to' => null,
             ];

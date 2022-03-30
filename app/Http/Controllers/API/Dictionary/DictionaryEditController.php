@@ -107,7 +107,7 @@ class DictionaryEditController extends ApiEditController
         $data = array_intersect_key($data, $fields);
 
         if ($errors = $this->validate($data, $validation, $titles)) {
-            return APIResponse::formError($data, $validation, $titles, $errors);
+            return APIResponse::validationError($errors);
         }
 
         /** @var AbstractDictionary $item */

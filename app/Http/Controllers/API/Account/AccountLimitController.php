@@ -31,7 +31,7 @@ class AccountLimitController extends ApiEditController
         $data['limit'] = (float)$data['limit'];
 
         if ($errors = $this->validate($data, $this->rules, $this->titles)) {
-            return APIResponse::formError($data, $this->rules, $this->titles, $errors);
+            return APIResponse::validationError($errors);
         }
 
         $id = $request->input('id');

@@ -58,7 +58,7 @@ class RateOverrideController extends ApiEditController
         }
 
         if ($errors = $this->validate($data, $rules, $titles)) {
-            return APIResponse::formError($flat, $rules, $titles, $errors);
+            return APIResponse::validationError($errors);
         }
 
         $ratesList->loadMissing('rates');

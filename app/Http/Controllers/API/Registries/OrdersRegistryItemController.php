@@ -68,7 +68,7 @@ class OrdersRegistryItemController extends ApiController
             'type' => $order->type->name,
             'terminal' => $order->terminal->name ?? null,
             'partner' => $order->partner->name ?? null,
-            'position' => $order->position->user->profile->fullName,
+            'position' => $order->position->user->profile->fullName ?? null,
             'tickets' => $order->tickets->map(function (Ticket $ticket) {
                 return [
                     'id' => $ticket->id,

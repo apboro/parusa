@@ -44,7 +44,7 @@ export default {
                 })
                     .then(response => {
                         // set loading state
-                        commit('setDictionary', {name: dictionary, data: response.data.list});
+                        commit('setDictionary', {name: dictionary, data: response.data.data});
                         commit('setDictionaryTimestamp', {
                             name: dictionary,
                             data: typeof response.headers['last-modified'] !== "undefined" ? response.headers['last-modified'] : null

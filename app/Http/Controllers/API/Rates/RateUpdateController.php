@@ -64,7 +64,7 @@ class RateUpdateController extends ApiEditController
         }
 
         if ($errors = $this->validate($data, $rules, $titles)) {
-            return APIResponse::formError($flat, $rules, $titles, $errors);
+            return APIResponse::validationError($errors);
         }
 
         // Check intervals collapsing
@@ -82,13 +82,13 @@ class RateUpdateController extends ApiEditController
                 $nextStart = $item->start_at;
             }
             if ($item->start_at <= $startAt && $startAt <= $item->end_at) {
-                return APIResponse::formError($flat, $rules, $titles, [
+                return APIResponse::validationError([
                     'start_at' => ['Начало действия тарифа пересекается другим тарифом'],
                 ]);
             }
         }
         if ($nextStart !== null && $endAt >= $nextStart) {
-            return APIResponse::formError($flat, $rules, $titles, [
+            return APIResponse::validationError([
                 'start_at' => ['Действие тарифа пересекается другим тарифом'],
                 'end_at' => ['Действие тарифа пересекается другим тарифом'],
             ]);
