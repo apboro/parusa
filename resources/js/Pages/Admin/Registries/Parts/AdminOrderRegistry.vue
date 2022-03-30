@@ -89,7 +89,7 @@
             </template>
         </ListTable>
 
-        <GuiMessage v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
+        <GuiMessage border v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
 
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
@@ -128,6 +128,7 @@ import InputDate from "@/Components/Inputs/InputDate";
 export default {
     props: {
         partnerId: {type: Number, default: null},
+        terminalId: {type: Number, default: null},
     },
 
     components: {
@@ -153,7 +154,7 @@ export default {
     }),
 
     created() {
-        this.list = list('/api/registries/orders', {partner_id: this.partnerId});
+        this.list = list('/api/registries/orders', {partner_id: this.partnerId, terminal_id: this.terminalId});
         this.list.initial();
     },
 

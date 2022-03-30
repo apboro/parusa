@@ -60,6 +60,9 @@ class OrdersRegistryController extends ApiController
             if ($request->input('partner_id') !== null) {
                 $query->where('partner_id', $request->input('partner_id'));
             }
+            if ($request->input('terminal_id') !== null) {
+                $query->where('terminal_id', $request->input('terminal_id'));
+            }
         } else {
             return APIResponse::error('Неверно заданы параметры');
         }

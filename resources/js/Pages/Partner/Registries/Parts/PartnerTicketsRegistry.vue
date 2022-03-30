@@ -82,7 +82,7 @@
             </ListTableRow>
         </ListTable>
 
-        <GuiMessage v-else-if="list.is_loaded" border>Нет проданных билетов</GuiMessage>
+        <GuiMessage border v-else-if="list.is_loaded">Нет проданных билетов</GuiMessage>
 
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 

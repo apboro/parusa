@@ -66,7 +66,7 @@
                     </tbody>
                 </table>
             </div>
-            <GuiMessage v-else>На выбранную дату рейсы не найдены</GuiMessage>
+            <GuiMessage border v-else>На выбранную дату рейсы не найдены</GuiMessage>
 
         </template>
     </div>

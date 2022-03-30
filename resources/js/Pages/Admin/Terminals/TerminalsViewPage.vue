@@ -14,7 +14,7 @@
 
         <TerminalInfo v-if="tab === 'description'" :terminal-id="terminalId" :data="data.data" :editable="true" @update="update"/>
         <TerminalStaff v-if="tab === 'staff'" :terminal-id="terminalId" :data="data.data" :editable="true" @attach="attach" @detach="detach"/>
-        <!-- SALES -->
+        <AdminOrderRegistry v-if="tab === 'sales'" :terminal-id="terminalId"/>
 
     </LayoutPage>
 </template>
@@ -27,9 +27,11 @@ import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 import TerminalInfo from "@/Pages/Admin/Terminals/Parts/TerminalInfo";
 import TerminalStaff from "@/Pages/Admin/Terminals/Parts/TerminalStaff";
+import AdminOrderRegistry from "@/Pages/Admin/Registries/Parts/AdminOrderRegistry";
 
 export default {
     components: {
+        AdminOrderRegistry,
         TerminalStaff,
         TerminalInfo,
         LayoutRoutedTabs,

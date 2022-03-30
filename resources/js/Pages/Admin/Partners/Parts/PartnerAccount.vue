@@ -90,7 +90,7 @@
                     </ListTableCell>
                 </ListTableRow>
             </ListTable>
-            <GuiMessage v-else-if="list.is_loaded">Нет операций за выбранный период</GuiMessage>
+            <GuiMessage border v-else-if="list.is_loaded">Нет операций за выбранный период</GuiMessage>
             <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
         </GuiContainer>
 

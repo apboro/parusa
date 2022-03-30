@@ -76,7 +76,7 @@
         </GuiContainer>
     </template>
     <template v-else>
-        <GuiMessage>В заказе нет билетов</GuiMessage>
+        <GuiMessage border>В заказе нет билетов</GuiMessage>
         <GuiContainer mt-30>
             <GuiButton @click="back">Вернуться к подбору билетов</GuiButton>
         </GuiContainer>
