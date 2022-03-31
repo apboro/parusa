@@ -72,6 +72,7 @@
         </GuiContainer>
 
         <GuiContainer w-70 mt-30 inline text-right>
+            <GuiButton @click="clear" :color="'red'" :disabled="!canOrder">Очистить</GuiButton>
             <GuiButton @click="order" :color="'green'" :disabled="!canOrder">Оплатить через терминал</GuiButton>
         </GuiContainer>
     </template>
@@ -103,7 +104,7 @@ export default {
         data: {type: Object, required: true},
     },
 
-    emits: ['order'],
+    emits: ['update'],
 
     components: {
         GuiMessage,
@@ -215,8 +216,27 @@ export default {
                         this.form.save()
                             .then(() => {
                                 this.$store.dispatch('terminal/refresh');
-                                this.$emit('order');
+                                this.$emit('update');
                             });
+                    }
+                });
+        },
+
+        clear() {
+            this.$dialog.show('Очистить содержимое заказа?', 'question', 'red', [
+                this.$dialog.button('ok', 'Очистить', 'red'),
+                this.$dialog.button('cancel', 'Отмена'),
+            ], 'center')
+                .then((result) => {
+                    if (result === 'ok') {
+                        axios.post('/api/cart/terminal/clear', {})
+                            .then(() => {
+                                this.$store.dispatch('terminal/refresh');
+                                this.$emit('update');
+                            })
+                            .catch(error => {
+                                this.$toast.error(error.response.data['message']);
+                            })
                     }
                 });
         },

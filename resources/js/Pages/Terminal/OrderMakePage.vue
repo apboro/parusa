@@ -3,7 +3,7 @@
 
         <OrderMakeProcess v-if="data.is_loaded && data.data['has_order']" :data="data.data" @update="data.load()" :external-processing="processing"/>
 
-        <OrderMakeCart v-else-if="data.is_loaded" :data="data.data" @order="data.load()"/>
+        <OrderMakeCart v-else-if="data.is_loaded" :data="data.data" @update="data.load()"/>
 
     </LayoutPage>
 </template>

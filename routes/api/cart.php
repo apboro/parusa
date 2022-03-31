@@ -8,8 +8,10 @@ Route::post('/cart/partner', [PartnerCartController::class, 'get'])->middleware(
 Route::post('/cart/partner/add', [PartnerCartController::class, 'add'])->middleware(['allow:partner']);
 Route::post('/cart/partner/quantity', [PartnerCartController::class, 'quantity'])->middleware(['allow:partner']);
 Route::post('/cart/partner/remove', [PartnerCartController::class, 'remove'])->middleware(['allow:partner']);
+Route::post('/cart/partner/clear', [PartnerCartController::class, 'clear'])->middleware(['allow:partner']);
 
 Route::post('/cart/terminal', [TerminalCartController::class, 'get'])->middleware(['allow:staff_terminal']);
 Route::post('/cart/terminal/add', [TerminalCartController::class, 'add'])->middleware(['allow:staff_terminal']);
 Route::post('/cart/terminal/quantity', [TerminalCartController::class, 'quantity'])->middleware(['allow:staff_terminal']);
 Route::post('/cart/terminal/remove', [TerminalCartController::class, 'remove'])->middleware(['allow:staff_terminal']);
+Route::post('/cart/terminal/clear', [TerminalCartController::class, 'clear'])->middleware(['allow:staff_terminal']);

@@ -61,6 +61,7 @@
             </GuiContainer>
 
             <GuiContainer w-70 mt-30 inline text-right>
+                <GuiButton @click="clear" :color="'red'" :disabled="!canOrder">Очистить</GuiButton>
                 <GuiButton @click="reserve" :color="'green'" :disabled="!canOrder" v-if="data.data['can_reserve']">Оформить бронь</GuiButton>
                 <GuiButton @click="order" :color="'green'" :disabled="!canOrder">Оплатить с лицевого счёта</GuiButton>
             </GuiContainer>
@@ -248,6 +249,25 @@ export default {
                                 this.$store.dispatch('partner/refresh');
                                 this.$router.push({name: 'order-info', params: {id: this.form.payload['order_id']}});
                             });
+                    }
+                });
+        },
+
+        clear() {
+            this.$dialog.show('Очистить содержимое заказа?', 'question', 'red', [
+                this.$dialog.button('ok', 'Очистить', 'red'),
+                this.$dialog.button('cancel', 'Отмена'),
+            ], 'center')
+                .then((result) => {
+                    if (result === 'ok') {
+                        axios.post('/api/cart/partner/clear', {})
+                            .then(() => {
+                                this.load();
+                                this.$store.dispatch('partner/refresh');
+                            })
+                            .catch(error => {
+                                this.$toast.error(error.response.data['message']);
+                            })
                     }
                 });
         },

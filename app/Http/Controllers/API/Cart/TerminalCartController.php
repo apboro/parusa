@@ -277,4 +277,24 @@ class TerminalCartController extends ApiEditController
 
         return APIResponse::success('Билет удалён из заказа.');
     }
+
+    /**
+     * Remove all ticket from cart.
+     *
+     * @param Request $request
+     *
+     * @return  JsonResponse
+     */
+    public function clear(Request $request): JsonResponse
+    {
+        $current = Currents::get($request);
+
+        if (!$current->isStaffTerminal()) {
+            return APIResponse::error('ВЫ не можете оформлять заказы.');
+        }
+
+        PositionOrderingTicket::query()->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])->delete();
+
+        return APIResponse::success('Заказ очищен.');
+    }
 }
