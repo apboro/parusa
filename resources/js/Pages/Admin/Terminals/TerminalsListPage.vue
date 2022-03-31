@@ -35,6 +35,15 @@
                     <ListTableCell>
                         {{ terminal['place'] }}
                     </ListTableCell>
+                    <ListTableCell>
+                        {{ terminal['today_sold_amount'] }} руб.
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{ terminal['today_tickets_sold'] }}
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{ terminal['last_sale'] }}
+                    </ListTableCell>
             </ListTableRow>
         </ListTable>
 

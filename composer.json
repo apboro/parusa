@@ -18,7 +18,8 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "doctrine/dbal": "^3.3.2",
-        "dompdf/dompdf": "^v1.2.0"
+        "dompdf/dompdf": "^v1.2.0",
+        "endroid/qr-code": "^4.4.7"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",

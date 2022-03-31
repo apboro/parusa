@@ -26,9 +26,9 @@ class LifePosSales
      */
     public static function send(Order $order, Terminal $terminal, Position $position): void
     {
-        if (empty($terminal->organization_id)) {
-            throw new RuntimeException('Не задан внешний ID организации для ' . $terminal->name);
-        }
+        //if (empty($terminal->organization_id)) {
+        //    throw new RuntimeException('Не задан внешний ID организации для ' . $terminal->name);
+        //}
         if (empty($terminal->outlet_id)) {
             throw new RuntimeException('Не задан внешний ID точки продаж для ' . $terminal->name);
         }

@@ -7,6 +7,7 @@ use App\Http\Controllers\API\Partners\PartnerInfoController;
 use App\Http\Controllers\API\Partners\PartnerPropertiesController;
 use App\Http\Controllers\API\Partners\PartnerRepresentativesController;
 use App\Http\Controllers\API\Partners\PartnerRepresentativeStatusController;
+use App\Http\Controllers\API\Partners\PartnerSettingsController;
 use App\Http\Controllers\API\Partners\PartnersListController;
 use App\Http\Controllers\API\Partners\PartnerViewController;
 use App\Http\Controllers\Storage\PartnerDocumentController;
@@ -31,3 +32,5 @@ Route::get('/partners/files/{file}', [PartnerDocumentController::class, 'get'])-
 Route::post('/partners/details', [PartnerDetailsController::class, 'get'])->middleware(['allow:partner']);
 
 Route::post('/partners/partner/info', [PartnerInfoController::class, 'get'])->middleware(['allow:partner']);
+Route::post('/partners/partner/settings', [PartnerSettingsController::class, 'settings'])->middleware(['allow:partner']);
+Route::post('/partners/partner/settings/qr', [PartnerSettingsController::class, 'qr'])->middleware(['allow:partner']);

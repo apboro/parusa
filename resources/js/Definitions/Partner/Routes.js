@@ -16,7 +16,7 @@ export default [
     {path: '/', name: 'home', component: TripsSelectPage, meta: {title: 'Подбор билетов'}},
     {path: '/', name: 'tickets-select', component: TripsSelectPage, meta: {title: 'Подбор билетов'}},
     {path: '/return', name: 'return', component: ReturnPage, meta: {title: 'Возврат билетов'}},
-    {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки'}},
+    {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки и коды'}},
     {path: '/registry/orders', name: 'orders-registry', component: OrdersRegistryPage, meta: {title: 'Реестр заказов'}},
     {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней'}},
     {path: '/registry/tickets', name: 'tickets-registry', component: TicketsRegistryPage, meta: {title: 'Реестр билетов'}},

@@ -10,7 +10,7 @@
             </GuiActionsMenu>
         </template>
 
-        <LayoutRoutedTabs :tabs="{description: 'Описание кассы', staff: 'Кассиры', sales: 'Операции'}" @change="tab = $event"/>
+        <LayoutRoutedTabs :tabs="{description: 'Описание кассы', staff: 'Кассиры', sales: 'Реестр заказов'}" @change="tab = $event"/>
 
         <TerminalInfo v-if="tab === 'description'" :terminal-id="terminalId" :data="data.data" :editable="true" @update="update"/>
         <TerminalStaff v-if="tab === 'staff'" :terminal-id="terminalId" :data="data.data" :editable="true" @attach="attach" @detach="detach"/>
