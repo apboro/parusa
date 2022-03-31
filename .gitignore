@@ -20,3 +20,4 @@ identifier.sqlite
 /.local
 composer.phar
 /public_html
+/cp-update.sh
