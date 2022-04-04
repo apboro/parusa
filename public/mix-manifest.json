@@ -1,11 +1,10 @@
 {
-    "/js/login.js": "/js/login.js?id=0a9b59a1d0caf2d89c11",
-    "/js/admin.js": "/js/admin.js?id=2f07c1c12fd46802a869",
-    "/js/partner.js": "/js/partner.js?id=7fa0bd296a6a9f18544d",
-    "/js/terminal.js": "/js/terminal.js?id=c0d8f7c1edc08f3735ad",
-    "/js/showcase.js": "/js/showcase.js?id=07858bdf9318588d5328",
-    "/js/checkout.js": "/js/checkout.js?id=ea41819a7df7dfce9aa4",
+    "/js/login.js": "/js/login.js?id=d7e9342dbe30edaf5aad",
+    "/js/admin.js": "/js/admin.js?id=53f1380b6016f77205a5",
+    "/js/partner.js": "/js/partner.js?id=f1ebbe3ae3601c9af5e6",
+    "/js/terminal.js": "/js/terminal.js?id=b77fae4cc13ad0422c86",
+    "/js/showcase.js": "/js/showcase.js?id=5442e25de3f07cbdbd8a",
+    "/js/checkout.js": "/js/checkout.js?id=d4f51d90e16fd6245ddb",
     "/css/app.css": "/css/app.css?id=d387260d4e871346e1e2",
-    "/css/select.css": "/css/select.css?id=79f266d790919903cc26",
-    "/css/login.css": "/css/login.css?id=de13b4cd747bfc8f726c"
+    "/css/select.css": "/css/select.css?id=79f266d790919903cc26"
 }

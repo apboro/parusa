@@ -41,7 +41,7 @@ class FrontendController extends Controller
             Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            return response()->redirectToRoute('login')->withErrors(['message' => __('No access to any organizations')]);
+            return response()->redirectToRoute('login')->with(['message' => __('auth.empty')]);
         }
 
         // if only one position available set it as current

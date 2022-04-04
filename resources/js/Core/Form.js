@@ -142,7 +142,7 @@ const form = function (load_url, save_url, options = {}) {
                                 this.save_failed_callback({code: error.response.status, message: error.response.data.message});
                             }
                         }
-                        reject({code: error.response.status, message: error.response.data.message});
+                        reject({code: error.response.status, message: error.response.data.message, response: error.response});
                     })
                     .finally(() => {
                         this.is_saved = false;

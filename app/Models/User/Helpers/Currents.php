@@ -99,7 +99,7 @@ class Currents
         /** @var Role $role */
         $role = $position->roles()->where(['id' => $roleId])->first();
         if ($role === null) {
-            throw new BadUserRoleException('User can not have this role for current position.');
+            return;
         }
         $this->role = $role;
 
@@ -117,7 +117,7 @@ class Currents
                     })
                     ->first();
                 if ($terminal === null) {
-                    throw new BadUserTerminalException('User can not login using this terminal.');
+                    return;
                 }
                 $this->terminal = $terminal;
             }

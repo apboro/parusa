@@ -6,7 +6,9 @@
 
     <title>{{ config('app.name') }}</title>
 
-    <link rel="stylesheet" href="{{ mix('/css/login.css') }}">
+    <script>
+        const message = {!! $message ? '"' . $message . '"' : 'null' !!};
+    </script>
 </head>
 <body>
 <div id="app"></div>

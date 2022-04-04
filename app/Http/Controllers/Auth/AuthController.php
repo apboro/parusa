@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\APIResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Response;
+use App\Models\Dictionaries\PositionAccessStatus;
+use App\Models\Dictionaries\PositionStatus;
+use App\Models\Positions\Position;
 use App\Models\User\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -22,7 +27,9 @@ class AuthController extends Controller
      */
     public function form(): View
     {
-        return view('login');
+        $message = Session::get('message');
+
+        return view('login', ['message' => $message]);
     }
 
     /**
@@ -41,6 +48,26 @@ class AuthController extends Controller
         /** @var User $user */
         $user = $request->user();
 
+        $positionsCount = Position::query()->where(['is_staff' => false, 'user_id' => $user->id, 'access_status_id' => PositionAccessStatus::active])->count();
+        $staffCount = Position::query()->where(['is_staff' => true, 'user_id' => $user->id, 'status_id' => PositionStatus::active])->count();
+        $rolesCount = 0;
+        if ($staffCount > 0) {
+            $positions = Position::query()->withCount(['roles'])->where(['is_staff' => true, 'user_id' => $user->id, 'status_id' => PositionStatus::active])->get();
+            foreach ($positions as $position) {
+                /** @var Position $position */
+                $rolesCount += $position->getAttribute('roles_count');
+            }
+        }
+
+        if ($positionsCount + $rolesCount === 0) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            throw ValidationException::withMessages([
+                'login' => __('auth.empty'),
+            ]);
+        }
+
         if ($user->tokens()->count() === 0) {
             $user->createToken('base_token');
         }
@@ -49,7 +76,7 @@ class AuthController extends Controller
 
         $intended = $request->session()->pull('url.intended', RouteServiceProvider::HOME);
 
-        return Response::redirectResponse($intended);
+        return APIResponse::redirect($intended);
     }
 
     /**

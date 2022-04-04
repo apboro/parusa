@@ -30,8 +30,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'login' => 'required|string',
-            'password' => 'required|string',
+            'data.login' => 'required|string',
+            'data.password' => 'required|string',
         ];
     }
 
@@ -43,8 +43,8 @@ class LoginRequest extends FormRequest
     protected function credentials(): array
     {
         return [
-            'login' => $this->input('login'),
-            'password' => $this->input('password'),
+            'login' => $this->input('data.login'),
+            'password' => $this->input('data.password'),
             'status_id' => UserStatus::active,
         ];
     }
@@ -74,7 +74,6 @@ class LoginRequest extends FormRequest
 
             RateLimiter::hit($this->throttleKey());
 
-            // TODO refactor to throw proper error
             throw ValidationException::withMessages([
                 'login' => __('auth.failed'),
             ]);
