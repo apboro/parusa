@@ -315,56 +315,6 @@ export default {
                 });
         },
 
-        // dictionaryItemFormResolving(result) {
-        //     return result !== 'yes' || this.form.validateAll();
-        // },
-
-        // dictionaryItemAfterSave(payload) {
-        //     const id = payload['id'];
-        //     let found = null;
-        //     this.data.data.map((item, key) => {
-        //         if (item['id'] === id) {
-        //             found = key;
-        //             return true;
-        //         }
-        //         return false;
-        //     });
-        //     if (found === null) {
-        //         this.data.data.push(payload);
-        //     } else {
-        //         this.data.data[found] = payload;
-        //     }
-        //
-        //     this.form.loaded = false;
-        //     this.$refs.dictionary_item_popup.hide();
-        //     this.$nextTick(() => {
-        //         this.sameWidths();
-        //     });
-        // },
-
-        // attachItem() {
-        //     this.form.values = {};
-        //     this.form.originals = {};
-        //     Object.keys(this.form.titles).map(key => {
-        //         this.form.values[key] = null;
-        //         this.form.originals[key] = null;
-        //     });
-        //     this.dictionary_item_title = 'Добавление элемента';
-        //     this.form.loaded = true;
-        //
-        //     this.$refs.dictionary_item_popup.show()
-        //         .then(result => {
-        //             if (result === 'yes') {
-        //                 this.$refs.dictionary_item_popup.process(true);
-        //                 this.form.options = {name: this.dictionary, id: 0};
-        //                 this.form.save();
-        //             } else {
-        //                 this.form.loaded = false;
-        //                 this.$refs.dictionary_item_popup.hide();
-        //             }
-        //         });
-        // },
-
         editItem(item) {
             this.dictionary_item_title = item === null ? 'Добавление элемента' : 'Изменение элемента';
             this.form.reset();
@@ -375,7 +325,6 @@ export default {
 
             this.$refs.dictionary_item_popup.show({name: this.dictionary, id: item === null ? 0 : item['id']})
                 .then(result => {
-                    console.log(result.payload);
                     const id = result.payload['id'];
                     let found = null;
                     this.data.data['items'].map((item, key) => {
