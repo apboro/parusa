@@ -82,6 +82,13 @@ class OrdersRegistryController extends ApiController
         if ($terms = $request->search()) {
             $query->where(function (Builder $query) use ($terms, $current, $request) {
                 $query->whereIn('id', $terms);
+
+                foreach ($terms as $term) {
+                    $query->orWhere('name', 'LIKE', '%' . $term . '%')
+                        ->orWhere('email', 'LIKE', '%' . $term . '%')
+                        ->orWhere('phone', 'LIKE', '%' . $term . '%');
+                }
+
                 if (!$current->isStaffTerminal() || !$request->input('only_orders')) {
                     $query->orWhereHas('tickets', function (Builder $query) use ($terms) {
                         $query->whereIn('id', $terms);

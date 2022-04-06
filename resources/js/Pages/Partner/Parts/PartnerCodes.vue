@@ -13,6 +13,7 @@
                 </GuiContainer>
             </LoadingProgress>
         </GuiValueArea>
+        <GuiValueArea mt-30 :title="'ID промоутера'">{{ data['partner_id'] }}</GuiValueArea>
 
         <PopUp :close-on-overlay="true" ref="qr_popup">
             <img :src="qr_image" alt="qr" style="width: 300px"/>

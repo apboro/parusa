@@ -98,6 +98,11 @@ class TicketsRegistryController extends ApiController
                     ->whereIn('id', $terms)
                     ->orWhereHas('order', function (Builder $query) use ($terms) {
                         $query->whereIn('id', $terms);
+                        foreach ($terms as $term) {
+                            $query->orWhere('name', 'LIKE', '%' . $term . '%')
+                                ->orWhere('email', 'LIKE', '%' . $term . '%')
+                                ->orWhere('phone', 'LIKE', '%' . $term . '%');
+                        }
                     });
             });
         }

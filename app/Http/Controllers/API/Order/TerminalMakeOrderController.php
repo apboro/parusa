@@ -126,10 +126,10 @@ class TerminalMakeOrderController extends ApiEditController
         }
 
         try {
-            DB::transaction(function () use (&$order, $tickets, $status_id, $partnerId, $position, $terminal, $current){
+            DB::transaction(static function () use (&$order, $tickets, $status_id, $partnerId, $position, $terminal, $current, $data) {
                 // create order
                 $order = Order::make(
-                    OrderType::terminal,
+                    $partnerId === null ? OrderType::terminal : OrderType::terminal_partner,
                     $tickets,
                     $status_id,
                     $partnerId,

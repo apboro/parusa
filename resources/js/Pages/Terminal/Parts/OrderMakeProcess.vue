@@ -149,6 +149,7 @@ export default {
             axios.post(url, {})
                 .then(() => {
                     this.$emit('update');
+                    this.$store.dispatch('terminal/refresh');
                 })
                 .catch(error => {
                     this.$toast.error(error.response.data.message, 5000);

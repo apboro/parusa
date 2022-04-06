@@ -34,6 +34,7 @@ class PartnerSettingsController extends ApiController
         $code .= "<div id=\"ap-showcase\"></div>";
 
         return APIResponse::response([
+            'partner_id' => $current->partnerId(),
             'link' => $this->appLink($showcaseUrl, $current->partnerId()),
             'code' => $code,
             'qr_target_page' => null,

@@ -50,7 +50,7 @@ export default {
             if (!this.form.validate()) {
                 return;
             }
-            this.form.save()
+            this.form.save();
         },
     }
 }

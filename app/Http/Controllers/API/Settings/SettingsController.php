@@ -15,19 +15,19 @@ class SettingsController extends ApiEditController
             'fields' => [
                 'default_cancellation_time' => Settings::int,
                 'cancellation_notify_time' => Settings::int,
-                'tickets_limit_by_capacity' => Settings::int,
+                //'tickets_limit_by_capacity' => Settings::int,
                 'buyer_email_welcome' => Settings::string,
             ],
             'titles' => [
                 'default_cancellation_time' => 'Время аннулирования броней для всех рейсов по умолчанию, мин.',
                 'cancellation_notify_time' => 'Время вывода предупреждения об окончании брони в кабинете партнера (за сколько начинать предупреждать), мин.',
-                'tickets_limit_by_capacity' => 'Ограничивать количество билетов в 1 заказе вместимостью теплохода (остатком мест)',
+                //'tickets_limit_by_capacity' => 'Ограничивать количество билетов в 1 заказе вместимостью теплохода (остатком мест)',
                 'buyer_email_welcome' => 'Текстовка письма плательщику с PDF-файлом заказа',
             ],
             'rules' => [
                 'default_cancellation_time' => 'required|integer|min:0',
                 'cancellation_notify_time' => 'required|integer|min:0',
-                'tickets_limit_by_capacity' => 'required',
+                //'tickets_limit_by_capacity' => 'required',
                 'buyer_email_welcome' => '',
             ],
         ],

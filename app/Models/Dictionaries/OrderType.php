@@ -19,6 +19,9 @@ class OrderType extends AbstractDictionary
     /** @var int Касса */
     public const terminal = 3;
 
+    /** @var int Касса (пропоутер)*/
+    public const terminal_partner = 4;
+
     /** @var int Витрина на сайте компании «Алые паруса» */
     public const site = 10;
 

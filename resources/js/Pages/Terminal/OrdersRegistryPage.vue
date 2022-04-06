@@ -14,7 +14,7 @@
                 />
             </LayoutFiltersItem>
             <template #search>
-                <LayoutFiltersItem :title="'Поиск по номеру заказа, билета'">
+                <LayoutFiltersItem :title="'Поиск заказа/билета по номеру, имени, email, телефону покупателя'">
                     <InputSearch v-model="list.search" @change="list.load()"/>
                 </LayoutFiltersItem>
             </template>

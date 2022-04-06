@@ -21,8 +21,14 @@
         </GuiContainer>
         <GuiContainer mt-30>
             <FormString :form="form" :name="'email'"/>
-            <FormPhone :class="'w-50 inline-flex'" :form="form" :name="'work_phone'"/>
-            <FormString :class="'w-50 pl-20 inline-flex'" :form="form" :name="'work_phone_additional'"/>
+            <GuiContainer>
+                <GuiContainer w-50 inline-flex>
+                    <FormPhone :form="form" :name="'work_phone'"/>
+                </GuiContainer>
+                <GuiContainer w-50 pl-20 inline-flex>
+                    <FormString :form="form" :name="'work_phone_additional'"/>
+                </GuiContainer>
+            </GuiContainer>
             <FormPhone :form="form" :name="'mobile_phone'" :mask="'+7 (###) ###-##-##'"/>
             <FormString :form="form" :name="'vkontakte'"/>
             <FormString :form="form" :name="'facebook'"/>

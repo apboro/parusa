@@ -19,6 +19,7 @@ class OrderTypesSeeder extends GenericSeeder
             OrderType::partner_site => ['name' => 'Витрина на сайте партнера'],
             OrderType::site => ['name' => 'Витрина на сайте компании «Алые паруса»'],
             OrderType::terminal => ['name' => 'Касса компании «Алые паруса»'],
+            OrderType::terminal_partner => ['name' => 'Касса компании «Алые паруса» (через промоутера)'],
             OrderType::qr_code => ['name' => 'QR-код'],
         ],
     ];
