@@ -59,26 +59,26 @@
                         <table class="details-table" v-if="order['show_tickets']">
                             <thead>
                             <tr>
-                                <td v-for="(cell, key) in ['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус билета']" :key="key"
+                                <th v-for="(cell, key) in ['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус билета']" :key="key"
                                 >{{ cell }}
-                                </td>
+                                </th>
                             </tr>
                             </thead>
                             <tr v-for="(ticket, key) in order['tickets']" :key="key">
-                                <td class="p-5">
+                                <td>
                                     <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}" v-html="highlight(ticket['id'])"/>
                                 </td>
-                                <td class="p-5">
+                                <td>
                                     <div>{{ ticket['trip_date'] }}</div>
                                     <div>{{ ticket['trip_time'] }}</div>
                                 </td>
-                                <td class="p-5">
+                                <td>
                                     <div>{{ ticket['excursion'] }}</div>
                                     <div>{{ ticket['pier'] }}</div>
                                 </td>
-                                <td class="p-5">{{ ticket['type'] }}</td>
-                                <td class="p-5">{{ ticket['amount'] }} руб.</td>
-                                <td class="p-5">
+                                <td>{{ ticket['type'] }}</td>
+                                <td>{{ ticket['amount'] }} руб.</td>
+                                <td>
                                     <div>{{ ticket['status'] }}</div>
                                     <div v-if="ticket['used']">Использован {{ ticket['used'] }}</div>
                                 </td>
@@ -176,3 +176,39 @@ export default {
     },
 }
 </script>
+
+<style lang="scss" scoped>
+$project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
+
+.details-table {
+    width: calc(100% - 40px);
+    margin: 0 0 20px 40px;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    & > thead > tr > th {
+        padding: 10px;
+        font-family: $project_font;
+        color: #727272;
+        text-align: left;
+        font-weight: normal;
+    }
+
+    & > tr {
+        border-top: 1px solid #e3e3e3;
+
+        &:hover {
+            background-color: #f7f7f7;
+        }
+
+        & > td {
+            padding: 10px;
+            color: #3e3e3e;
+
+            & > *:not(:last-child) {
+                margin-bottom: 5px;
+            }
+        }
+    }
+}
+</style>

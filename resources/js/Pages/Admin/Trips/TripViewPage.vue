@@ -13,7 +13,7 @@
         <LayoutRoutedTabs :tabs="{description: 'Описание рейса', tickets: 'Проданные билеты'}" @change="tab = $event"/>
 
         <TripInfo v-if="tab === 'description'" :trip-id="tripId" :data="data.data" :editable="true" @update="update"/>
-        <TicketsRegistry v-if="tab === 'tickets'" :trip-id="tripId"/>
+        <AdminTicketsRegistry v-if="tab === 'tickets'" :trip-id="tripId"/>
 
     </LayoutPage>
 </template>
@@ -25,11 +25,11 @@ import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 import TripInfo from "@/Pages/Admin/Trips/Parts/TripInfo";
 import DeleteEntry from "@/Mixins/DeleteEntry";
-import TicketsRegistry from "@/Pages/Parts/Registries/TicketsRegistry";
+import AdminTicketsRegistry from "@/Pages/Admin/Registries/Parts/AdminTicketsRegistry";
 
 export default {
     components: {
-        TicketsRegistry,
+        AdminTicketsRegistry,
         LayoutPage,
         GuiActionsMenu,
         LayoutRoutedTabs,
