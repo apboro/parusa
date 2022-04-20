@@ -52,9 +52,9 @@
         <template v-if="info.is_loaded">
             <template v-if="!isReserve">
                 <GuiContainer>
-                    <GuiButton :disabled="!info.data['is_actual']" @clicked="in_dev">Скачать заказ в PDF</GuiButton>
-                    <GuiButton :disabled="!info.data['is_actual']" @clicked="in_dev">Отправить клиенту на почту</GuiButton>
-                    <GuiButton :disabled="!info.data['is_actual']" @clicked="in_dev">Распечатать</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable']" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || !info.data['email']" @clicked="emailOrder">Отправить клиенту на почту</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable']" @clicked="printOrder">Распечатать</GuiButton>
                 </GuiContainer>
             </template>
             <template v-else>
@@ -81,6 +81,8 @@ import IconCross from "@/Components/Icons/IconCross";
 import InputCheckbox from "@/Components/Inputs/InputCheckbox";
 import InputText from "@/Components/Inputs/InputText";
 import DeleteEntry from "@/Mixins/DeleteEntry";
+import printJS from "print-js";
+import {saveAs} from "file-saver";
 
 export default {
     components: {
@@ -134,10 +136,6 @@ export default {
     },
 
     methods: {
-        in_dev() {
-            this.$toast.info('В разработке');
-        },
-
         discardReserve() {
             if (!this.isReserve) {
                 return;
@@ -162,6 +160,57 @@ export default {
                         this.info.load({id: this.orderId});
                     }
                 })
+        },
+
+        downloadOrder() {
+            axios.post('/api/registries/order/download', {id: this.orderId})
+                .then(response => {
+                    let order = atob(response.data.data['order']);
+                    let byteNumbers = new Array(order.length);
+                    for (let i = 0; i < order.length; i++) {
+                        byteNumbers[i] = order.charCodeAt(i);
+                    }
+                    let byteArray = new Uint8Array(byteNumbers);
+                    let blob = new Blob([byteArray], {type: "application/pdf;charset=utf-8"});
+
+                    saveAs(blob, response.data.data['file_name'], {autoBom: true});
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data['message']);
+                });
+        },
+        emailOrder() {
+            this.$dialog.show('Отправить билет на почту "' + this.info.data['email'] + '"?', 'question', 'orange', [
+                this.$dialog.button('yes', 'Продолжить', 'orange'),
+                this.$dialog.button('no', 'Отмена', 'blue'),
+            ]).then(result => {
+                if (result === 'yes') {
+                    axios.post('/api/registries/order/send', {id: this.orderId})
+                        .then(response => {
+                            this.$toast.success(response.data['message']);
+                        })
+                        .catch(error => {
+                            this.$toast.error(error.response.data['message']);
+                        });
+                }
+            });
+        },
+        printOrder() {
+            axios.post('/api/registries/order/download', {id: this.orderId })
+                .then(response => {
+                    let order = atob(response.data.data['order']);
+                    let byteNumbers = new Array(order.length);
+                    for (let i = 0; i < order.length; i++) {
+                        byteNumbers[i] = order.charCodeAt(i);
+                    }
+                    let byteArray = new Uint8Array(byteNumbers);
+                    let blob = new Blob([byteArray], {type: "application/pdf;charset=utf-8"});
+                    let pdfUrl = URL.createObjectURL(blob);
+                    printJS(pdfUrl);
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data['message']);
+                });
         },
     }
 }

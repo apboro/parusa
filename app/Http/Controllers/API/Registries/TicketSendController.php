@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Registries;
 use App\Classes\EmailReceiver;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use App\Notifications\TicketNotification;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Notification;
 class TicketSendController extends ApiController
 {
     /**
-     * Download ticket.
+     * Send ticket.
      *
      * @param Request $request
      *
@@ -50,6 +51,7 @@ class TicketSendController extends ApiController
 
         return Ticket::query()
             ->where('id', $request->input('id'))
+            ->whereIn('status_id', TicketStatus::ticket_printable_statuses)
             ->when(!$current->isStaff(), function (Builder $query) use ($current) {
                 $query->whereHas('order', function (Builder $query) use ($current) {
                     $query->where('partner_id', $current->partnerId());

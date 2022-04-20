@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Registries;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,6 +37,7 @@ class TicketsRegistryItemController extends ApiController
         return APIResponse::response([
             'order_id' => $ticket->order_id,
             'is_order_reserve' => $ticket->order->hasStatus(OrderStatus::partner_reserve),
+            'is_printable' => in_array($ticket->status_id, TicketStatus::ticket_printable_statuses),
             'sold_at' => $ticket->created_at->format('d.m.Y, H:i'),
             'order_type' => $ticket->order->type->name,
             'position' => $ticket->order->partner->name ?? null,

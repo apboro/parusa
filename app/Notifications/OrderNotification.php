@@ -3,9 +3,10 @@
 namespace App\Notifications;
 
 use App\Classes\Mail\MailMessage;
-use App\Helpers\OrderPdf;
 use App\Helpers\TicketPdf;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
+use App\Settings;
 use Illuminate\Notifications\Notification;
 
 class OrderNotification extends Notification
@@ -35,14 +36,16 @@ class OrderNotification extends Notification
      */
     public function toMail(): MailMessage
     {
-        $pdf = OrderPdf::a4($this->order);
-        $message = (new MailMessage)
-            ->subject("Заказ N{$this->order->id}")
-            ->greeting('Благодарим за преобретение билетов. Вот они.')
-            ->attachData($pdf, "Заказ N{$this->order->id}.pdf");
+        $message = new MailMessage;
+        $message->subject("Заказ N{$this->order->id}");
+        $text = explode("\n", Settings::get('buyer_email_welcome'));
+        foreach ($text as $line) {
+            $message->line($line);
+        }
 
-        // TODO filter tickets
-        foreach ($this->order->tickets as $ticket) {
+        $tickets = $this->order->tickets()->whereIn('status_id', TicketStatus::ticket_printable_statuses)->get();
+
+        foreach ($tickets as $ticket) {
             $message->attachData(TicketPdf::a4($ticket), "Билет N{$ticket->id}.pdf");
         }
 

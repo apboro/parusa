@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Classes\Mail\MailMessage;
 use App\Helpers\TicketPdf;
 use App\Models\Tickets\Ticket;
+use App\Settings;
 use Illuminate\Notifications\Notification;
 
 class TicketNotification extends Notification
@@ -36,9 +37,14 @@ class TicketNotification extends Notification
     {
         $pdf = TicketPdf::a4($this->ticket);
 
-        return (new MailMessage)
-            ->subject("Билет N{$this->ticket->id}")
-            ->greeting('Благодарим за преобретение билета. Вот он.')
-            ->attachData($pdf, "Билет N{$this->ticket->id}.pdf");
+        $message = new MailMessage;
+        $message->subject("Билет N{$this->ticket->id}");
+        $text = explode("\n", Settings::get('buyer_email_welcome'));
+        foreach ($text as $line) {
+            $message->line($line);
+        }
+        $message->attachData($pdf, "Билет N{$this->ticket->id}.pdf");
+
+        return $message;
     }
 }

@@ -27,7 +27,7 @@
             <GuiValue :title="'Телефон'">{{ info.data['phone'] }}</GuiValue>
         </GuiContainer>
 
-        <template v-if="info.is_loaded && !isReserve">
+        <template v-if="info.is_loaded && !isReserve && info.data['is_printable']">
             <GuiContainer>
                 <GuiButton @clicked="downloadTicket">Скачать билет в PDF</GuiButton>
                 <GuiButton @clicked="emailTicket" :disabled="!info.data['email']">Отправить клиенту на почту</GuiButton>

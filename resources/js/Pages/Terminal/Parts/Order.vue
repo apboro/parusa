@@ -57,8 +57,7 @@
 
         <div v-if="info.is_loaded && !isReserve" class="flex">
             <GuiContainer inline-flex v-if="printable">
-                <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dev">Скачать заказ в PDF</GuiButton>
-                <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dev">Распечатать</GuiButton>
+                <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
             </GuiContainer>
             <GuiContainer inline-flex grow justify-end v-if="returnable">
                 <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
@@ -84,6 +83,7 @@ import IconCross from "@/Components/Icons/IconCross";
 import InputCheckbox from "@/Components/Inputs/InputCheckbox";
 import InputText from "@/Components/Inputs/InputText";
 import DeleteEntry from "@/Mixins/DeleteEntry";
+import printJS from "print-js";
 
 export default {
     props: {
@@ -238,6 +238,24 @@ export default {
                                 this.ordering = false;
                             })
                     }
+                });
+        },
+
+        printOrder() {
+            axios.post('/api/registries/order/print', {id: this.orderId })
+                .then(response => {
+                    let order = atob(response.data.data['order']);
+                    let byteNumbers = new Array(order.length);
+                    for (let i = 0; i < order.length; i++) {
+                        byteNumbers[i] = order.charCodeAt(i);
+                    }
+                    let byteArray = new Uint8Array(byteNumbers);
+                    let blob = new Blob([byteArray], {type: "application/pdf;charset=utf-8"});
+                    let pdfUrl = URL.createObjectURL(blob);
+                    printJS(pdfUrl);
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data['message']);
                 });
         },
     }

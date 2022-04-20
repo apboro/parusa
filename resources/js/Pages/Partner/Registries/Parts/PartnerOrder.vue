@@ -58,9 +58,9 @@
         <template v-if="info.is_loaded">
             <template v-if="!isReserve">
                 <GuiContainer>
-                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dev">Скачать заказ в PDF</GuiButton>
-                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dev">Отправить клиенту на почту</GuiButton>
-                    <GuiButton :disabled="!info.data['is_actual'] || is_returning" @clicked="in_dev">Распечатать</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning" @clicked="emailOrder">Отправить клиенту на почту</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
                     <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
                     </GuiButton>
                     <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>
@@ -91,6 +91,7 @@ import IconCross from "@/Components/Icons/IconCross";
 import InputCheckbox from "@/Components/Inputs/InputCheckbox";
 import InputText from "@/Components/Inputs/InputText";
 import DeleteEntry from "@/Mixins/DeleteEntry";
+import printJS from "print-js";
 
 export default {
     components: {
@@ -149,10 +150,6 @@ export default {
     },
 
     methods: {
-        in_dev() {
-            this.$toast.info('В разработке');
-        },
-
         makeReturn() {
             if (this.is_returning === false) {
                 this.to_return = [];
@@ -241,6 +238,57 @@ export default {
                                 this.ordering = false;
                             })
                     }
+                });
+        },
+
+        downloadOrder() {
+            axios.post('/api/registries/order/download', {id: this.orderId})
+                .then(response => {
+                    let order = atob(response.data.data['order']);
+                    let byteNumbers = new Array(order.length);
+                    for (let i = 0; i < order.length; i++) {
+                        byteNumbers[i] = order.charCodeAt(i);
+                    }
+                    let byteArray = new Uint8Array(byteNumbers);
+                    let blob = new Blob([byteArray], {type: "application/pdf;charset=utf-8"});
+
+                    saveAs(blob, response.data.data['file_name'], {autoBom: true});
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data['message']);
+                });
+        },
+        emailOrder() {
+            this.$dialog.show('Отправить билет на почту "' + this.info.data['email'] + '"?', 'question', 'orange', [
+                this.$dialog.button('yes', 'Продолжить', 'orange'),
+                this.$dialog.button('no', 'Отмена', 'blue'),
+            ]).then(result => {
+                if (result === 'yes') {
+                    axios.post('/api/registries/order/send', {id: this.orderId})
+                        .then(response => {
+                            this.$toast.success(response.data['message']);
+                        })
+                        .catch(error => {
+                            this.$toast.error(error.response.data['message']);
+                        });
+                }
+            });
+        },
+        printOrder() {
+            axios.post('/api/registries/order/download', {id: this.orderId })
+                .then(response => {
+                    let order = atob(response.data.data['order']);
+                    let byteNumbers = new Array(order.length);
+                    for (let i = 0; i < order.length; i++) {
+                        byteNumbers[i] = order.charCodeAt(i);
+                    }
+                    let byteArray = new Uint8Array(byteNumbers);
+                    let blob = new Blob([byteArray], {type: "application/pdf;charset=utf-8"});
+                    let pdfUrl = URL.createObjectURL(blob);
+                    printJS(pdfUrl);
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data['message']);
                 });
         },
     }

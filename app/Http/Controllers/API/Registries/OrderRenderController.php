@@ -32,7 +32,7 @@ class OrderRenderController extends ApiController
 
         return APIResponse::response([
             'order' => base64_encode($pdf),
-            'file_name' => "Заказ N$$order->id.pdf",
+            'file_name' => "Заказ N$order->id.pdf",
         ]);
     }
 
@@ -55,14 +55,14 @@ class OrderRenderController extends ApiController
 
         return APIResponse::response([
             'order' => base64_encode($pdf),
-            'file_name' => "Заказ N$$order->id.pdf",
+            'file_name' => "Заказ N$order->id.pdf",
         ]);
     }
 
     /**
      * @param Request $request
      *
-     * @return \App\Models\Order\Order
+     * @return Order
      */
     protected function order(Request $request): ?Order
     {

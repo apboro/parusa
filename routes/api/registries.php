@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\Registries\OrderRenderController;
+use App\Http\Controllers\API\Registries\OrderSendController;
 use App\Http\Controllers\API\Registries\OrdersRegistryItemController;
 use App\Http\Controllers\API\Registries\OrdersRegistryController;
 use App\Http\Controllers\API\Registries\ReservesRegistryController;
@@ -24,4 +25,4 @@ Route::post('/registries/ticket/send', [TicketSendController::class, 'send'])->m
 
 Route::post('/registries/order/download', [OrderRenderController::class, 'download'])->middleware(['allow:staff_admin,staff_terminal,partner']);
 Route::post('/registries/order/print', [OrderRenderController::class, 'print'])->middleware(['allow:staff_admin,staff_terminal,partner']);
-//Route::post('/registries/order/send', [TicketSendController::class, 'send'])->middleware(['allow:staff_admin,staff_terminal,partner']);
+Route::post('/registries/order/send', [OrderSendController::class, 'send'])->middleware(['allow:staff_admin,staff_terminal,partner']);
