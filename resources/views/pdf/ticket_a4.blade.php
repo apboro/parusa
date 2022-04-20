@@ -99,7 +99,7 @@ $image = $ticket->trip->startPier->mapImages[0] ?? null;
                 <td colspan="3" style="font-family: 'Proxima Nova',serif;font-size: 10pt;padding: 4pt 0;">
                     <div><b>Причал отправления на карте:</b></div>
                     <div>Чтобы открыть причал на карте перейдите по ссылке - <a href="{{ $ticket->trip->startPier->info->map_link }}" target="_blank">открыть причал на карте</a></div>
-                    <div>Номер офиса: <b>+7 - 812 - 600 - 30 - 60</b></div>
+                    <div>Номер офиса: <b>+7-812-600-30-60</b></div>
                 </td>
             </tr>
             <tr>
