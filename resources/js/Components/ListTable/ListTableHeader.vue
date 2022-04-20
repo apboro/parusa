@@ -2,7 +2,7 @@
     <thead class="list-table__header" v-if="titles">
     <tr class="list-table__header-row">
         <th class="list-table__header-cell" v-for="title in titlesProxy">{{ title }}</th>
-        <th class="list-table__header-cell base-table__header-cell-actions" v-if="hasAction"></th>
+        <th class="list-table__header-cell list-table__header-cell-actions" v-if="hasAction"></th>
     </tr>
     </thead>
 </template>
