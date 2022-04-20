@@ -3,6 +3,7 @@
 namespace App\Models\Common;
 
 use App\Models\Model;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
@@ -96,5 +97,20 @@ class Image extends Model
         }
 
         return $collection;
+    }
+
+    /**
+     * Get base64 encoded image.
+     *
+     * @return  string|null
+     * @throws FileNotFoundException
+     */
+    public function asDataUri(): ?string
+    {
+        if (Storage::disk($this->disk)->exists($this->filename)) {
+            return 'data:' . $this->mime . ';base64, ' . base64_encode(Storage::disk($this->disk)->get($this->filename));
+        }
+
+        return null;
     }
 }
