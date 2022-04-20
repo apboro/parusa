@@ -6,6 +6,7 @@ namespace App\Models\Dictionaries;
  * @property int $id
  * @property string $name
  * @property bool $enabled
+ * @property bool $preferential
  * @property int $order
  */
 class TicketGrade extends AbstractDictionary
@@ -21,6 +22,9 @@ class TicketGrade extends AbstractDictionary
 
     /** @var string[] Attributes casting */
     protected $casts = [
-        'locked' => 'bool',
+        'enabled' => 'boolean',
+        'locked' => 'boolean',
+        'preferential' => 'boolean',
+        'order' => 'int',
     ];
 }

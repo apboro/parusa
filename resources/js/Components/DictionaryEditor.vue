@@ -25,7 +25,7 @@
                 </div>
                 <div class="drag-item__body">
                     <span class="drag-item__body-value" :class="[name !== data.data['auto'] ? 'same-width-' + name : 'drag-item__body-value-auto']"
-                          v-for="name in displayableFields" v-html="format(item[name])"></span>
+                          v-for="name in displayableFields" v-html="format(item[name], name)"></span>
                 </div>
                 <div class="drag-item__actions">
                     <div class="drag-item__actions-button drag-item__actions-button-on" title="Отключить" @click="switchOff(item)">
@@ -61,7 +61,7 @@
                 </div>
                 <div class="drag-item__body">
                     <span class="drag-item__body-value" :class="[name !== data.data['auto'] ? 'same-width-' + name : 'drag-item__body-value-auto']"
-                          v-for="name in displayableFields" v-html="format(item[name])"></span>
+                          v-for="name in displayableFields" v-html="format(item[name], name)"></span>
                 </div>
                 <div class="drag-item__actions">
                     <div class="drag-item__actions-button drag-item__actions-button-off" title="Включить" @click="switchOn(item)">
@@ -90,24 +90,11 @@
                 <template v-for="(type, name) in data.data['fields']">
                     <FormNumber v-if="type === 'number'" :form="form" :name="name"/>
                     <FormText v-else-if="type === 'text'" :form="form" :name="name"/>
+                    <FormCheckBox v-else-if="type === 'bool'" :form="form" :name="name"/>
                     <FormString v-else :form="form" :name="name"/>
                 </template>
             </GuiContainer>
         </FormPopUp>
-        <!--        <pop-up ref="dictionary_item_popup"-->
-        <!--                :title="dictionary_item_title"-->
-        <!--                :buttons="[{result: 'no', caption: 'Отмена', color: 'white'},{result: 'yes', caption: 'OK', color: 'green'}]"-->
-        <!--                :resolving="dictionaryItemFormResolving"-->
-        <!--                :manual="true"-->
-        <!--        >-->
-        <!--            <container w-600px>-->
-        <!--                <template v-for="(type, name) in data.payload.fields">-->
-        <!--                    <data-field-input v-if="type === 'number'" :datasource="form" :name="name" :type="'number'"/>-->
-        <!--                    <data-field-text-area v-else-if="type === 'text'" :datasource="form" :name="name"/>-->
-        <!--                    <data-field-input v-else :datasource="form" :name="name"/>-->
-        <!--                </template>-->
-        <!--            </container>-->
-        <!--        </pop-up>-->
     </LoadingProgress>
 </template>
 
@@ -129,9 +116,11 @@ import form from "@/Core/Form";
 import FormNumber from "@/Components/Form/FormNumber";
 import FormText from "@/Components/Form/FormText";
 import FormString from "@/Components/Form/FormString";
+import FormCheckBox from "@/Components/Form/FormCheckBox";
 
 export default {
     components: {
+        FormCheckBox,
         FormString,
         FormText,
         FormNumber,
@@ -215,8 +204,11 @@ export default {
                 });
         },
 
-        format(value) {
+        format(value, name) {
             if (value === null) return null;
+            if (typeof this.data.data['fields'][name] !== "undefined" && this.data.data['fields'][name] === 'bool') {
+                return Boolean(value) ? 'да' : 'нет';
+            }
             return String(value).replaceAll("\n", '<br/>');
         },
 

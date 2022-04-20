@@ -28,7 +28,12 @@
                 <td class="pl-10 pt-15">{{ multiply(form.values['tickets.' + key + '.base_price'], form.values['tickets.' + key + '.quantity']) }} руб.</td>
             </tr>
             <tr>
-                <td colspan="3" class="tickets-select-table__total text-right">Итого</td>
+                <td colspan="2" class="tickets-select-table__notes">
+                    * - К льготной категории относятся – школьники, студенты,
+                    инвалиды, пенсионеры при предъявлении соответствующих
+                    документов
+                </td>
+                <td class="tickets-select-table__total text-right">Итого</td>
                 <td class="tickets-select-table__total">{{ total }} руб.</td>
             </tr>
             </tbody>
@@ -86,7 +91,7 @@ export default {
             let index = 0;
             trip['rates'].map(grade => {
                 this.form.set('tickets.' + index + '.grade_id', grade['id'], null);
-                this.form.set('tickets.' + index + '.grade_name', grade['name'], null);
+                this.form.set('tickets.' + index + '.grade_name', grade['name'] + (grade['preferential'] ? '  *' : ''), null);
                 this.form.set('tickets.' + index + '.base_price', Number(grade['value']), null);
                 this.form.set('tickets.' + index + '.quantity', 0, 'integer|min:0', 'Количество');
                 this.iterator.push(index);
@@ -109,7 +114,7 @@ export default {
                 .then(() => {
                     this.$store.dispatch('partner/refresh');
                     this.$refs.popup.hide();
-                    if(result === 'add_and_redirect') {
+                    if (result === 'add_and_redirect') {
                         this.$router.push({name: 'order'});
                     }
                     return true;
@@ -159,6 +164,11 @@ $base_black_color: #1e1e1e !default;
         font-size: 16px;
         font-weight: bold;
         padding-top: 15px !important;
+    }
+
+    &__notes {
+        white-space: normal !important;
+        max-width: 300px;
     }
 
     & .input-field {

@@ -31,7 +31,7 @@ trait EditableDictionaries
                 'owner' => 'string',
                 'description' => 'text',
             ],
-//            'hide' => ['description'],
+            // 'hide' => ['description'],
             'auto' => 'description',
         ],
         'ticket_grades' => [
@@ -39,8 +39,8 @@ trait EditableDictionaries
             'class' => TicketGrade::class,
             'item_name' => 'тип билета',
             'validation' => ['name' => 'required'],
-            'titles' => ['name' => 'Тип билета'],
-            'fields' => ['name' => 'string'],
+            'titles' => ['name' => 'Тип билета', 'preferential' => 'Льготный'],
+            'fields' => ['name' => 'string', 'preferential' => 'bool'],
         ],
         'excursion_programs' => [
             'name' => 'Типы программ',

@@ -105,6 +105,7 @@ class TripsSelectListController extends ApiController
                         'id' => $rate->grade->id,
                         'name' => $rate->grade->name,
                         'value' => $rate->base_price,
+                        'preferential' => $rate->grade->preferential,
                     ];
                 })->toArray();
 
