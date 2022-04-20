@@ -41,7 +41,7 @@ class OrdersRegistryItemController extends ApiController
             return APIResponse::error('Неверно заданы параметры');
         }
 
-        /** @var ?Order $order */
+        /** @var Order|null $order */
         $order = $query->first();
 
         if ($order === null) {

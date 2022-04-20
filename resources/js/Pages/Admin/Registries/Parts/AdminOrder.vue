@@ -43,7 +43,9 @@
         </ListTable>
 
         <GuiContainer w-50 mt-30 mb-30 inline>
-            <GuiHeading mb-20>Информация о плательщике</GuiHeading>
+            <GuiHeading mb-20>Информация о плательщике
+                <IconEdit class="link w-20px ml-5" style="position: relative; top: 1px;" @click="editInfo"/>
+            </GuiHeading>
             <GuiValue :title="'Имя'">{{ info.data['name'] }}</GuiValue>
             <GuiValue :title="'Email'">{{ info.data['email'] }}</GuiValue>
             <GuiValue :title="'Телефон'">{{ info.data['phone'] }}</GuiValue>
@@ -63,6 +65,13 @@
                 </GuiContainer>
             </template>
         </template>
+
+        <FormPopUp :title="'Информация о плательщике'" :form="form" ref="popup">
+            <FormString :form="form" :name="'name'"/>
+            <FormString :form="form" :name="'email'"/>
+            <FormPhone :form="form" :name="'phone'"/>
+        </FormPopUp>
+
     </LayoutPage>
 </template>
 
@@ -83,9 +92,18 @@ import InputText from "@/Components/Inputs/InputText";
 import DeleteEntry from "@/Mixins/DeleteEntry";
 import printJS from "print-js";
 import {saveAs} from "file-saver";
+import IconEdit from "@/Components/Icons/IconEdit";
+import form from "@/Core/Form";
+import FormPopUp from "@/Components/FormPopUp";
+import FormString from "@/Components/Form/FormString";
+import FormPhone from "@/Components/Form/FormPhone";
 
 export default {
     components: {
+        FormPhone,
+        FormString,
+        FormPopUp,
+        IconEdit,
         InputText,
         InputCheckbox,
         IconCross,
@@ -108,6 +126,7 @@ export default {
 
     data: () => ({
         info: data('/api/registries/order'),
+        form: form(null, '/api/registries/order/buyer'),
     }),
 
     computed: {
@@ -133,6 +152,7 @@ export default {
         if (this.$route.query['return']) {
             this.is_returning = true;
         }
+        this.form.toaster = this.$toast;
     },
 
     methods: {
@@ -179,6 +199,7 @@ export default {
                     this.$toast.error(error.response.data['message']);
                 });
         },
+
         emailOrder() {
             this.$dialog.show('Отправить билет на почту "' + this.info.data['email'] + '"?', 'question', 'orange', [
                 this.$dialog.button('yes', 'Продолжить', 'orange'),
@@ -195,8 +216,9 @@ export default {
                 }
             });
         },
+
         printOrder() {
-            axios.post('/api/registries/order/download', {id: this.orderId })
+            axios.post('/api/registries/order/download', {id: this.orderId})
                 .then(response => {
                     let order = atob(response.data.data['order']);
                     let byteNumbers = new Array(order.length);
@@ -211,6 +233,20 @@ export default {
                 .catch(error => {
                     this.$toast.error(error.response.data['message']);
                 });
+        },
+
+        editInfo() {
+            this.form.reset();
+            this.form.set('name', this.info.data['name'], null, 'Имя', true);
+            this.form.set('email', this.info.data['email'], 'nullable|email', 'Email', true);
+            this.form.set('phone', this.info.data['phone'], null, 'Телефон', true);
+            this.form.load();
+            this.$refs.popup.show({id: this.orderId})
+                .then(result => {
+                    this.info.data['name'] = result.values['name'];
+                    this.info.data['email'] = result.values['email'];
+                    this.info.data['phone'] = result.values['phone'];
+                })
         },
     }
 }

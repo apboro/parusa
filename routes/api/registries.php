@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\Registries\OrderRenderController;
 use App\Http\Controllers\API\Registries\OrderSendController;
+use App\Http\Controllers\API\Registries\OrdersRegistryBuyerController;
 use App\Http\Controllers\API\Registries\OrdersRegistryItemController;
 use App\Http\Controllers\API\Registries\OrdersRegistryController;
 use App\Http\Controllers\API\Registries\ReservesRegistryController;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/registries/orders', [OrdersRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_terminal,partner']);
 Route::post('/registries/order', [OrdersRegistryItemController::class, 'view'])->middleware(['allow:staff_admin,staff_terminal,partner']);
+Route::post('/registries/order/buyer', [OrdersRegistryBuyerController::class, 'buyer'])->middleware(['allow:staff_admin,partner']);
 
 Route::post('/registries/reserves', [ReservesRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_terminal,partner']);
 
