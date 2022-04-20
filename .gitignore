@@ -18,6 +18,7 @@ identifier.sqlite
 /.cache
 /.composer
 /.local
+/.ssh
 composer.phar
 /public_html
 /cp-update.sh
