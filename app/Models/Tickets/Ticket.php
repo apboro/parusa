@@ -17,8 +17,14 @@ use App\Models\Positions\Position;
 use App\Models\Sails\Trip;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelMedium;
+use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeNone;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Hash;
+use JsonException;
 
 /**
  * @property int $id
@@ -265,7 +271,35 @@ class Ticket extends Model implements Statusable
             'ticket_id' => $this->id,
             'commission_type' => $transaction->commission_type,
             'commission_value' => $transaction->commission_value,
-            // 'committer_id' => $committer->id ?? null,
         ]));
+    }
+
+    /**
+     * Make qr-code for this ticket.
+     *
+     * @return string
+     *
+     * @throws JsonException
+     */
+    public function qr(): string
+    {
+        $payload = [
+            'id' => $this->id,
+            'subject' => 'ticket',
+            'version' => '1.0',
+        ];
+
+        $signature = Hash::make(config('app.key') . '|' . json_encode($payload, JSON_THROW_ON_ERROR));
+        $payload['signature'] = $signature;
+
+        return Builder::create()
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(new ErrorCorrectionLevelMedium())
+            ->size(200)
+            ->margin(0)
+            ->roundBlockSizeMode(new RoundBlockSizeModeNone())
+            ->data(json_encode($payload, JSON_THROW_ON_ERROR))
+            ->build()
+            ->getDataUri();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use Illuminate\Support\Facades\View;
 
@@ -10,7 +11,7 @@ class OrderPdf
     /**
      * Ticket standard PDF.
      *
-     * @param \App\Models\Order\Order $order
+     * @param Order $order
      *
      * @return string|null
      */
@@ -36,7 +37,7 @@ class OrderPdf
     /**
      * Generate ticket PDF.
      *
-     * @param \App\Models\Order\Order $order
+     * @param Order $order
      * @param $paperSize
      * @param string $orientation
      * @param string $template
@@ -45,7 +46,9 @@ class OrderPdf
      */
     public static function generate(Order $order, $paperSize, string $orientation, string $template): ?string
     {
-        $view = View::make($template, ['order' => $order]);
+        $tickets = $order->tickets()->whereIn('status_id', TicketStatus::ticket_printable_statuses)->get();
+
+        $view = View::make($template, ['order' => $order, 'tickets' => $tickets]);
         $html = $view->render();
 
         return Pdf::generate($html, $paperSize, $orientation);
