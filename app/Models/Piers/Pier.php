@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property PiersStatus $status
  * @property PierInfo $info
  * @property Collection $images
+ * @property Collection $mapImages
  */
 class Pier extends Model implements Statusable, AsDictionary
 {
@@ -75,5 +76,15 @@ class Pier extends Model implements Statusable, AsDictionary
     public function images(): BelongsToMany
     {
         return $this->belongsToMany(Image::class, 'pier_has_image', 'pier_id', 'image_id');
+    }
+
+    /**
+     * Pier map images.
+     *
+     * @return  BelongsToMany
+     */
+    public function mapImages(): BelongsToMany
+    {
+        return $this->belongsToMany(Image::class, 'pier_has_map_image', 'pier_id', 'image_id');
     }
 }

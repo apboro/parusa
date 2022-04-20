@@ -216,7 +216,6 @@ class Trip extends Model implements Statusable
      */
     public function tickets(): HasMany
     {
-        // TODO add TicketStatus::countable and check
         return $this->hasMany(Ticket::class);
     }
 

@@ -8,13 +8,15 @@
             <FormString :form="form" :name="'name'"/>
             <FormDictionary :form="form" :dictionary="'pier_statuses'" :name="'status_id'" :fresh="true"/>
             <FormImages :form="form" :name="'images'"/>
-            <FormString :form="form" :name="'work_time'"/>
+            <FormText :form="form" :name="'work_time'"/>
             <FormPhone :form="form" :name="'phone'"/>
             <FormString :form="form" :name="'address'"/>
             <FormString :form="form" :name="'latitude'"/>
             <FormString :form="form" :name="'longitude'"/>
             <FormText :form="form" :name="'description'"/>
             <FormText :form="form" :name="'way_to'"/>
+            <FormImages :form="form" :name="'map_images'"/>
+            <FormString :form="form" :name="'map_link'"/>
         </GuiContainer>
 
         <GuiContainer mt-30>

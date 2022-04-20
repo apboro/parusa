@@ -3,7 +3,7 @@
         <GuiContainer w-50 mt-30 inline>
             <GuiValue :title="'Название'">{{ data['name'] }}</GuiValue>
             <GuiValue :title="'Адрес причала'">{{ data['address'] }}</GuiValue>
-            <GuiValue :title="'Время работы'">{{ data['work_time'] }}</GuiValue>
+            <GuiValueArea :title="'Время работы'" v-text="data['work_time']"/>
             <GuiValue :title="'Телефон'">{{ data['phone'] }}</GuiValue>
             <GuiValue :title="'Координаты причала'">
                 <span v-if="data['latitude'] && data['longitude']">{{ data['latitude'] }}, {{ data['longitude'] }}</span>
@@ -23,7 +23,18 @@
             <GuiValueArea :title="'Как добраться'" v-text="data['way_to']"/>
         </GuiContainer>
 
-        <GuiContainer mt-15 v-if="editable">
+        <GuiContainer w-100 mt-30>
+            <GuiValueArea :title="'Место причала на карте'">
+                <template v-if="data['map_images'] && data['map_images'][0]">
+                    <img class="w-100" :src="data['map_images'][0]" :alt="data['name']"/>
+                </template>
+            </GuiValueArea>
+            <GuiValue :title="'Ссылка на карту'">
+                <a :href="data['map_link']" v-if="data['map_link']" target="_blank">{{ data['map_link'] }}</a>
+            </GuiValue>
+        </GuiContainer>
+
+        <GuiContainer mt-30 v-if="editable">
             <GuiButton @click="edit">Редактировать</GuiButton>
         </GuiContainer>
 

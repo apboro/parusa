@@ -17,7 +17,7 @@ class PierViewController extends ApiController
         $id = $request->input('id');
 
         if ($id === null ||
-            null === ($pier = Pier::query()->with(['status', 'info', 'images'])->where('id', $id)->first())) {
+            null === ($pier = Pier::query()->with(['status', 'info', 'images', 'mapImages'])->where('id', $id)->first())) {
             return APIResponse::notFound('Причал не найден');
         }
 
@@ -36,9 +36,13 @@ class PierViewController extends ApiController
             'active' => $pier->hasStatus(PiersStatus::active),
             'description' => $pier->info->description,
             'way_to' => $pier->info->way_to,
+            'map_link' => $pier->info->map_link,
             'images' => $pier->images->map(function (Image $image) {
                 return $image->url;
-            })
+            }),
+            'map_images' => $pier->mapImages->map(function (Image $image) {
+                return $image->url;
+            }),
         ];
 
         // send response

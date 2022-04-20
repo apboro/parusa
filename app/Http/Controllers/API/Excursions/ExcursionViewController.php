@@ -18,11 +18,11 @@ class ExcursionViewController extends ApiController
         $id = $request->input('id');
 
         if ($id === null ||
-            null === ($excursion = Excursion::query()->with(['status', 'programs'])->where('id', $id)->first())) {
+            null === ($excursion = Excursion::query()->with(['status', 'programs', 'images', 'tripImages'])->where('id', $id)->first())) {
             return APIResponse::notFound('Экскурсия не найдена');
         }
 
-        /** @var \App\Models\Excursions\Excursion $excursion */
+        /** @var Excursion $excursion */
 
         // fill data
         $values = [
@@ -31,6 +31,9 @@ class ExcursionViewController extends ApiController
             'status_id' => $excursion->status_id,
             'active' => $excursion->hasStatus(ExcursionStatus::active),
             'images' => $excursion->images->map(function (Image $image) {
+                return $image->url;
+            }),
+            'trip_images' => $excursion->tripImages->map(function (Image $image) {
                 return $image->url;
             }),
             'programs' => $excursion->programs->map(function (ExcursionProgram $program) {

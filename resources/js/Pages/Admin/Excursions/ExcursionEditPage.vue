@@ -12,6 +12,7 @@
             <FormNumber :form="form" :name="'duration'"/>
             <FormText :form="form" :name="'announce'"/>
             <FormText :form="form" :name="'description'"/>
+            <FormImages :form="form" :name="'trip_images'"/>
         </GuiContainer>
 
         <GuiContainer mt-30>

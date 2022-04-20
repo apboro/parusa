@@ -15,6 +15,8 @@ class PierEditController extends ApiEditController
         'name' => 'required',
         'status_id' => 'required',
         'images' => 'required|max:1',
+        'map_images' => 'required|max:1',
+        'map_link' => 'required',
     ];
 
     protected array $titles = [
@@ -28,6 +30,8 @@ class PierEditController extends ApiEditController
         'description' => 'Описание причала',
         'way_to' => 'Как добраться',
         'images' => 'Фотография причала',
+        'map_images' => 'Место причала на карте',
+        'map_link' => 'Ссылка на карту',
     ];
 
     /**
@@ -41,7 +45,7 @@ class PierEditController extends ApiEditController
     public function get(Request $request): JsonResponse
     {
         /** @var Pier|null $pier */
-        $pier = $this->firstOrNew(Pier::class, $request, ['info', 'images']);
+        $pier = $this->firstOrNew(Pier::class, $request, ['info', 'images', 'mapImages']);
 
         if ($pier === null) {
             return APIResponse::notFound('Причал не найден');
@@ -59,6 +63,10 @@ class PierEditController extends ApiEditController
                 'longitude' => $pier->info->longitude,
                 'description' => $pier->info->description,
                 'way_to' => $pier->info->way_to,
+                'map_link' => $pier->info->map_link,
+                'map_images' => $pier->mapImages->map(function (Image $image) {
+                    return ['id' => $image->id, 'url' => $image->url];
+                }),
                 'images' => $pier->images->map(function (Image $image) {
                     return ['id' => $image->id, 'url' => $image->url];
                 }),
@@ -105,12 +113,18 @@ class PierEditController extends ApiEditController
         $info->setAttribute('longitude', $data['longitude']);
         $info->setAttribute('description', $data['description']);
         $info->setAttribute('way_to', $data['way_to']);
+        $info->setAttribute('map_link', $data['map_link']);
         $info->save();
 
         //images
         $images = Image::createFromMany($data['images'], 'public_images');
         $imageIds = $images->pluck('id')->toArray();
         $pier->images()->sync($imageIds);
+
+        //map images
+        $images = Image::createFromMany($data['map_images'], 'public_images');
+        $imageIds = $images->pluck('id')->toArray();
+        $pier->mapImages()->sync($imageIds);
 
         return APIResponse::success(
             $pier->wasRecentlyCreated ? 'Причал добавлен' : 'Данные причала обновлены',

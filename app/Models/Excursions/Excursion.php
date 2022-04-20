@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection $programs
  * @property ExcursionInfo $info
  * @property Collection $images
+ * @property Collection $tripImages
  * @property Collection $ratesLists
  */
 class Excursion extends Model implements Statusable, AsDictionary
@@ -91,6 +92,16 @@ class Excursion extends Model implements Statusable, AsDictionary
     public function images(): BelongsToMany
     {
         return $this->belongsToMany(Image::class, 'excursion_has_image', 'excursion_id', 'image_id');
+    }
+
+    /**
+     * Excursion trip images.
+     *
+     * @return  BelongsToMany
+     */
+    public function tripImages(): BelongsToMany
+    {
+        return $this->belongsToMany(Image::class, 'excursion_has_trip_image', 'excursion_id', 'image_id');
     }
 
     /**

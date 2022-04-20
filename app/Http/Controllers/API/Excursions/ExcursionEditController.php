@@ -14,8 +14,9 @@ class ExcursionEditController extends ApiEditController
     protected array $rules = [
         'name' => 'required',
         'status_id' => 'required',
-        'images' => 'required|max:1',
+        'images' => 'required',
         'duration' => 'required|integer|min:0',
+        'trip_images' => 'required|max:1',
     ];
 
     protected array $titles = [
@@ -26,6 +27,7 @@ class ExcursionEditController extends ApiEditController
         'duration' => 'Продолжительность, минут',
         'announce' => 'Краткое описание',
         'description' => 'Полное описание',
+        'trip_images' => 'Карта маршрута',
     ];
 
     /**
@@ -39,7 +41,7 @@ class ExcursionEditController extends ApiEditController
     public function get(Request $request): JsonResponse
     {
         /** @var Excursion|null $excursion */
-        $excursion = $this->firstOrNew(Excursion::class, $request, ['status', 'images', 'programs', 'info']);
+        $excursion = $this->firstOrNew(Excursion::class, $request, ['status', 'images', 'tripImages', 'programs', 'info']);
 
         if ($excursion === null) {
             return APIResponse::notFound('Экскурсия не найдена');
@@ -51,6 +53,9 @@ class ExcursionEditController extends ApiEditController
                 'name' => $excursion->name,
                 'status_id' => $excursion->status_id,
                 'images' => $excursion->images->map(function (Image $image) {
+                    return ['id' => $image->id, 'url' => $image->url];
+                }),
+                'trip_images' => $excursion->tripImages->map(function (Image $image) {
                     return ['id' => $image->id, 'url' => $image->url];
                 }),
                 'programs' => $excursion->programs->pluck('id'),
@@ -102,6 +107,11 @@ class ExcursionEditController extends ApiEditController
         $images = Image::createFromMany($data['images'], 'public_images');
         $imageIds = $images->pluck('id')->toArray();
         $excursion->images()->sync($imageIds);
+
+        //trip images
+        $images = Image::createFromMany($data['trip_images'], 'public_images');
+        $imageIds = $images->pluck('id')->toArray();
+        $excursion->tripImages()->sync($imageIds);
 
         $excursion->programs()->sync($data['programs']);
 
