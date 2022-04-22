@@ -1,29 +1,21 @@
 <template>
     <div>
         <div class="ap-showcase__search">
-            <div class="ap-showcase__search-item ap-showcase__search-item-1">
-                <span class="ap-showcase__search-item-title">Дата</span>
-                <div class="ap-showcase__search-item-wrapper">
-                    <GuiIconButton :border="false" @click="setDay(-1)">
-                        <IconBackward/>
-                    </GuiIconButton>
-                    <InputDate v-model="searchDateProxy" :from="date_from" :to="date_to" :original="searchDate" ref="date"/>
-                    <GuiIconButton :border="false" @click="setDay(1)">
-                        <IconForward/>
-                    </GuiIconButton>
-                </div>
-            </div>
-            <div class="ap-showcase__search-item ap-showcase__search-item-2">
+            <div class="ap-showcase__search-item">
                 <span class="ap-showcase__search-item-title">Количество персон</span>
-                <InputNumber v-model="searchPersonsProxy" :min="0" :quantity="true" :original="searchPersons"/>
+                <ShowcaseInputNumber v-model="searchPersonsProxy" :min="0" :quantity="true" :original="searchPersons" :placeholder="'Количество персон'"/>
             </div>
-            <div class="ap-showcase__search-item ap-showcase__search-item-3">
+            <div class="ap-showcase__search-item">
+                <span class="ap-showcase__search-item-title">Дата</span>
+                <ShowcaseInputDate v-model="searchDateProxy" :from="date_from" :to="date_to" :original="searchDate" ref="date"/>
+            </div>
+            <div class="ap-showcase__search-item">
                 <span class="ap-showcase__search-item-title">Желаемая программа</span>
-                <InputDropDown v-model="searchProgramsProxy" :options="programs" :original="searchPrograms" :identifier="'id'" :show="'name'" :has-null="true"
-                               :placeholder="'Все'"/>
+                <ShowcaseInputDropDown v-model="searchProgramsProxy" :options="programs" :original="searchPrograms" :identifier="'id'" :show="'name'" :has-null="true"
+                                       :placeholder="'Все'"/>
             </div>
-            <div class="ap-showcase__search-item ap-showcase__search-item-4">
-                <GuiButton @click="find">Подобрать рейс</GuiButton>
+            <div class="ap-showcase__search-item">
+                <ShowcaseButton @click="find">Подобрать рейс</ShowcaseButton>
             </div>
         </div>
 
@@ -53,38 +45,45 @@
                         <td data-label="Программа">
                             <span>{{ trip['excursion'] }}</span>
                             <span>
-                                <span v-if="trip['programs'] && trip['programs'].length > 0">{{ trip['programs'].join(', ') }}</span>
-                            </span>
+                                        <span v-if="trip['programs'] && trip['programs'].length > 0">{{ trip['programs'].join(', ') }}</span>
+                                    </span>
                         </td>
                         <td data-label="Длительность">{{ trip['duration'] }} мин.</td>
                         <td data-label="Стоимость за взрослого">{{ trip['price'] }} руб.</td>
                         <td data-label="Статус рейса">{{ trip['status'] }}</td>
                         <td>
-                            <GuiButton @click="select(trip)">Купить билеты</GuiButton>
+                            <ShowcaseButton @click="select(trip)">Купить билеты</ShowcaseButton>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-            <GuiMessage border v-else>На выбранную дату рейсы не найдены</GuiMessage>
+            <ShowcaseMessage border v-else>На выбранную дату рейсы не найдены</ShowcaseMessage>
 
         </template>
+
     </div>
 </template>
 
 <script>
-import InputDate from "@/Components/Inputs/InputDate";
-import InputNumber from "@/Components/Inputs/InputNumber";
-import InputDropDown from "@/Components/Inputs/InputDropDown";
-import GuiButton from "@/Components/GUI/GuiButton";
-import GuiMessage from "@/Components/GUI/GuiMessage";
 import PopUp from "@/Components/PopUp";
 import GuiIconButton from "@/Components/GUI/GuiIconButton";
-import IconBackward from "@/Components/Icons/IconBackward";
-import IconForward from "@/Components/Icons/IconForward";
+import ShowcaseInputDate from "@/Pages/Showcase/Components/ShowcaseInputDate";
+import ShowcaseButton from "@/Pages/Showcase/Components/ShowcaseButton";
+import ShowcaseInputNumber from "@/Pages/Showcase/Components/ShowcaseInputNumber";
+import ShowcaseInputDropDown from "@/Pages/Showcase/Components/ShowcaseInputDropDown";
+import ShowcaseMessage from "@/Pages/Showcase/Components/ShowcaseMessage";
 
 export default {
-    components: {IconForward, IconBackward, GuiIconButton, PopUp, GuiMessage, GuiButton, InputDropDown, InputNumber, InputDate},
+    components: {
+        ShowcaseMessage,
+        ShowcaseInputDropDown,
+        ShowcaseInputNumber,
+        ShowcaseButton,
+        ShowcaseInputDate,
+        GuiIconButton,
+        PopUp,
+    },
 
     props: {
         partner: {type: Number, default: null},
@@ -135,9 +134,6 @@ export default {
     },
 
     methods: {
-        setDay(direction) {
-            this.$refs.date.addDays(direction);
-        },
         find() {
             if (this.searchDate !== null) {
                 this.$emit('find', this.search);
@@ -151,63 +147,56 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
+@import "../variables";
 
-.ap-showcase {
-    &__search {
+.ap-showcase__search {
+    box-sizing: border-box;
+    padding: 10px 10px 20px 10px;
+    border: 1px solid $showcase_light_gray_color;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.ap-showcase__search-item {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 0;
+    padding: 10px 10px 0 10px;
+    box-sizing: border-box;
+    justify-content: flex-end;
+    width: 100%;
+    min-height: 10px;
+
+    &-title {
+        height: 26px;
+        font-family: $showcase_font;
+        font-size: 16px;
         box-sizing: border-box;
-        padding: 10px 10px 20px 10px;
-        border: 1px solid #afafaf;
-        display: flex;
-        flex-wrap: wrap;
-
-        &-item {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            padding: 10px 10px 0 10px;
-            justify-content: flex-end;
-
-            &-wrapper {
-                display: flex;
-                flex-direction: row;
-            }
-
-            &-1 {
-                min-width: 200px;
-            }
-
-            &-2 {
-                min-width: 200px;
-            }
-
-            &-3 {
-                min-width: 300px;
-            }
-
-            &-4 {
-                padding-top: 20px;
-                min-width: 200px;
-            }
-
-            &-title {
-                height: 26px;
-                font-family: $project_font;
-                font-size: 14px;
-                box-sizing: border-box;
-                padding: 5px;
-            }
-        }
+        padding: 5px;
     }
+}
 
-    &__title {
-        font-family: $project_font;
-        font-size: 20px;
-        margin: 30px 0;
+@media screen and (min-width: 650px) {
+    .ap-showcase__search-item {
+        width: 50%;
+    }
+}
 
-        &-centered {
-            text-align: center;
-        }
+@media screen and (min-width: 920px) {
+    .ap-showcase__search-item {
+        width: 25%;
+    }
+}
+
+
+.ap-showcase__title {
+    font-family: $showcase_font;
+    font-size: 20px;
+    margin: 30px 0;
+    color: $showcase_link_color;
+
+    &-centered {
+        text-align: center;
     }
 }
 
@@ -221,10 +210,11 @@ $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Ne
         }
 
         th {
-            font-family: $project_font;
+            font-family: $showcase_font;
             text-align: left;
             font-size: 14px;
             padding: 15px 10px;
+            color: $showcase_link_color;
         }
     }
 
@@ -234,7 +224,7 @@ $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Ne
         }
 
         td {
-            font-family: $project_font;
+            font-family: $showcase_font;
             text-align: left;
             font-size: 14px;
             padding: 15px 10px;
@@ -251,6 +241,7 @@ $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Ne
 }
 
 @media screen and (max-width: 1000px) {
+
     .ap-showcase__trips {
         max-width: 500px;
         margin: 0 auto;
@@ -303,6 +294,7 @@ $project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Ne
             margin-right: 10px;
             font-weight: bold;
         }
+
     }
 }
 </style>

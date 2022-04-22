@@ -1,6 +1,6 @@
 <template>
     <div class="ap-showcase">
-        <GuiMessage v-if="recently_created">Перенапрваление на оплату</GuiMessage>
+        <ShowcaseMessage v-if="recently_created">Перенапрваление на оплату</ShowcaseMessage>
         <Final v-else-if="order !== null"
                @close="select"
         />
@@ -36,11 +36,11 @@ import TripSelect from "@/Pages/Showcase/Parts/TripSelect";
 import Cart from "@/Pages/Showcase/Parts/Cart";
 import {mapGetters} from "vuex";
 import Final from "@/Pages/Showcase/Parts/Final";
-import GuiMessage from "@/Components/GUI/GuiMessage";
+import ShowcaseMessage from "@/Pages/Showcase/Components/ShowcaseMessage";
 
 export default {
     components: {
-        GuiMessage,
+        ShowcaseMessage,
         Final,
         Cart,
         TripSelect,
