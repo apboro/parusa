@@ -1,5 +1,8 @@
 <template>
     <ShowcaseInputWrapper class="ap-input-date" :dirty="isDirty" :disabled="disabled" :valid="valid" :has-focus="isFocused">
+        <template #icon v-if="$slots.default">
+            <slot/>
+        </template>
         <ShowcaseDateInput
             v-model="proxyValue"
             :from="from"

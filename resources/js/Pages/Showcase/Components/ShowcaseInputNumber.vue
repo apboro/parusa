@@ -1,11 +1,14 @@
 <template>
-    <ShowcaseInputWrapper class="ap-input-number" :dirty="isDirty" :disabled="disabled" :valid="valid">
+    <ShowcaseInputWrapper class="ap-input-number" :border="border" :dirty="isDirty" :disabled="disabled" :valid="valid">
+        <template #icon v-if="$slots.default">
+            <slot/>
+        </template>
         <span class="ap-input-number__decrease" v-if="quantity"
               :class="{'ap-input-number__decrease-disabled': disabled}"
               tabindex="-1"
               @click="decrease"
         >
-            <IconMinus/>
+            <ShowcaseIconMinus/>
         </span>
         <input
             class="ap-input-number__input"
@@ -22,7 +25,7 @@
               tabindex="-1"
               @click="increase"
         >
-            <IconPlus/>
+            <ShowcaseIconPlus/>
         </span>
     </ShowcaseInputWrapper>
 </template>
@@ -31,9 +34,11 @@
 import IconMinus from "@/Components/Icons/IconMinus";
 import IconPlus from "@/Components/Icons/IconPlus";
 import ShowcaseInputWrapper from "@/Pages/Showcase/Components/Helpers/ShowcaseInputWrapper";
+import ShowcaseIconMinus from "@/Pages/Showcase/Icons/ShowcaseIconMinus";
+import ShowcaseIconPlus from "@/Pages/Showcase/Icons/ShowcaseIconPlus";
 
 export default {
-    components: {ShowcaseInputWrapper, IconPlus, IconMinus},
+    components: {ShowcaseIconPlus, ShowcaseIconMinus, ShowcaseInputWrapper, IconPlus, IconMinus},
     props: {
         name: String,
         modelValue: {type: Number, default: null},
@@ -49,6 +54,7 @@ export default {
 
         min: {type: Number, default: null},
         max: {type: Number, default: null},
+        border: {type: Boolean, default: true},
     },
 
     emits: ['update:modelValue', 'change'],
@@ -158,7 +164,7 @@ export default {
         box-sizing: border-box;
         cursor: pointer;
         background-color: transparent;
-        color: $showcase_text_color;
+        color: $showcase_primary_color;
         transition: color $animation $animation_time,;
         @include no_selection;
 

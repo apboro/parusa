@@ -41,13 +41,13 @@ export default {
     text-align: center;
     cursor: pointer;
     box-sizing: border-box;
-    padding: 0.15em math.div($showcase_size_unit, 2) 0;
+    padding: 0 math.div($showcase_size_unit, 2) 0;
     letter-spacing: 0.03rem;
     transition: background-color $animation $animation_time, border-color $animation $animation_time, color $animation $animation_time;
     font-family: $showcase_font;
     font-size: 14px;
-    text-transform: uppercase;
     white-space: nowrap;
+    border: 1px solid;
     @include no_selection;
 
     &__disabled {

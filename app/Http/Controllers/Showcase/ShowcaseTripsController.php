@@ -77,8 +77,10 @@ class ShowcaseTripsController extends ApiController
                 'id' => $trip->id,
                 'start_time' => $trip->start_at->format('H:i'),
                 'pier' => $trip->startPier->name,
+                'pier_id' => $trip->start_pier_id,
                 'ship' => $trip->ship->name,
                 'excursion' => $trip->excursion->name,
+                'excursion_id' => $trip->excursion_id,
                 'programs' => $trip->excursion->programs->map(function (ExcursionProgram $program) {
                     return $program->name;
                 }),
@@ -111,9 +113,9 @@ class ShowcaseTripsController extends ApiController
             ->with(['startPier', 'excursion', 'excursion.info', 'excursion.programs'])
             ->first();
 
-        if($trip === null) {
+        if ($trip === null) {
             return response()->json([
-                'message' => 'Пордажа билетов на этот рейс не осуществляется.'
+                'message' => 'Пордажа билетов на этот рейс не осуществляется.',
             ], 404);
         }
         $rates = $trip->excursion->rateForDate($trip->start_at);
@@ -121,7 +123,7 @@ class ShowcaseTripsController extends ApiController
         if ($rates !== null) {
             $rates = $rates->rates
                 ->filter(function (TicketRate $rate) {
-                    return $rate->base_price !== 0 && $rate->grade_id !== TicketGrade::guide;
+                    return !empty($rate->base_price) && $rate->grade_id !== TicketGrade::guide;
                 })
                 ->map(function (TicketRate $rate) {
                     return [
@@ -135,15 +137,17 @@ class ShowcaseTripsController extends ApiController
         return response()->json([
             'trip' => [
                 'id' => $trip->id,
-                'excursion' => $trip->excursion->name,
+                'pier' => $trip->startPier->name,
+                'pier_id' => $trip->start_pier_id,
                 'start_date' => $trip->start_at->translatedFormat('j F Y'),
                 'start_time' => $trip->start_at->format('H:i'),
-                'pier' => $trip->startPier->name,
+                'excursion' => $trip->excursion->name,
+                'excursion_id' => $trip->excursion_id,
                 'duration' => $trip->excursion->info->duration,
                 'images' => $trip->excursion->images->map(function (Image $image) {
                     return $image->url;
                 }),
-                'rates' => $rates,
+                'rates' => array_values($rates->toArray()),
             ],
         ]);
     }

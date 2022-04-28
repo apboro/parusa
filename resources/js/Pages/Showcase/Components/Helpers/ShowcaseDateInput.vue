@@ -75,7 +75,7 @@ export default {
                     this.set(null);
                     return;
                 }
-                const dateObject = value.split('.');
+                const dateObject = value.split('/');
                 const year = (typeof dateObject[2] !== "undefined" && dateObject[2] !== '') ? Number(dateObject[2]) : null;
                 const month = (typeof dateObject[1] !== "undefined" && dateObject[1] !== '') ? Number(dateObject[1]) : null;
                 const day = (typeof dateObject[0] !== "undefined" && dateObject[0] !== '') ? Number(dateObject[0]) : null;
@@ -114,7 +114,7 @@ export default {
             if (!this.isFocused || force) {
                 this.displayValue = this.innerValue === null
                     ? null
-                    : String(this.innerValue.getDate()).padStart(2, '0') + '.' + String(this.innerValue.getMonth() + 1).padStart(2, '0') + '.' + String(this.innerValue.getFullYear()).padStart(4, '0')
+                    : String(this.innerValue.getDate()).padStart(2, '0') + '/' + String(this.innerValue.getMonth() + 1).padStart(2, '0') + '/' + String(this.innerValue.getFullYear()).padStart(4, '0')
             }
         },
         picked(value) {
@@ -156,7 +156,7 @@ export default {
                 8, //backspace
                 46, // delete
             ];
-            if (accepted.indexOf(event.keyCode) === -1 && ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'].indexOf(event.key) === -1) {
+            if (accepted.indexOf(event.keyCode) === -1 && ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '/'].indexOf(event.key) === -1) {
                 event.preventDefault();
             }
             return true;

@@ -3,54 +3,62 @@
         <div class="ap-showcase__search">
             <div class="ap-showcase__search-item">
                 <span class="ap-showcase__search-item-title">Количество персон</span>
-                <ShowcaseInputNumber v-model="searchPersonsProxy" :min="0" :quantity="true" :original="searchPersons" :placeholder="'Количество персон'"/>
+                <ShowcaseInputNumber v-model="search_parameters.persons" :min="0" :quantity="false" :original="search_parameters.persons" :placeholder="'Количество персон'">
+                    <ShowcaseIconPersons/>
+                </ShowcaseInputNumber>
             </div>
             <div class="ap-showcase__search-item">
                 <span class="ap-showcase__search-item-title">Дата</span>
-                <ShowcaseInputDate v-model="searchDateProxy" :from="date_from" :to="date_to" :original="searchDate" ref="date"/>
+                <ShowcaseInputDate v-model="date_filter" :from="date_from" :to="date_to" :original="date_filter" ref="date">
+                    <ShowcaseIconCalendar/>
+                </ShowcaseInputDate>
             </div>
             <div class="ap-showcase__search-item">
                 <span class="ap-showcase__search-item-title">Желаемая программа</span>
-                <ShowcaseInputDropDown v-model="searchProgramsProxy" :options="programs" :original="searchPrograms" :identifier="'id'" :show="'name'" :has-null="true"
-                                       :placeholder="'Все'"/>
+                <ShowcaseInputDropDown v-model="search_parameters.programs" :options="programs" :original="search_parameters.programs" :identifier="'id'" :show="'name'"
+                                       :has-null="true"
+                                       :placeholder="'Все'">
+                    <ShowcaseIconCompass/>
+                </ShowcaseInputDropDown>
             </div>
             <div class="ap-showcase__search-item">
-                <ShowcaseButton @click="find">Подобрать рейс</ShowcaseButton>
+                <ShowcaseButton @click="search">Подобрать рейс</ShowcaseButton>
             </div>
         </div>
 
-        <template v-if="isTripsLoaded">
-            <h2 class="ap-showcase__title ap-showcase__title-centered">Расписание рейсов на {{ date }}</h2>
+        <ShowcaseLoadingProgress :loading="isLoading">
+
+            <h2 class="ap-showcase__title ap-showcase__title-centered">Расписание отправлений на <span class="ap-not-brake">{{ date }}</span></h2>
 
             <div class="ap-showcase__results" v-if="trips !== null && trips.length > 0">
                 <table class="ap-showcase__trips">
                     <thead>
                     <tr>
-                        <th class="ap-showcase__trip-time">Отправление</th>
+                        <th class="ap-showcase__trip-time">Время отправления</th>
                         <th class="ap-showcase__trip-excursion">Причал, теплоход</th>
                         <th class="ap-showcase__trip-info">Программа</th>
-                        <th class="ap-showcase__trip-duration">Длительность</th>
-                        <th class="ap-showcase__trip-price">Стоимость</th>
-                        <th class="ap-showcase__trip-status">Статус</th>
+                        <th class="ap-showcase__trip-duration">Время в пути</th>
+                        <th class="ap-showcase__trip-price">Стоимость за взрослого</th>
+                        <th class="ap-showcase__trip-status">Статус рейса</th>
                         <th class="ap-showcase__trip-buy"></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="trip in trips">
-                        <td data-label="Время отправления">{{ trip['start_time'] }}</td>
-                        <td data-label="Причал, теплоход">
-                            <span>{{ trip['pier'] }}</span>
+                        <td>{{ trip['start_time'] }}</td>
+                        <td>
+                            <span class="ap-link" @click="showPierInfo(trip)">Причал "{{ trip['pier'] }}"</span>
                             <span>{{ trip['ship'] }}</span>
                         </td>
-                        <td data-label="Программа">
-                            <span>{{ trip['excursion'] }}</span>
+                        <td>
+                            <span class="ap-link" @click="showExcursionInfo(trip)">{{ trip['excursion'] }}</span>
                             <span>
                                         <span v-if="trip['programs'] && trip['programs'].length > 0">{{ trip['programs'].join(', ') }}</span>
                                     </span>
                         </td>
-                        <td data-label="Длительность">{{ trip['duration'] }} мин.</td>
-                        <td data-label="Стоимость за взрослого">{{ trip['price'] }} руб.</td>
-                        <td data-label="Статус рейса">{{ trip['status'] }}</td>
+                        <td data-label="Время в пути:"><span class="ap-not-brake">{{ trip['duration'] }} мин.</span></td>
+                        <td data-label="Стоимость за взрослого:"><span class="ap-not-brake">{{ trip['price'] }} руб.</span></td>
+                        <td data-label="Статус рейса:"><span class="ap-not-brake">{{ trip['status'] }}</span></td>
                         <td>
                             <ShowcaseButton @click="select(trip)">Купить билеты</ShowcaseButton>
                         </td>
@@ -58,96 +66,108 @@
                     </tbody>
                 </table>
             </div>
-            <ShowcaseMessage border v-else>На выбранную дату рейсы не найдены</ShowcaseMessage>
+            <ShowcaseMessage border v-else>Рейсы с заданными параметрами не найдены</ShowcaseMessage>
 
-        </template>
+        </ShowcaseLoadingProgress>
 
+        <ExcursionInfo ref="excursion"/>
+        <PierInfo ref="pier"/>
     </div>
 </template>
 
 <script>
-import PopUp from "@/Components/PopUp";
-import GuiIconButton from "@/Components/GUI/GuiIconButton";
 import ShowcaseInputDate from "@/Pages/Showcase/Components/ShowcaseInputDate";
 import ShowcaseButton from "@/Pages/Showcase/Components/ShowcaseButton";
 import ShowcaseInputNumber from "@/Pages/Showcase/Components/ShowcaseInputNumber";
 import ShowcaseInputDropDown from "@/Pages/Showcase/Components/ShowcaseInputDropDown";
+import ShowcaseLoadingProgress from "@/Pages/Showcase/Components/ShowcaseLoadingProgress";
 import ShowcaseMessage from "@/Pages/Showcase/Components/ShowcaseMessage";
+import ExcursionInfo from "@/Pages/Showcase/Parts/ExcursionInfo";
+import PierInfo from "@/Pages/Showcase/Parts/PierInfo";
+import ShowcaseIconPersons from "@/Pages/Showcase/Icons/ShowcaseIconPersons";
+import ShowcaseIconCalendar from "@/Pages/Showcase/Icons/ShowcaseIconCalendar";
+import ShowcaseIconCompass from "@/Pages/Showcase/Icons/ShowcaseIconCompass";
 
 export default {
     components: {
+        ShowcaseIconCompass,
+        ShowcaseIconCalendar,
+        ShowcaseIconPersons,
+        PierInfo,
+        ExcursionInfo,
         ShowcaseMessage,
         ShowcaseInputDropDown,
         ShowcaseInputNumber,
         ShowcaseButton,
         ShowcaseInputDate,
-        GuiIconButton,
-        PopUp,
+        ShowcaseLoadingProgress,
     },
 
     props: {
-        partner: {type: Number, default: null},
-        today: {type: String, default: null},
-        date: {type: String, default: null},
         date_from: {type: String, default: null},
         date_to: {type: String, default: null},
         programs: {type: Array, default: null},
-        trips: {type: Array, default: () => ([])},
-        isTripsLoaded: {type: Boolean, default: false},
+        today: {type: String, default: null},
 
-        searchDate: {type: String, default: null},
-        searchPersons: {type: Number, default: null},
-        searchPrograms: {type: [Number, Array], default: null},
+        date: {type: String, default: null},
+        trips: {type: Array, default: () => ([])},
+        isLoading: {type: Boolean, default: false},
+
+        lastSearch: {type: Object, default: null},
     },
 
-    emits: ['find', 'select', 'updateSearch'],
+    emits: ['search', 'select'],
 
     computed: {
-        searchDateProxy: {
+        date_filter: {
             get() {
-                return this.searchDate;
+                return this.search_parameters.date === null ? this.today : this.search_parameters.date;
             },
             set(value) {
-                this.$emit('updateSearch', 'date', value);
+                this.search_parameters.date = value;
             }
-        },
-        searchPersonsProxy: {
-            get() {
-                return this.searchPersons;
-            },
-            set(value) {
-                this.$emit('updateSearch', 'persons', value);
-            }
-        },
-        searchProgramsProxy: {
-            get() {
-                return this.searchPrograms;
-            },
-            set(value) {
-                this.$emit('updateSearch', 'programs', value);
-            }
-        },
+        }
     },
 
+    data: () => ({
+        search_parameters: {
+            date: null,
+            persons: null,
+            programs: null,
+        }
+    }),
+
     mounted() {
-        this.$emit('select', null);
+        this.search_parameters['date'] = this.lastSearch !== null && typeof this.lastSearch['date'] !== "undefined" ? this.lastSearch['date'] : null;
+        this.search_parameters['persons'] = this.lastSearch !== null && typeof this.lastSearch['persons'] !== "undefined" ? this.lastSearch['persons'] : null;
+        this.search_parameters['programs'] = this.lastSearch !== null && typeof this.lastSearch['programs'] !== "undefined" ? this.lastSearch['programs'] : null;
     },
 
     methods: {
-        find() {
-            if (this.searchDate !== null) {
-                this.$emit('find', this.search);
+        search() {
+            if (this.search_parameters.date === null) {
+                this.search_parameters.date = this.today;
             }
+            this.$emit('search', this.search_parameters);
         },
+
         select(trip) {
             this.$emit('select', trip['id']);
+        },
+
+        showPierInfo(trip) {
+            this.$refs.pier.show(trip['pier_id']);
+        },
+
+        showExcursionInfo(trip) {
+            this.$refs.excursion.show(trip['excursion_id']);
         },
     }
 }
 </script>
 
 <style lang="scss" scoped>
-@import "../variables";
+@import "variables";
 
 .ap-showcase__search {
     box-sizing: border-box;
@@ -188,10 +208,19 @@ export default {
     }
 }
 
+.ap-link {
+    color: $showcase_link_color;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.ap-not-brake {
+    white-space: nowrap;
+}
 
 .ap-showcase__title {
     font-family: $showcase_font;
-    font-size: 20px;
+    font-size: 24px;
     margin: 30px 0;
     color: $showcase_link_color;
 
@@ -206,15 +235,16 @@ export default {
 
     thead {
         tr {
-            border-bottom: 1px solid #afafaf;
+            border-bottom: 1px solid #d7d7d7;
         }
 
         th {
             font-family: $showcase_font;
             text-align: left;
-            font-size: 14px;
+            font-size: 16px;
             padding: 15px 10px;
             color: $showcase_link_color;
+            font-weight: normal;
         }
     }
 
@@ -268,23 +298,10 @@ export default {
         td {
             display: block;
             text-align: right;
-            padding: 10px !important;
-
-            &:not(:last-child) {
-                border-bottom: 1px solid #e5e5e5;
-            }
-
-            &:last-child {
-                text-align: right;
-            }
+            padding: 5px !important;
 
             & > span {
-                display: inline !important;
                 margin: 0 !important;
-
-                &:not(:last-child):after {
-                    content: ', ';
-                }
             }
         }
 
@@ -292,9 +309,7 @@ export default {
             content: attr(data-label);
             float: left;
             margin-right: 10px;
-            font-weight: bold;
         }
-
     }
 }
 </style>

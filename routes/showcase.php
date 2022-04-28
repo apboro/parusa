@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Showcase\ShowcaseInfoController;
 use App\Http\Controllers\Showcase\ShowcaseInitController;
 use App\Http\Controllers\Showcase\ShowcaseOrderController;
 use App\Http\Controllers\Showcase\ShowcaseTripsController;
@@ -9,6 +10,8 @@ Route::prefix('/showcase')->middleware(['showcase'])->group(function () {
     Route::post('/init', [ShowcaseInitController::class, 'init']);
     Route::post('/trips', [ShowcaseTripsController::class, 'trips'])->middleware(['external.protect']);
     Route::post('/trip', [ShowcaseTripsController::class, 'trip'])->middleware(['external.protect']);
+    Route::post('/excursion', [ShowcaseInfoController::class, 'excursion'])->middleware(['external.protect']);
+    Route::post('/pier', [ShowcaseInfoController::class, 'pier'])->middleware(['external.protect']);
 
     Route::post('/order', [ShowcaseOrderController::class, 'order'])->middleware(['external.protect']);
 });

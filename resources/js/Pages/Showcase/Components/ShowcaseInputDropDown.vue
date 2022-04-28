@@ -2,6 +2,9 @@
     <ShowcaseInputWrapper class="ap-input-dropdown" :dirty="isDirty" :disabled="disabled" :valid="valid" :has-focus="dropped" :label="false"
                   :class="{'ap-input-dropdown__disabled': disabled, 'ap-input-dropdown__multiple': multi}"
     >
+        <template #icon v-if="$slots.default">
+            <slot/>
+        </template>
         <span v-if="isEmpty" class="ap-input-dropdown__value"
               :class="{'ap-input-dropdown__value-placeholder': isEmpty && !hasNull, 'ap-input-dropdown__value-small': small}"
               @click="toggle">{{ placeholder }}</span>

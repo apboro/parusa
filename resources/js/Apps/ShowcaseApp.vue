@@ -1,171 +1,265 @@
 <template>
-    <LoadingProgress :loading="is_initializing || is_queued || is_loading" :opacity="100">
-        <template v-if="has_error">
-            <GuiMessage>Ошибка: {{ error_message }}</GuiMessage>
+    <ShowcaseLoadingProgress :loading="state.is_initializing || state.is_loading" :opacity="100">
+        <template v-if="state.has_error">
+            <ShowcaseMessage>Ошибка: {{ state.error_message }}</ShowcaseMessage>
         </template>
-        <MainPage v-else
-                  :partner="partner"
-                  :crm_url="crm_url"
-                  :debug="debug"
-                  :today="today"
-                  :date="date"
-                  :date_from="date_from"
-                  :date_to="date_to"
-                  :programs="programs"
-                  :trips="trips"
-                  :trip="trip"
-                  :is-trips-loaded="is_trips_loaded"
-                  @find="getList"
-                  @select="getTrip"
-        />
-    </LoadingProgress>
+        <template v-else>
+            <template v-if="order_secret">
+                Order info goes here
+            </template>
+            <TicketsSelect v-else-if="trip_id"
+                           :trip="trip.data"
+                           :trip-id="trip_id"
+                           :crm_url="crm_url"
+                           :debug="debug"
+                           :is-loading="trip.is_loading"
+                           @select="selectTrip"
+            />
+            <TripsList v-else
+                       :date_from="search_options.date_from"
+                       :date_to="search_options.date_to"
+                       :programs="search_options.programs"
+                       :today="today"
+                       :date="trips.date"
+                       :trips="trips.list"
+                       :is-loading="trips.is_loading"
+                       :last-search="last_search"
+                       @search="loadList"
+                       @select="selectTrip"
+            />
+
+        </template>
+    </ShowcaseLoadingProgress>
 </template>
 
 <script>
-import MainPage from "@/Pages/Showcase/MainPage";
-import LoadingProgress from "@/Components/LoadingProgress";
-import GuiMessage from "@/Components/GUI/GuiMessage";
-import GuiButton from "@/Components/GUI/GuiButton";
+import ShowcaseMessage from "@/Pages/Showcase/Components/ShowcaseMessage";
+import ShowcaseLoadingProgress from "@/Pages/Showcase/Components/ShowcaseLoadingProgress";
+import TripsList from "@/Pages/Showcase/TripsList";
+import TicketsSelect from "@/Pages/Showcase/TicketsSelect";
 
 export default {
-    name: "ShowcaseApp",
-
     props: {
         crm_url: {type: String, default: 'https://cp.parus-a.ru'},
         debug: {type: Boolean, default: false},
     },
 
-    components: {GuiButton, GuiMessage, LoadingProgress, MainPage},
+    components: {
+        TicketsSelect,
+        TripsList,
+        ShowcaseLoadingProgress,
+        ShowcaseMessage,
+    },
 
     data: () => ({
-        partner: null,
-        media: null,
-        is_partner_page: true,
-
-        is_initializing: true,
-        is_queued: false,
-        is_loading: false,
-        is_trips_loaded: false,
-
-        has_error: false,
-        error_message: null,
+        options: {
+            partner: null,
+            media: null,
+            is_partner_page: true,
+        },
+        state: {
+            is_initializing: true,
+            is_loading: false,
+            has_error: false,
+            error_message: null,
+        },
+        search_options: {
+            date_from: null,
+            date_to: null,
+            programs: [],
+        },
+        last_search: null,
 
         today: null,
 
-        date: null,
-        date_from: null,
-        date_to: null,
-        programs: [],
+        order_secret: null,
 
-        trips: [],
-        trip: null,
+        trip_id: null,
+        trip: {
+            is_loading: false,
+            data: null,
+        },
+
+        trips: {
+            date: null,
+            list: [],
+            is_loading: false,
+        },
+
     }),
 
     created() {
+        // get config defined outside
         const configElement = document.getElementById('ap-showcase-config');
         const config = configElement !== null ? JSON.parse(configElement.innerHTML) : null;
-        const urlParams = new URLSearchParams(window.location.search);
+        if (config !== null && typeof config['partner_site'] !== "undefined" && config['partner_site'] === false) {
+            this.is_partner_page = false;
+        }
 
+        // get initial parameters
+        const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('partner')) {
             this.partner = Number(urlParams.get('partner'));
         } else {
             this.partner = config !== null && typeof config['partner'] !== "undefined" && config['partner'] !== null ? Number(config['partner']) : null;
         }
         this.media = urlParams.get('media');
-        if(config !== null && typeof config['partner_site'] !== "undefined" && config['partner_site'] === false) {
-            this.is_partner_page = false;
-        }
 
+        // get order secret if set
+        this.order_secret = localStorage.getItem('ap-showcase-order');
+
+        // get trip id if set
+        this.trip_id = this.getTripId();
+
+        // initialize
         this.init();
+
+        // navigation buttons events
+        window.addEventListener('popstate', this.handleNavigation);
     },
 
     methods: {
+        /**
+         * Helper function for url making.
+         *
+         * @param path
+         * @returns {string}
+         */
         url(path) {
             return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
         },
+
+        /**
+         * Get externally set internal trip_id from query string.
+         */
+        getTripId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('ap-tid')) {
+                return Number(urlParams.get('ap-tid'));
+            }
+            return null;
+        },
+
+        /**
+         * Initialization request to get initial parameters and create session.
+         *
+         * @returns {Promise}
+         */
         init() {
             return new Promise((resolve, reject) => {
                 axios.post(this.url('/showcase/init'), {
-                    is_partner: this.is_partner_page,
-                    partner_id: this.partner,
-                    media: this.media
+                    is_partner: this.options.is_partner_page,
+                    partner_id: this.options.partner,
+                    media: this.options.media
                 })
                     .then(response => {
-                        this.today = response.data['today'];
-                        this.date_from = response.data['date_from'];
-                        this.date_to = response.data['date_to'];
-                        this.programs = response.data['programs'];
+                        this.today = response.data['today']; // Current date
+                        this.search_options.date_from = response.data['date_from']; //  Date range start
+                        this.search_options.date_to = response.data['date_to']; // Date range end for future use
+                        this.search_options.programs = response.data['programs']; // List of available programs
+                        this.updateState();
                         resolve();
                     })
                     .catch(error => {
-                        this.error_message = error.response.data['message'];
+                        this.state.error_message = error.response.data['message'];
                         console.log(this.error_message);
-                        this.has_error = true;
+                        this.state.has_error = true;
                         reject();
                     })
                     .finally(() => {
-                        this.is_initializing = false;
+                        this.state.is_initializing = false;
                     });
             });
         },
 
-        reset() {
-            this.$store.commit('showcase/trip_id', null);
-            return this.init();
+        /**
+         * Handle application action on current state.
+         */
+        updateState() {
+            if (this.order_secret !== null) {
+                console.log('handle order state loading');
+            } else if (this.trip_id !== null) {
+                // handle trip info
+                this.getTrip(this.trip_id)
+            } else {
+                // handle trips list
+                this.loadList();
+            }
         },
 
-        getList(search) {
-            if (this.is_initializing) {
-                setTimeout(() => this.getList(search), 300);
-                this.is_queued = true;
-                return;
+        /**
+         * Load trips list.
+         *
+         * @param search
+         */
+        loadList(search = null) {
+            if (search !== null) {
+                this.last_search = search;
+            } else {
+                this.last_search = (this.last_search === null) ? {date: this.today} : this.last_search;
             }
-            this.is_loading = true;
-            this.is_trips_loaded = false;
-            axios.post(this.url('/showcase/trips'), {search})
+            this.trips.is_loading = true;
+            axios.post(this.url('/showcase/trips'), {search: this.last_search})
                 .then(response => {
-                    this.trips = response.data['trips'];
-                    this.date = response.data['date'];
-                    this.is_trips_loaded = true;
+                    this.trips.list = response.data['trips'];
+                    this.trips.date = response.data['date'];
                 })
                 .catch(error => {
-                    this.error_message = error.response.data['message'];
-                    console.log(this.error_message);
-                    this.has_error = true;
+                    this.state.error_message = error.response.data['message'];
+                    this.state.has_error = true;
                     this.reset();
                 })
                 .finally(() => {
-                    this.is_loading = false;
-                    this.is_queued = false;
+                    this.trips.is_loading = false;
                 });
         },
 
-        getTrip(id) {
-            if (this.is_initializing) {
-                setTimeout(() => this.getTrip(id), 300);
-                this.is_queued = true;
-                return;
+        /**
+         * Handle browser navigation.
+         */
+        handleNavigation() {
+            const trip_id = this.getTripId();
+            if (trip_id !== this.trip_id) {
+                this.selectTrip(trip_id);
             }
-            if (id === null) {
-                this.trip = null;
-                return;
+        },
+
+        /**
+         * Select trip to choose tickets.
+         *
+         * @param trip_id
+         */
+        selectTrip(trip_id) {
+            const url = new URL(window.location.href);
+            if (trip_id !== null) {
+                url.searchParams.set('ap-tid', trip_id);
+            } else {
+                url.searchParams.delete('ap-tid');
             }
-            this.is_loading = true;
-            axios.post(this.url('/showcase/trip'), {id: id})
+
+            if (trip_id !== this.trip_id) {
+                window.history.pushState({}, '', url.toString());
+            }
+            this.trip_id = trip_id;
+            this.updateState();
+        },
+
+        /**
+         * Load trip info and rates.
+         *
+         * @param trip_id
+         */
+        getTrip(trip_id) {
+            this.trip.is_loading = true;
+            axios.post(this.url('/showcase/trip'), {id: trip_id})
                 .then(response => {
-                    this.trip = response.data['trip'];
+                    this.trip.data = response.data['trip'];
                 })
                 .catch(() => {
-                    // this.error_message = error.response.data['message'];
-                    // this.has_error = true;
-                    this.reset()
-                        .then(() => {
-                            this.trip = null;
-                        });
+                    this.selectTrip(null);
                 })
                 .finally(() => {
-                    this.is_loading = false;
-                    this.is_queued = false;
+                    this.trip.is_loading = false;
                 });
         },
     }

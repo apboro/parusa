@@ -32,7 +32,7 @@ class ExternalProtect
             return $this->responseError('Ошибка сессии.', 400, $request->expectsJson());
         }
 
-        if (($request->ip() !== ($cookie['ip'] ?? null)) || ($request->userAgent() !== ($cookie['user-agent'] ?? null))) {
+        if ($request->ip() !== ($cookie['ip'] ?? null)) {
             return $this->responseError('Ошибка сессии. Перезагрузите страницу.', 403, $request->expectsJson());
         }
 

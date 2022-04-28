@@ -17,16 +17,13 @@ export default {
 <style lang="scss">
 @import "../variables";
 
-$project_font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !default;
-$base_black_color: #1e1e1e !default;
-
 .message {
-    font-family: $project_font;
+    font-family: $showcase_font;
     font-size: 20px;
     width: 100%;
     text-align: center;
     padding: 30px 20px;
-    color: $base_black_color;
+    color: $showcase_text_color;
     box-sizing: border-box;
 }
 </style>

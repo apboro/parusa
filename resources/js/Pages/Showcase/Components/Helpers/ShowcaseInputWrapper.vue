@@ -1,12 +1,26 @@
 <template>
-    <label class="ap-input-wrapper" v-if="label"
-           :class="{'ap-input-wrapper__dirty': dirty, 'ap-input-wrapper__disabled': disabled, 'ap-input-wrapper__error': !valid, 'ap-input-wrapper__focus': hasFocus}"
-    >
+    <label class="ap-input-wrapper" v-if="label" :class="{
+        'ap-input-wrapper__dirty': dirty,
+        'ap-input-wrapper__disabled': disabled,
+        'ap-input-wrapper__error': !valid,
+        'ap-input-wrapper__focus': hasFocus,
+        'ap-input-wrapper__border': border
+    }">
+        <span class="ap-input-wrapper__icon" v-if="$slots.icon">
+            <slot name="icon"/>
+        </span>
         <slot/>
     </label>
-    <div class="ap-input-wrapper" v-else
-         :class="{'ap-input-wrapper__dirty': dirty, 'ap-input-wrapper__disabled': disabled, 'ap-input-wrapper__error': !valid, 'ap-input-wrapper__focus': hasFocus}"
-    >
+    <div class="ap-input-wrapper" v-else :class="{
+        'ap-input-wrapper__dirty': dirty,
+        'ap-input-wrapper__disabled': disabled,
+        'ap-input-wrapper__error': !valid,
+        'ap-input-wrapper__focus': hasFocus,
+        'ap-input-wrapper__border': border
+    }">
+        <span class="ap-input-wrapper__icon" v-if="$slots.icon">
+            <slot name="icon"/>
+        </span>
         <slot/>
     </div>
 </template>
@@ -19,6 +33,7 @@ export default {
         dirty: {type: Boolean, default: true},
         label: {type: Boolean, default: true},
         hasFocus: {type: Boolean, default: false},
+        border: {type: Boolean, default: true},
     },
 }
 </script>
@@ -29,7 +44,6 @@ export default {
 .ap-input-wrapper {
     background-color: $showcase_white_color;
     border-radius: 2px;
-    border: 1px solid $showcase_light_gray_color;
     box-sizing: border-box;
     color: $showcase_text_color;
     cursor: text;
@@ -38,6 +52,26 @@ export default {
     position: relative;
     transition: border-color $animation $animation_time;
     width: 100%;
+    flex-direction: row;
+
+    &__icon {
+        width: $showcase_size_unit;
+        height: 100%;
+        flex-shrink: 0;
+        flex-grow: 0;
+        box-sizing: border-box;
+        padding: 3px 2px 3px 4px;
+        color: #c9c9c9;
+
+        & > svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    &__border {
+        border: 1px solid $showcase_light_gray_color;
+    }
 
     &:not(&__disabled):hover {
         border-color: $showcase_gray_color;
