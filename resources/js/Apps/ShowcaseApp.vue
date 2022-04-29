@@ -4,9 +4,11 @@
             <ShowcaseMessage>Ошибка: {{ state.error_message }}</ShowcaseMessage>
         </template>
         <template v-else>
-            <template v-if="order_secret">
-                Order info goes here
-            </template>
+            <OrderInfo v-if="order_secret"
+                       :is-loading="order.is_loading"
+                       :order-data="order.data"
+                       @close="closeOrder"
+            />
             <TicketsSelect v-else-if="trip_id"
                            :trip="trip.data"
                            :trip-id="trip_id"
@@ -37,6 +39,7 @@ import ShowcaseMessage from "@/Pages/Showcase/Components/ShowcaseMessage";
 import ShowcaseLoadingProgress from "@/Pages/Showcase/Components/ShowcaseLoadingProgress";
 import TripsList from "@/Pages/Showcase/TripsList";
 import TicketsSelect from "@/Pages/Showcase/TicketsSelect";
+import OrderInfo from "@/Pages/Showcase/OrderInfo";
 
 export default {
     props: {
@@ -45,6 +48,7 @@ export default {
     },
 
     components: {
+        OrderInfo,
         TicketsSelect,
         TripsList,
         ShowcaseLoadingProgress,
@@ -72,7 +76,11 @@ export default {
 
         today: null,
 
-        order_secret: null,
+        trips: {
+            date: null,
+            list: [],
+            is_loading: false,
+        },
 
         trip_id: null,
         trip: {
@@ -80,12 +88,11 @@ export default {
             data: null,
         },
 
-        trips: {
-            date: null,
-            list: [],
+        order_secret: null,
+        order: {
             is_loading: false,
+            data: null,
         },
-
     }),
 
     created() {
@@ -106,7 +113,7 @@ export default {
         this.media = urlParams.get('media');
 
         // get order secret if set
-        this.order_secret = localStorage.getItem('ap-showcase-order');
+        this.order_secret = localStorage.getItem('ap-showcase-order-secret');
 
         // get trip id if set
         this.trip_id = this.getTripId();
@@ -177,10 +184,13 @@ export default {
          */
         updateState() {
             if (this.order_secret !== null) {
-                console.log('handle order state loading');
+                // handle order state loading
+                this.getOrderInfo(this.order_secret);
+
             } else if (this.trip_id !== null) {
                 // handle trip info
                 this.getTrip(this.trip_id)
+
             } else {
                 // handle trips list
                 this.loadList();
@@ -262,6 +272,35 @@ export default {
                     this.trip.is_loading = false;
                 });
         },
+
+        /**
+         * Load order info.
+         *
+         * @param order_secret
+         */
+        getOrderInfo(order_secret) {
+            this.order.is_loading = true;
+            axios.post(this.url('/showcase/order/info'), {secret: order_secret})
+                .then(response => {
+                    this.order.data = response.data['order'];
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+                .finally(() => {
+                    this.order.is_loading = false;
+                });
+        },
+
+        /**
+         * Close order.
+         */
+        closeOrder() {
+            localStorage.removeItem('ap-showcase-order-id');
+            localStorage.removeItem('ap-showcase-order-secret');
+            this.order_secret = null;
+            this.updateState();
+        }
     }
 }
 </script>

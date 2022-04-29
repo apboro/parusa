@@ -27,7 +27,7 @@ use JsonException;
 class ShowcaseOrderController extends ApiEditController
 {
     /**
-     * Initial data for showcase application.
+     * Create order for showcase application.
      *
      * @param Request $request
      *
@@ -151,7 +151,6 @@ class ShowcaseOrderController extends ApiEditController
         $orderSecret = json_encode([
             'id' => $order->id,
             'ts' => Carbon::now(),
-            'ua' => $request->userAgent(),
             'ip' => $request->ip(),
             'ref' => $request->input('ref'),
         ], JSON_THROW_ON_ERROR);
@@ -159,14 +158,15 @@ class ShowcaseOrderController extends ApiEditController
         // clear media and partner cookie after successful order.
         $cookie = [
             'ip' => $request->ip(),
-            'user-agent' => $request->userAgent(),
         ];
+
+        $secret = Crypt::encrypt($orderSecret);
 
         return response()->json([
             'payload' => [
-                'id' => $order->id,
-                'payment_page' => env('SHOWCASE_PAYMENT_PAGE'),
-                'order' => Crypt::encrypt($orderSecret),
+                'order_id' => $order->id,
+                'payment_page' => env('SHOWCASE_PAYMENT_PAGE') . '?order=' . $secret,
+                'order_secret' => $secret,
             ],
         ])->withCookie(cookie(ExternalProtect::COOKIE_NAME, json_encode($cookie, JSON_THROW_ON_ERROR)));
     }

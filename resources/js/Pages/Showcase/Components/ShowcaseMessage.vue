@@ -1,5 +1,5 @@
 <template>
-    <div class="message" :class="classFromAttributes">
+    <div class="ap-message" :class="classFromAttributes">
         <slot/>
     </div>
 </template>
@@ -17,7 +17,7 @@ export default {
 <style lang="scss">
 @import "../variables";
 
-.message {
+.ap-message {
     font-family: $showcase_font;
     font-size: 20px;
     width: 100%;

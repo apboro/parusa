@@ -2,7 +2,7 @@
     <div class="ap-dialogs__overlay" v-if="shown" :class="{'ap-dialogs__overlay-hide': hiding, 'ap-dialogs__overlay-shown': showing}" @click="popupClose">
         <div class="ap-dialogs__dialog">
             <div class="ap-dialogs__dialog-header">
-                <div class="ap-dialogs__dialog-header-title" v-if="title && !processing">{{ title }}</div>
+                <div class="ap-dialogs__dialog-header-title"><span v-if="title && !processing">{{ title }}</span></div>
                 <div class="ap-dialogs__dialog-header-close" @click="resolve('close')">
                     <IconCross/>
                 </div>
@@ -124,7 +124,7 @@ export default {
         flex-direction: column;
         max-height: 95%;
         max-width: 95%;
-        min-width: 100px;
+        min-width: 200px;
         box-sizing: border-box;
         padding: 30px 15px 30px 30px;
         background-color: $showcase_white_color;
@@ -176,6 +176,7 @@ export default {
             /* W3C standard - сейчас только для Firefox */
             scrollbar-color: #8c82ce #ededed;
             scrollbar-width: thin;
+            min-height: 100px;
 
             /* для Chrome/Edge/Safari */
             &::-webkit-scrollbar {

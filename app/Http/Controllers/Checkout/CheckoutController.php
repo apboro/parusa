@@ -5,16 +5,18 @@ namespace App\Http\Controllers\Checkout;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\LifePay\LifePayCheck;
-use App\LifePay\LifePayPayment;
+use App\Models\Common\Image;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
+use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
 use JsonException;
 
@@ -28,19 +30,19 @@ class CheckoutController extends ApiController
      * @param Request $request
      *
      * @return JsonResponse
-     * @throws JsonException
      */
     public function handle(Request $request): JsonResponse
     {
-        if ($request->has('response')) {
-            // Handle lifepay response
-            return $this->handleResponse($request);
-        }
-
+        // Handle initial request
         if ($request->has('order')) {
-            // Handle initial request
             return $this->handleOrderRequest($request);
         }
+
+//        if ($request->has('response')) {
+        // Handle lifepay response
+//            return $this->handleResponse($request);
+//        }
+
 
         // handle page load without options
         if ($request->hasCookie(self::COOKIE_NAME)) {
@@ -58,7 +60,6 @@ class CheckoutController extends ApiController
      * @param Request $request
      *
      * @return JsonResponse
-     * @throws JsonException
      */
     protected function handleOrderRequest(Request $request): JsonResponse
     {
@@ -70,7 +71,7 @@ class CheckoutController extends ApiController
         }
 
         // check "credentials"
-        if ($container['ip'] !== $request->ip() || $container['ua'] !== $request->userAgent()) {
+        if ($container['ip'] !== $request->ip()) {
             return APIResponse::error('Ошибка сессии.');
         }
 
@@ -82,37 +83,56 @@ class CheckoutController extends ApiController
 
         // check timestamp against order states
         $ts = Carbon::parse($container['ts']);
-        $validThrough = $ts->clone()->addMinutes(15);
+        $validThrough = $ts->clone()->addMinutes(env('SHOWCASE_ORDER_LIFETIME'));
         $now = Carbon::now();
 
         if ($order->hasStatus(OrderStatus::showcase_creating) || $order->hasStatus(OrderStatus::showcase_wait_for_pay)) {
             if ($validThrough < $now) {
-                return APIResponse::error('Лимит времени на оплату заказа исчерпан. Заказ аннулирован.', [
+                return APIResponse::error('Время, отведенное на оплату заказа, закончилось. Заказ расформирован.', [
                     'backlink' => $container['ref'] ?? null,
                 ]);
             }
         }
 
+        $trips = new Collection;
+
+        $tickets = $order->tickets->map(function (Ticket $ticket) use ($trips) {
+            if (!isset($trips[$ticket->trip_id])) {
+                $trips[$ticket->trip_id] = $ticket->trip;
+            }
+            return [
+                'id' => $ticket->id,
+                'trip_id' => $ticket->trip_id,
+                'grade' => $ticket->grade->name,
+                'grade_id' => $ticket->grade_id,
+                'base_price' => $ticket->base_price,
+            ];
+        });
+
         return response()->json([
             'order' => [
                 'id' => $order->id,
                 'total' => $order->total(),
-                'tickets' => $order->tickets->map(function (Ticket $ticket) {
-                    return [
-                        'id' => $ticket->id,
-                        'trip_start_date' => $ticket->trip->start_at->format('d.m.Y'),
-                        'trip_start_time' => $ticket->trip->start_at->format('H:i'),
-                        'excursion' => $ticket->trip->excursion->name,
-                        'pier' => $ticket->trip->startPier->name,
-                        'grade' => $ticket->grade->name,
-                        'base_price' => $ticket->base_price,
-                    ];
-                }),
                 'name' => $order->name,
                 'email' => $order->email,
                 'phone' => $order->phone,
+                'tickets' => $tickets,
+                'trips' => $trips->map(function (Trip $trip) {
+                    return [
+                        'id' => $trip->id,
+                        'start_date' => $trip->start_at->format('d.m.Y'),
+                        'start_time' => $trip->start_at->format('H:i'),
+                        'pier' => $trip->startPier->name,
+                        'pier_id' => $trip->start_pier_id,
+                        'excursion' => $trip->excursion->name,
+                        'excursion_id' => $trip->excursion_id,
+                        'duration' => $trip->excursion->info->duration,
+                        'images' => $trip->excursion->images->map(function (Image $image) {
+                            return $image->url;
+                        }),
+                    ];
+                })->values(),
             ],
-            'payment' => LifePayPayment::prepare($order),
             'lifetime' => $validThrough > $now ? $validThrough->diffInSeconds($now) : null,
 
         ])->withCookie(cookie(self::COOKIE_NAME, json_encode($container, JSON_THROW_ON_ERROR)));
@@ -163,7 +183,7 @@ class CheckoutController extends ApiController
         }
 
         // check "credentials"
-        if ($container['ip'] !== $request->ip() || $container['ua'] !== $request->userAgent()) {
+        if ($container['ip'] !== $request->ip()) {
             return APIResponse::error('Ошибка сессии.');
         }
 
@@ -208,7 +228,7 @@ class CheckoutController extends ApiController
     {
         /** @var Order $order */
         $order = Order::query()
-            ->with(['status', 'tickets', 'tickets.trip', 'tickets.trip.startPier', 'tickets.trip.excursion', 'tickets.grade'])
+            ->with(['status', 'tickets', 'tickets.grade', 'tickets.trip', 'tickets.trip.startPier', 'tickets.trip.startPier.info', 'tickets.trip.excursion', 'tickets.trip.excursion.info'])
             ->where('id', $id)
             ->whereIn('status_id', [OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::showcase_paid, OrderStatus::showcase_canceled])
             ->whereIn('type_id', [OrderType::qr_code, OrderType::partner_site, OrderType::site])

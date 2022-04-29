@@ -31,12 +31,6 @@
  * Unicode data by Mathias Bynens <mathiasbynens.be>
  */
 
-/*!
- * vuex v4.0.2
- * (c) 2021 Evan You
- * @license MIT
- */
-
 /**
  * @license
  * Lodash <https://lodash.com/>

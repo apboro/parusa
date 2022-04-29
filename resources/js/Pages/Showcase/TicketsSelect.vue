@@ -94,7 +94,8 @@
             </div>
 
             <div class="ap-showcase__agreement">
-                <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_valid" :errors="['Необходимо принять условия оферты на оказание услуг и дать своё согласие на обработку персональных данных']">
+                <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_valid"
+                                      :errors="['Необходимо принять условия оферты на оказание услуг и дать своё согласие на обработку персональных данных']">
                     <ShowcaseInputCheckbox v-model="agree" :small="true">
                         Я принимаю условия <span class="ap-showcase__link">Оферты на оказание услуг</span> и даю своё <span class="ap-showcase__link">согласие на обработку
                         персональных данных</span>
@@ -121,15 +122,6 @@
                     При получении билетов в кассе необходимо предоставить документ, подтверждающий право на льготу: студенческий билет, пенсионное удостоверение и т.д.
                 </div>
             </div>
-
-
-        </template>
-
-        <template v-else>
-            <ShowcaseMessage>
-                Произошла ошибка<br/><br/>
-                <ShowcaseButton @click="unselect">Вернуться к рейсам</ShowcaseButton>
-            </ShowcaseMessage>
         </template>
     </div>
 </template>
@@ -244,7 +236,6 @@ export default {
 
         initForm() {
             this.form.reset();
-            console.log(this.trip);
             this.trip['rates'].map(rate => {
                 this.form.set('rate.' + rate['grade_id'] + '.quantity', 0, 'integer|min:0', 'Количество', true);
             });
@@ -260,7 +251,6 @@ export default {
 
         order() {
             this.agreement_valid = this.agreement;
-
             if (!this.form.validate() || !this.agreement_valid || this.count < 1) {
                 return;
             }
@@ -268,14 +258,17 @@ export default {
             this.form.save()
                 .then(response => {
                     // store order secret
-                    const order = response.payload['order'];
-                    const id = response.payload['id'];
-                    this.$emit('order', order, id);
+                    const order_id = response.payload['order_id'];
+                    const order_secret = response.payload['order_secret'];
+                    const payment_page = response.payload['payment_page'];
+
+                    localStorage.setItem('ap-showcase-order-id', order_id);
+                    localStorage.setItem('ap-showcase-order-secret', order_secret);
+
                     // redirect to payment page
-                    const url = response.payload['payment_page'];
                     setTimeout(() => {
-                        window.location.href = `${url}?order=${order}`;
-                    }, 50);
+                        window.location.href = payment_page;
+                    }, 100);
                 })
                 .catch(error => {
                     this.has_error = true;
