@@ -27,47 +27,47 @@
         </div>
 
         <ShowcaseLoadingProgress :loading="isLoading">
+            <template v-if="trips !== null">
+                <h2 class="ap-showcase__title ap-showcase__title-centered">Расписание отправлений на <span class="ap-not-brake">{{ date }}</span></h2>
 
-            <h2 class="ap-showcase__title ap-showcase__title-centered">Расписание отправлений на <span class="ap-not-brake">{{ date }}</span></h2>
-
-            <div class="ap-showcase__results" v-if="trips !== null && trips.length > 0">
-                <table class="ap-showcase__trips">
-                    <thead>
-                    <tr>
-                        <th class="ap-showcase__trip-time">Время отправления</th>
-                        <th class="ap-showcase__trip-excursion">Причал, теплоход</th>
-                        <th class="ap-showcase__trip-info">Программа</th>
-                        <th class="ap-showcase__trip-duration">Время в пути</th>
-                        <th class="ap-showcase__trip-price">Стоимость за взрослого</th>
-                        <th class="ap-showcase__trip-status">Статус рейса</th>
-                        <th class="ap-showcase__trip-buy"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="trip in trips">
-                        <td>{{ trip['start_time'] }}</td>
-                        <td>
-                            <span class="ap-link" @click="showPierInfo(trip)">Причал "{{ trip['pier'] }}"</span>
-                            <span>{{ trip['ship'] }}</span>
-                        </td>
-                        <td>
-                            <span class="ap-link" @click="showExcursionInfo(trip)">{{ trip['excursion'] }}</span>
-                            <span>
+                <div class="ap-showcase__results" v-if="trips !== null && trips.length > 0">
+                    <table class="ap-showcase__trips">
+                        <thead>
+                        <tr>
+                            <th class="ap-showcase__trip-time">Время отправления</th>
+                            <th class="ap-showcase__trip-excursion">Причал, теплоход</th>
+                            <th class="ap-showcase__trip-info">Программа</th>
+                            <th class="ap-showcase__trip-duration">Время в пути</th>
+                            <th class="ap-showcase__trip-price">Стоимость за взрослого</th>
+                            <th class="ap-showcase__trip-status">Статус рейса</th>
+                            <th class="ap-showcase__trip-buy"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="trip in trips">
+                            <td>{{ trip['start_time'] }}</td>
+                            <td>
+                                <span class="ap-link" @click="showPierInfo(trip)">Причал "{{ trip['pier'] }}"</span>
+                                <span>{{ trip['ship'] }}</span>
+                            </td>
+                            <td>
+                                <span class="ap-link" @click="showExcursionInfo(trip)">{{ trip['excursion'] }}</span>
+                                <span>
                                         <span v-if="trip['programs'] && trip['programs'].length > 0">{{ trip['programs'].join(', ') }}</span>
                                     </span>
-                        </td>
-                        <td data-label="Время в пути:"><span class="ap-not-brake">{{ trip['duration'] }} мин.</span></td>
-                        <td data-label="Стоимость за взрослого:"><span class="ap-not-brake">{{ trip['price'] }} руб.</span></td>
-                        <td data-label="Статус рейса:"><span class="ap-not-brake">{{ trip['status'] }}</span></td>
-                        <td>
-                            <ShowcaseButton @click="select(trip)">Купить билеты</ShowcaseButton>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <ShowcaseMessage border v-else>Рейсы с заданными параметрами не найдены</ShowcaseMessage>
-
+                            </td>
+                            <td data-label="Время в пути:"><span class="ap-not-brake">{{ trip['duration'] }} мин.</span></td>
+                            <td data-label="Стоимость за взрослого:"><span class="ap-not-brake">{{ trip['price'] }} руб.</span></td>
+                            <td data-label="Статус рейса:"><span class="ap-not-brake">{{ trip['status'] }}</span></td>
+                            <td>
+                                <ShowcaseButton @click="select(trip)">Купить билеты</ShowcaseButton>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <ShowcaseMessage border v-else>Рейсы с заданными параметрами не найдены</ShowcaseMessage>
+            </template>
         </ShowcaseLoadingProgress>
 
         <ExcursionInfo ref="excursion"/>
@@ -110,7 +110,7 @@ export default {
         today: {type: String, default: null},
 
         date: {type: String, default: null},
-        trips: {type: Array, default: () => ([])},
+        trips: {type: Array, default: null},
         isLoading: {type: Boolean, default: false},
 
         lastSearch: {type: Object, default: null},

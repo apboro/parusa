@@ -79,7 +79,7 @@ export default {
 
         trips: {
             date: null,
-            list: [],
+            list: null,
             is_loading: false,
         },
 
@@ -194,7 +194,7 @@ export default {
 
             } else {
                 // handle trips list
-                this.loadList();
+                //this.loadList();
             }
         },
 
