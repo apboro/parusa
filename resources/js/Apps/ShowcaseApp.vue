@@ -7,6 +7,7 @@
             <OrderInfo v-if="order_secret"
                        :is-loading="order.is_loading"
                        :order-data="order.data"
+                       :secret="order_secret"
                        @close="closeOrder"
             />
             <TicketsSelect v-else-if="trip_id"
@@ -285,7 +286,7 @@ export default {
                     this.order.data = response.data['order'];
                 })
                 .catch(error => {
-                    console.log(error);
+                    this.closeOrder();
                 })
                 .finally(() => {
                     this.order.is_loading = false;
@@ -296,10 +297,9 @@ export default {
          * Close order.
          */
         closeOrder() {
-            localStorage.removeItem('ap-showcase-order-id');
-            localStorage.removeItem('ap-showcase-order-secret');
+            localStorage.clear();
             this.order_secret = null;
-            this.updateState();
+            this.selectTrip(null);
         }
     }
 }

@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Checkout\CheckoutController;
+use App\Http\Controllers\Checkout\CheckoutInitPayController;
+use App\Http\Controllers\Checkout\CheckoutOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/checkout')->middleware(['checkout'])->group(function () {
     Route::post('/handle', [CheckoutController::class, 'handle']);
-    Route::post('/pay', [CheckoutController::class, 'pay']);
+    Route::post('/cancel', [CheckoutOrderController::class, 'cancel']);
+    Route::post('/pay', [CheckoutInitPayController::class, 'pay']);
 });

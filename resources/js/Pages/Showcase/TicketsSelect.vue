@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="ap-showcase__heading">
-            <div class="ap-showcase__heading-title">Покупка билета</div>
+            <div class="ap-showcase__heading-title">Покупка билетов</div>
             <div class="ap-showcase__heading-actions">
                 <ShowcaseButton color="light" @click="unselect">Вернуться к рейсам</ShowcaseButton>
             </div>
@@ -48,7 +48,7 @@
                     <thead>
                     <tr>
                         <th class="ap-showcase__tickets-table-col-1">Тип билета</th>
-                        <th class="ap-showcase__tickets-table-col-2">Стомиость</th>
+                        <th class="ap-showcase__tickets-table-col-2">Стоимость</th>
                         <th class="ap-showcase__tickets-table-col-3">Количество</th>
                         <th class="ap-showcase__tickets-table-col-4">Сумма</th>
                     </tr>
@@ -56,7 +56,7 @@
                     <tbody>
                     <tr v-for="rate in trip['rates']">
                         <td data-label="Тип билета:" class="ap-showcase__tickets-table-col-1">{{ rate['name'] }}</td>
-                        <td data-label="Стомиость:" class="ap-showcase__tickets-table-col-2">{{ rate['base_price'] }} руб.</td>
+                        <td data-label="Стоимость:" class="ap-showcase__tickets-table-col-2">{{ rate['base_price'] }} руб.</td>
                         <td class="ap-showcase__tickets-table-col-3">
                             <ShowcaseFormNumber class="ap-showcase__tickets-quantity" :form="form" :name="'rate.' + rate['grade_id'] + '.quantity'" :hide-title="true"
                                                 :quantity="true" :min="0" :border="false"/>
@@ -213,8 +213,10 @@ export default {
     }),
 
     created() {
+        let url = new URL(window.location.href);
+        url.searchParams.delete('ap-tid');
         this.form = form(null, this.crm_url + '/showcase/order' + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : ''),
-            {trip: this.tripId, ref: window.location.href});
+            {trip: this.tripId, ref: url.toString()});
         if (this.trip) {
             this.initForm();
         }

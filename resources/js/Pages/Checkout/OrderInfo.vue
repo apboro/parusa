@@ -33,13 +33,13 @@
                 </div>
             </div>
 
-            <div class="ap-checkout__title">Билеты</div>
+            <div class="ap-checkout__title">Выбранные билеты</div>
             <div class="ap-checkout__tickets">
                 <table class="ap-checkout__tickets-table">
                     <thead>
                     <tr>
                         <th class="ap-checkout__tickets-table-col-1">Тип билета</th>
-                        <th class="ap-checkout__tickets-table-col-2">Стомиость</th>
+                        <th class="ap-checkout__tickets-table-col-2">Стоимость</th>
                         <th class="ap-checkout__tickets-table-col-3">Количество</th>
                         <th class="ap-checkout__tickets-table-col-4">Сумма</th>
                     </tr>
@@ -47,7 +47,7 @@
                     <tbody>
                     <tr v-for="ticket in trip['tickets']">
                         <td data-label="Тип билета:" class="ap-checkout__tickets-table-col-1">{{ ticket['grade'] }}</td>
-                        <td data-label="Стомиость:" class="ap-checkout__tickets-table-col-2">{{ ticket['base_price'] }} руб.</td>
+                        <td data-label="Стоимость:" class="ap-checkout__tickets-table-col-2">{{ ticket['base_price'] }} руб.</td>
                         <td data-label="Количество:" class="ap-checkout__tickets-table-col-3">{{ ticket['quantity'] }}</td>
                         <td data-label="Сумма:" class="ap-checkout__tickets-table-col-4 ap-checkout__tickets-filled">{{ ticket['total_price'] }} руб.</td>
                     </tr>

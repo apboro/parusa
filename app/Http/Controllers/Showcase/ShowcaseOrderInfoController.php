@@ -43,6 +43,17 @@ class ShowcaseOrderInfoController extends ApiEditController
             return APIResponse::error('Заказ не найден.');
         }
 
+        if (!$order->hasStatus(OrderStatus::showcase_creating) && !$order->hasStatus(OrderStatus::showcase_wait_for_pay) && !$order->hasStatus(OrderStatus::showcase_paid)) {
+            return APIResponse::error('Заказ ' . mb_strtolower($order->status->name));
+        }
+
+        $now = Carbon::now();
+        $expires = Carbon::parse($orderSecret['ts'])->setTimezone($now->timezone)->addMinutes(env('SHOWCASE_ORDER_LIFETIME'));
+
+        if ($expires < $now) {
+            return APIResponse::error('Время, отведенное на оплату заказа илтекло, заказ расформирован.');
+        }
+
         $now = Carbon::now();
         $expires = Carbon::parse($orderSecret['ts'])->setTimezone($now->timezone)->addMinutes(env('SHOWCASE_ORDER_LIFETIME'));
 

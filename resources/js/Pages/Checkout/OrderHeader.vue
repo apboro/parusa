@@ -1,7 +1,7 @@
 <template>
     <div class="ap-checkout__header">Подтверждение заказа №{{ order['id'] }}</div>
     <div class="ap-checkout__disclaimer">Проверьте контактные данные и состав заказа. Если всё в порядке, то заказ можно оплачивать.</div>
-    <div class="ap-checkout__disclaimer">Если Вы увидели ошибку, нажмите на кнопку "отменить заказ".</div>
+    <div class="ap-checkout__disclaimer">Если Вы увидели ошибку, нажмите на кнопку "Отменить заказ".</div>
 </template>
 
 <script>

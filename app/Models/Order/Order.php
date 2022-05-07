@@ -187,6 +187,7 @@ class Order extends Model implements Statusable, Typeable
         $total = 0;
 
         $this->tickets->map(function (Ticket $ticket) use (&$total) {
+            // todo check ticket status
             $total += $ticket->base_price;
         });
 

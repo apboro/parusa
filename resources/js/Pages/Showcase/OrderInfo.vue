@@ -10,17 +10,31 @@
                 <ShowcaseButton @click="close">Закрыть</ShowcaseButton>
             </div>
         </template>
-        <template v-if="status === 'creating'">
+
+        <template v-if="status === 'payed'">
             <div class="ap-final-message__status">
-                Заказ забронирован. Время на оплату заказа ограничено: {{ remind }}
-            </div>
-            <div class="ap-final-message__status">
-                Для оплаты заказа перейдите на <a class="ap-final-message__status-link" :href="orderData['payment_page']">страницу оплаты</a>.
+                Заказ оплачен. Билеты высланы на электронную почту.
             </div>
             <div class="ap-final-message__buttons">
-                <ShowcaseButton color="light" @click="cancel">Отменить заказ</ShowcaseButton>
+                <ShowcaseButton @click="close">Закрыть</ShowcaseButton>
             </div>
         </template>
+
+        <template v-if="status === 'creating' || status === 'paying'">
+            <ShowcaseLoadingProgress :loading="cancelling">
+                <div class="ap-final-message__status">
+                    Заказ создан. Время на оплату заказа ограничено: {{ remind }}
+                </div>
+                <div class="ap-final-message__status">
+                    Для оплаты заказа перейдите на <a class="ap-final-message__status-link" :href="orderData['payment_page']">страницу оплаты</a>.
+                </div>
+                <div class="ap-final-message__buttons">
+                    <ShowcaseButton color="light" @click="cancel">Отменить заказ</ShowcaseButton>
+                </div>
+            </ShowcaseLoadingProgress>
+        </template>
+
+
         <!--        <div>Билеты отправлены Вам на почту, указанную при оформлении.</div>-->
         <!--        <br/>-->
         <!--        <div>Инструкции, если клиент не получил билеты.</div>-->
@@ -30,7 +44,7 @@
 </template>
 
 <script>
-
+import ShowcaseLoadingProgress from "@/Pages/Showcase/Components/ShowcaseLoadingProgress";
 import ShowcaseMessage from "@/Pages/Showcase/Components/ShowcaseMessage";
 import ShowcaseButton from "@/Pages/Showcase/Components/ShowcaseButton";
 
@@ -38,11 +52,12 @@ export default {
     props: {
         isLoading: {type: Boolean, default: false},
         orderData: {type: Object, default: null},
+        secret: {type: String, default: null},
     },
 
     emits: ['close'],
 
-    components: {ShowcaseButton, ShowcaseMessage},
+    components: {ShowcaseButton, ShowcaseMessage, ShowcaseLoadingProgress},
 
     computed: {
         orderId() {
@@ -93,6 +108,7 @@ export default {
         lifetime: null,
         lifetime_timer: null,
         expired_internal: false,
+        cancelling: false,
     }),
 
     methods: {
@@ -106,10 +122,25 @@ export default {
             this.lifetime -= 1;
         },
         close() {
+            const url = new URL(window.location.href);
+            if (url.searchParams.has('status')) {
+                url.searchParams.delete('status');
+                window.history.replaceState({}, '', url.toString());
+            }
             this.$emit('close');
         },
         cancel() {
-
+            this.cancelling = true;
+            axios.post('/showcase/order/cancel', {secret: this.secret})
+                .then(() => {
+                    this.$emit('close');
+                })
+                .catch(error => {
+                    console.log(error.response['message']);
+                })
+                .finally(() => {
+                    this.cancelling = false;
+                });
         },
     }
 }

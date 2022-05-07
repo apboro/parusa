@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Checkout;
 
+use App\Classes\EmailReceiver;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\LifePay\LifePayCheck;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
@@ -12,12 +12,19 @@ use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
+use App\Notifications\OrderNotification;
+use App\SberbankAcquiring\Connection;
+use App\SberbankAcquiring\Helpers\Currency;
+use App\SberbankAcquiring\HttpClient\CurlClient;
+use App\SberbankAcquiring\Options;
+use App\SberbankAcquiring\Sber;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Notification;
 use JsonException;
 
 class CheckoutController extends ApiController
@@ -30,41 +37,44 @@ class CheckoutController extends ApiController
      * @param Request $request
      *
      * @return JsonResponse
+     * @throws JsonException
      */
     public function handle(Request $request): JsonResponse
     {
-        // Handle initial request
+        // Handle success response
+        if ($request->has('status')) {
+            return $this->handleResponse($request);
+        }
+
+        // Handle common request
         if ($request->has('order')) {
             return $this->handleOrderRequest($request);
         }
 
-//        if ($request->has('response')) {
-        // Handle lifepay response
-//            return $this->handleResponse($request);
-//        }
-
-
-        // handle page load without options
         if ($request->hasCookie(self::COOKIE_NAME)) {
             $cookies = $this->getCookies($request);
             if (!empty($cookies['ref'])) {
-                return APIResponse::redirect($cookies['ref']);
+                $backLink = $cookies['ref'];
             }
-            return APIResponse::error('Неверно заданы параметры')->withoutCookie(self::COOKIE_NAME);
         }
 
-        return APIResponse::error('Заказ не найден.');
+        return APIResponse::error('Нет заказов, находящихся в оформлении.', [
+            'back_link' => $backLink ?? env('SHOWCASE_AP_PAGE'),
+        ]);
     }
 
     /**
      * @param Request $request
      *
      * @return JsonResponse
+     * @throws JsonException
      */
     protected function handleOrderRequest(Request $request): JsonResponse
     {
+        $secret = $request->input('order');
+
         try {
-            $container = Crypt::decrypt($request->input('order'));
+            $container = Crypt::decrypt($secret);
             $container = json_decode($container, true, 512, JSON_THROW_ON_ERROR);
         } catch (Exception $exception) {
             return APIResponse::error('Заказ не найден.');
@@ -89,9 +99,13 @@ class CheckoutController extends ApiController
         if ($order->hasStatus(OrderStatus::showcase_creating) || $order->hasStatus(OrderStatus::showcase_wait_for_pay)) {
             if ($validThrough < $now) {
                 return APIResponse::error('Время, отведенное на оплату заказа, закончилось. Заказ расформирован.', [
-                    'backlink' => $container['ref'] ?? null,
+                    'back_link' => $container['ref'] ?? null,
                 ]);
             }
+        } else {
+            return APIResponse::error('Заказ ' . mb_strtolower($order->status->name), [
+                'back_link' => $container['ref'] ?? null,
+            ]);
         }
 
         $trips = new Collection;
@@ -112,6 +126,8 @@ class CheckoutController extends ApiController
         return response()->json([
             'order' => [
                 'id' => $order->id,
+                'secret' => $secret,
+                'back_link' => $container['ref'] ?? null,
                 'total' => $order->total(),
                 'name' => $order->name,
                 'email' => $order->email,
@@ -146,37 +162,10 @@ class CheckoutController extends ApiController
      */
     protected function handleResponse(Request $request): JsonResponse
     {
-        $response = $request->input('response');
-        $cookies = $this->getCookies($request);
+        $secret = $request->input('order');
 
-        $check = $response['check'];
-        unset($response['check']);
-
-        $valid = LifePayCheck::check($response, env('SHOWCASE_PAYMENT_PAGE'), 'get', $check);
-
-//        if (!$valid) {
-//            return APIResponse::error('Ошибка параметров.', ['backlink' => $cookies['ref'] ?? null]);
-//        }
-
-        $cookies = $this->getCookies($request);
-        if (!empty($cookies['ref'])) {
-            return APIResponse::redirect($cookies['ref']);
-        }
-
-        return APIResponse::error('Неверно заданы параметры')->withoutCookie(self::COOKIE_NAME);
-    }
-
-    /**
-     * Set payment status.
-     *
-     * @param Request $request
-     *
-     * @return  JsonResponse
-     */
-    public function pay(Request $request): JsonResponse
-    {
         try {
-            $container = Crypt::decrypt($request->input('order'));
+            $container = Crypt::decrypt($secret);
             $container = json_decode($container, true, 512, JSON_THROW_ON_ERROR);
         } catch (Exception $exception) {
             return APIResponse::error('Заказ не найден.');
@@ -192,13 +181,57 @@ class CheckoutController extends ApiController
         if ($order === null) {
             return APIResponse::error('Заказ не найден.');
         }
+        if ($order->external_id === null) {
+            return APIResponse::error('Заказ не был корректно передан в оплату.');
+        }
 
-        $order->setStatus(OrderStatus::showcase_wait_for_pay);
+        // check order status
+        $isProduction = env('SBER_ACQUIRING_PRODUCTION');
+        $connection = new Connection([
+            'token' => env('SBER_ACQUIRING_TOKEN'),
+            'userName' => env('SBER_ACQUIRING_USER'),
+            'password' => env('SBER_ACQUIRING_PASSWORD'),
+        ], new CurlClient, $isProduction);
+        $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
+        $sber = new Sber($connection, $options);
+
+        try {
+            $response = $sber->getOrderStatus($order->external_id);
+        } catch (Exception $exception) {
+            return APIResponse::error($exception->getMessage());
+        }
+
+        if (!$response->isSuccess()) {
+            return APIResponse::error($response->errorMessage());
+        }
+
+        if (!\App\SberbankAcquiring\OrderStatus::isDeposited($response['orderStatus'] ?? 0)) {
+            // perform paying error handling
+            return APIResponse::error($response['actionCodeDescription'] ?? 'Оплата не прошла', [$response->all()]);
+        }
+
+        // set order status
+        $order->setStatus(OrderStatus::showcase_paid);
         $order->tickets->map(function (Ticket $ticket) {
-            $ticket->setStatus(TicketStatus::showcase_wait_for_pay);
+            $ticket->setStatus(TicketStatus::showcase_paid);
         });
 
-        return APIResponse::success('Перенаправление на оплату...');
+        // email tickets
+        Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+
+        // response OK
+        $backLink = $container['ref'] ?? env('SHOWCASE_AP_PAGE');
+        $query = parse_url($backLink, PHP_URL_QUERY);
+        if ($query) {
+            $backLink .= '&status=finished';
+        } else {
+            $backLink .= '?status=finished';
+        }
+
+        return APIResponse::success('Заказ оплачен. Билеты высланы на электронную почту.', [
+            'is_ordered' => true,
+            'back_link' => $backLink,
+        ]);
     }
 
     /**

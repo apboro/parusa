@@ -5,10 +5,10 @@
             <span class="ap-showcase__checkout-total-value">{{ order['total'] }} руб.</span>
         </div>
         <div class="ap-showcase__checkout-button ap-showcase__checkout-button-cancel">
-            <CheckoutButton color="light" @clicked="$emit('cancel')">Отменить заказ</CheckoutButton>
+            <CheckoutButton color="light" @clicked="$emit('cancel')" :disabled="!order['secret']">Отменить заказ</CheckoutButton>
         </div>
         <div class="ap-showcase__checkout-button ap-showcase__checkout-button-ok">
-            <CheckoutButton @clicked="$emit('checkout')">Оплатить</CheckoutButton>
+            <CheckoutButton @clicked="$emit('checkout')" :disabled="!order['secret']">Оплатить</CheckoutButton>
         </div>
     </div>
 </template>

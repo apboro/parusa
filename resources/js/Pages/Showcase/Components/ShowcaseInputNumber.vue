@@ -1,5 +1,5 @@
 <template>
-    <ShowcaseInputWrapper class="ap-input-number" :border="border" :dirty="isDirty" :disabled="disabled" :valid="valid">
+    <ShowcaseInputWrapper class="ap-input-number" :label="false" :border="border" :dirty="isDirty" :disabled="disabled" :valid="valid">
         <template #icon v-if="$slots.default">
             <slot/>
         </template>
@@ -78,14 +78,12 @@ export default {
 
         decrease() {
             if (this.disabled || this.min !== null && (this.min > this.modelValue - this.step)) return;
-            this.$refs.input.focus();
             this.$emit('update:modelValue', this.modelValue - this.step);
             this.$emit('change', this.modelValue - this.step, this.name);
         },
 
         increase() {
             if (this.disabled || this.max !== null && (this.max < this.modelValue + this.step)) return;
-            this.$refs.input.focus();
             this.$emit('update:modelValue', this.modelValue + this.step);
             this.$emit('change', this.modelValue + this.step, this.name);
         },
@@ -167,6 +165,11 @@ export default {
         color: $showcase_primary_color;
         transition: color $animation $animation_time,;
         @include no_selection;
+
+        & > svg {
+            width: 100%;
+            height: 100%;
+        }
 
         &:not(&-disabled):hover {
             color: $showcase_primary_hover_color;

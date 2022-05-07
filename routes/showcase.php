@@ -8,6 +8,7 @@ use App\Http\Controllers\Showcase\ShowcaseTripsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/showcase')->middleware(['showcase'])->group(function () {
+
     Route::post('/init', [ShowcaseInitController::class, 'init']);
     Route::post('/trips', [ShowcaseTripsController::class, 'trips'])->middleware(['external.protect']);
     Route::post('/trip', [ShowcaseTripsController::class, 'trip'])->middleware(['external.protect']);
@@ -15,5 +16,6 @@ Route::prefix('/showcase')->middleware(['showcase'])->group(function () {
     Route::post('/pier', [ShowcaseInfoController::class, 'pier'])->middleware(['external.protect']);
 
     Route::post('/order', [ShowcaseOrderController::class, 'order'])->middleware(['external.protect']);
+    Route::post('/order/cancel', [ShowcaseOrderController::class, 'cancel'])->middleware(['external.protect']);
     Route::post('/order/info', [ShowcaseOrderInfoController::class, 'info'])->middleware(['external.protect']);
 });
