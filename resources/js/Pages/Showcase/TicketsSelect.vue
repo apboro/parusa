@@ -55,7 +55,9 @@
                     </thead>
                     <tbody>
                     <tr v-for="rate in trip['rates']">
-                        <td data-label="Тип билета:" class="ap-showcase__tickets-table-col-1">{{ rate['name'] }}</td>
+                        <td data-label="Тип билета:" class="ap-showcase__tickets-table-col-1">{{ rate['name'] }}
+                            <span class="ap-showcase__sup-sign" v-if="rate['preferential']"><ShowcaseIconSign/></span>
+                        </td>
                         <td data-label="Стоимость:" class="ap-showcase__tickets-table-col-2">{{ rate['base_price'] }} руб.</td>
                         <td class="ap-showcase__tickets-table-col-3">
                             <ShowcaseFormNumber class="ap-showcase__tickets-quantity" :form="form" :name="'rate.' + rate['grade_id'] + '.quantity'" :hide-title="true"
@@ -490,6 +492,17 @@ export default {
                 width: calc(100% - 20px);
             }
         }
+    }
+}
+
+.ap-showcase__sup-sign {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+
+    & > svg {
+        width: 100%;
+        height: 100%;
     }
 }
 

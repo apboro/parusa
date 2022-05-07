@@ -130,6 +130,7 @@ class ShowcaseTripsController extends ApiController
                         'grade_id' => $rate->grade_id,
                         'name' => $rate->grade->name,
                         'base_price' => $rate->base_price,
+                        'preferential' => $rate->grade->preferential
                     ];
                 });
         }
