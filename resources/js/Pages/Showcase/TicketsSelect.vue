@@ -37,8 +37,14 @@
                         </div>
                     </div>
                 </div>
-                <ExcursionInfo ref="excursion"/>
-                <PierInfo ref="pier"/>
+                <ExcursionInfo ref="excursion"
+                               :crm_url="crm_url"
+                               :debug="debug"
+                />
+                <PierInfo ref="pier"
+                          :crm_url="crm_url"
+                          :debug="debug"
+                />
             </div>
 
             <div class="ap-showcase__title">Билеты</div>

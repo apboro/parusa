@@ -61,8 +61,14 @@
 
         </div>
 
-        <ExcursionInfo ref="excursion"/>
-        <PierInfo ref="pier"/>
+        <ExcursionInfo ref="excursion"
+                       :crm_url="crm_url"
+                       :debug="debug"
+        />
+        <PierInfo ref="pier"
+                  :crm_url="crm_url"
+                  :debug="debug"
+        />
     </div>
 </template>
 
@@ -76,6 +82,8 @@ export default {
 
     props: {
         order: {type: Object, default: null},
+        crm_url: {type: String, default: 'https://cp.parus-a.ru'},
+        debug: {type: Boolean, default: false},
     },
 
     computed: {

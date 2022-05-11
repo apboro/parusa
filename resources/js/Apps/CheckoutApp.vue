@@ -4,7 +4,10 @@
 
             <template v-if="!has_error">
                 <OrderHeader v-if="order" :order="order"/>
-                <OrderInfo :order="order"/>
+                <OrderInfo :order="order"
+                           :crm_url="crm_url"
+                           :debug="debug"
+                />
                 <OrderContacts :order="order"/>
                 <OrderActions :order="order" @cancel="cancel" @checkout="checkout"/>
             </template>

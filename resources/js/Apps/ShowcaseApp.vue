@@ -8,6 +8,8 @@
                        :is-loading="order.is_loading"
                        :order-data="order.data"
                        :secret="order_secret"
+                       :crm_url="crm_url"
+                       :debug="debug"
                        @close="closeOrder"
             />
             <TicketsSelect v-else-if="trip_id"

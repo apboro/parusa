@@ -16,6 +16,11 @@ import IconArrowRight from "@/Components/Icons/IconArrowRight";
 import CheckoutGallery from "@/Pages/Checkout/Components/CheckoutGallery";
 
 export default {
+    props: {
+        crm_url: {type: String, default: 'https://cp.parus-a.ru'},
+        debug: {type: Boolean, default: false},
+    },
+
     components: {
         CheckoutGallery,
         IconArrowRight,
@@ -37,6 +42,7 @@ export default {
 
     methods: {
         show(id) {
+            this.info.load_url = this.url('/showcase/excursion');
             this.info.reset();
             this.$refs.popup.show();
             this.$refs.popup.process(true);
@@ -44,7 +50,10 @@ export default {
                 .finally(() => {
                     this.$refs.popup.process(false);
                 })
-        }
+        },
+        url(path) {
+            return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
+        },
     }
 }
 </script>

@@ -26,7 +26,8 @@
             <div class="ap-showcase__text-paragraph" v-for="paragraph in way_to">{{ paragraph }}</div>
         </div>
 
-        <ShowcaseGallery class="ap-showcase__gallery_pt" v-if="info.data['map_images'] && info.data['map_images'][0]" :images="[info.data['map_images'][0]]" :alt="info.data['name']"/>
+        <ShowcaseGallery class="ap-showcase__gallery_pt" v-if="info.data['map_images'] && info.data['map_images'][0]" :images="[info.data['map_images'][0]]"
+                         :alt="info.data['name']"/>
 
     </ShowcasePopUp>
 </template>
@@ -41,6 +42,11 @@ import ShowcaseIconClock from "@/Pages/Showcase/Icons/ShowcaseIconClock";
 import ShowcaseIconPhone from "@/Pages/Showcase/Icons/ShowcaseIconPhone";
 
 export default {
+    props: {
+        crm_url: {type: String, default: 'https://cp.parus-a.ru'},
+        debug: {type: Boolean, default: false},
+    },
+
     components: {
         ShowcaseIconPhone,
         ShowcaseIconClock,
@@ -68,6 +74,7 @@ export default {
 
     methods: {
         show(id) {
+            this.info.load_url = this.url('/showcase/pier');
             this.info.reset();
             this.$refs.popup.show();
             this.$refs.popup.process(true);
@@ -75,7 +82,10 @@ export default {
                 .finally(() => {
                     this.$refs.popup.process(false);
                 })
-        }
+        },
+        url(path) {
+            return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
+        },
     }
 }
 </script>

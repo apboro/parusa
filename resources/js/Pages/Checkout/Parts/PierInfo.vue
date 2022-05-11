@@ -40,6 +40,11 @@ import CheckoutIconClock from "@/Pages/Checkout/Icons/CheckoutIconClock";
 import CheckoutIconPhone from "@/Pages/Checkout/Icons/CheckoutIconPhone";
 
 export default {
+    props: {
+        crm_url: {type: String, default: 'https://cp.parus-a.ru'},
+        debug: {type: Boolean, default: false},
+    },
+
     components: {
         CheckoutIconPhone,
         CheckoutIconClock,
@@ -66,6 +71,7 @@ export default {
 
     methods: {
         show(id) {
+            this.info.load_url = this.url('/showcase/pier');
             this.info.reset();
             this.$refs.popup.show();
             this.$refs.popup.process(true);
@@ -73,7 +79,10 @@ export default {
                 .finally(() => {
                     this.$refs.popup.process(false);
                 })
-        }
+        },
+        url(path) {
+            return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
+        },
     }
 }
 </script>

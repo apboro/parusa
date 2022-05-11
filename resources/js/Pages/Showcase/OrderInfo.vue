@@ -53,6 +53,8 @@ export default {
         isLoading: {type: Boolean, default: false},
         orderData: {type: Object, default: null},
         secret: {type: String, default: null},
+        crm_url: {type: String, default: 'https://cp.parus-a.ru'},
+        debug: {type: Boolean, default: false},
     },
 
     emits: ['close'],
@@ -112,6 +114,9 @@ export default {
     }),
 
     methods: {
+        url(path) {
+            return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
+        },
         updateLifetime() {
             if (this.lifetime === null) {
                 return;
@@ -131,7 +136,7 @@ export default {
         },
         cancel() {
             this.cancelling = true;
-            axios.post('/showcase/order/cancel', {secret: this.secret})
+            axios.post(this.url('/showcase/order/cancel'), {secret: this.secret})
                 .then(() => {
                     this.$emit('close');
                 })
