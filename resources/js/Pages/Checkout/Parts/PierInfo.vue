@@ -71,7 +71,7 @@ export default {
 
     methods: {
         show(id) {
-            this.info.load_url = this.url('/showcase/pier');
+            this.info.url = this.url('/showcase/pier');
             this.info.reset();
             this.$refs.popup.show();
             this.$refs.popup.process(true);
