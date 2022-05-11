@@ -1,6 +1,6 @@
 <template>
     <ShowcaseInputWrapper class="ap-input-dropdown" :dirty="isDirty" :disabled="disabled" :valid="valid" :has-focus="dropped" :label="false"
-                  :class="{'ap-input-dropdown__disabled': disabled, 'ap-input-dropdown__multiple': multi}"
+                          :class="{'ap-input-dropdown__disabled': disabled, 'ap-input-dropdown__multiple': multi}"
     >
         <template #icon v-if="$slots.default">
             <slot/>
@@ -24,13 +24,13 @@
             <div class="ap-input-dropdown__list-search" v-if="search">
                 <InputSearch v-model="terms" @change="updateHeight" @click.stop="false" ref="search"/>
             </div>
-            <scroll-box :mode="'vertical'" :scrollable-class="'ap-input-dropdown__list-wrapper'" v-if="dropped">
+            <div class="ap-input-dropdown__list-wrapper">
                 <span class="ap-input-dropdown__list-item" v-if="hasNull && !multi"
                       :class="{'ap-input-dropdown__list-item-current' : modelValue === null}" @click="value = null">{{ placeholder }}</span>
                 <span class="ap-input-dropdown__list-item" v-for="(val, key) in displayableOptions"
                       :class="{'ap-input-dropdown__list-item-current' : isCurrent(val['key'])}"
                       :key="key" @click="value = val['key']" v-html="displayValue(val['value'])"></span>
-            </scroll-box>
+            </div>
         </div>
     </ShowcaseInputWrapper>
 </template>
@@ -444,6 +444,27 @@ export default {
         &-wrapper {
             display: flex;
             flex-direction: column;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            /* W3C standard - сейчас только для Firefox */
+            scrollbar-color: #8c82ce #ededed;
+            scrollbar-width: thin;
+
+            /* для Chrome/Edge/Safari */
+            &::-webkit-scrollbar {
+                height: 5px;
+                width: 5px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: #ededed;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: #8c82ce;
+                border-radius: 2px;
+            }
         }
 
         &-item {

@@ -101,15 +101,15 @@ export default {
         const configElement = document.getElementById('ap-showcase-config');
         const config = configElement !== null ? JSON.parse(configElement.innerHTML) : null;
         if (config !== null && typeof config['partner_site'] !== "undefined" && config['partner_site'] === false) {
-            this.is_partner_page = false;
+            this.options.is_partner_page = false;
         }
 
         // get initial parameters
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('partner')) {
-            this.partner = Number(urlParams.get('partner'));
+            this.options.partner = Number(urlParams.get('partner'));
         } else {
-            this.partner = config !== null && typeof config['partner'] !== "undefined" && config['partner'] !== null ? Number(config['partner']) : null;
+            this.options.partner = config !== null && typeof config['partner'] !== "undefined" && config['partner'] !== null ? Number(config['partner']) : null;
         }
         this.media = urlParams.get('media');
 

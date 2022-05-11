@@ -105,6 +105,7 @@ import FormPopUp from "@/Components/FormPopUp";
 import FormString from "@/Components/Form/FormString";
 import FormPhone from "@/Components/Form/FormPhone";
 import IconEdit from "@/Components/Icons/IconEdit";
+import {saveAs} from "file-saver";
 
 export default {
     components: {
