@@ -6,7 +6,7 @@ use App\Models\Tickets\Ticket;
 ?>
 
     <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" style="margin: 0; padding: 0; width: 340.15pt;">
 <head>
     <meta charset="utf-8">
     <title>Билет N{{ $ticket->id }}</title>
@@ -19,7 +19,7 @@ use App\Models\Tickets\Ticket;
     </style>
 </head>
 
-<body style="margin: 0; padding: 0;">
+<body style="margin: 0; padding: 0; width: 340.15pt;">
 <div style="width: 340.15pt;margin: 7pt 0 0;">
     <table style="width: 315pt; height: 90pt; margin: 0 auto; border-bottom: 1px solid #5e5e5e;">
         <tr>

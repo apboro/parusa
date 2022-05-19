@@ -8,7 +8,7 @@ use App\Models\Tickets\Ticket;
 ?>
 
     <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" style="margin: 0; padding: 0; width: 340.15pt;">
 <head>
     <meta charset="utf-8">
     <title>Заказ N{{ $order->id }}</title>
@@ -21,7 +21,7 @@ use App\Models\Tickets\Ticket;
     </style>
 </head>
 
-<body style="margin: 0; padding: 0;">
+<body style="margin: 0; padding: 0; width: 340.15pt;">
 
 @foreach($tickets as $ticket)
 
