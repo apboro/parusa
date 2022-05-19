@@ -16,6 +16,7 @@ class TerminalEditController extends ApiEditController
         'workplace_id' => 'required',
         'outlet_id' => 'required',
         //'organization_id' => 'required',
+        'show_all_orders' => 'required',
     ];
 
     protected array $titles = [
@@ -24,6 +25,7 @@ class TerminalEditController extends ApiEditController
         'workplace_id' => 'Внешний ID мобильной кассы',
         'outlet_id' => 'Внешний ID торговой точки',
         //'organization_id' => 'Внешний ID организации',
+        'show_all_orders' => 'Режим просмотра реестра заказов',
     ];
 
     /**
@@ -51,6 +53,7 @@ class TerminalEditController extends ApiEditController
                 'workplace_id' => $terminal->workplace_id,
                 'outlet_id' => $terminal->outlet_id,
                 //'organization_id' => $terminal->organization_id,
+                'show_all_orders' => $terminal->show_all_orders,
             ],
             $this->rules,
             $this->titles,
@@ -86,6 +89,7 @@ class TerminalEditController extends ApiEditController
         $terminal->setAttribute('workplace_id', $data['workplace_id']);
         $terminal->setAttribute('outlet_id', $data['outlet_id']);
         //$terminal->setAttribute('organization_id', $data['organization_id']);
+        $terminal->show_all_orders = $data['show_all_orders'];
         $terminal->setStatus($data['status_id'], false);
         $terminal->save();
 

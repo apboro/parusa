@@ -8,6 +8,9 @@
                 <span class="link" v-if="editable" @click="statusChange"><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
                 <span v-else><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
             </GuiValue>
+            <GuiValue :title="'Режим просмотра реестра заказов'">
+                {{ data['show_all_orders'] ? 'Отображать все заказы системы' : 'Отображать только заказы, созданные на этой кассе' }}
+            </GuiValue>
         </GuiContainer>
         <GuiContainer mt-30>
             <GuiValue :title="'Внешний ID мобильной кассы'">{{ data['workplace_id'] }}</GuiValue>

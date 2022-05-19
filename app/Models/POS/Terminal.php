@@ -20,10 +20,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $outlet_id
  * @property string $organization_id
  * @property int $pier_id
+ * @property bool $show_all_orders
  *
  * @property-read string $name
  * @property TerminalStatus $status
- * @property \App\Models\Piers\Pier $pier
+ * @property Pier $pier
  * @property Collection $staff
  */
 class Terminal extends Model implements Statusable
@@ -34,11 +35,13 @@ class Terminal extends Model implements Statusable
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'show_all_orders' => 'bool',
     ];
 
     /** @var array Default attributes. */
     protected $attributes = [
         'status_id' => TerminalStatus::default,
+        'show_all_orders' => false
     ];
 
     /**

@@ -13,6 +13,13 @@
             <FormString :form="form" :name="'outlet_id'"/>
             <FormString :form="form" :name="'workplace_id'"/>
         </GuiContainer>
+        <GuiContainer mt-30>
+            <FormDropdown :form="form" :name="'show_all_orders'" :placeholder="'Выберите'"
+                          :options="[{id: false, name: 'Отображать только заказы, созданные на этой кассе'}, {id: true, name: 'Отображать все заказы системы'}]"
+                          :show="'name'"
+                          :identifier="'id'"
+            />
+        </GuiContainer>
 
         <GuiContainer mt-30>
             <GuiButton @click="save" :color="'green'">Сохранить</GuiButton>
@@ -28,9 +35,11 @@ import GuiContainer from "@/Components/GUI/GuiContainer";
 import FormDictionary from "@/Components/Form/FormDictionary";
 import GuiButton from "@/Components/GUI/GuiButton";
 import FormString from "@/Components/Form/FormString";
+import FormDropdown from "@/Components/Form/FormDropdown";
 
 export default {
     components: {
+        FormDropdown,
         FormString,
         GuiButton,
         FormDictionary,

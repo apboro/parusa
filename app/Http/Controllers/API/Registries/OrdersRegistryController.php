@@ -54,9 +54,9 @@ class OrdersRegistryController extends ApiController
 
         if ($current->isRepresentative()) {
             $query->where('partner_id', $current->partnerId());
-        } else if ($current->isStaffTerminal()) {
+        } else if ($current->isStaffTerminal() && empty($current->terminal()->show_all_orders)) {
             $query->where('terminal_id', $current->terminalId());
-        } else if ($current->isStaffAdmin()) {
+        } else if ($current->isStaffAdmin() || ($current->isStaffTerminal() && !empty($current->terminal()->show_all_orders))) {
             if ($request->input('partner_id') !== null) {
                 $query->where('partner_id', $request->input('partner_id'));
             }

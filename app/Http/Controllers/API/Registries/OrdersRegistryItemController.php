@@ -27,13 +27,13 @@ class OrdersRegistryItemController extends ApiController
 
         if ($current->isRepresentative()) {
             $query->where('partner_id', $current->partnerId());
-        } else if ($current->isStaffTerminal()) {
+        } else if ($current->isStaffTerminal() && empty($current->terminal()->show_all_orders)) {
             if ($request->input('reserve')) {
                 $query->whereIn('status_id', OrderStatus::order_reserved_statuses);
             } else {
                 $query->where('terminal_id', $current->terminalId());
             }
-        } else if ($current->isStaffAdmin()) {
+        } else if ($current->isStaffAdmin() || ($current->isStaffTerminal() && !empty($current->terminal()->show_all_orders))) {
             if ($request->input('partner_id')) {
                 $query->where('partner_id', $request->input('partner_id'));
             }

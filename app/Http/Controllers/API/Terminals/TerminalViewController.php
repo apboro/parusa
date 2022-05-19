@@ -35,6 +35,7 @@ class TerminalViewController extends ApiController
             'workplace_id' => $terminal->workplace_id,
             'outlet_id' => $terminal->outlet_id,
             //'organization_id' => $terminal->organization_id,
+            'show_all_orders' => $terminal->show_all_orders,
             'staff' => $terminal->staff->map(function (Position $position) {
                 return [
                     'id' => $position->id,
