@@ -5,6 +5,7 @@
                 <CheckoutGallery :images="[info.data['images'][0]]" :alt="info.data['name']"/>
             </div>
             <div class="ap-checkout__text-paragraph" v-for="paragraph in description">{{ paragraph }}</div>
+            <CheckoutGallery class="ap-checkout__gallery_pt" v-if="info.data['map_images'] && info.data['map_images'][0]" :images="[info.data['map_images'][0]]" :alt="info.data['name']"/>
         </div>
     </CheckoutPopUp>
 </template>
@@ -77,6 +78,10 @@ export default {
     &-paragraph {
         margin-bottom: 10px;
     }
+}
+
+.ap-checkout__gallery_pt {
+    margin-top: 30px;
 }
 
 @media screen and (max-width: 800px) {

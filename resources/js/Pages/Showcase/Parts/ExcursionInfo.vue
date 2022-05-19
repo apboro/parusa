@@ -5,6 +5,8 @@
                 <ShowcaseGallery :images="[info.data['images'][0]]" :alt="info.data['name']"/>
             </div>
             <div class="ap-showcase__text-paragraph" v-for="paragraph in description">{{ paragraph }}</div>
+            <ShowcaseGallery class="ap-showcase__gallery_pt" v-if="info.data['map_images'] && info.data['map_images'][0]" :images="[info.data['map_images'][0]]"
+                             :alt="info.data['name']"/>
         </div>
     </ShowcasePopUp>
 </template>
@@ -78,6 +80,10 @@ $showcase_text_color: #2e2e2e !default;
     &-paragraph {
         margin-bottom: 10px;
     }
+}
+
+.ap-showcase__gallery_pt {
+    margin-top: 30px;
 }
 
 @media screen and (max-width: 800px) {

@@ -70,8 +70,14 @@
             </template>
         </ShowcaseLoadingProgress>
 
-        <ExcursionInfo ref="excursion"/>
-        <PierInfo ref="pier"/>
+        <ExcursionInfo ref="excursion"
+                       :crm_url="crm_url"
+                       :debug="debug"
+        />
+        <PierInfo ref="pier"
+                  :crm_url="crm_url"
+                  :debug="debug"
+        />
     </div>
 </template>
 
@@ -114,6 +120,9 @@ export default {
         isLoading: {type: Boolean, default: false},
 
         lastSearch: {type: Object, default: null},
+
+        crm_url: {type: String, required: true},
+        debug: {type: Boolean, default: false},
     },
 
     emits: ['search', 'select'],

@@ -29,6 +29,8 @@
                        :trips="trips.list"
                        :is-loading="trips.is_loading"
                        :last-search="last_search"
+                       :crm_url="crm_url"
+                       :debug="debug"
                        @search="loadList"
                        @select="selectTrip"
             />
