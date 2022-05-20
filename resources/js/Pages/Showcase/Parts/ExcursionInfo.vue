@@ -5,6 +5,9 @@
                 <ShowcaseGallery :images="[info.data['images'][0]]" :alt="info.data['name']"/>
             </div>
             <div class="ap-showcase__text-paragraph" v-for="paragraph in description">{{ paragraph }}</div>
+
+            <div class="ap-showcase__title">Карта маршрута</div>
+
             <ShowcaseGallery class="ap-showcase__gallery_pt" v-if="info.data['map_images'] && info.data['map_images'][0]" :images="[info.data['map_images'][0]]"
                              :alt="info.data['name']"/>
         </div>
@@ -61,8 +64,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../variables";
 $showcase_font: Gilroy;
 $showcase_text_color: #2e2e2e !default;
+
+.ap-showcase__title {
+    font-family: $showcase_font;
+    margin: 20px 0;
+    font-size: 20px;
+    color: $showcase_link_color;
+    font-weight: bold;
+    clear: both;
+}
 
 .ap-showcase__text {
     font-family: $showcase_font;

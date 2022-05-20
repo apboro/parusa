@@ -38,6 +38,9 @@ class PierInfoController extends ApiController
             'images' => $pier->images->map(function (Image $image) {
                 return 'data:' . $image->mime . ';base64, ' . base64_encode(Storage::disk($image->disk)->get($image->filename));
             }),
+            'map_images' => $pier->mapImages->map(function (Image $image) {
+                return 'data:' . $image->mime . ';base64, ' . base64_encode(Storage::disk($image->disk)->get($image->filename));
+            }),
         ];
 
         // send response

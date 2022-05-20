@@ -38,6 +38,9 @@ class ExcursionInfoController extends ApiController
             'duration' => $excursion->info->duration,
             'description' => $excursion->info->description,
             'announce' => $excursion->info->announce,
+            'map_images' => $excursion->tripImages->map(function (Image $image) {
+                return 'data:' . $image->mime . ';base64, ' . base64_encode(Storage::disk($image->disk)->get($image->filename));
+            }),
         ];
 
         // send response

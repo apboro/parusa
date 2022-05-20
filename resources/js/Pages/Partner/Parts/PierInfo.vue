@@ -1,6 +1,6 @@
 <template>
     <PopUp :title="title" :close-on-overlay="true" ref="popup">
-        <div class="w-600px" style="flex-shrink: 1; overflow: hidden;">
+        <div style="flex-shrink: 1; overflow: hidden; max-width: 1020px;">
             <ScrollBox :mode="'vertical'">
                 <GuiValue :title="'Название'">{{ info.data['name'] }}</GuiValue>
                 <GuiValue :title="'Адрес причала'">{{ info.data['address'] }}</GuiValue>
@@ -16,6 +16,9 @@
                 </GuiContainer>
                 <GuiValueArea :title="'Описание причала'" v-text="info.data['description']"/>
                 <GuiValueArea :title="'Как добраться'" v-text="info.data['way_to']"/>
+                <GuiValueArea :title="'Причал на карте'" v-if="info.data['map_images'] && info.data['map_images'][0]">
+                    <img class="w-100" :src="info.data['map_images'][0]" :alt="info.data['name']"/>
+                </GuiValueArea>
             </ScrollBox>
         </div>
     </PopUp>

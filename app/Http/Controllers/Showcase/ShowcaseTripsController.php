@@ -91,7 +91,7 @@ class ShowcaseTripsController extends ApiController
         });
 
         return response()->json([
-            'date' => $date->translatedFormat('j F Y'),
+            'date' => $date->translatedFormat('j F Y') . ' г.',
             'trips' => array_values($trips->toArray()),
         ]);
     }
@@ -140,7 +140,7 @@ class ShowcaseTripsController extends ApiController
                 'id' => $trip->id,
                 'pier' => $trip->startPier->name,
                 'pier_id' => $trip->start_pier_id,
-                'start_date' => $trip->start_at->translatedFormat('j F Y'),
+                'start_date' => $trip->start_at->translatedFormat('j F Y') . ' г.',
                 'start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
                 'excursion_id' => $trip->excursion_id,

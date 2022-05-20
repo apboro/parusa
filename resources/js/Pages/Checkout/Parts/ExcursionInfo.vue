@@ -5,6 +5,9 @@
                 <CheckoutGallery :images="[info.data['images'][0]]" :alt="info.data['name']"/>
             </div>
             <div class="ap-checkout__text-paragraph" v-for="paragraph in description">{{ paragraph }}</div>
+
+            <div class="ap-checkout__title">Как добраться?</div>
+
             <CheckoutGallery class="ap-checkout__gallery_pt" v-if="info.data['map_images'] && info.data['map_images'][0]" :images="[info.data['map_images'][0]]" :alt="info.data['name']"/>
         </div>
     </CheckoutPopUp>
@@ -61,6 +64,15 @@ export default {
 
 <style lang="scss" scoped>
 @import "../variables";
+
+.ap-checkout__title {
+    font-family: $checkout_font;
+    margin: 20px 0;
+    font-size: 20px;
+    color: $checkout_link_color;
+    font-weight: bold;
+    clear: both;
+}
 
 .ap-checkout__text {
     font-family: $checkout_font;
