@@ -30,35 +30,37 @@ class DBDump extends Command
      */
     public function handle()
     {
+        $this->info("Dumping database");
+
         $mysqlDump = env('DB_MYSQL_DUMP');
         $db = env('DB_DATABASE');
         $user = env('DB_USERNAME');
         $pass = env('DB_PASSWORD');
-        $dir = storage_path('mysql');
-        $filename = $db . '_' . Carbon::now()->format('Y_m_d_H_i') . '.sql.gz';
-        $flags = '--add-drop-table --add-locks --extended-insert --quick --force --triggers --routines --events --set-gtid-purged=off --no-tablespaces';
 
         if (empty($mysqlDump) || empty($db) || empty($user) || empty($pass)) {
             $this->error('Not enough parameters to run DB dumping');
+            return -1;
         }
 
-        $command = "$mysqlDump -u $user -p$pass $flags $db | gzip > $dir/$filename";
-        $this->info("running: $mysqlDump -u $user -p*** $flags $db | gzip> $dir/$filename");
+        $dir = storage_path('mysql');
+        $filename = $db . '_' . Carbon::now()->format('Y_m_d_H_i') . '.sql.gz';
+
+        $command = "$mysqlDump -u $user -p$pass $db | gzip > $dir/$filename";
+        $this->line("running: $mysqlDump -u $user -p*** $db | gzip> $dir/$filename");
 
         $process = Process::fromShellCommandline($command);
         $processOutput = '';
+
         $captureOutput = function ($type, $line) use (&$processOutput) {
             $processOutput .= $line;
         };
         $process->setTimeout(null)->run($captureOutput);
 
-        $this->info($processOutput);
 
         if ($process->getExitCode()) {
-            $exception = new RuntimeException("$mysqlDump -u $user -p**** $flags $db | gzip> $dir/$filename" . " - " . $processOutput);
+            $exception = new RuntimeException("$mysqlDump -u $user -p**** $db | gzip> $dir/$filename" . " - " . $processOutput);
             report($exception);
-
-            $this->error($exception->getMessage());
+            $this->error($processOutput);
         } else {
             $this->info('Database dumped to ' . $filename);
         }
