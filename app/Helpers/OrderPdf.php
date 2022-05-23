@@ -29,7 +29,7 @@ class OrderPdf
      */
     public static function print(Order $order): ?string
     {
-        $size = [0, 0, 127.55, 240.94]; // 45 * 85
+        $size = [0, 0, 226, 340];
 
         return self::generate($order, $size, 'landscape', 'pdf/order_print');
     }

@@ -30,7 +30,7 @@ class TicketPdf
      */
     public static function print(Ticket $ticket): ?string
     {
-        $size = [0, 0, 127.55, 240.94]; // 45 * 85
+        $size = [0, 0, 226, 340];
 
         return self::generate($ticket, $size, 'landscape', 'pdf/ticket_print');
     }
