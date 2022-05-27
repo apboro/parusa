@@ -69,7 +69,7 @@ use App\Models\Tickets\Ticket;
                         </div>
                         <div style="white-space: nowrap; padding-top: 5pt;">
                             <div style="display: inline-block; width: 65pt; vertical-align: top; padding-right: 3pt;">Стоимость</div>
-                            <div style="display: inline-block; vertical-align: top; width: 140pt; white-space: normal; border-bottom: 1px solid #5e5e5e;">{{ $ticket->base_price }}рублей</div>
+                            <div style="display: inline-block; vertical-align: top; width: 140pt; white-space: normal; border-bottom: 1px solid #5e5e5e;">{{ $ticket->base_price }} рублей</div>
                         </div>
                     </div>
                 </div>
