@@ -31,7 +31,7 @@ class OrderPdf
     {
         $size = [0, 0, 226, 340];
 
-        return self::generate($order, $size, 'landscape', 'pdf/order_print');
+        return self::generate($order, $size, 'portrait', 'pdf/order_print');
     }
 
     /**
