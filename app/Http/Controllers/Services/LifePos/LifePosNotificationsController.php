@@ -42,12 +42,12 @@ class LifePosNotificationsController extends ApiController
                     $this->handleSaleRefund($input);
                     break;
                 default:
-                    Log::channel('lifepos_payments')->error("LifePos: unhandled notification [{$input['type_of']}]");
+                    Log::channel('lifepos_payments')->info("LifePos: unhandled notification [{$input['type_of']}]");
                     Log::channel('lifepos_payments')->info(json_encode($input));
             }
         } catch (Exception $exception) {
             Log::channel('lifepos_payments')->error($exception->getMessage());
-            if(!empty($input)) {
+            if (!empty($input)) {
                 Log::channel('lifepos_payments')->info('Request content: ' . json_encode($input));
             }
         }
@@ -83,7 +83,7 @@ class LifePosNotificationsController extends ApiController
         // update order status and payment data
         try {
             if (isset($input['sale']['guid'])) {
-                /** @var \App\Models\Order\Order $order */
+                /** @var Order|null $order */
                 $order = Order::query()->where('external_id', $input['sale']['guid'])->first();
 
                 // add payment
@@ -91,7 +91,7 @@ class LifePosNotificationsController extends ApiController
                 $payment->gate = 'lifepos';
                 $payment->status_id = 1;
                 $payment->order_id = $order->id ?? null;
-                $payment->fiscal = $input['fiscal_document']['guid'];
+                $payment->fiscal = $input['fiscal_document']['guid'] ?? null;
                 $payment->total = $input['total_sum']['value'];
                 $payment->by_card = $input['sum_by_card']['value'];
                 $payment->by_cash = $input['sum_by_cash']['value'];
@@ -114,10 +114,12 @@ class LifePosNotificationsController extends ApiController
 
                 } else {
                     Log::channel('lifepos_payments')->error(sprintf('LifePos [SalePayment:%s] - order not found', $input['guid']));
+                    Log::channel('lifepos_payments')->info('Request content: ' . json_encode($input));
                 }
             }
         } catch (Exception $exception) {
             Log::channel('lifepos_payments')->error(sprintf('LifePos [SalePayment:%s] - %s', $input['guid'], $exception->getMessage()));
+            Log::channel('lifepos_payments')->info('Request content: ' . json_encode($input));
         }
     }
 
@@ -159,13 +161,13 @@ class LifePosNotificationsController extends ApiController
         $payment = new Payment;
         $payment->gate = 'lifepos';
         $payment->status_id = 2;
-        $parent->parent_id = $parent->id ?? null;
+        $payment->parent_id = $parent->id ?? null;
         $payment->order_id = $order->id ?? null;
-        $payment->fiscal = $input['fiscal_document']['guid'];
-        $payment->total = $input['total_sum']['value'];
-        $payment->by_card = $input['sum_by_card']['value'];
-        $payment->by_cash = $input['sum_by_cash']['value'];
-        $payment->external_id = $input['guid'];
+        $payment->fiscal = $input['fiscal_document']['guid'] ?? null;
+        $payment->total = $input['total_sum']['value'] ?? null;
+        $payment->by_card = $input['sum_by_card']['value'] ?? null;
+        $payment->by_cash = $input['sum_by_cash']['value'] ?? null;
+        $payment->external_id = $input['guid'] ?? null;
         $payment->save();
 
         if ($order) {
@@ -176,6 +178,7 @@ class LifePosNotificationsController extends ApiController
 
         } else {
             Log::channel('lifepos_payments')->error(sprintf('LifePos [SaleRefund:%s] - order not found', $input['guid']));
+            Log::channel('lifepos_payments')->info('Request content: ' . json_encode($input));
         }
     }
 }
