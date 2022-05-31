@@ -41,7 +41,7 @@ class TerminalStaffController extends ApiController
         $terminal->staff()->attach($position->id);
 
         return APIResponse::success('Кассир прикреплён', [
-            'id' => $position->id,
+            'id' => $position->user_id,
             'name' => $position->user->profile->fullName,
             'active' => $position->hasStatus(PositionStatus::active),
             'position' => $position->title,
