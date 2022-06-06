@@ -4,14 +4,17 @@ namespace App\Models\POS;
 
 use App\Exceptions\POS\WrongTerminalStatusException;
 use App\Interfaces\Statusable;
+use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\TerminalStatus;
 use App\Models\Model;
 use App\Models\Piers\Pier;
 use App\Models\Positions\Position;
 use App\Traits\HasStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property int $id
@@ -27,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Pier $pier
  * @property Collection $staff
  */
-class Terminal extends Model implements Statusable
+class Terminal extends Model implements Statusable, AsDictionary
 {
     use HasStatus;
 
@@ -41,7 +44,7 @@ class Terminal extends Model implements Statusable
     /** @var array Default attributes. */
     protected $attributes = [
         'status_id' => TerminalStatus::default,
-        'show_all_orders' => false
+        'show_all_orders' => false,
     ];
 
     /**
@@ -97,6 +100,24 @@ class Terminal extends Model implements Statusable
     public function staff(): BelongsToMany
     {
         return $this->belongsToMany(Position::class, 'terminal_users', 'terminal_id', 'position_id');
+    }
+
+    /**
+     * Dictionary connector.
+     *
+     * @return  Builder
+     */
+    public static function asDictionary(): Builder
+    {
+        return self::query()
+            ->select([
+                'id',
+                DB::raw('CONCAT(\'Касса № \', id) as name'),
+                DB::raw('IF(status_id = ' . TerminalStatus::enabled . ', true, false) as enabled'),
+                'id as order',
+                'created_at',
+                'updated_at',
+            ]);
     }
 }
 

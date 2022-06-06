@@ -1,19 +1,48 @@
 <template>
     <LoadingProgress :loading="list.is_loading">
 
-        <LayoutFilters>
-            <LayoutFiltersItem :title="'Период'" v-if="tripId === null">
-                <InputDate
-                    v-model="list.filters['date_from']"
-                    :original="list.filters_original['date_from']"
-                    @change="list.load()"
-                />
-                <InputDate
-                    v-model="list.filters['date_to']"
-                    :original="list.filters_original['date_to']"
+        <LayoutFilters v-if="tripId === null">
+            <LayoutFiltersItem :title="'Период продажи'">
+                <div class="w-210px mr-10">
+                    <InputDateTime
+                        v-model="list.filters['date_from']"
+                        :original="list.filters_original['date_from']"
+                        @change="list.load()"
+                    />
+                </div>
+                <div class="w-210px">
+                    <InputDateTime
+                        v-model="list.filters['date_to']"
+                        :original="list.filters_original['date_to']"
+                        @change="list.load()"
+                    />
+                </div>
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :title="'Дата рейса'">
+                <div class="w-150px">
+                    <InputDate
+                        v-model="list.filters['trip_date']"
+                        :original="list.filters_original['trip_date']"
+                        @change="list.load()"
+                    />
+                </div>
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :title="'Экскурсия'">
+                <DictionaryDropDown
+                    :dictionary="'excursions'"
+                    :fresh="true"
+                    v-model="list.filters['excursion_id']"
+                    :original="list.filters_original['excursion_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :search="true"
+                    :small="true"
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+        </LayoutFilters>
+
+        <LayoutFilters style="padding-top: 0;">
             <LayoutFiltersItem :title="'Способ продажи'">
                 <DictionaryDropDown
                     :dictionary="'order_types'"
@@ -26,8 +55,20 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+            <LayoutFiltersItem :title="'Касса'">
+                <DictionaryDropDown
+                    :dictionary="'terminals'"
+                    :fresh="true"
+                    v-model="list.filters['terminal_id']"
+                    :original="list.filters_original['terminal_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
             <template #search>
-                <LayoutFiltersItem :title="'Поиск заказа/билета по номеру, имени, email, телефону покупателя'">
+                <LayoutFiltersItem :title="'Поиск заказа/билета по номеру, имени, email, телефону покупателя'" style="max-width: 450px;">
                     <InputSearch v-model="list.search" @change="list.load()"/>
                 </LayoutFiltersItem>
             </template>
@@ -102,6 +143,7 @@ import ListTableCell from "@/Components/ListTable/ListTableCell";
 import GuiMessage from "@/Components/GUI/GuiMessage";
 import Pagination from "@/Components/Pagination";
 import InputDate from "@/Components/Inputs/InputDate";
+import InputDateTime from "@/Components/Inputs/InputDateTime";
 
 export default {
     props: {
@@ -113,6 +155,7 @@ export default {
     },
 
     components: {
+        InputDateTime,
         InputDate,
         Pagination,
         GuiMessage,

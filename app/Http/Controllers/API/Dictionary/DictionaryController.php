@@ -28,6 +28,7 @@ use App\Models\Dictionaries\UserStatus;
 use App\Models\Excursions\Excursion;
 use App\Models\Partner\Partner;
 use App\Models\Piers\Pier;
+use App\Models\POS\Terminal;
 use App\Models\POS\TerminalPositions;
 use App\Models\Ships\Ship;
 use App\Models\User\Helpers\Currents;
@@ -56,6 +57,7 @@ class DictionaryController extends ApiController
         'ships_statuses' => ['class' => ShipStatus::class, 'allow' => 'staff_admin'],
         'terminal_positions' => ['class' => TerminalPositions::class, 'allow' => 'staff_admin'],
         'terminal_statuses' => ['class' => TerminalStatus::class, 'allow' => 'staff_admin'],
+        'terminals' => ['class' => Terminal::class, 'allow' => 'staff_admin'],
         'ticket_grades' => ['class' => TicketGrade::class, 'allow' => 'staff_admin,partner'],
         'transaction_primary_types' => ['class' => AccountTransactionTypePrimary::class, 'allow' => 'staff_admin,partner'],
         'transaction_refill_types' => ['class' => AccountTransactionTypeRefill::class, 'allow' => 'staff_admin'],

@@ -20,6 +20,9 @@ class TicketsRegistryController extends ApiController
         'date_from' => null,
         'date_to' => null,
         'order_type_id' => null,
+        'trip_date' => null,
+        'excursion_id' => null,
+        'terminal_id' => null,
     ];
 
     protected array $rememberFilters = [
@@ -38,8 +41,8 @@ class TicketsRegistryController extends ApiController
     {
         $current = Currents::get($request);
 
-        $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('Y-m-d');
-        $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d');
+        $this->defaultFilters['date_from'] = Carbon::now()->day(1)->startOfDay()->format('Y-m-d\TH:i');
+        $this->defaultFilters['date_to'] = Carbon::now()->endOfDay()->format('Y-m-d\TH:i');
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $partnerId = $current->isStaff() ? $request->input('partner_id') : $current->partnerId();
@@ -60,9 +63,9 @@ class TicketsRegistryController extends ApiController
             ->when($tripId, function (Builder $query) use ($tripId) {
                 $query->where('trip_id', $tripId);
             })
-            ->when($excursionId, function (Builder $query) use ($excursionId) {
-                $query->whereHas('trip', function (Builder $query) use ($excursionId) {
-                    $query->where('excursion_id', $excursionId);
+            ->when(($excursionId || !empty($filters['excursion_id'])), function (Builder $query) use ($excursionId, $filters) {
+                $query->whereHas('trip', function (Builder $query) use ($excursionId, $filters) {
+                    $query->where('excursion_id', $excursionId ?? $filters['excursion_id']);
                 });
             })
             ->when($pierId, function (Builder $query) use ($pierId) {
@@ -79,15 +82,25 @@ class TicketsRegistryController extends ApiController
         // apply filters
         if (!$tripId) {
             if (!empty($filters['date_from'])) {
-                $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
+                $query->where('created_at', '>=', Carbon::parse($filters['date_from']));
             }
             if (!empty($filters['date_to'])) {
-                $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+                $query->where('created_at', '<=', Carbon::parse($filters['date_to']));
             }
         }
         if (!empty($filters['order_type_id'])) {
             $query->whereHas('order', function (Builder $query) use ($filters) {
                 $query->where('type_id', $filters['order_type_id']);
+            });
+        }
+        if (!empty($filters['terminal_id'])) {
+            $query->whereHas('order', function (Builder $query) use ($filters) {
+                $query->where('terminal_id', $filters['terminal_id']);
+            });
+        }
+        if (!empty($filters['trip_date'])) {
+            $query->whereHas('trip', function (Builder $query) use ($filters) {
+                $query->whereDate('start_at', Carbon::parse($filters['trip_date']));
             });
         }
 
