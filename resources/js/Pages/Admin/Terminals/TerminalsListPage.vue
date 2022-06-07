@@ -36,7 +36,9 @@
                         {{ terminal['place'] }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{ terminal['today_sold_amount'] }} руб.
+                        <div>{{ terminal['today_sold_amount'] }} руб.</div>
+                        <div class="text-sm">нал.: {{ terminal['today_sold_cash_amount'] }} руб.</div>
+                        <div class="text-sm">безнал.: {{ terminal['today_sold_card_amount'] }} руб.</div>
                     </ListTableCell>
                     <ListTableCell>
                         {{ terminal['today_tickets_sold'] }}

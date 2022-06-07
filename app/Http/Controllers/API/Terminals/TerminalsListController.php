@@ -8,9 +8,11 @@ use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\TerminalStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
+use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Tickets\Ticket;
 use Carbon\Carbon;
@@ -50,27 +52,29 @@ class TerminalsListController extends ApiController
         // current page automatically resolved from request via `page` parameter
         $terminals = $query->paginate($request->perPage(10, $this->rememberKey));
 
+        $now = Carbon::now();
+
         /** @var LengthAwarePaginator $terminals */
-        $terminals->transform(function (Terminal $terminal) {
+        $terminals->transform(function (Terminal $terminal) use ($now) {
             $ticketsCount = Ticket::query()
                 ->whereHas('order', function (Builder $query) use ($terminal) {
                     $query->where('terminal_id', $terminal->id);
                 })
-                ->whereDate('updated_at', Carbon::now())
+                ->whereDate('updated_at', $now)
                 ->whereIn('status_id', TicketStatus::ticket_had_paid_statuses)
                 ->count();
-            $ticketsAmount = Ticket::query()
-                ->whereHas('order', function (Builder $query) use ($terminal) {
-                    $query->where('terminal_id', $terminal->id);
-                })
-                ->whereDate('updated_at', Carbon::now())
-                ->whereIn('status_id', TicketStatus::ticket_had_paid_statuses)
-                ->sum('base_price');
+
+            $countQuery = Payment::query()->where('terminal_id', $terminal->id)->whereDate('created_at', $now)->where('status_id', PaymentStatus::sale);
+            $ticketsAmount = $countQuery->sum('total');
+            $ticketsCardAmount = $countQuery->sum('by_card');
+            $ticketsCashAmount = $countQuery->sum('by_cash');
+
             $lastSale = Order::query()
                 ->where('terminal_id', $terminal->id)
-                ->whereDate('updated_at', Carbon::now())
+                ->whereDate('updated_at', $now)
                 ->whereIn('status_id', OrderStatus::order_had_paid_statuses)
                 ->max('updated_at');
+
             return [
                 'active' => $terminal->hasStatus(TerminalStatus::enabled),
                 'id' => $terminal->id,
@@ -79,6 +83,8 @@ class TerminalsListController extends ApiController
                 'pier' => $terminal->pier->name,
                 'place' => $terminal->pier->info->address,
                 'today_sold_amount' => PriceConverter::storeToPrice($ticketsAmount),
+                'today_sold_card_amount' => PriceConverter::storeToPrice($ticketsCardAmount),
+                'today_sold_cash_amount' => PriceConverter::storeToPrice($ticketsCashAmount),
                 'today_tickets_sold' => $ticketsCount,
                 'last_sale' => $lastSale ? Carbon::parse($lastSale)->format('H:i') : '—',
             ];

@@ -34,15 +34,15 @@ class TerminalMakeOrderController extends ApiEditController
         $current = Currents::get($request);
 
         if (!$current->isStaff() || $current->role() === null || !$current->role()->matches(Role::terminal)) {
-            return APIResponse::error('Оформлление заказа запрещено.');
+            return APIResponse::error('Оформление заказа запрещено.');
         }
 
         if (($position = $current->position()) === null || ($current->partner() !== null)) {
-            return APIResponse::error('Оформлление заказа запрещено.');
+            return APIResponse::error('Оформление заказа запрещено.');
         }
 
         if (null === ($terminal = $current->terminal())) {
-            return APIResponse::error('Оформлление заказа запрещено.');
+            return APIResponse::error('Оформление заказа запрещено.');
         }
 
         if (Order::query()->where(['position_id' => $position->id, 'terminal_id' => $terminal->id])

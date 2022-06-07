@@ -56,7 +56,7 @@ class OrderReserveController extends ApiController
      */
     public function remove(Request $request): JsonResponse
     {
-        /** @var ?\App\Models\Order\Order $order */
+        /** @var Order|null $order */
         $order = $this->getOrder($request);
 
         if ($order === null) {
@@ -181,6 +181,7 @@ class OrderReserveController extends ApiController
                 }
                 $order->terminal_id = $current->terminalId();
                 $order->position_id = $current->positionId();
+                $order->terminal_position_id = $current->positionId();
                 $order->setStatus(OrderStatus::terminal_creating_from_reserve, false);
                 $order->save();
             });
@@ -214,8 +215,7 @@ class OrderReserveController extends ApiController
             return null;
         }
 
-        /** @var ?\App\Models\Order\Order $order */
-        /** @noinspection PhpUnnecessaryLocalVariableInspection */
+        /** @var Order|null $order */
         /** @noinspection OneTimeUseVariablesInspection */
         $order = $query->first();
 

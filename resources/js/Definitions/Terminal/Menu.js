@@ -3,4 +3,5 @@ export default [
     {'title': 'ВЫКУП БРОНИ', 'route': 'reserve-search'},
     {'title': 'ВОЗВРАТ БИЛЕТОВ', 'route': 'return-search'},
     {'title': 'РЕЕСТР ЗАКАЗОВ', 'route': 'orders-registry'},
+    {'title': 'РЕЕСТР ТРАНЗАКЦИЙ', 'route': 'transactions-registry'},
 ];

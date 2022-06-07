@@ -10,11 +10,12 @@
             </GuiActionsMenu>
         </template>
 
-        <LayoutRoutedTabs :tabs="{description: 'Описание кассы', staff: 'Кассиры', sales: 'Реестр заказов'}" @change="tab = $event"/>
+        <LayoutRoutedTabs :tabs="{description: 'Описание кассы', staff: 'Кассиры', sales: 'Реестр заказов', transactions: 'Реестр транзакций'}" @change="tab = $event"/>
 
         <TerminalInfo v-if="tab === 'description'" :terminal-id="terminalId" :data="data.data" :editable="true" @update="update"/>
         <TerminalStaff v-if="tab === 'staff'" :terminal-id="terminalId" :data="data.data" :editable="true" @attach="attach" @detach="detach"/>
         <AdminOrderRegistry v-if="tab === 'sales'" :terminal-id="terminalId"/>
+        <AdminTransactionsRegistry v-if="tab === 'transactions'" :terminal-id="terminalId"/>
 
     </LayoutPage>
 </template>
@@ -28,9 +29,11 @@ import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 import TerminalInfo from "@/Pages/Admin/Terminals/Parts/TerminalInfo";
 import TerminalStaff from "@/Pages/Admin/Terminals/Parts/TerminalStaff";
 import AdminOrderRegistry from "@/Pages/Admin/Registries/Parts/AdminOrderRegistry";
+import AdminTransactionsRegistry from "@/Pages/Admin/Registries/Parts/AdminTransactionsRegistry";
 
 export default {
     components: {
+        AdminTransactionsRegistry,
         AdminOrderRegistry,
         TerminalStaff,
         TerminalInfo,

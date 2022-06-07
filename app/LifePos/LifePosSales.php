@@ -168,4 +168,40 @@ class LifePosSales
             throw new RuntimeException($response['message']);
         }
     }
+
+    /**
+     * Get sale info.
+     *
+     * @param string $guid
+     *
+     * @return  array
+     */
+    public static function getSale(string $guid): array
+    {
+        $orgId = env('LIFE_POS_ORG_ID');
+
+        $client = new Client([
+            'base_uri' => env('LIFE_POS_BASE_URL'),
+            'timeout' => 0,
+            'allow_redirects' => false,
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('LIFE_POS_KEY'),
+                'Accept-Language' => 'ru-RU',
+            ],
+        ]);
+
+        try {
+            $result = $client->get("/v4/orgs/{$orgId}/deals/sales/{$guid}");
+        } catch (GuzzleException $exception) {
+            throw new RuntimeException($exception->getMessage());
+        }
+
+        try {
+            $response = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            throw new RuntimeException('LifePos response parsing error: ' . $exception->getMessage());
+        }
+
+        return $response;
+    }
 }

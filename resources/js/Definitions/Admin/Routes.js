@@ -26,6 +26,7 @@ import ExcursionEditPage from '@/Pages/Admin/Excursions/ExcursionEditPage';
 import TripViewPage from '@/Pages/Admin/Trips/TripViewPage';
 import TripEditPage from '@/Pages/Admin/Trips/TripEditPage';
 import DictionariesPage from '@/Pages/Admin/Dictionaries/DictionariesPage';
+import TransactionsRegistryPage from "@/Pages/Admin/Registries/TransactionsRegistryPage";
 import NotFound from '@/Pages/NotFound';
 
 export default [
@@ -36,6 +37,7 @@ export default [
     {path: '/registry/tickets', name: 'tickets-registry', component: TicketsRegistryPage, meta: {title: 'Реестр билетов'}},
     {path: '/registry/tickets/:id', name: 'ticket-info', component: TicketInfoPage, meta: {title: 'Билет'}},
     {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней'}},
+    {path: '/registry/transactions', name: 'transactions-registry', component: TransactionsRegistryPage, meta: {title: 'Реестр транзакций'}},
     {path: '/staff', name: 'staff-list', component: StaffListPage, meta: {title: 'Сотрудники'}},
     {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника'}},
     {path: '/staff/:id/edit', name: 'staff-edit', component: StaffEditPage, meta: {title: 'Редактирование сотрудника'}},

@@ -6,6 +6,7 @@ use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PartnerStatus;
+use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\PiersStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
@@ -121,6 +122,11 @@ class StatusesSeeder extends GenericSeeder
         TerminalStatus::class => [
             TripDiscountStatus::enabled => ['name' => 'Работает'],
             TripDiscountStatus::disabled => ['name' => 'Не работает'],
+        ],
+
+        PaymentStatus::class => [
+            PaymentStatus::sale => ['name' => 'Оплата'],
+            PaymentStatus::return => ['name' => 'Возврат'],
         ],
     ];
 }

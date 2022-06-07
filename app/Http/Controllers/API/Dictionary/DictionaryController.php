@@ -13,6 +13,7 @@ use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
+use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\PiersStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
@@ -47,6 +48,7 @@ class DictionaryController extends ApiController
         'partner_statuses' => ['class' => PartnerStatus::class, 'allow' => 'staff_admin'],
         'partner_types' => ['class' => PartnerType::class, 'allow' => 'staff_admin'],
         'partners' => ['class' => Partner::class, 'allow' => 'staff_admin'],
+        'payment_statuses' => ['class' => PaymentStatus::class, 'allow' => 'staff_admin'],
         'pier_statuses' => ['class' => PiersStatus::class, 'allow' => 'staff_admin'],
         'piers' => ['class' => Pier::class, 'allow' => 'staff_admin,staff_terminal,partner'],
         'position_access_statuses' => ['class' => PositionAccessStatus::class, 'allow' => 'staff_admin'],

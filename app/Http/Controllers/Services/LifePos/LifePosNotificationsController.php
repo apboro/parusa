@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Services\LifePos;
 
 use App\Http\Controllers\ApiController;
+use App\LifePos\LifePosSales;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\Payments\Payment;
+use App\Models\POS\Terminal;
+use App\Models\Positions\StaffPositionInfo;
 use App\Models\Tickets\Ticket;
 use Exception;
 use Illuminate\Http\Request;
@@ -83,19 +87,30 @@ class LifePosNotificationsController extends ApiController
         // update order status and payment data
         try {
             if (isset($input['sale']['guid'])) {
+                $externalId = $input['sale']['guid'];
+
                 /** @var Order|null $order */
-                $order = Order::query()->where('external_id', $input['sale']['guid'])->first();
+                $order = Order::query()->where('external_id', $externalId)->first();
+
+                // get POS and cashier
+                $sale = LifePosSales::getSale($externalId);
+                $terminalExternalId = $sale['workplace']['guid'];
+                $positionExternalId = $sale['opened_by']['guid'];
+                $terminalId = Terminal::query()->where('workplace_id', $terminalExternalId)->value('id');
+                $positionId = StaffPositionInfo::query()->where('external_id', $positionExternalId)->value('position_id');
 
                 // add payment
                 $payment = new Payment;
                 $payment->gate = 'lifepos';
-                $payment->status_id = 1;
+                $payment->status_id = PaymentStatus::sale;
                 $payment->order_id = $order->id ?? null;
                 $payment->fiscal = $input['fiscal_document']['guid'] ?? null;
-                $payment->total = $input['total_sum']['value'];
-                $payment->by_card = $input['sum_by_card']['value'];
-                $payment->by_cash = $input['sum_by_cash']['value'];
+                $payment->total = ($input['total_sum']['value'] ?? 0) / 100;
+                $payment->by_card = ($input['sum_by_card']['value'] ?? 0) / 100;
+                $payment->by_cash = ($input['sum_by_cash']['value'] ?? 0) / 100;
                 $payment->external_id = $input['guid'];
+                $payment->terminal_id = $terminalId;
+                $payment->position_id = $positionId;
                 $payment->save();
 
                 if ($order && ($order->hasStatus(OrderStatus::terminal_wait_for_pay) || $order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve))) {
@@ -157,17 +172,28 @@ class LifePosNotificationsController extends ApiController
         /** @var Order|null $order */
         $order = $parent ? Order::query()->where('id', $parent->order_id)->first() : null;
 
+        $externalId = $input['sale']['guid'];
+
+        // get POS and cashier
+        $sale = LifePosSales::getSale($externalId);
+        $terminalExternalId = $sale['workplace']['guid'];
+        $positionExternalId = $sale['opened_by']['guid'];
+        $terminalId = Terminal::query()->where('workplace_id', $terminalExternalId)->value('id');
+        $positionId = StaffPositionInfo::query()->where('external_id', $positionExternalId)->value('position_id');
+
         // add payment
         $payment = new Payment;
         $payment->gate = 'lifepos';
-        $payment->status_id = 2;
+        $payment->status_id = PaymentStatus::return;
         $payment->parent_id = $parent->id ?? null;
         $payment->order_id = $order->id ?? null;
         $payment->fiscal = $input['fiscal_document']['guid'] ?? null;
-        $payment->total = $input['total_sum']['value'] ?? null;
-        $payment->by_card = $input['sum_by_card']['value'] ?? null;
-        $payment->by_cash = $input['sum_by_cash']['value'] ?? null;
+        $payment->total = ($input['total_sum']['value'] ?? 0) / 100;
+        $payment->by_card = ($input['sum_by_card']['value'] ?? 0) / 100;
+        $payment->by_cash = ($input['sum_by_cash']['value'] ?? 0) / 100;
         $payment->external_id = $input['guid'] ?? null;
+        $payment->terminal_id = $terminalId;
+        $payment->position_id = $positionId;
         $payment->save();
 
         if ($order) {

@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\DB;
  * @property int $partner_id
  * @property int|null $position_id
  * @property int|null $terminal_id
+ * @property int|null $terminal_position_id
  * @property string|null $external_id
  * @property string|null $name
  * @property string|null $email
@@ -137,6 +138,16 @@ class Order extends Model implements Statusable, Typeable
     public function position(): HasOne
     {
         return $this->hasOne(Position::class, 'id', 'position_id');
+    }
+
+    /**
+     * Order processed cashier position.
+     *
+     * @return  HasOne
+     */
+    public function cashier(): HasOne
+    {
+        return $this->hasOne(Position::class, 'id', 'terminal_position_id');
     }
 
     /**
@@ -267,6 +278,7 @@ class Order extends Model implements Statusable, Typeable
         $order->partner_id = $partnerId;
         $order->position_id = $positionId;
         $order->terminal_id = $terminalId;
+        $order->terminal_position_id = $terminalId ? $positionId : null;
         $order->email = $email;
         $order->name = $name;
         $order->phone = $phone;

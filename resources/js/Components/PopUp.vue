@@ -100,8 +100,8 @@ export default {
             const dialog = this.$el.querySelector('.dialogs__dialog');
             dialog.style.height = null;
             dialog.style.width = null;
-            dialog.style.height = dialog.clientHeight + 'px';
-            dialog.style.width = dialog.clientWidth + 'px';
+            dialog.style.height = (dialog.clientHeight + 1) + 'px';
+            dialog.style.width = (dialog.clientWidth + 1) + 'px';
         }
     }
 }

@@ -37,11 +37,11 @@ class PartnerMakeOrderController extends ApiEditController
         $current = Currents::get($request);
 
         if ($current->isStaff()) {
-            return APIResponse::error('Оформлление заказа запрещено.');
+            return APIResponse::error('Оформление заказа запрещено.');
         }
 
         if (($position = $current->position()) === null || ($partner = $current->partner()) === null) {
-            return APIResponse::error('Оформлление заказа запрещено.');
+            return APIResponse::error('Оформление заказа запрещено.');
         }
 
         $mode = $request->input('mode');
