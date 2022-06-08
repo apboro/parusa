@@ -26,6 +26,12 @@ class TicketsRegistryController extends ApiController
     ];
 
     protected array $rememberFilters = [
+        'date_from',
+        'date_to',
+        'order_type_id',
+        'trip_date',
+        'excursion_id',
+        'terminal_id',
     ];
 
     protected string $rememberKey = CookieKeys::ticket_registry_list;
@@ -41,7 +47,7 @@ class TicketsRegistryController extends ApiController
     {
         $current = Currents::get($request);
 
-        $this->defaultFilters['date_from'] = Carbon::now()->day(1)->startOfDay()->format('Y-m-d\TH:i');
+        $this->defaultFilters['date_from'] = Carbon::now()->startOfDay()->format('Y-m-d\TH:i');
         $this->defaultFilters['date_to'] = Carbon::now()->endOfDay()->format('Y-m-d\TH:i');
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
@@ -53,7 +59,7 @@ class TicketsRegistryController extends ApiController
         $shipId = $request->input('ship_id');
 
         $query = Ticket::query()
-            ->with(['status', 'order', 'order.type', 'order.partner', 'order.position', 'order.position.user.profile', 'transaction', 'grade', 'trip', 'trip.startPier', 'trip.excursion'])
+            ->with(['status', 'order', 'order.terminal', 'order.type', 'order.partner', 'order.position', 'order.position.user.profile', 'transaction', 'grade', 'trip', 'trip.startPier', 'trip.excursion'])
             ->whereIn('status_id', array_merge(TicketStatus::ticket_had_paid_statuses, TicketStatus::ticket_reserved_statuses))
             ->when($partnerId, function (Builder $query) use ($partnerId) {
                 $query->whereHas('order', function (Builder $query) use ($partnerId) {
@@ -81,12 +87,14 @@ class TicketsRegistryController extends ApiController
 
         // apply filters
         if (!$tripId) {
-            if (!empty($filters['date_from'])) {
-                $query->where('created_at', '>=', Carbon::parse($filters['date_from']));
+            if (empty($filters['date_from'])) {
+                $filters['date_from'] = $this->defaultFilters['date_from'];
             }
-            if (!empty($filters['date_to'])) {
-                $query->where('created_at', '<=', Carbon::parse($filters['date_to']));
+            if (empty($filters['date_to'])) {
+                $filters['date_to'] = $this->defaultFilters['date_to'];
             }
+            $query->where('created_at', '>=', Carbon::parse($filters['date_from']));
+            $query->where('created_at', '<=', Carbon::parse($filters['date_to']));
         }
         if (!empty($filters['order_type_id'])) {
             $query->whereHas('order', function (Builder $query) use ($filters) {
@@ -145,6 +153,7 @@ class TicketsRegistryController extends ApiController
                 'order_type' => $ticket->order->type->name,
                 'partner' => $ticket->order->partner->name ?? null,
                 'sale_by' => $ticket->order->position ? $ticket->order->position->user->profile->compactName : null,
+                'terminal' => $ticket->order->terminal->name ?? null,
                 'return_up_to' => null,
             ];
         });
@@ -155,6 +164,6 @@ class TicketsRegistryController extends ApiController
             $filters,
             $this->defaultFilters,
             []
-        );
+        )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }

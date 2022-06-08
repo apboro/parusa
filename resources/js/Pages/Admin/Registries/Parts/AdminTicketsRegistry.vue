@@ -17,29 +17,34 @@
                         @change="list.load()"
                     />
                 </div>
+                <GuiButton style="margin-left: 10px" @clicked="resetDate">Сегодня</GuiButton>
             </LayoutFiltersItem>
-            <LayoutFiltersItem :title="'Дата рейса'">
-                <div class="w-150px">
-                    <InputDate
-                        v-model="list.filters['trip_date']"
-                        :original="list.filters_original['trip_date']"
+            <template #search>
+                <LayoutFiltersItem :title="'Дата рейса'">
+                    <div class="w-150px">
+                        <InputDate
+                            v-model="list.filters['trip_date']"
+                            :original="list.filters_original['trip_date']"
+                            @change="list.load()"
+                            :clearable="true"
+                            :pick-on-clear="false"
+                        />
+                    </div>
+                </LayoutFiltersItem>
+                <LayoutFiltersItem :title="'Экскурсия'" style="margin-left: 10px; width: 280px;">
+                    <DictionaryDropDown
+                        :dictionary="'excursions'"
+                        :fresh="true"
+                        v-model="list.filters['excursion_id']"
+                        :original="list.filters_original['excursion_id']"
+                        :placeholder="'Все'"
+                        :has-null="true"
+                        :search="true"
+                        :small="true"
                         @change="list.load()"
                     />
-                </div>
-            </LayoutFiltersItem>
-            <LayoutFiltersItem :title="'Экскурсия'">
-                <DictionaryDropDown
-                    :dictionary="'excursions'"
-                    :fresh="true"
-                    v-model="list.filters['excursion_id']"
-                    :original="list.filters_original['excursion_id']"
-                    :placeholder="'Все'"
-                    :has-null="true"
-                    :search="true"
-                    :small="true"
-                    @change="list.load()"
-                />
-            </LayoutFiltersItem>
+                </LayoutFiltersItem>
+            </template>
         </LayoutFilters>
 
         <LayoutFilters style="padding-top: 0;">
@@ -52,10 +57,10 @@
                     :placeholder="'Все'"
                     :has-null="true"
                     :small="true"
-                    @change="list.load()"
+                    @change="saleMethodChanged"
                 />
             </LayoutFiltersItem>
-            <LayoutFiltersItem :title="'Касса'">
+            <LayoutFiltersItem :title="'Касса'" v-if="is_terminal_filter">
                 <DictionaryDropDown
                     :dictionary="'terminals'"
                     :fresh="true"
@@ -104,7 +109,8 @@
                     <div>{{ ticket['excursion'] }} {{ ticket['pier'] }}</div>
                 </ListTableCell>
                 <ListTableCell>
-                    {{ ticket['order_type'] }}
+                    <div style="white-space: normal;">{{ ticket['order_type'] }}</div>
+                    <div v-if="ticket['terminal']">{{ ticket['terminal'] }}</div>
                 </ListTableCell>
                 <ListTableCell>
                     <div>{{ ticket['partner'] }}</div>
@@ -144,6 +150,7 @@ import GuiMessage from "@/Components/GUI/GuiMessage";
 import Pagination from "@/Components/Pagination";
 import InputDate from "@/Components/Inputs/InputDate";
 import InputDateTime from "@/Components/Inputs/InputDateTime";
+import GuiButton from "@/Components/GUI/GuiButton";
 
 export default {
     props: {
@@ -155,6 +162,7 @@ export default {
     },
 
     components: {
+        GuiButton,
         InputDateTime,
         InputDate,
         Pagination,
@@ -172,6 +180,7 @@ export default {
 
     data: () => ({
         list: null,
+        is_terminal_filter: false,
     }),
 
     created() {
@@ -188,6 +197,16 @@ export default {
     methods: {
         highlight(text) {
             return this.$highlight(String(text), String(this.list.search), true);
+        },
+        resetDate() {
+            this.list.filters['date_from'] = null;
+            this.list.filters['date_to'] = null;
+            this.list.load();
+        },
+        saleMethodChanged(value) {
+            this.is_terminal_filter = value === 3 || value === 4;
+            this.list.filters['terminal_id'] = null;
+            this.list.load();
         },
     }
 }

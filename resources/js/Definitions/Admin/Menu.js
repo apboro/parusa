@@ -29,7 +29,7 @@ export default [
             {'title': 'Реестр заказов', 'route': 'orders-registry'},
             {'title': 'Реестр билетов', 'route': 'tickets-registry'},
             {'title': 'Реестр броней', 'route': 'reserves-registry'},
-            {'title': 'Реестр транзакций', 'route': 'transactions-registry'},
+            {'title': 'Реестр транзакций по кассам', 'route': 'transactions-registry'},
         ]
     },
 ];

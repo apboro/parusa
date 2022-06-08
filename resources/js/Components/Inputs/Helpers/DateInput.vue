@@ -161,15 +161,18 @@ export default {
             }
             return true;
         },
-        clear() {
+        clear(event) {
             if (this.isClearable && !this.disabled) {
                 this.setInner(null, true);
                 this.set(null);
                 if (this.pickOnClear) {
                     this.showPicker(false);
+                    this.focus();
+                } else {
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
             }
-            this.focus();
         },
         showPicker(dropping = true) {
             if (this.disabled || this.picker === true) return;

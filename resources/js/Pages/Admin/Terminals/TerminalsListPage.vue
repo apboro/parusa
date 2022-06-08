@@ -36,9 +36,15 @@
                         {{ terminal['place'] }}
                     </ListTableCell>
                     <ListTableCell>
-                        <div>{{ terminal['today_sold_amount'] }} руб.</div>
-                        <div class="text-sm">нал.: {{ terminal['today_sold_cash_amount'] }} руб.</div>
-                        <div class="text-sm">безнал.: {{ terminal['today_sold_card_amount'] }} руб.</div>
+                        <div style="margin-bottom: 5px;">приход общ.: {{ terminal['today_sold_amount'] }} руб.</div>
+                        <div style="margin-bottom: 5px;">приход нал.: {{ terminal['today_sold_cash_amount'] }} руб.</div>
+                        <div style="margin-bottom: 10px;">приход безнал.: {{ terminal['today_sold_card_amount'] }} руб.</div>
+                        <div style="margin-bottom: 5px;">возврат нал.: {{ terminal['today_return_cash_amount'] }} руб.</div>
+                        <div style="margin-bottom: 10px;">возврат безнал.: {{ terminal['today_return_card_amount'] }} руб.</div>
+                        <div style="margin-bottom: 5px;">в кассе нал.: {{ terminal['today_total_cash_amount'] }} руб.</div>
+                        <div style="margin-bottom: 10px;">на р/с: {{ terminal['today_total_card_amount'] }} руб.</div>
+                        <div style="margin-bottom: 10px;"><b>итого: {{ terminal['today_total'] }} руб.</b></div>
+                        <div class="text-gray" style="font-size: 11px;">{{ terminal['timestamp'] }}</div>
                     </ListTableCell>
                     <ListTableCell>
                         {{ terminal['today_tickets_sold'] }}

@@ -100,25 +100,17 @@
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
         <GuiContainer mt-30>
-            <GuiHeading text-lg>Статистика за период <span class="bold">{{ list.payload['date_from'] }} - {{ list.payload['date_to'] }}</span></GuiHeading>
+            <GuiHeading text-lg>Статистика за период: <span class="bold">{{ list.payload['date_from'] }} — {{ list.payload['date_to'] }}</span></GuiHeading>
             <GuiHeading text-md mt-20 bold v-if="list.payload['terminal']">Касса №{{ list.payload['terminal'] }}</GuiHeading>
+            <GuiHeading text-md mt-20 bold v-else>Касса: все</GuiHeading>
             <GuiContainer pr-40 pt-15 w-350px>
-                <GuiHeading text-md mt-15 mb-10 bold>Наличными</GuiHeading>
-                <GuiValue :class="'w-300px'" :title="'приход'">{{ list.payload['sale_by_cash'] }} руб.</GuiValue>
-                <GuiValue :class="'w-300px'" :title="'возврат'">{{ list.payload['return_by_cash'] }} руб.</GuiValue>
-                <GuiValue :class="'w-300px'" :title="'итого'">{{ list.payload['cash_total'] }} руб.</GuiValue>
+                <GuiValue :class="'w-300px'" :title="'приход общ.'">{{ list.payload['sale_total'] }} руб.</GuiValue>
+                <GuiValue :class="'w-300px'" :title="'приход нал.'">{{ list.payload['sale_by_cash'] }} руб.</GuiValue>
+                <GuiValue :class="'w-300px'" :title="'приход безнал.'">{{ list.payload['sale_by_card'] }} руб.</GuiValue>
             </GuiContainer>
             <GuiContainer pr-40 pt-15 w-350px>
-                <GuiHeading text-md mt-15 mb-10 bold>Безналичными</GuiHeading>
-                <GuiValue :class="'w-300px'" :title="'приход'">{{ list.payload['sale_by_card'] }} руб.</GuiValue>
-                <GuiValue :class="'w-300px'" :title="'возврат'">{{ list.payload['return_by_card'] }} руб.</GuiValue>
-                <GuiValue :class="'w-300px'" :title="'итого'">{{ list.payload['card_total'] }} руб.</GuiValue>
-            </GuiContainer>
-            <GuiContainer pr-40 pt-15 w-350px>
-                <GuiHeading text-md mt-15 mb-10 bold>Общий</GuiHeading>
-                <GuiValue :class="'w-300px'" :title="'приход'">{{ list.payload['sale_total'] }} руб.</GuiValue>
-                <GuiValue :class="'w-300px'" :title="'возврат'">{{ list.payload['return_total'] }} руб.</GuiValue>
-                <GuiValue :class="'w-300px'" :title="'итого'">{{ list.payload['overall_total'] }} руб.</GuiValue>
+                <GuiValue :class="'w-300px'" :title="'возврат нал.'">{{ list.payload['return_by_cash'] }} руб.</GuiValue>
+                <GuiValue :class="'w-300px'" :title="'возврат безнал.'">{{ list.payload['return_by_card'] }} руб.</GuiValue>
             </GuiContainer>
         </GuiContainer>
 

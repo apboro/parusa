@@ -64,10 +64,14 @@ class TerminalsListController extends ApiController
                 ->whereIn('status_id', TicketStatus::ticket_had_paid_statuses)
                 ->count();
 
-            $countQuery = Payment::query()->where('terminal_id', $terminal->id)->whereDate('created_at', $now)->where('status_id', PaymentStatus::sale);
-            $ticketsAmount = $countQuery->sum('total');
-            $ticketsCardAmount = $countQuery->sum('by_card');
-            $ticketsCashAmount = $countQuery->sum('by_cash');
+            $saleQuery = Payment::query()->where('terminal_id', $terminal->id)->whereDate('created_at', $now)->where('status_id', PaymentStatus::sale);
+            $ticketsSoldAmount = $saleQuery->sum('total');
+            $ticketsSoldCardAmount = $saleQuery->sum('by_card');
+            $ticketsSoldCashAmount = $saleQuery->sum('by_cash');
+            $returnQuery = Payment::query()->where('terminal_id', $terminal->id)->whereDate('created_at', $now)->where('status_id', PaymentStatus::return);
+            $ticketsReturnAmount = $returnQuery->sum('total');
+            $ticketsReturnCardAmount = $returnQuery->sum('by_card');
+            $ticketsReturnCashAmount = $returnQuery->sum('by_cash');
 
             $lastSale = Order::query()
                 ->where('terminal_id', $terminal->id)
@@ -82,9 +86,16 @@ class TerminalsListController extends ApiController
                 'status' => $terminal->status->name,
                 'pier' => $terminal->pier->name,
                 'place' => $terminal->pier->info->address,
-                'today_sold_amount' => PriceConverter::storeToPrice($ticketsAmount),
-                'today_sold_card_amount' => PriceConverter::storeToPrice($ticketsCardAmount),
-                'today_sold_cash_amount' => PriceConverter::storeToPrice($ticketsCashAmount),
+                'today_sold_amount' => PriceConverter::storeToPrice($ticketsSoldAmount),
+                'today_sold_card_amount' => PriceConverter::storeToPrice($ticketsSoldCardAmount),
+                'today_sold_cash_amount' => PriceConverter::storeToPrice($ticketsSoldCashAmount),
+                'today_return_amount' => -PriceConverter::storeToPrice($ticketsReturnAmount),
+                'today_return_card_amount' => -PriceConverter::storeToPrice($ticketsReturnCardAmount),
+                'today_return_cash_amount' => -PriceConverter::storeToPrice($ticketsReturnCashAmount),
+                'today_total_card_amount' => PriceConverter::storeToPrice($ticketsSoldCardAmount - $ticketsReturnCardAmount),
+                'today_total_cash_amount' => PriceConverter::storeToPrice($ticketsSoldCashAmount - $ticketsReturnCashAmount),
+                'today_total' => PriceConverter::storeToPrice($ticketsSoldAmount - $ticketsReturnAmount),
+                'timestamp' => Carbon::now()->format('H:i, d.m.Y'),
                 'today_tickets_sold' => $ticketsCount,
                 'last_sale' => $lastSale ? Carbon::parse($lastSale)->format('H:i') : '—',
             ];
