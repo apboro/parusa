@@ -76,7 +76,7 @@ class TerminalCurrentOrderController extends ApiController
         }
 
         if (!$order->hasStatus(OrderStatus::terminal_wait_for_pay) && !$order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve)) {
-            return APIResponse::error('Невозможно. Текущеий заказ не ожидает оплаты.');
+            return APIResponse::error('Невозможно. Текущий заказ не ожидает оплаты.');
         }
 
         try {
@@ -202,7 +202,7 @@ class TerminalCurrentOrderController extends ApiController
      * @param Request $request
      * @param Currents|null $current
      *
-     * @return  \App\Models\Order\Order
+     * @return  Order
      * @throw InvalidArgumentException
      */
     protected function getOrder(Request $request, ?Currents $current = null): Order
@@ -215,9 +215,9 @@ class TerminalCurrentOrderController extends ApiController
             throw new InvalidArgumentException('Неверно заданы параметры');
         }
 
-        /** @var ?\App\Models\Order\Order $order */
+        /** @var ?Order $order */
         $order = Order::query()->with(['tickets'])
-            ->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
+            ->where(['terminal_position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
             ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
             ->first();
 

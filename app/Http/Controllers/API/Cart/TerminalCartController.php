@@ -40,7 +40,7 @@ class TerminalCartController extends ApiEditController
         /** @var ?Order $order */
         $order = Order::query()
             ->with(['status', 'tickets', 'tickets.grade', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier'])
-            ->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
+            ->where(['terminal_position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
             ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
             ->first();
 
@@ -136,7 +136,7 @@ class TerminalCartController extends ApiEditController
         }
 
         if ($current->isStaffTerminal() && Order::query()
-                ->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
+                ->where(['terminal_position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
                 ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
                 ->count() > 0
         ) {
@@ -230,7 +230,7 @@ class TerminalCartController extends ApiEditController
         }
 
         if (Order::query()
-                ->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
+                ->where(['terminal_position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
                 ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
                 ->count() > 0
         ) {
@@ -268,7 +268,7 @@ class TerminalCartController extends ApiEditController
         $current = Currents::get($request);
 
         if (!$current->isStaffTerminal()) {
-            return APIResponse::error('ВЫ не можете оформлять заказы.');
+            return APIResponse::error('Вы не можете оформлять заказы.');
         }
 
         $id = $request->input('ticket_id');

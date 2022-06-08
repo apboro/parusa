@@ -59,7 +59,7 @@ class TicketsRegistryController extends ApiController
         $shipId = $request->input('ship_id');
 
         $query = Ticket::query()
-            ->with(['status', 'order', 'order.terminal', 'order.type', 'order.partner', 'order.position', 'order.position.user.profile', 'transaction', 'grade', 'trip', 'trip.startPier', 'trip.excursion'])
+            ->with(['status', 'order', 'order.terminal', 'order.cashier', 'order.type', 'order.partner', 'order.position', 'order.position.user.profile', 'transaction', 'grade', 'trip', 'trip.startPier', 'trip.excursion'])
             ->whereIn('status_id', array_merge(TicketStatus::ticket_had_paid_statuses, TicketStatus::ticket_reserved_statuses))
             ->when($partnerId, function (Builder $query) use ($partnerId) {
                 $query->whereHas('order', function (Builder $query) use ($partnerId) {
@@ -154,13 +154,14 @@ class TicketsRegistryController extends ApiController
                 'partner' => $ticket->order->partner->name ?? null,
                 'sale_by' => $ticket->order->position ? $ticket->order->position->user->profile->compactName : null,
                 'terminal' => $ticket->order->terminal->name ?? null,
+                'cashier' => $ticket->order->cashier ? $ticket->order->cashier->user->profile->compactName : null,
                 'return_up_to' => null,
             ];
         });
 
         return APIResponse::list(
             $tickets,
-            ['Дата и время продажи', '№ билета, заказа', 'Тип билета, стоимость', 'Комиссия, руб.', 'Рейс', 'Способ продажи', 'Продавец', 'Статус', 'Возврат'],
+            ['Дата и время продажи', '№ билета, заказа', 'Тип билета, стоимость', 'Комиссия, руб.', 'Рейс', 'Способ продажи', 'Продавец / Промоутер', 'Статус', 'Возврат'],
             $filters,
             $this->defaultFilters,
             []

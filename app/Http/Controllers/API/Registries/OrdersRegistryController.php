@@ -47,7 +47,7 @@ class OrdersRegistryController extends ApiController
             ->with([
                 'type', 'status',
                 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade',
-                'partner', 'position', 'position.user', 'position.user.profile', 'terminal',
+                'partner', 'position', 'position.user', 'position.user.profile', 'terminal', 'cashier'
             ])
             ->withCount(['tickets'])
             ->whereIn('status_id', OrderStatus::order_had_paid_statuses);
@@ -128,6 +128,7 @@ class OrdersRegistryController extends ApiController
                         'position_name' => $order->position ? $order->position->user->profile->compactName : null,
                         'terminal_id' => $order->terminal_id,
                         'terminal_name' => $order->terminal->name ?? null,
+                        'cashier' => $order->cashier ? $order->cashier->user->profile->compactName : null,
                     ],
                     'tickets' => $order->tickets->map(function (Ticket $ticket) {
                         return [

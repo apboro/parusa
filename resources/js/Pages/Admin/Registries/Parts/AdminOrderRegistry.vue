@@ -99,9 +99,8 @@
                 <GuiValue :title="'Email'">{{ info['buyer_email'] }}</GuiValue>
                 <GuiValue :title="'Телефон'">{{ info['buyer_phone'] }}</GuiValue>
                 <GuiValue :title="'Способ продажи'">{{ info['order_type'] }}</GuiValue>
-                <GuiValue v-if="info['terminal_name']" :title="'Касса'">{{ info['terminal_name'] }}</GuiValue>
-                <GuiValue :dots="info['position_name'] !== null" :title="info['terminal_name'] ? 'Промоутер' : 'Партнёр'">{{ info['partner'] }}</GuiValue>
-                <GuiValue v-if="info['position_name'] !== null" :dots="false" :title="'Продавец'">{{ info['position_name'] }}</GuiValue>
+                <GuiValue v-if="info['terminal_name']" :title="'Касса'">{{ info['terminal_name'] }} <span v-if="info['cashier']">({{ info['cashier'] }})</span></GuiValue>
+                <GuiValue :dots="false" :title="info['position_name'] === null ? 'Промоутер' : 'Партнёр'">{{ info['partner'] }} <span v-if="info['position_name']">({{ info['position_name'] }})</span></GuiValue>
             </template>
         </PopUp>
 

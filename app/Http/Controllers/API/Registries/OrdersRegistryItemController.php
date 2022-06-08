@@ -21,7 +21,7 @@ class OrdersRegistryItemController extends ApiController
         $query = Order::query()
             ->where('id', $request->input('id'))
             ->with([
-                'status', 'type', 'tickets.grade', 'partner', 'position.user.profile', 'terminal',
+                'status', 'type', 'tickets.grade', 'partner', 'position.user.profile', 'terminal', 'cashier',
                 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier',
             ]);
 
@@ -67,8 +67,9 @@ class OrdersRegistryItemController extends ApiController
             'time' => $order->created_at->format('H:i'),
             'type' => $order->type->name,
             'terminal' => $order->terminal->name ?? null,
+            'cashier' => $order->cashier ? $order->cashier->user->profile->fullName : null,
             'partner' => $order->partner->name ?? null,
-            'position' => $order->position->user->profile->fullName ?? null,
+            'position' => $order->position ? $order->position->user->profile->fullName : null,
             'tickets' => $order->tickets->map(function (Ticket $ticket) {
                 return [
                     'id' => $ticket->id,

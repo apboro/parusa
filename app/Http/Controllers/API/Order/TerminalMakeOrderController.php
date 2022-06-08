@@ -133,8 +133,9 @@ class TerminalMakeOrderController extends ApiEditController
                     $tickets,
                     $status_id,
                     $partnerId,
-                    $position->id,
+                    null,
                     $terminal->id,
+                    $position->id,
                     $data['email'] ?? null,
                     $data['name'] ?? null,
                     $data['phone'] ?? null

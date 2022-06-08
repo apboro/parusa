@@ -50,6 +50,7 @@ use Illuminate\Support\Facades\DB;
  * @property Partner $partner
  * @property Position|null $position
  * @property Terminal|null $terminal
+ * @property Position|null $cashier
  * @property Collection $tickets
  */
 class Order extends Model implements Statusable, Typeable
@@ -225,7 +226,7 @@ class Order extends Model implements Statusable, Typeable
      * @see Partner
      * @see Position
      */
-    public static function make(int $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?string $email, ?string $name, ?string $phone): Order
+    public static function make(int $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?int $terminalPositionId, ?string $email, ?string $name, ?string $phone): Order
     {
         if (empty($tickets)) {
             throw new WrongOrderException('Невозможно создать заказ без билетов.');
@@ -278,7 +279,7 @@ class Order extends Model implements Statusable, Typeable
         $order->partner_id = $partnerId;
         $order->position_id = $positionId;
         $order->terminal_id = $terminalId;
-        $order->terminal_position_id = $terminalId ? $positionId : null;
+        $order->terminal_position_id = $terminalPositionId;
         $order->email = $email;
         $order->name = $name;
         $order->phone = $phone;

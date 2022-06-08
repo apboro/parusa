@@ -156,7 +156,7 @@ class OrderReserveController extends ApiController
     {
         $current = Currents::get($request);
 
-        if (Order::query()->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
+        if (Order::query()->where(['terminal_position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])
                 ->whereIn('status_id', OrderStatus::terminal_processing_statuses)
                 ->count() > 0
         ) {
@@ -180,7 +180,6 @@ class OrderReserveController extends ApiController
                     $ticket->setStatus(TicketStatus::terminal_creating_from_reserve);
                 }
                 $order->terminal_id = $current->terminalId();
-                $order->position_id = $current->positionId();
                 $order->terminal_position_id = $current->positionId();
                 $order->setStatus(OrderStatus::terminal_creating_from_reserve, false);
                 $order->save();
