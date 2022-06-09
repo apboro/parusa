@@ -51,7 +51,7 @@ class ShowcaseOrderInfoController extends ApiEditController
         $expires = Carbon::parse($orderSecret['ts'])->setTimezone($now->timezone)->addMinutes(env('SHOWCASE_ORDER_LIFETIME'));
 
         if ($expires < $now) {
-            return APIResponse::error('Время, отведенное на оплату заказа илтекло, заказ расформирован.');
+            return APIResponse::error('Время, отведенное на оплату заказа истекло, заказ расформирован.');
         }
 
         $now = Carbon::now();

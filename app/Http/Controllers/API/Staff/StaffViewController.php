@@ -23,7 +23,7 @@ class StaffViewController extends ApiController
                 ->where('id', $id)
                 ->has('staffPosition')->first())
         ) {
-            return APIResponse::notFound('Сотрудник не найен');
+            return APIResponse::notFound('Сотрудник не найден');
         }
 
         /** @var User $user */

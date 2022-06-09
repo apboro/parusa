@@ -45,6 +45,6 @@ class TerminalPropertiesController extends ApiController
             'status' => $terminal->status->name,
             'status_id' => $terminal->status_id,
             'active' => $terminal->hasStatus(TerminalStatus::enabled),
-        ], "Данные кассы №\"$id\" обновлёны");
+        ], "Данные кассы №\"$id\" обновлены");
     }
 }

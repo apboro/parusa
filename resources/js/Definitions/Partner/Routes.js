@@ -24,7 +24,7 @@ export default [
     {path: '/registry/tickets/:id', name: 'ticket-info', component: TicketPage, meta: {title: 'Билет'}},
     {path: '/company/info', name: 'company-info', component: PartnerPage, meta: {title: 'Карточка партнёра'}},
     {path: '/company/account', name: 'company-account', component: AccountPage, meta: {title: 'Лицевой счёт'}},
-    {path: '/company/rates', name: 'company-rates', component: Rates, meta: {title: 'Тарифы и комисионное вознаграждение'}},
+    {path: '/company/rates', name: 'company-rates', component: Rates, meta: {title: 'Тарифы и комиссионное вознаграждение'}},
     {path: '/order', name: 'order', component: OrderMakePage, meta: {title: 'Оформление заказа'}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 ];

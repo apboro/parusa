@@ -53,7 +53,7 @@ class StaffPropertiesController extends ApiController
                 case 'roles':
                     // Check self turn off of admin
                     if ($current->positionId() === $user->staffPosition->id && !in_array(Role::admin, $value, true) && $user->staffPosition->hasRole(Role::admin)) {
-                        return APIResponse::error('Нельзя отключить роль адимнистратора для себя.');
+                        return APIResponse::error('Нельзя отключить роль администратора для себя.');
                     }
                     // Check turn off assigned terminal users
                     if (!in_array(Role::terminal, $value, true) && $user->staffPosition->hasRole(Role::terminal)
@@ -77,6 +77,6 @@ class StaffPropertiesController extends ApiController
             'status_id' => $user->staffPosition->status_id,
             'active' => $user->staffPosition->hasStatus(PositionStatus::active),
             'roles' => $user->staffPosition->roles->pluck('id')->toArray(),
-        ], "Данные сотрудника обновлёны");
+        ], "Данные сотрудника обновлены");
     }
 }

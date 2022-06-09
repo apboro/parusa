@@ -113,7 +113,7 @@ class TripDeleteController extends ApiController
         });
 
         if ($tripsWithTickets->count() > 0) {
-            return APIResponse::error('В диапазоне есть рейсы с оформленнымы билетами.');
+            return APIResponse::error('В диапазоне есть рейсы с оформленными билетами.');
         }
 
         // Get trip ids to move to new chain
@@ -159,6 +159,6 @@ class TripDeleteController extends ApiController
             $chain->delete();
         }
 
-        return APIResponse::success("Удалёно $deleteCount рейсов." . (isset($newChainTripsCount) ? " $newChainTripsCount рейсов перенесено в новую цепочку." : ''));
+        return APIResponse::success("Удалено $deleteCount рейсов." . (isset($newChainTripsCount) ? " $newChainTripsCount рейсов перенесено в новую цепочку." : ''));
     }
 }

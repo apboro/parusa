@@ -45,6 +45,6 @@ class ExcursionPropertiesController extends ApiController
             'status' => $excursion->status->name,
             'status_id' => $excursion->status_id,
             'active' => $excursion->hasStatus(ExcursionStatus::active),
-        ], "Данные экскурсии \"$excursion->name\" обновлёны");
+        ], "Данные экскурсии \"$excursion->name\" обновлены");
     }
 }

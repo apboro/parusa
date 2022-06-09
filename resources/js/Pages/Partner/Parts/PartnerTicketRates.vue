@@ -1,6 +1,6 @@
 <template>
     <LoadingProgress :loading="data.is_loading">
-        <GuiHint mx-10 my-15>Тарифы и комисионное вознаграждение партнёра за продажу услуг компании "Алые Паруса"</GuiHint>
+        <GuiHint mx-10 my-15>Тарифы и комиссионное вознаграждение партнёра за продажу услуг компании "Алые Паруса"</GuiHint>
 
         <template v-for="excursion in data.payload['excursions']" v-if="data.payload['excursions'] && data.payload['excursions'].length > 0">
             <GuiHeading bold mt-30 mb-10>{{ excursion['name'] }}</GuiHeading>

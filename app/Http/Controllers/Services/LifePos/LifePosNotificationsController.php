@@ -93,11 +93,17 @@ class LifePosNotificationsController extends ApiController
                 $order = Order::query()->where('external_id', $externalId)->first();
 
                 // get POS and cashier
-                $sale = LifePosSales::getSale($externalId);
-                $terminalExternalId = $sale['workplace']['guid'];
-                $positionExternalId = $sale['opened_by']['guid'];
-                $terminalId = Terminal::query()->where('workplace_id', $terminalExternalId)->value('id');
-                $positionId = StaffPositionInfo::query()->where('external_id', $positionExternalId)->value('position_id');
+                try {
+                    $sale = LifePosSales::getSale($externalId);
+                    $terminalExternalId = $sale['workplace']['guid'];
+                    $positionExternalId = $sale['opened_by']['guid'];
+                    $terminalId = Terminal::query()->where('workplace_id', $terminalExternalId)->value('id');
+                    $positionId = StaffPositionInfo::query()->where('external_id', $positionExternalId)->value('position_id');
+                } catch (Exception $exception) {
+                    Log::channel('lifepos_payments')->error(sprintf('LifePos [getSale]  error: %s', $exception->getMessage()));
+                    $terminalId = null;
+                    $positionId = null;
+                }
 
                 // add payment
                 $payment = new Payment;
@@ -131,6 +137,8 @@ class LifePosNotificationsController extends ApiController
                     Log::channel('lifepos_payments')->error(sprintf('LifePos [SalePayment:%s] - order not found', $input['guid']));
                     Log::channel('lifepos_payments')->info('Request content: ' . json_encode($input));
                 }
+            } else {
+                Log::channel('lifepos_payments')->error(sprintf('LifePos [SalePayment]  error: GUID not set. Request content: %s', json_encode($input)));
             }
         } catch (Exception $exception) {
             Log::channel('lifepos_payments')->error(sprintf('LifePos [SalePayment:%s] - %s', $input['guid'], $exception->getMessage()));
@@ -175,11 +183,17 @@ class LifePosNotificationsController extends ApiController
         $externalId = $input['sale']['guid'];
 
         // get POS and cashier
-        $sale = LifePosSales::getSale($externalId);
-        $terminalExternalId = $sale['workplace']['guid'];
-        $positionExternalId = $sale['opened_by']['guid'];
-        $terminalId = Terminal::query()->where('workplace_id', $terminalExternalId)->value('id');
-        $positionId = StaffPositionInfo::query()->where('external_id', $positionExternalId)->value('position_id');
+        try {
+            $sale = LifePosSales::getSale($externalId);
+            $terminalExternalId = $sale['workplace']['guid'];
+            $positionExternalId = $sale['opened_by']['guid'];
+            $terminalId = Terminal::query()->where('workplace_id', $terminalExternalId)->value('id');
+            $positionId = StaffPositionInfo::query()->where('external_id', $positionExternalId)->value('position_id');
+        } catch (Exception $exception) {
+            Log::channel('lifepos_payments')->error(sprintf('LifePos [getSale]  error: %s', $exception->getMessage()));
+            $terminalId = null;
+            $positionId = null;
+        }
 
         // add payment
         $payment = new Payment;

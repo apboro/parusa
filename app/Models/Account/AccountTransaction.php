@@ -194,9 +194,9 @@ class AccountTransaction extends Model implements Statusable, Typeable
             case AccountTransactionType::tickets_buy_return:
                 return 'Возврат билета №' . $this->ticket_id;
             case AccountTransactionType::tickets_sell_commission:
-                return 'Начисление комисионных за продажу билета №' . $this->ticket_id;
+                return 'Начисление комиссионных за продажу билета №' . $this->ticket_id;
             case AccountTransactionType::tickets_sell_commission_return:
-                return 'Возврат комисионных за продажу билета №' . $this->ticket_id;
+                return 'Возврат комиссионных за продажу билета №' . $this->ticket_id;
         }
 
         return null;
@@ -240,14 +240,14 @@ class AccountTransaction extends Model implements Statusable, Typeable
                 ];
             case AccountTransactionType::tickets_sell_commission:
                 return [
-                    'title' => 'Начисление комисионных за продажу',
+                    'title' => 'Начисление комиссионных за продажу',
                     'caption' => 'билета №' . $this->ticket_id,
                     'object' => 'ticket',
                     'object_id' => $this->ticket_id,
                 ];
             case AccountTransactionType::tickets_sell_commission_return:
                 return [
-                    'title' => 'Возврат комисионных за продажу',
+                    'title' => 'Возврат комиссионных за продажу',
                     'caption' => 'билета №' . $this->ticket_id,
                     'object' => 'ticket',
                     'object_id' => $this->ticket_id,

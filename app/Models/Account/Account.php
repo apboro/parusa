@@ -124,7 +124,7 @@ class Account extends Model
         }
 
         if ($type->sign === -1 && ($transaction->amount > ($this->amount - $this->limit))) {
-            throw new AccountException('Недостаточно средств на счетё для совершения операции.');
+            throw new AccountException('Недостаточно средств на счете для совершения операции.');
         }
 
         $transaction->account_id = $this->id;

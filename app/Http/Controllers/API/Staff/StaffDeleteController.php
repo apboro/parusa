@@ -24,7 +24,7 @@ class StaffDeleteController extends ApiController
         $id = $request->input('id');
 
         if ($id === null || null === ($user = User::query()->with('profile')->where('id', $id)->has('staffPosition')->first())) {
-            return APIResponse::notFound('Сотрудник не найен');
+            return APIResponse::notFound('Сотрудник не найден');
         }
         /** @var User $user */
 

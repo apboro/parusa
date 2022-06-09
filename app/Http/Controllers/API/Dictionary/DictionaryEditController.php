@@ -114,7 +114,7 @@ class DictionaryEditController extends ApiEditController
         $item = $this->firstOrNew($class, $request);
 
         if ($item === null) {
-            return APIResponse::notFound("Запись в слваре \"$title\" не найдена");
+            return APIResponse::notFound("Запись в словаре \"$title\" не найдена");
         }
 
         foreach ($data as $key => $value) {

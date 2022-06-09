@@ -36,6 +36,6 @@ class TerminalDeleteController extends ApiController
             return APIResponse::error($exception->getMessage());
         }
 
-        return APIResponse::response([], [], "Касса №\"$id\" удалёна");
+        return APIResponse::response([], [], "Касса №\"$id\" удалена");
     }
 }

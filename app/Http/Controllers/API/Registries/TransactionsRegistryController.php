@@ -27,7 +27,7 @@ class TransactionsRegistryController extends ApiController
     ];
 
     protected array $rememberFilters = [
-        'terminal_id', 'select',
+        'date_from', 'date_to', 'terminal_id', 'select',
     ];
 
     protected string $rememberKey = CookieKeys::transactions_registry_list;

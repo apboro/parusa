@@ -37,7 +37,7 @@ export default [
     {path: '/registry/tickets', name: 'tickets-registry', component: TicketsRegistryPage, meta: {title: 'Реестр билетов'}},
     {path: '/registry/tickets/:id', name: 'ticket-info', component: TicketInfoPage, meta: {title: 'Билет'}},
     {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней'}},
-    {path: '/registry/transactions', name: 'transactions-registry', component: TransactionsRegistryPage, meta: {title: 'Реестр транзакций'}},
+    {path: '/registry/transactions', name: 'transactions-registry', component: TransactionsRegistryPage, meta: {title: 'Реестр транзакций по кассам'}},
     {path: '/staff', name: 'staff-list', component: StaffListPage, meta: {title: 'Сотрудники'}},
     {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника'}},
     {path: '/staff/:id/edit', name: 'staff-edit', component: StaffEditPage, meta: {title: 'Редактирование сотрудника'}},

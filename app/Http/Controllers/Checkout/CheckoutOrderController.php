@@ -54,7 +54,7 @@ class CheckoutOrderController extends ApiEditController
         $expires = Carbon::parse($orderSecret['ts'])->setTimezone($now->timezone)->addMinutes(env('SHOWCASE_ORDER_LIFETIME'));
 
         if ($expires < $now) {
-            return APIResponse::success('Время, отведенное на оплату заказа илтекло, заказ расформирован.', [
+            return APIResponse::success('Время, отведенное на оплату заказа истекло, заказ расформирован.', [
                 'back_link' => $backLink,
             ]);
         }

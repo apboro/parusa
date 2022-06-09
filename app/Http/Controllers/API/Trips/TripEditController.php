@@ -185,7 +185,7 @@ class TripEditController extends ApiEditController
         });
 
         if ($tripsWithTickets->count() > 0) {
-            return APIResponse::error('В диапазоне есть рейсы с оформленнымы билетами.');
+            return APIResponse::error('В диапазоне есть рейсы с оформленными билетами.');
         }
 
         // iterate trips and update data

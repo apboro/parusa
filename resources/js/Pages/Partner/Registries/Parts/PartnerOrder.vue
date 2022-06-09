@@ -3,9 +3,9 @@
         <GuiContainer w-70>
             <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
             <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}</GuiValue>
-            <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }} <span v-if="info.data['cashier']">({{ info.data['cashier'] }})</span></GuiValue>
-            <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }} <span v-if="info.data['position']">({{ info.data['position'] }})</span></GuiValue>
-            <GuiValue v-else :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }} <span v-if="info.data['position']">({{ info.data['position'] }})</span></GuiValue>
+            <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
+            <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
+            <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }}<span v-if="info.data['cashier']">, {{ info.data['cashier'] }}</span></GuiValue>
         </GuiContainer>
 
         <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>
@@ -48,7 +48,7 @@
 
         <GuiContainer w-50 mt-30 mb-30 inline>
             <GuiHeading mb-20>Информация о плательщике
-                <IconEdit v-if="!info.data['terminal']" class="link w-20px ml-5" style="position: relative; top: 1px;" @click="editInfo"/>
+                <IconEdit class="link w-20px ml-5" style="position: relative; top: 1px;" @click="editInfo"/>
             </GuiHeading>
             <GuiValue :title="'Имя'">{{ info.data['name'] }}</GuiValue>
             <GuiValue :title="'Email'">{{ info.data['email'] }}</GuiValue>
@@ -62,9 +62,9 @@
         <template v-if="info.is_loaded">
             <template v-if="!isReserve">
                 <GuiContainer>
-                    <GuiButton :disabled="!!info.data['terminal'] || !info.data['is_printable'] || is_returning" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
-                    <GuiButton :disabled="!!info.data['terminal'] || !info.data['is_printable'] || !info.data['email'] || is_returning" @clicked="emailOrder">Отправить клиенту на почту</GuiButton>
-                    <GuiButton :disabled="!!info.data['terminal'] || !info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning" @clicked="emailOrder">Отправить клиенту на почту</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
                     <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
                     </GuiButton>
                     <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>

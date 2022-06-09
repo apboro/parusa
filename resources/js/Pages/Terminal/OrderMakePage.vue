@@ -30,7 +30,7 @@ export default {
             return Boolean(this.data.is_loading);
         },
         title() {
-            if (!this.data.is_loaded) return 'Оформлние заказа';
+            if (!this.data.is_loaded) return 'Оформление заказа';
             if (this.data.data['status']['creating']) return 'Оформление заказа';
             if (this.data.data['status']['created']) return 'Оплата заказа';
             if (this.data.data['status']['waiting_for_payment']) return 'Приём оплаты через терминал';

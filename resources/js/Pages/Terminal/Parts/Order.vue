@@ -3,9 +3,9 @@
         <GuiContainer w-70>
             <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
             <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}</GuiValue>
-            <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }} <span v-if="info.data['cashier']">({{ info.data['cashier'] }})</span></GuiValue>
-            <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }} <span v-if="info.data['position']">({{ info.data['position'] }})</span></GuiValue>
-            <GuiValue v-else :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }} <span v-if="info.data['position']">({{ info.data['position'] }})</span></GuiValue>
+            <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
+            <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
+            <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }}<span v-if="info.data['cashier']">, {{ info.data['cashier'] }}</span></GuiValue>
         </GuiContainer>
 
         <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>

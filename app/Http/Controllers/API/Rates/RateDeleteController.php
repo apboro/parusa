@@ -24,7 +24,7 @@ class RateDeleteController extends ApiController
         $id = $request->input('id');
 
         if ($id === null || null === ($ratesList = TicketsRatesList::query()->where('id', $id)->first())) {
-            return APIResponse::notFound('Тариф не найен');
+            return APIResponse::notFound('Тариф не найден');
         }
         /** @var TicketsRatesList $ratesList */
 
