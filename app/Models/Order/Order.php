@@ -215,6 +215,7 @@ class Order extends Model implements Statusable, Typeable
      * @param int|null $partnerId Partner ID
      * @param int|null $positionId Position of partner made this order (or null)
      * @param int|null $terminalId Terminal this order made by
+     * @param int|null $terminalPositionId
      * @param string|null $email Buyer details
      * @param string|null $name Buyer details
      * @param string|null $phone Buyer details

@@ -41,6 +41,19 @@ class TerminalsListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
+        $periodHour = 4;
+        $periodMinutes = 30;
+
+        $now = Carbon::now();
+
+        $periodStart = $now->clone()->hours($periodHour)->minutes($periodMinutes);
+        if($periodStart->isPast()) {
+            $periodEnd = $periodStart->clone()->addDay();
+        } else {
+            $periodEnd = $periodStart->clone();
+            $periodStart->addDays(-1);
+        }
+
         $query = Terminal::query()
             ->with(['status', 'pier', 'pier.info']);
 
@@ -52,31 +65,36 @@ class TerminalsListController extends ApiController
         // current page automatically resolved from request via `page` parameter
         $terminals = $query->paginate($request->perPage(10, $this->rememberKey));
 
-        $now = Carbon::now();
-
         /** @var LengthAwarePaginator $terminals */
-        $terminals->transform(function (Terminal $terminal) use ($now) {
+        $terminals->transform(function (Terminal $terminal) use ($now, $periodStart, $periodEnd) {
             $ticketsCount = Ticket::query()
                 ->whereHas('order', function (Builder $query) use ($terminal) {
                     $query->where('terminal_id', $terminal->id);
                 })
-                ->whereDate('updated_at', $now)
+                ->where('updated_at', '>=', $periodStart)
+                ->where('updated_at', '<=', $periodEnd)
                 ->whereIn('status_id', TicketStatus::ticket_had_paid_statuses)
                 ->count();
 
-            $saleQuery = Payment::query()->where('terminal_id', $terminal->id)->whereDate('created_at', $now)->where('status_id', PaymentStatus::sale);
+            $query = Payment::query()
+                ->where('terminal_id', $terminal->id)
+                ->where('created_at', '>=', $periodStart)
+                ->where('created_at', '<=', $periodEnd);
+
+            $saleQuery = $query->clone()->where('status_id', PaymentStatus::sale);
             $ticketsSoldAmount = $saleQuery->sum('total');
             $ticketsSoldCardAmount = $saleQuery->sum('by_card');
             $ticketsSoldCashAmount = $saleQuery->sum('by_cash');
-            $returnQuery = Payment::query()->where('terminal_id', $terminal->id)->whereDate('created_at', $now)->where('status_id', PaymentStatus::return);
+            $returnQuery = $query->clone()->where('status_id', PaymentStatus::return);
             $ticketsReturnAmount = $returnQuery->sum('total');
             $ticketsReturnCardAmount = $returnQuery->sum('by_card');
             $ticketsReturnCashAmount = $returnQuery->sum('by_cash');
 
             $lastSale = Order::query()
                 ->where('terminal_id', $terminal->id)
-                ->whereDate('updated_at', $now)
                 ->whereIn('status_id', OrderStatus::order_had_paid_statuses)
+                ->where('updated_at', '>=', $periodStart)
+                ->where('updated_at', '<=', $periodEnd)
                 ->max('updated_at');
 
             return [
@@ -98,6 +116,8 @@ class TerminalsListController extends ApiController
                 'timestamp' => Carbon::now()->format('H:i, d.m.Y'),
                 'today_tickets_sold' => $ticketsCount,
                 'last_sale' => $lastSale ? Carbon::parse($lastSale)->format('H:i') : '—',
+                'period_start' => $periodStart->format('H:i, d.m.Y'),
+                'period_end' => $periodEnd->format('H:i, d.m.Y'),
             ];
         });
 

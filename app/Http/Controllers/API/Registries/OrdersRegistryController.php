@@ -43,7 +43,7 @@ class OrdersRegistryController extends ApiController
         $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d');
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
-        $query = Order::query()
+        $query = Order::query()->orderBy('updated_at', 'desc')
             ->with([
                 'type', 'status',
                 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade',

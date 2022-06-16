@@ -44,7 +44,7 @@
                         <div style="margin-bottom: 5px;">в кассе нал.: {{ terminal['today_total_cash_amount'] }} руб.</div>
                         <div style="margin-bottom: 10px;">на р/с: {{ terminal['today_total_card_amount'] }} руб.</div>
                         <div style="margin-bottom: 10px;"><b>итого: {{ terminal['today_total'] }} руб.</b></div>
-                        <div class="text-gray" style="font-size: 11px;">{{ terminal['timestamp'] }}</div>
+                        <div class="text-gray" style="font-size: 11px; white-space: nowrap;">{{ terminal['period_start'] }} — {{ terminal['period_end'] }}</div>
                     </ListTableCell>
                     <ListTableCell>
                         {{ terminal['today_tickets_sold'] }}

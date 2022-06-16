@@ -58,7 +58,7 @@ class TicketsRegistryController extends ApiController
         $pierId = $request->input('pier_id');
         $shipId = $request->input('ship_id');
 
-        $query = Ticket::query()
+        $query = Ticket::query()->orderBy('updated_at', 'desc')
             ->with(['status', 'order', 'order.terminal', 'order.cashier', 'order.type', 'order.partner', 'order.position', 'order.position.user.profile', 'transaction', 'grade', 'trip', 'trip.startPier', 'trip.excursion'])
             ->whereIn('status_id', array_merge(TicketStatus::ticket_had_paid_statuses, TicketStatus::ticket_reserved_statuses))
             ->when($partnerId, function (Builder $query) use ($partnerId) {
