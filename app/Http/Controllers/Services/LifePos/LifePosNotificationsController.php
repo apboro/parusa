@@ -105,8 +105,16 @@ class LifePosNotificationsController extends ApiController
                     $positionId = null;
                 }
 
-                // add payment
-                $payment = new Payment;
+                // search existing payment to update
+                if(!empty($input['guid'])) {
+                    /** @var Payment|null $payment */
+                    $payment = Payment::query()->where('external_id', $input['guid'])->first();
+                }
+                // if no payment to update create new
+                if(!isset($payment)) {
+                    $payment = new Payment;
+                }
+
                 $payment->gate = 'lifepos';
                 $payment->status_id = PaymentStatus::sale;
                 $payment->order_id = $order->id ?? null;
@@ -195,8 +203,16 @@ class LifePosNotificationsController extends ApiController
             $positionId = null;
         }
 
-        // add payment
-        $payment = new Payment;
+        // search existing payment to update
+        if(!empty($input['guid'])) {
+            /** @var Payment|null $payment */
+            $payment = Payment::query()->where('external_id', $input['guid'])->first();
+        }
+        // if no payment to update create new
+        if(!isset($payment)) {
+            $payment = new Payment;
+        }
+
         $payment->gate = 'lifepos';
         $payment->status_id = PaymentStatus::return;
         $payment->parent_id = $parent->id ?? null;
