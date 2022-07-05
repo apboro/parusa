@@ -313,8 +313,8 @@ class FrontendController extends Controller
      *
      * @return  string
      */
-    protected function e(string $text): string
+    protected function e(?string $text): ?string
     {
-        return str_replace('"', '\\"', $text);
+        return $text ? str_replace('"', '\\"', $text) : null;
     }
 }
