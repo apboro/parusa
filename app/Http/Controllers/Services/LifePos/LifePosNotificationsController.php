@@ -229,6 +229,7 @@ class LifePosNotificationsController extends ApiController
         if ($order) {
             $order->setStatus(OrderStatus::terminal_returned);
             $order->tickets->map(function (Ticket $ticket) {
+                $ticket->refundCommission();
                 $ticket->setStatus(TicketStatus::terminal_returned);
             });
 
