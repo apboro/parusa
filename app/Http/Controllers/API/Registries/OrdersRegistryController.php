@@ -47,7 +47,7 @@ class OrdersRegistryController extends ApiController
             ->with([
                 'type', 'status',
                 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade',
-                'partner', 'position', 'position.user', 'position.user.profile', 'terminal', 'cashier'
+                'partner', 'position', 'position.user', 'position.user.profile', 'terminal', 'cashier',
             ])
             ->withCount(['tickets'])
             ->whereIn('status_id', OrderStatus::order_had_paid_statuses);
@@ -67,17 +67,6 @@ class OrdersRegistryController extends ApiController
             return APIResponse::error('Неверно заданы параметры');
         }
 
-        // apply filters
-        if (!empty($filters['date_from'])) {
-            $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
-        }
-        if (!empty($filters['date_to'])) {
-            $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
-        }
-        if (!empty($filters['order_type_id'])) {
-            $query->where('type_id', $filters['order_type_id']);
-        }
-
         // apply search
         if ($terms = $request->search()) {
             $query->where(function (Builder $query) use ($terms, $current, $request) {
@@ -95,6 +84,17 @@ class OrdersRegistryController extends ApiController
                     });
                 }
             });
+        } else {
+            // apply filters
+            if (!empty($filters['date_from'])) {
+                $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
+            }
+            if (!empty($filters['date_to'])) {
+                $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+            }
+            if (!empty($filters['order_type_id'])) {
+                $query->where('type_id', $filters['order_type_id']);
+            }
         }
 
         $orders = $query->paginate($request->perPage());

@@ -7,6 +7,7 @@
                     <InputDateTime
                         v-model="list.filters['date_from']"
                         :original="list.filters_original['date_from']"
+                        :disabled="!!list.search"
                         @change="list.load()"
                     />
                 </div>
@@ -15,6 +16,7 @@
                         v-model="list.filters['date_to']"
                         :original="list.filters_original['date_to']"
                         :from="list.filters['date_from']"
+                        :disabled="!!list.search"
                         @change="list.load()"
                     />
                 </div>

@@ -43,7 +43,9 @@ class ReservesRegistryController extends ApiController
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $query = Order::query()->orderBy('updated_at', 'desc')
-            ->with(['type', 'status', 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade', 'partner', 'position', 'position.user', 'position.user.profile'])
+            ->with(
+                ['type', 'status', 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade', 'partner', 'position', 'position.user', 'position.user.profile']
+            )
             ->withCount(['tickets'])
             ->when(!$current->isStaff(), function (Builder $query) use ($current) {
                 $query->where('partner_id', $current->partnerId());
@@ -52,14 +54,6 @@ class ReservesRegistryController extends ApiController
                 $query->where('partner_id', $request->input('partner_id'));
             })
             ->whereIn('status_id', OrderStatus::order_reserved_statuses);
-
-        // apply filters
-        if (!empty($filters['date_from'])) {
-            $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
-        }
-        if (!empty($filters['date_to'])) {
-            $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
-        }
 
         // apply search
         if ($terms = $request->search()) {
@@ -72,6 +66,14 @@ class ReservesRegistryController extends ApiController
                     });
                 }
             });
+        } else {
+            // apply filters
+            if (!empty($filters['date_from'])) {
+                $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
+            }
+            if (!empty($filters['date_to'])) {
+                $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+            }
         }
 
         $orders = $query->paginate($request->perPage());

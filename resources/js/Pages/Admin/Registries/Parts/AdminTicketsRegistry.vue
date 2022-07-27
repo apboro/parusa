@@ -8,6 +8,7 @@
                         v-model="list.filters['date_from']"
                         :original="list.filters_original['date_from']"
                         @change="list.load()"
+                        :disabled="!!list.search"
                     />
                 </div>
                 <div class="w-210px">
@@ -15,9 +16,10 @@
                         v-model="list.filters['date_to']"
                         :original="list.filters_original['date_to']"
                         @change="list.load()"
+                        :disabled="!!list.search"
                     />
                 </div>
-                <GuiButton style="margin-left: 10px" @clicked="resetDate">Сегодня</GuiButton>
+                <GuiButton style="margin-left: 10px" @clicked="resetDate" :disabled="!!list.search">Сегодня</GuiButton>
             </LayoutFiltersItem>
             <template #search>
                 <LayoutFiltersItem :title="'Дата рейса'">
@@ -28,6 +30,7 @@
                             @change="list.load()"
                             :clearable="true"
                             :pick-on-clear="false"
+                            :disabled="!!list.search"
                         />
                     </div>
                 </LayoutFiltersItem>
@@ -41,6 +44,7 @@
                         :has-null="true"
                         :search="true"
                         :small="true"
+                        :disabled="!!list.search"
                         @change="list.load()"
                     />
                 </LayoutFiltersItem>
@@ -57,6 +61,7 @@
                     :placeholder="'Все'"
                     :has-null="true"
                     :small="true"
+                    :disabled="!!list.search"
                     @change="saleMethodChanged"
                 />
             </LayoutFiltersItem>
@@ -69,6 +74,7 @@
                     :placeholder="'Все'"
                     :has-null="true"
                     :small="true"
+                    :disabled="!!list.search"
                     @change="list.load()"
                 />
             </LayoutFiltersItem>

@@ -55,14 +55,6 @@ class TransactionsRegistryController extends ApiController
         $filters['date_from'] = $dateFrom->format('Y-m-d\TH:i');
         $filters['date_to'] = $dateTo->format('Y-m-d\TH:i');
 
-        // apply filters
-        if (!empty($filters['date_from'])) {
-            $query->where('created_at', '>=', $dateFrom);
-        }
-        if (!empty($filters['date_to'])) {
-            $query->where('created_at', '<=', $dateTo);
-        }
-
         $terminalId = null;
 
         if ($current->isStaffAdmin()) {
@@ -111,6 +103,14 @@ class TransactionsRegistryController extends ApiController
                             ->orWhere('by_cash', $value);
                     }
                 });
+            }
+        } else {
+            // apply filters
+            if (!empty($filters['date_from'])) {
+                $query->where('created_at', '>=', $dateFrom);
+            }
+            if (!empty($filters['date_to'])) {
+                $query->where('created_at', '<=', $dateTo);
             }
         }
 
