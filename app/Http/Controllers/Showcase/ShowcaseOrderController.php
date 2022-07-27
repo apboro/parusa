@@ -37,9 +37,10 @@ class ShowcaseOrderController extends ApiEditController
      */
     public function order(Request $request): JsonResponse
     {
-        $cookies = $request->cookie(ExternalProtect::COOKIE_NAME);
+        $originalKey = $request->header(ExternalProtect::HEADER_NAME);
+
         try {
-            $cookies = json_decode($cookies, true, 512, JSON_THROW_ON_ERROR);
+            $originalKey = $originalKey ? json_decode(Crypt::decrypt($originalKey), true, 512, JSON_THROW_ON_ERROR) : null;
         } catch (Exception $exception) {
             return response()->json(['message' => 'Ошибка сессии.'], 400);
         }
@@ -120,8 +121,8 @@ class ShowcaseOrderController extends ApiEditController
         }
 
         /** @var ?Partner $partner */
-        $partner = $cookies['partner_id'] ? Partner::query()->where('id', $cookies['partner_id'])->first() : null;
-        $isPartnerSite = $cookies['is_partner'];
+        $partner = $originalKey['partner_id'] ? Partner::query()->where('id', $originalKey['partner_id'])->first() : null;
+        $isPartnerSite = $originalKey['is_partner'];
         $media = $cookies['media'] ?? null;
 
         if ($media === 'qr') {
@@ -158,7 +159,7 @@ class ShowcaseOrderController extends ApiEditController
         ], JSON_THROW_ON_ERROR);
 
         // clear media and partner cookie after successful order.
-        $cookie = [
+        $originalKey = [
             'ip' => $request->ip(),
         ];
 
@@ -170,7 +171,7 @@ class ShowcaseOrderController extends ApiEditController
                 'payment_page' => env('SHOWCASE_PAYMENT_PAGE') . '?order=' . $secret,
                 'order_secret' => $secret,
             ],
-        ])->withCookie(cookie(ExternalProtect::COOKIE_NAME, json_encode($cookie, JSON_THROW_ON_ERROR)));
+        ], 200, [ExternalProtect::HEADER_NAME => Crypt::encrypt(json_encode($originalKey, JSON_THROW_ON_ERROR))]);
     }
 
     /**

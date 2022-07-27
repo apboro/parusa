@@ -169,6 +169,7 @@ export default {
         isLoading: {type: Boolean, default: false},
         crm_url: {type: String, required: true},
         debug: {type: Boolean, default: false},
+        session: {type: String, required: true},
     },
 
     emits: ['select', 'order'],
@@ -265,12 +266,17 @@ export default {
                 return;
             }
             this.is_ordering = true;
-            this.form.save()
+            // override form saving to send headers
+            axios.post(this.form.save_url, {
+                data: this.form.values,
+                trip: this.form.options['trip'],
+                ref:this.form.options['ref'],
+            }, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     // store order secret
-                    const order_id = response.payload['order_id'];
-                    const order_secret = response.payload['order_secret'];
-                    const payment_page = response.payload['payment_page'];
+                    const order_id = response.data.payload['order_id'];
+                    const order_secret = response.data.payload['order_secret'];
+                    const payment_page = response.data.payload['payment_page'];
 
                     localStorage.setItem('ap-showcase-order-id', order_id);
                     localStorage.setItem('ap-showcase-order-secret', order_secret);
@@ -282,7 +288,7 @@ export default {
                 })
                 .catch(error => {
                     this.has_error = true;
-                    this.error_message = error['message'];
+                    this.error_message = error.response.data['message'];
                 })
                 .finally(() => {
                     this.is_ordering = false;

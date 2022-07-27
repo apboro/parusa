@@ -77,7 +77,7 @@ class CheckoutController extends ApiController
             $container = Crypt::decrypt($secret);
             $container = json_decode($container, true, 512, JSON_THROW_ON_ERROR);
         } catch (Exception $exception) {
-            return APIResponse::error('Заказ не найден.');
+            return APIResponse::error('Заказ не найден.', [$exception->getMessage()]);
         }
 
         // check "credentials"

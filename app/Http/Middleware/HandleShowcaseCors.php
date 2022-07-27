@@ -28,7 +28,10 @@ class HandleShowcaseCors
             $response->headers->set('Access-Control-Allow-Origin', $request->header('origin', '*'));
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
             $response->headers->set('Access-Control-Allow-Methods', 'POST');
-            $response->headers->set('Access-Control-Allow-Headers', 'access-control-allow-methods,access-control-allow-origin,content-type,x-requested-with,x-xsrf-token');
+            $response->headers->set(
+                'Access-Control-Allow-Headers',
+                'access-control-allow-methods,access-control-allow-origin,content-type,x-requested-with,x-xsrf-token,' . ExternalProtect::HEADER_NAME
+            );
 
             return $response;
         }
@@ -39,6 +42,7 @@ class HandleShowcaseCors
         $response->headers->set('Access-Control-Allow-Origin', $request->header('access-control-allow-origin', '*'));
         $response->headers->set('Access-Control-Allow-Credentials', 'true');
         $response->headers->set('Access-Control-Allow-Methods', 'POST');
+        $response->headers->set('Access-Control-Expose-Headers', ExternalProtect::HEADER_NAME);
 
         return $response;
     }

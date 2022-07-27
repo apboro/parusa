@@ -55,6 +55,7 @@ export default {
         secret: {type: String, default: null},
         crm_url: {type: String, default: 'https://cp.parus-a.ru'},
         debug: {type: Boolean, default: false},
+        session: {type: String, default: null},
     },
 
     emits: ['close'],
@@ -136,7 +137,7 @@ export default {
         },
         cancel() {
             this.cancelling = true;
-            axios.post(this.url('/showcase/order/cancel'), {secret: this.secret})
+            axios.post(this.url('/showcase/order/cancel'), {secret: this.secret}, {headers: {'X-Ap-External-Session': this.session}})
                 .then(() => {
                     this.$emit('close');
                 })

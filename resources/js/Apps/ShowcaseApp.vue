@@ -10,6 +10,7 @@
                        :secret="order_secret"
                        :crm_url="crm_url"
                        :debug="debug"
+                       :session="session"
                        @close="closeOrder"
             />
             <TicketsSelect v-else-if="trip_id"
@@ -18,6 +19,7 @@
                            :crm_url="crm_url"
                            :debug="debug"
                            :is-loading="trip.is_loading"
+                           :session="session"
                            @select="selectTrip"
             />
             <TripsList v-else
@@ -61,6 +63,7 @@ export default {
     },
 
     data: () => ({
+        session: null,
         options: {
             partner: null,
             media: null,
@@ -153,7 +156,7 @@ export default {
         },
 
         /**
-         * Initialization request to get initial parameters and create session.
+         * Initialization request to get initial parameters and create a session.
          *
          * @returns {Promise}
          */
@@ -169,6 +172,7 @@ export default {
                         this.search_options.date_from = response.data['date_from']; //  Date range start
                         this.search_options.date_to = response.data['date_to']; // Date range end for future use
                         this.search_options.programs = response.data['programs']; // List of available programs
+                        this.session = response.headers['x-ap-external-session'];
                         this.updateState();
                         resolve();
                     })
@@ -214,7 +218,7 @@ export default {
                 this.last_search = (this.last_search === null) ? {date: this.today} : this.last_search;
             }
             this.trips.is_loading = true;
-            axios.post(this.url('/showcase/trips'), {search: this.last_search})
+            axios.post(this.url('/showcase/trips'), {search: this.last_search}, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     this.trips.list = response.data['trips'];
                     this.trips.date = response.data['date'];
@@ -222,7 +226,6 @@ export default {
                 .catch(error => {
                     this.state.error_message = error.response.data['message'];
                     this.state.has_error = true;
-                    this.reset();
                 })
                 .finally(() => {
                     this.trips.is_loading = false;
@@ -266,7 +269,7 @@ export default {
          */
         getTrip(trip_id) {
             this.trip.is_loading = true;
-            axios.post(this.url('/showcase/trip'), {id: trip_id})
+            axios.post(this.url('/showcase/trip'), {id: trip_id}, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     this.trip.data = response.data['trip'];
                 })
@@ -285,7 +288,7 @@ export default {
          */
         getOrderInfo(order_secret) {
             this.order.is_loading = true;
-            axios.post(this.url('/showcase/order/info'), {secret: order_secret})
+            axios.post(this.url('/showcase/order/info'), {secret: order_secret}, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     this.order.data = response.data['order'];
                 })

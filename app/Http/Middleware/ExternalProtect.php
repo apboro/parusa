@@ -7,10 +7,11 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Crypt;
 
 class ExternalProtect
 {
-    public const COOKIE_NAME = 'ap-external-session';
+    public const HEADER_NAME = 'X-Ap-External-Session';
 
     /**
      * Check access ability.
@@ -23,16 +24,17 @@ class ExternalProtect
      */
     public function handle(Request $request, Closure $next)
     {
-        $cookie = $request->cookie(self::COOKIE_NAME);
+        $header = $request->header(self::HEADER_NAME);
 
         try {
-            $cookie = json_decode($cookie, true, 512, JSON_THROW_ON_ERROR);
+            $header = Crypt::decrypt($header);
+            $header = json_decode($header, true, 512, JSON_THROW_ON_ERROR);
 
         } catch (Exception $exception) {
             return $this->responseError('Ошибка сессии.', 400, $request->expectsJson());
         }
 
-        if ($request->ip() !== ($cookie['ip'] ?? null)) {
+        if ($request->ip() !== ($header['ip'] ?? null)) {
             return $this->responseError('Ошибка сессии. Перезагрузите страницу.', 403, $request->expectsJson());
         }
 

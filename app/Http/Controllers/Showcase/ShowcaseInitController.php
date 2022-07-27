@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use JsonException;
 
 class ShowcaseInitController extends ApiController
@@ -23,19 +24,20 @@ class ShowcaseInitController extends ApiController
      */
     public function init(Request $request): JsonResponse
     {
-        $originalCookie = $request->cookie(ExternalProtect::COOKIE_NAME);
+        $originalKey = $request->header(ExternalProtect::HEADER_NAME);
+
         try {
-            $originalCookie = $originalCookie ? json_decode($originalCookie, true, 512, JSON_THROW_ON_ERROR) : null;
+            $originalKey = $originalKey ? json_decode(Crypt::decrypt($originalKey), true, 512, JSON_THROW_ON_ERROR) : null;
         } catch (Exception $exception) {
             return response()->json(['message' => 'Ошибка сессии.'], 400);
         }
 
-        $cookie = [
+        $originalKey = [
             'ip' => $request->ip(),
             'user-agent' => $request->userAgent(),
-            'is_partner' => $originalCookie['partner'] ?? $request->input('is_partner'),
-            'partner_id' => $originalCookie['partner'] ?? $request->input('partner_id'),
-            'media' => $originalCookie['media'] ?? $request->input('media'),
+            'is_partner' => $originalKey['is_partner'] ?? $request->input('is_partner'),
+            'partner_id' => $originalKey['partner'] ?? $request->input('partner_id'),
+            'media' => $originalKey['media'] ?? $request->input('media'),
         ];
 
         $programs = ExcursionProgram::query()->where(['enabled' => true])->select(['id', 'name'])->orderBy('name')->get();
@@ -45,16 +47,6 @@ class ShowcaseInitController extends ApiController
             'programs' => $programs->toArray(),
             'date_from' => Carbon::now()->format('Y-m-d'),
             'date_to' => null,
-        ])->withCookie(cookie(
-            ExternalProtect::COOKIE_NAME,
-            json_encode($cookie, JSON_THROW_ON_ERROR),
-            0,
-            null,
-            null,
-            true,
-            true,
-            false,
-            'None'
-        ));
+        ], 200, [ExternalProtect::HEADER_NAME => Crypt::encrypt(json_encode($originalKey, JSON_THROW_ON_ERROR))]);
     }
 }
