@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Rates;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Excursions\Excursion;
 use App\Models\Tickets\TicketsRatesList;
 use App\Models\User\Helpers\Currents;
@@ -33,6 +34,7 @@ class RatesListController extends ApiEditController
         $partnerId = $current->isStaff() ? $request->input('partner_id') : $current->partnerId();
         $excursionId = $request->input('excursion_id');
         $isArchiveRequested = $current->isStaff() && $request->input('archive');
+        $hideDisabledExcursions = ($excursionId === null);
 
         $query = TicketsRatesList::query()
             ->with(['rates', 'excursion'])
@@ -55,6 +57,9 @@ class RatesListController extends ApiEditController
                 $query->whereDate('end_at', '>=', $now);
             })
             ->leftJoin('excursions', 'excursions.id', '=', 'tickets_rates_list.excursion_id')
+            ->when($hideDisabledExcursions, function (Builder $query) {
+                $query->where('excursions.status_id', ExcursionStatus::active);
+            })
             ->select('tickets_rates_list.*')
             ->orderBy('excursions.name')
             ->orderBy('tickets_rates_list.start_at');
@@ -66,9 +71,22 @@ class RatesListController extends ApiEditController
             return $this->rateToArray($ratesList, true);
         });
 
+        $excursions = $excursionId !== null ? null : Excursion::query()
+            ->select(['id', 'name'])
+            ->when($hideDisabledExcursions, function (Builder $query) {
+                $query->where('status_id', ExcursionStatus::active);
+            })
+            ->when($current->isRepresentative(), function (Builder $query) use ($current) {
+                $query->withCount(['partnerShowcaseHide' => function (Builder $query) use($current){
+                    $query->where('partner_id', $current->partnerId());
+                }]);
+            })
+            ->orderBy('name')
+            ->get();
+
         return APIResponse::response($list, [
             'today' => Carbon::now()->format('Y-m-d'),
-            'excursions' => $excursionId !== null ? null : Excursion::query()->select(['id', 'name'])->orderBy('name')->get(),
+            'excursions' => $excursions,
         ]);
     }
 }

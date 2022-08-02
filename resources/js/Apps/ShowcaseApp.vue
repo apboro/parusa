@@ -33,6 +33,7 @@
                        :last-search="last_search"
                        :crm_url="crm_url"
                        :debug="debug"
+                       :session="session"
                        @search="loadList"
                        @select="selectTrip"
             />
@@ -292,7 +293,7 @@ export default {
                 .then(response => {
                     this.order.data = response.data['order'];
                 })
-                .catch(error => {
+                .catch(() => {
                     this.closeOrder();
                 })
                 .finally(() => {

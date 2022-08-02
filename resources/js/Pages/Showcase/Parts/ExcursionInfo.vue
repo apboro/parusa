@@ -24,6 +24,7 @@ export default {
     props: {
         crm_url: {type: String, default: 'https://cp.parus-a.ru'},
         debug: {type: Boolean, default: false},
+        session: {type: String, default: null},
     },
 
     components: {
@@ -51,7 +52,7 @@ export default {
             this.info.reset();
             this.$refs.popup.show();
             this.$refs.popup.process(true);
-            this.info.load({id: id})
+            this.info.load({id: id}, {'X-Ap-External-Session': this.session})
                 .finally(() => {
                     this.$refs.popup.process(false);
                 })

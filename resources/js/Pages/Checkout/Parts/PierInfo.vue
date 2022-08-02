@@ -66,12 +66,12 @@ export default {
     },
 
     data: () => ({
-        info: data('/showcase/pier'),
+        info: data('/checkout/pier'),
     }),
 
     methods: {
         show(id) {
-            this.info.url = this.url('/showcase/pier');
+            this.info.url = this.url('/checkout/pier');
             this.info.reset();
             this.$refs.popup.show();
             this.$refs.popup.process(true);

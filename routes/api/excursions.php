@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\Excursions\ExcursionDeleteController;
 use App\Http\Controllers\API\Excursions\ExcursionEditController;
 use App\Http\Controllers\API\Excursions\ExcursionInfoController;
+use App\Http\Controllers\API\Excursions\ExcursionPartnerShowcaseVisibilityController;
 use App\Http\Controllers\API\Excursions\ExcursionPropertiesController;
 use App\Http\Controllers\API\Excursions\ExcursionsListController;
 use App\Http\Controllers\API\Excursions\ExcursionViewController;
@@ -18,3 +19,5 @@ Route::post('/excursions/update', [ExcursionEditController::class, 'update'])->m
 Route::post('/excursions/delete', [ExcursionDeleteController::class, 'delete'])->middleware(['allow:staff_admin']);
 
 Route::post('/excursions/info', [ExcursionInfoController::class, 'info'])->middleware(['allow:partner']);
+
+Route::post('/excursions/visibility', [ExcursionPartnerShowcaseVisibilityController::class, 'visibility'])->middleware(['allow:partner']);

@@ -73,10 +73,12 @@
         <ExcursionInfo ref="excursion"
                        :crm_url="crm_url"
                        :debug="debug"
+                       :session="session"
         />
         <PierInfo ref="pier"
                   :crm_url="crm_url"
                   :debug="debug"
+                  :session="session"
         />
     </div>
 </template>
@@ -123,6 +125,7 @@ export default {
 
         crm_url: {type: String, required: true},
         debug: {type: Boolean, default: false},
+        session: {type: String, default: null},
     },
 
     emits: ['search', 'select'],

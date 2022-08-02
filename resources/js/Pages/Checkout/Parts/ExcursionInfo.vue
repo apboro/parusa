@@ -41,12 +41,12 @@ export default {
     },
 
     data: () => ({
-        info: data('/showcase/excursion'),
+        info: data('/checkout/excursion'),
     }),
 
     methods: {
         show(id) {
-            this.info.url = this.url('/showcase/excursion');
+            this.info.url = this.url('/checkout/excursion');
             this.info.reset();
             this.$refs.popup.show();
             this.$refs.popup.process(true);

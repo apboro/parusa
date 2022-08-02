@@ -11,6 +11,7 @@ use App\Models\Common\File;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
+use App\Models\Excursions\Excursion;
 use App\Models\Model;
 use App\Models\Positions\Position;
 use App\Traits\HasStatus;
@@ -36,6 +37,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Account $account
  * @property Collection $positions
  * @property Collection $files
+ * @property Collection $excursionsShowcaseHide
  */
 class Partner extends Model implements Statusable, Typeable, AsDictionary
 {
@@ -117,7 +119,7 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
     }
 
     /**
-     * Loaded partner's files.
+     * A loaded partner files.
      *
      * @return  BelongsToMany
      */
@@ -134,5 +136,15 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
     public function positions(): HasMany
     {
         return $this->hasMany(Position::class, 'partner_id', 'id')->where('is_staff', false);
+    }
+
+    /**
+     * Excursions this partner showing disabled in a showcase.
+     *
+     * @return  BelongsToMany
+     */
+    public function excursionsShowcaseHide(): BelongsToMany
+    {
+        return $this->belongsToMany(Excursion::class, 'partner_excursion_showcase_disabling', 'partner_id', 'excursion_id');
     }
 }

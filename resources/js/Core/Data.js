@@ -18,14 +18,15 @@ const data = function (url) {
          * Load data.
          *
          * @param options Options to pass to request.
+         * @param headers Headers pass to request
          *
          * @returns {Promise}
          */
-        load(options = {}) {
+        load(options = {}, headers = {}) {
             return new Promise((resolve, reject) => {
                 this.is_loading = true;
 
-                axios.post(this.url, options)
+                axios.post(this.url, options, {headers: headers})
                     .then(response => {
                         this.data = response.data.data;
                         this.payload = typeof response.data.payload !== "undefined" ? response.data.payload : {};
@@ -52,11 +53,12 @@ const data = function (url) {
          * Alias for clarifying data processing.
          *
          * @param options Options to pass to request.
+         * @param headers
          *
          * @returns {Promise}
          */
-        save(options = {}) {
-            return this.load(options);
+        save(options = {}, headers = {}) {
+            return this.load(options, headers);
         },
 
         /**

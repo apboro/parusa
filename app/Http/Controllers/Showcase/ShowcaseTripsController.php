@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Showcase;
 
 use App\Http\Controllers\ApiController;
+use App\Http\Middleware\ExternalProtect;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\TicketGrade;
@@ -12,10 +13,12 @@ use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class ShowcaseTripsController extends ApiController
 {
@@ -28,6 +31,16 @@ class ShowcaseTripsController extends ApiController
      */
     public function trips(Request $request): JsonResponse
     {
+        $originalKey = $request->header(ExternalProtect::HEADER_NAME);
+
+        try {
+            $originalKey = $originalKey ? json_decode(Crypt::decrypt($originalKey), true, 512, JSON_THROW_ON_ERROR) : null;
+        } catch (Exception $exception) {
+            return response()->json(['message' => 'Ошибка сессии.'], 400);
+        }
+
+        $partnerId = $originalKey['partner_id'] ?? null;
+
         $date = $request->input('search.date');
         $persons = $request->input('search.persons');
         $programs = $request->input('search.programs');
@@ -39,6 +52,13 @@ class ShowcaseTripsController extends ApiController
 
         $trips = $this->baseTripQuery()
             ->with(['status', 'startPier', 'ship', 'excursion', 'excursion.info', 'excursion.programs'])
+            ->when($partnerId, function (Builder $query) use ($partnerId) {
+                $query->whereHas('excursion', function (Builder $query) use ($partnerId) {
+                    $query->whereDoesntHave('partnerShowcaseHide', function (Builder $query) use ($partnerId) {
+                        $query->where('partner_id', $partnerId);
+                    });
+                });
+            })
             ->withCount(['tickets'])
             ->with('excursion.ratesLists', function (HasMany $query) use ($date) {
                 $query
@@ -130,7 +150,7 @@ class ShowcaseTripsController extends ApiController
                         'grade_id' => $rate->grade_id,
                         'name' => $rate->grade->name,
                         'base_price' => $rate->base_price,
-                        'preferential' => $rate->grade->preferential
+                        'preferential' => $rate->grade->preferential,
                     ];
                 });
         }

@@ -9,6 +9,7 @@ use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Model;
+use App\Models\Partner\Partner;
 use App\Models\Tickets\TicketsRatesList;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
@@ -29,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection $images
  * @property Collection $tripImages
  * @property Collection $ratesLists
+ * @property Collection $partnerShowcaseHide
  */
 class Excursion extends Model implements Statusable, AsDictionary
 {
@@ -152,5 +154,15 @@ class Excursion extends Model implements Statusable, AsDictionary
             ->first();
 
         return $rate ?? null;
+    }
+
+    /**
+     * Partners this excursion showing disabled in a showcase.
+     *
+     * @return  BelongsToMany
+     */
+    public function partnerShowcaseHide(): BelongsToMany
+    {
+        return $this->belongsToMany(Partner::class, 'partner_excursion_showcase_disabling', 'excursion_id','partner_id',);
     }
 }

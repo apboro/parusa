@@ -47,7 +47,6 @@ $list_table_cell_color: #1e1e1e;
 
         &:not(:last-child) {
             margin-bottom: 8px;
-            white-space: nowrap;
         }
     }
 }
