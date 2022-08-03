@@ -24,6 +24,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use JsonException;
 
@@ -108,7 +109,7 @@ class CheckoutController extends ApiController
             ]);
         }
 
-        $trips = new Collection;
+        $trips = new Collection();
 
         $tickets = $order->tickets->map(function (Ticket $ticket) use ($trips) {
             if (!isset($trips[$ticket->trip_id])) {
@@ -191,7 +192,7 @@ class CheckoutController extends ApiController
             'token' => env('SBER_ACQUIRING_TOKEN'),
             'userName' => env('SBER_ACQUIRING_USER'),
             'password' => env('SBER_ACQUIRING_PASSWORD'),
-        ], new CurlClient, $isProduction);
+        ], new CurlClient(), $isProduction);
         $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
         $sber = new Sber($connection, $options);
 
@@ -215,6 +216,12 @@ class CheckoutController extends ApiController
         $order->tickets->map(function (Ticket $ticket) {
             $ticket->setStatus(TicketStatus::showcase_paid);
         });
+
+        try {
+            $order->payCommissions();
+        } catch (Exception $exception) {
+            Log::error($exception->getMessage());
+        }
 
         // email tickets
         Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
@@ -261,7 +268,9 @@ class CheckoutController extends ApiController
     {
         /** @var Order $order */
         $order = Order::query()
-            ->with(['status', 'tickets', 'tickets.grade', 'tickets.trip', 'tickets.trip.startPier', 'tickets.trip.startPier.info', 'tickets.trip.excursion', 'tickets.trip.excursion.info'])
+            ->with(
+                ['status', 'tickets', 'tickets.grade', 'tickets.trip', 'tickets.trip.startPier', 'tickets.trip.startPier.info', 'tickets.trip.excursion', 'tickets.trip.excursion.info']
+            )
             ->where('id', $id)
             ->whereIn('status_id', [OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::showcase_paid, OrderStatus::showcase_canceled])
             ->whereIn('type_id', [OrderType::qr_code, OrderType::partner_site, OrderType::site])
