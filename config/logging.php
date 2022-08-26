@@ -66,6 +66,12 @@ return [
             'level' => 'info',
         ],
 
+        'lifepos_connection' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/lifepos_connection.log'),
+            'level' => 'info',
+        ],
+
         'lifepay_payments' => [
             'driver' => 'single',
             'path' => storage_path('logs/lifepay_payments.log'),

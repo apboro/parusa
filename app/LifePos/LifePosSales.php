@@ -9,6 +9,7 @@ use App\Models\Tickets\Ticket;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Log;
 use JsonException;
 use RuntimeException;
 
@@ -26,9 +27,7 @@ class LifePosSales
      */
     public static function send(Order $order, Terminal $terminal, Position $position): void
     {
-        //if (empty($terminal->organization_id)) {
-        //    throw new RuntimeException('Не задан внешний ID организации для ' . $terminal->name);
-        //}
+        // check external IDs
         if (empty($terminal->outlet_id)) {
             throw new RuntimeException('Не задан внешний ID точки продаж для ' . $terminal->name);
         }
@@ -39,6 +38,7 @@ class LifePosSales
             throw new RuntimeException('Не задан внешний ID для сотрудника ' . $position->user->profile->compactName);
         }
 
+        // make connection client
         $client = new Client([
             'base_uri' => env('LIFE_POS_BASE_URL'),
             'timeout' => 0,
@@ -51,6 +51,7 @@ class LifePosSales
 
         $orgId = env('LIFE_POS_ORG_ID');
 
+        // prepare request
         $total = 0;
         $tickets = [];
 
@@ -71,9 +72,10 @@ class LifePosSales
             $total += $ticket->base_price;
         }
 
+        // send order to LifePos and get result
         try {
             if ($order->external_id === null) {
-                $result = $client->post("/v4/orgs/{$orgId}/deals/sales", [
+                $data = [
                     'json' => [
                         "outlet" => ["guid" => $terminal->outlet_id],
                         "workplace" => ["guid" => $terminal->workplace_id],
@@ -84,9 +86,10 @@ class LifePosSales
                         "total_sum" => ["value" => $total * 100, "currency" => "RUB"],
                         'positions' => $tickets,
                     ],
-                ]);
+                ];
+                $result = $client->post("/v4/orgs/{$orgId}/deals/sales", $data);
             } else {
-                $result = $client->patch("/v4/orgs/{$orgId}/deals/sales/{$order->external_id}", [
+                $data = [
                     'json' => [
                         ["op" => "replace", "path" => "outlet", "value" => ["guid" => $terminal->outlet_id]],
                         ["op" => "replace", "path" => "workplace", "value" => ["guid" => $terminal->workplace_id]],
@@ -94,33 +97,42 @@ class LifePosSales
                         ["op" => "replace", "path" => "total_sum", "value" => ["value" => $total * 100, "currency" => "RUB"]],
                         ["op" => "replace", "path" => "positions", "value" => $tickets],
                     ],
-                ]);
+                ];
+                $result = $client->patch("/v4/orgs/{$orgId}/deals/sales/{$order->external_id}", $data);
             }
         } catch (GuzzleException|Exception $exception) {
+            Log::channel('lifepos_connection')->error('Connection error: ' . $exception->getMessage());
+            Log::channel('lifepos_connection')->info('Request: ' . json_encode($data));
             throw new RuntimeException('LifePos: ' . $exception->getMessage());
         }
 
+        // update order external ID if it was not set and response is OK
         if ($order->external_id === null && $result->getStatusCode() === 201) {
             try {
                 $response = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
                 $order->external_id = $response['guid'];
                 $order->save();
             } catch (JsonException $exception) {
+                Log::channel('lifepos_connection')->error('LifePos response parsing error: ' . $exception->getMessage());
                 throw new RuntimeException('LifePos response parsing error: ' . $exception->getMessage());
             }
             return;
         }
 
+        // if order external ID was set no need further actions and response is OK
         if ($order->external_id !== null && $result->getStatusCode() === 204) {
             return;
         }
 
+        // at this point comes only errors
         try {
             $response = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
+            Log::channel('lifepos_connection')->error('LifePos response parsing error: ' . $exception->getMessage());
             throw new RuntimeException('LifePos response parsing error: ' . $exception->getMessage());
         }
 
+        Log::channel('lifepos_connection')->error('LifePos error response: ' . $response['message']);
         throw new RuntimeException('LifePos error response: ' . $response['message']);
     }
 
@@ -139,6 +151,7 @@ class LifePosSales
             throw new RuntimeException('Зтот заказ не связан с продажей.');
         }
 
+        // make connection client
         $client = new Client([
             'base_uri' => env('LIFE_POS_BASE_URL'),
             'timeout' => 0,
@@ -151,20 +164,25 @@ class LifePosSales
 
         $orgId = env('LIFE_POS_ORG_ID');
 
+        // send data to LifePos
         try {
-            $result = $client->patch("/v4/orgs/{$orgId}/deals/sales/{$order->external_id}", [
+            $data = [
                 'json' => [[
                     "op" => "replace",
                     "path" => "/status",
                     "value" => "Canceled",
                 ]],
-            ]);
+            ];
+            $result = $client->patch("/v4/orgs/{$orgId}/deals/sales/{$order->external_id}", $data);
         } catch (GuzzleException $exception) {
+            Log::channel('lifepos_connection')->error('Connection error: ' . $exception->getMessage());
+            Log::channel('lifepos_connection')->info('Request: ' . json_encode($data));
             throw new RuntimeException($exception->getMessage());
         }
 
         if ($result->getStatusCode() !== 204) {
             $response = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+            Log::channel('lifepos_connection')->error('LifePos error response: ' . $response['message']);
             throw new RuntimeException($response['message']);
         }
     }
@@ -180,6 +198,7 @@ class LifePosSales
     {
         $orgId = env('LIFE_POS_ORG_ID');
 
+        // make connection client
         $client = new Client([
             'base_uri' => env('LIFE_POS_BASE_URL'),
             'timeout' => 0,
@@ -190,15 +209,18 @@ class LifePosSales
             ],
         ]);
 
+        // query data
         try {
             $result = $client->get("/v4/orgs/{$orgId}/deals/sales/{$guid}");
         } catch (GuzzleException $exception) {
+            Log::channel('lifepos_connection')->error("Querying order [$guid] connection error: " . $exception->getMessage());
             throw new RuntimeException($exception->getMessage());
         }
 
         try {
             $response = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
+            Log::channel('lifepos_connection')->error("Querying order [$guid] response parsing error: " . $exception->getMessage());
             throw new RuntimeException('LifePos response parsing error: ' . $exception->getMessage());
         }
 
