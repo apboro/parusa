@@ -8,7 +8,7 @@
             <ListTableRow v-for="(user, key) in data['staff']" :key="key">
                 <ListTableCell>
                     <GuiActivityIndicator :active="user['active']"/>
-                    <router-link class="link" :to="{ name: 'staff-view', params: { id: user['id'] }}">{{ user['name'] }}</router-link>
+                    <router-link class="link" :to="{ name: 'staff-view', params: { id: user['user_id'] }}">{{ user['name'] }}</router-link>
                 </ListTableCell>
                 <ListTableCell>
                     {{ user['position'] }}
