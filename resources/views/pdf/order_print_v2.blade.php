@@ -19,7 +19,7 @@ use App\Models\Tickets\Ticket;
         /*    padding: 0;*/
         /*}*/
         /** {*/
-        /*    outline: 1px solid rgba(255, 0, 242, 0.35);*/
+        /*    outline: 1px solid rgba(255, 0, 242, 0.49);*/
         /*}*/
     </style>
 </head>
@@ -39,8 +39,8 @@ use App\Models\Tickets\Ticket;
                     приложите штрих-код к сканеру турникета
                 </div>
             </div>
-            <div style="width: 246pt; height: 222pt;position: absolute; top: 0; left: 90pt;">
-                <div style="width: 246pt; height: 90pt; margin: 0 auto; border-bottom: 1px solid #5e5e5e; font-size: 0">
+            <div style="width: 225pt; height: 222pt;position: absolute; top: 0; left: 90pt;">
+                <div style="width: 225pt; height: 90pt; margin: 0 auto; border-bottom: 1px solid #5e5e5e; font-size: 0">
                     <div style="position: absolute; left: 0; top: 0;">
                         <img src="{{ $ticket->trip->startPier->info->mapLinkQr() }}" alt="qr-link" style="width: 55pt; height: 55pt;margin: 5pt 0 0;">
                     </div>
@@ -56,21 +56,21 @@ use App\Models\Tickets\Ticket;
                         </div>
                     </div>
                 </div>
-                <div style="font-family: 'Proxima Nova',serif; position: absolute; top: 90pt; width: 245pt; height: 132pt; margin: 0 auto;">
+                <div style="font-family: 'Proxima Nova',serif; position: absolute; top: 90pt; width: 225pt; height: 132pt; margin: 0 auto;">
                     <img src="{{ $ticket->qr() }}" alt="qr-link" style="position: absolute; top: 45pt; left: 0; width: 80pt; height: 80pt;">
 
-                    <div style="position: absolute; top: 2pt; left: 20pt; width: 224pt; height: 30pt; border-bottom: 1px solid #5e5e5e;">
+                    <div style="position: absolute; top: 2pt; left: 20pt; width: 205pt; height: 30pt; border-bottom: 1px solid #5e5e5e;">
                         <div style="position: absolute; left: 0; bottom: 0; width: 100%; line-height: 10pt; display: block; font-size: 10pt;">{{ $ticket->trip->excursion->name }}</div>
                     </div>
-                    <div style="position:absolute; left: 95pt; top: 30pt; width: 65pt; font-size: 7pt">Экскурсия</div>
-                    <div style="position:absolute; left: 90pt; top: 43pt; width: 154pt; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->trip->start_at->format('d.m.Y,  H:i') }}</div>
-                    <div style="position:absolute; left: 95pt; top: 55pt; width: 154pt; font-size: 7pt;">Дата поездки</div>
-                    <div style="position:absolute; left: 90pt; top: 68pt; width: 154pt; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->grade->name }}</div>
-                    <div style="position:absolute; left: 95pt; top: 80pt; width: 154pt; font-size: 7pt;">Тип билета</div>
-                    <div style="position:absolute; left: 90pt; top: 93pt; width: 154pt; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->base_price }} рублей</div>
-                    <div style="position:absolute; left: 95pt; top: 105pt; width: 154pt; font-size: 7pt;">Стоимость</div>
+                    <div style="position:absolute; left: 95pt; top: 30pt; font-size: 7pt">Экскурсия</div>
+                    <div style="position:absolute; left: 90pt; top: 43pt; width: 135pt; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->trip->start_at->format('d.m.Y,  H:i') }}</div>
+                    <div style="position:absolute; left: 95pt; top: 55pt; font-size: 7pt;">Дата поездки</div>
+                    <div style="position:absolute; left: 90pt; top: 68pt; width: 135pt; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->grade->name }}</div>
+                    <div style="position:absolute; left: 95pt; top: 80pt; font-size: 7pt;">Тип билета</div>
+                    <div style="position:absolute; left: 90pt; top: 93pt; width: 135pt; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->base_price }} рублей</div>
+                    <div style="position:absolute; left: 95pt; top: 105pt; font-size: 7pt;">Стоимость</div>
 
-                    <div style="position:absolute; left: 90pt; top: 115pt; width: 154pt;">
+                    <div style="position:absolute; left: 90pt; top: 115pt; width: 135pt;">
                         <div style="font-size: 8pt;text-align: right">N заказа {{ $ticket->order_id }}, N билета {{ $ticket->id }}</div>
                     </div>
                 </div>

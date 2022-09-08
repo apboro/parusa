@@ -17,6 +17,9 @@ use App\Models\Tickets\Ticket;
         /*    margin: 0;*/
         /*    padding: 0;*/
         /*}*/
+        /** {*/
+        /*    outline: 1px solid rgba(255, 0, 242, 0.49);*/
+        /*}*/
     </style>
 </head>
 
