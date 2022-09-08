@@ -17,7 +17,9 @@ class OrderPdf
      */
     public static function a4(Order $order): ?string
     {
-        return self::generate($order, 'a4', 'portrait', 'pdf/order_a4');
+        $view = env('PDF_ORDER_A4', 'pdf/order_a4');
+
+        return self::generate($order, 'a4', 'portrait', $view);
     }
 
     /**
@@ -31,7 +33,9 @@ class OrderPdf
     {
         $size = [0, 0, 226, 340];
 
-        return self::generate($order, $size, 'portrait', 'pdf/order_print');
+        $view = env('PDF_ORDER_PRINT', 'pdf/order_print');
+
+        return self::generate($order, $size, 'portrait', $view);
     }
 
     /**

@@ -16,9 +16,11 @@ class TicketPdf
      */
     public static function a4(Ticket $ticket): ?string
     {
-        $size = [0,0,595.28,841.89]; // A4
+        $size = [0, 0, 595.28, 841.89]; // A4
 
-        return self::generate($ticket, $size, 'portrait', 'pdf/ticket_a4');
+        $view = env('PDF_TICKET_A4', 'pdf/ticket_a4');
+
+        return self::generate($ticket, $size, 'portrait', $view);
     }
 
     /**
@@ -32,7 +34,9 @@ class TicketPdf
     {
         $size = [0, 0, 226, 340];
 
-        return self::generate($ticket, $size, 'landscape', 'pdf/ticket_print');
+        $view = env('PDF_TICKET_PRINT', 'pdf/ticket_print');
+
+        return self::generate($ticket, $size, 'landscape', $view);
     }
 
     /**
