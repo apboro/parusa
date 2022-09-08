@@ -19,11 +19,10 @@ use App\Traits\HasStatus;
 use Carbon\Carbon;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelMedium;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
 use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeNone;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Hash;
 use JsonException;
 
 /**
@@ -283,18 +282,14 @@ class Ticket extends Model implements Statusable
      */
     public function qr(): string
     {
-        $payload = [
-            'id' => $this->id,
-            'subject' => 'ticket',
-            'version' => '1.0',
-        ];
+        $payload = "1|t|$this->id";
 
-        $signature = Hash::make(config('app.key') . '|' . json_encode($payload, JSON_THROW_ON_ERROR));
-        $payload['signature'] = $signature;
+        $signature = md5(config('app.key') . '|' . $payload);
+        $payload .= '|' . $signature;
 
         return Builder::create()
             ->encoding(new Encoding('UTF-8'))
-            ->errorCorrectionLevel(new ErrorCorrectionLevelMedium())
+            ->errorCorrectionLevel(new ErrorCorrectionLevelLow())
             ->size(200)
             ->margin(0)
             ->roundBlockSizeMode(new RoundBlockSizeModeNone())
