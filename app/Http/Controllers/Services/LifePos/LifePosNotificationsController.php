@@ -129,13 +129,15 @@ class LifePosNotificationsController extends ApiController
 
                 if ($order && ($order->hasStatus(OrderStatus::terminal_wait_for_pay) || $order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve))) {
 
+                    $order->payment_unconfirmed = false;
                     $order->setStatus(OrderStatus::terminal_finishing);
                     $order->tickets->map(function (Ticket $ticket) {
                         $ticket->setStatus(TicketStatus::terminal_finishing);
                     });
 
-                } else if ($order && $order->terminal_id !== null) {
+                } else if ($order && $order->terminal_id !== null && !$order->hasStatus(OrderStatus::terminal_finishing)) {
 
+                    $order->payment_unconfirmed = false;
                     $order->tickets->map(function (Ticket $ticket) {
                         $ticket->setStatus(TicketStatus::terminal_paid);
                     });

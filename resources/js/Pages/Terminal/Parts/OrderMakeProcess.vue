@@ -41,6 +41,7 @@
 
         <GuiMessage v-if="data['status']['waiting_for_payment']">Заказ отправлен на терминал. Идёт оплата...</GuiMessage>
         <GuiContainer mt-30 text-right v-if="data['status']['waiting_for_payment']">
+            <GuiButton :color="'red'" :disabled="!data['actions']['cancel_payment']" @clicked="saveUnconfirmedOrder">Сохранить заказ без подтверждения оплаты</GuiButton>
             <GuiButton :color="'red'" :disabled="!data['actions']['cancel_payment']" @clicked="cancelPayment">Отмена оплаты</GuiButton>
         </GuiContainer>
 
@@ -126,6 +127,18 @@ export default {
             this.runAction('/api/order/terminal/cancel');
         },
 
+        saveUnconfirmedOrder() {
+            this.$dialog.show('Сохранить заказ без подтверждения платежа?', 'question', 'red', [
+                this.$dialog.button('no', 'Отмена', 'blue'),
+                this.$dialog.button('yes', 'Сохранить', 'red'),
+            ]).then(result => {
+                if (result === 'yes') {
+                    this.order_cancelling = true;
+                    this.runAction('/api/order/terminal/save_unconfirmed');
+                }
+            });
+        },
+
         closeOrder() {
             this.runAction('/api/order/terminal/close');
         },
@@ -160,7 +173,7 @@ export default {
         },
 
         printOrder() {
-            axios.post('/api/registries/order/print', {id: this.data['order_id'] })
+            axios.post('/api/registries/order/print', {id: this.data['order_id']})
                 .then(response => {
                     let order = atob(response.data.data['order']);
                     let byteNumbers = new Array(order.length);

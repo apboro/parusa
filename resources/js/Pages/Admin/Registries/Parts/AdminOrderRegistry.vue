@@ -42,6 +42,9 @@
                         <router-link class="link" :to="{name: 'order-info', params: {id: order['id']}}" v-html="highlight(order['id'])"/>
                     </ListTableCell>
                     <ListTableCell>
+                        <span v-if="order['payment_unconfirmed']" style="display: inline-block; color: orange; width: 1em" title="Платёж не подтверждён">
+                            <IconExclamation style="color: orange"/>
+                        </span>
                         {{ order['date'] }}
                     </ListTableCell>
                     <ListTableCell>
@@ -102,8 +105,10 @@
                 <GuiValue :title="'Email'">{{ info['buyer_email'] }}</GuiValue>
                 <GuiValue :title="'Телефон'">{{ info['buyer_phone'] }}</GuiValue>
                 <GuiValue :title="'Способ продажи'">{{ info['order_type'] }}</GuiValue>
-                <GuiValue v-if="info['partner']" :dots="!!info['terminal_name']" :title="info['position_name'] === null ? 'Промоутер' : 'Партнёр'">{{ info['partner'] }}<span v-if="info['position_name']">, {{ info['position_name'] }}</span></GuiValue>
-                <GuiValue v-if="info['terminal_name']" :dots="false" :title="'Касса'">{{ info['terminal_name'] }}<span v-if="info['cashier']">, {{ info['cashier'] }}</span></GuiValue>
+                <GuiValue v-if="info['partner']" :dots="!!info['terminal_name']" :title="info['position_name'] === null ? 'Промоутер' : 'Партнёр'">{{ info['partner'] }}<span
+                    v-if="info['position_name']">, {{ info['position_name'] }}</span></GuiValue>
+                <GuiValue v-if="info['terminal_name']" :dots="false" :title="'Касса'">{{ info['terminal_name'] }}<span v-if="info['cashier']">, {{ info['cashier'] }}</span>
+                </GuiValue>
             </template>
         </PopUp>
 
@@ -126,6 +131,7 @@ import Pagination from "@/Components/Pagination";
 import PopUp from "@/Components/PopUp";
 import GuiValue from "@/Components/GUI/GuiValue";
 import InputDate from "@/Components/Inputs/InputDate";
+import IconExclamation from "../../../../Components/Icons/IconExclamation";
 
 export default {
     props: {
@@ -134,6 +140,7 @@ export default {
     },
 
     components: {
+        IconExclamation,
         InputDate,
         LoadingProgress,
         LayoutFilters,

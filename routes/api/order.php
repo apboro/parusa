@@ -16,6 +16,7 @@ Route::post('/order/terminal/cancel', [TerminalCurrentOrderController::class, 'c
 Route::post('/order/terminal/delete', [TerminalCurrentOrderController::class, 'delete'])->middleware(['allow:staff_terminal']);
 Route::post('/order/terminal/status', [TerminalCurrentOrderController::class, 'status'])->middleware(['allow:staff_terminal']);
 Route::post('/order/terminal/close', [TerminalCurrentOrderController::class, 'close'])->middleware(['allow:staff_terminal']);
+Route::post('/order/terminal/save_unconfirmed', [TerminalCurrentOrderController::class, 'saveUnconfirmed'])->middleware(['allow:staff_terminal']);
 
 Route::post('/order/return', [OrderReturnController::class, 'return']);
 

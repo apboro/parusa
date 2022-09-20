@@ -39,6 +39,7 @@ use Illuminate\Support\Facades\DB;
  * @property int|null $terminal_id
  * @property int|null $terminal_position_id
  * @property string|null $external_id
+ * @property bool $payment_unconfirmed
  * @property string|null $name
  * @property string|null $email
  * @property string|null $phone

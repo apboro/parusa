@@ -6,14 +6,17 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\LifePos\LifePosSales;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
+use App\Models\Payments\Payment;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 
 class TerminalCurrentOrderController extends ApiController
@@ -96,6 +99,40 @@ class TerminalCurrentOrderController extends ApiController
         }
 
         return APIResponse::success('Оплата отменена.');
+    }
+
+    /**
+     * Save unconfirmed order payment.
+     *
+     * @param Request $request
+     *
+     * @return  JsonResponse
+     */
+    public function saveUnconfirmed(Request $request): JsonResponse
+    {
+        try {
+            $order = $this->getOrder($request);
+        } catch (Exception $exception) {
+            return APIResponse::error($exception->getMessage());
+        }
+
+        if (!$order->hasStatus(OrderStatus::terminal_wait_for_pay) && !$order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve)) {
+            return APIResponse::error('Невозможно. Текущий заказ не ожидает оплаты.');
+        }
+
+        try {
+            DB::transaction(static function () use ($order) {
+                $order->payment_unconfirmed = true;
+                $order->setStatus(OrderStatus::terminal_finishing);
+                $order->tickets->map(function (Ticket $ticket) {
+                    $ticket->setStatus(TicketStatus::terminal_finishing);
+                });
+            });
+        } catch (Exception $exception) {
+            return APIResponse::error($exception->getMessage());
+        }
+
+        return APIResponse::success('Заказ сохранен без подтверждения платежа');
     }
 
     /**
@@ -185,10 +222,63 @@ class TerminalCurrentOrderController extends ApiController
      */
     public function status(Request $request): JsonResponse
     {
+        $current = Currents::get($request);
+
         try {
-            $order = $this->getOrder($request);
+            $order = $this->getOrder($request, $current);
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
+        }
+
+        try {
+            if ($order->external_id) {
+                $payments = LifePosSales::getSalePayments($order->external_id);
+                if (isset($payments['items']) && count($payments['items']) > 0) {
+                    foreach ($payments['items'] as $receivedPayment) {
+                        // add payment
+                        // search existing payment to update
+                        if (!empty($receivedPayment['guid'])) {
+                            /** @var Payment|null $payment */
+                            $payment = Payment::query()->where('external_id', $receivedPayment['guid'])->first();
+                        }
+                        // if no payment to update create new
+                        if (!isset($payment)) {
+                            $payment = new Payment();
+                        }
+
+                        $payment->gate = 'lifepos';
+                        $payment->status_id = PaymentStatus::sale;
+                        $payment->order_id = $order->id ?? null;
+                        $payment->fiscal = $receivedPayment['fiscal_document']['guid'] ?? null;
+                        $payment->total = ($receivedPayment['total_sum']['value'] ?? 0) / 100;
+                        $payment->by_card = ($receivedPayment['sum_by_card']['value'] ?? 0) / 100;
+                        $payment->by_cash = ($receivedPayment['sum_by_cash']['value'] ?? 0) / 100;
+                        $payment->external_id = $receivedPayment['guid'];
+                        $payment->terminal_id = $current->terminalId();
+                        $payment->position_id = $current->positionId();
+                        $payment->save();
+
+                        if ($receivedPayment['fiscal_document']['guid']) {
+                            $receipt = LifePosSales::getFiscal($receivedPayment['fiscal_document']['guid']);
+                            if (isset($receipt['sources']['print_view'])) {
+                                $print = $receipt['sources']['print_view'];
+                                $name = '/lifepos/' . $receipt['guid'] . '.txt';
+
+                                Storage::disk('fiscal')->put($name, $print);
+                            }
+                        }
+
+                        // set order status
+                        $order->payment_unconfirmed = false;
+                        $order->setStatus(OrderStatus::terminal_finishing);
+                        $order->tickets->map(function (Ticket $ticket) {
+                            $ticket->setStatus(TicketStatus::terminal_finishing);
+                        });
+                    }
+                }
+            }
+        } catch (Exception $exception) {
+
         }
 
         return APIResponse::response([

@@ -16,7 +16,8 @@ https://apidoc.life-pay.ru/cloud-print/
 ## QUESTIONS / PROBABLY TODO
 
 Возврат билетов/заказов, купленных на сайте ???
-Проверка IP lifepos
+Проверка IP lifepos ???
+Ограничение длины названий для билетов (LifePos) 
 
 ### Настройки задач по расписанию
 

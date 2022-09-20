@@ -29,6 +29,9 @@
                         <router-link class="link" :to="{name: 'order-info', params: {id: order['id']}}" v-html="highlight(order['id'])"/>
                     </ListTableCell>
                     <ListTableCell>
+                        <span v-if="order['payment_unconfirmed']" style="display: inline-block; color: orange; width: 1em" title="Платёж не подтверждён">
+                            <IconExclamation style="color: orange"/>
+                        </span>
                         {{ order['date'] }}
                     </ListTableCell>
                     <ListTableCell>
@@ -113,6 +116,7 @@ import PopUp from "@/Components/PopUp";
 import GuiValue from "@/Components/GUI/GuiValue";
 import InputDate from "@/Components/Inputs/InputDate";
 import LayoutPage from "@/Components/Layout/LayoutPage";
+import IconExclamation from "../../Components/Icons/IconExclamation";
 
 export default {
     props: {
@@ -120,6 +124,7 @@ export default {
     },
 
     components: {
+        IconExclamation,
         LayoutPage,
         InputDate,
         LoadingProgress,

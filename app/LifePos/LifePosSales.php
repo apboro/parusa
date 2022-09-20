@@ -226,4 +226,86 @@ class LifePosSales
 
         return $response;
     }
+
+    /**
+     * Get sale info.
+     *
+     * @param string $guid
+     *
+     * @return  array
+     */
+    public static function getSalePayments(string $guid): array
+    {
+        $orgId = env('LIFE_POS_ORG_ID');
+
+        // make connection client
+        $client = new Client([
+            'base_uri' => env('LIFE_POS_BASE_URL'),
+            'timeout' => 0,
+            'allow_redirects' => false,
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('LIFE_POS_KEY'),
+                'Accept-Language' => 'ru-RU',
+            ],
+        ]);
+
+        // query data
+        try {
+            $result = $client->get("/v4/orgs/{$orgId}/deals/sales/{$guid}/docs/money");
+        } catch (GuzzleException $exception) {
+            Log::channel('lifepos_connection')->error("Querying order [$guid] connection error: " . $exception->getMessage());
+            throw new RuntimeException($exception->getMessage());
+        }
+
+        try {
+            $response = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            Log::channel('lifepos_connection')->error("Querying order [$guid] payments response parsing error: " . $exception->getMessage());
+            throw new RuntimeException('LifePos response parsing error: ' . $exception->getMessage());
+        }
+
+        return $response;
+    }
+
+
+    /**
+     * Get sale info.
+     *
+     * @param string $guid
+     *
+     * @return  array
+     */
+    public static function getFiscal(string $guid): array
+    {
+        $orgId = env('LIFE_POS_ORG_ID');
+        $registrarId = env('LIFE_POS_FISCAL_REGISTRAR');
+
+        // make connection client
+        $client = new Client([
+            'base_uri' => env('LIFE_POS_BASE_URL'),
+            'timeout' => 0,
+            'allow_redirects' => false,
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('LIFE_POS_KEY'),
+                'Accept-Language' => 'ru-RU',
+            ],
+        ]);
+
+        // query data
+        try {
+            $result = $client->get("/v4/orgs/{$orgId}/fiscal-registrars/{$registrarId}/docs/receipts/{$guid}");
+        } catch (GuzzleException $exception) {
+            Log::channel('lifepos_connection')->error("Querying receipt [$guid] connection error: " . $exception->getMessage());
+            throw new RuntimeException($exception->getMessage());
+        }
+
+        try {
+            $response = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            Log::channel('lifepos_connection')->error("Querying receipt [$guid] response parsing error: " . $exception->getMessage());
+            throw new RuntimeException('LifePos response parsing error: ' . $exception->getMessage());
+        }
+
+        return $response;
+    }
 }

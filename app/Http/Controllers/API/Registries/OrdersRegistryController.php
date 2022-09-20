@@ -117,6 +117,7 @@ class OrdersRegistryController extends ApiController
                     'tickets_total' => $order->getAttribute('tickets_count'),
                     'amount' => $order->tickets->sum('base_price'),
                     'returnable' => $returnable,
+                    'payment_unconfirmed' => (bool)$order->payment_unconfirmed,
                     'info' => [
                         'buyer_name' => $order->name,
                         'buyer_email' => $order->email,
