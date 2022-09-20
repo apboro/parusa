@@ -34,7 +34,6 @@
 
 <script>
 import data from "@/Core/Data";
-import PopUp from "@/Components/PopUp";
 import ShowcasePopUp from "@/Pages/Showcase/Components/ShowcasePopUp";
 import ShowcaseGallery from "@/Pages/Showcase/Components/ShowcaseGallery";
 import ShowcaseIconPlace from "@/Pages/Showcase/Icons/ShowcaseIconPlace";
@@ -54,7 +53,6 @@ export default {
         ShowcaseIconPlace,
         ShowcaseGallery,
         ShowcasePopUp,
-        PopUp,
     },
 
     computed: {
