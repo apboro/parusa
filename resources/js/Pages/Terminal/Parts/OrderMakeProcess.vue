@@ -87,7 +87,7 @@ export default {
     }),
 
     mounted() {
-        this.interval = setInterval(this.handleInterval, 1000);
+        this.interval = setInterval(this.handleInterval, 2500);
     },
 
     unmounted() {
