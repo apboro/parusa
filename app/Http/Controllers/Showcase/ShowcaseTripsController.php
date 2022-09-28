@@ -50,6 +50,8 @@ class ShowcaseTripsController extends ApiController
         }
         $date = Carbon::parse($date);
 
+        $excursionId = $request->input('excursion_id');
+
         $trips = $this->baseTripQuery()
             ->with(['status', 'startPier', 'ship', 'excursion', 'excursion.info', 'excursion.programs'])
             ->when($partnerId, function (Builder $query) use ($partnerId) {
@@ -58,6 +60,9 @@ class ShowcaseTripsController extends ApiController
                         $query->where('partner_id', $partnerId);
                     });
                 });
+            })
+            ->when($excursionId !== null, function (Builder $query) use ($excursionId) {
+                $query->where('excursion_id', $excursionId);
             })
             ->withCount(['tickets'])
             ->with('excursion.ratesLists', function (HasMany $query) use ($date) {

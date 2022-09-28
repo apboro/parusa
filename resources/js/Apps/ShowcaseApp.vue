@@ -102,14 +102,25 @@ export default {
             is_loading: false,
             data: null,
         },
+
+        autoload: false,
+        excursion_id: null,
     }),
 
     created() {
         // get config defined outside
         const configElement = document.getElementById('ap-showcase-config');
         const config = configElement !== null ? JSON.parse(configElement.innerHTML) : null;
-        if (config !== null && typeof config['partner_site'] !== "undefined" && config['partner_site'] === false) {
-            this.options.is_partner_page = false;
+        if (config !== null) {
+            if (typeof config['partner_site'] !== "undefined" && config['partner_site'] === false) {
+                this.options.is_partner_page = false;
+            }
+            if (typeof config['autoload'] !== "undefined" && config['autoload'] === true) {
+                this.autoload = true;
+            }
+            if (typeof config['excursion_id'] !== "undefined" && typeof config['excursion_id'] === 'number') {
+                this.excursion_id = config['excursion_id'];
+            }
         }
 
         // get initial parameters
@@ -201,9 +212,9 @@ export default {
                 // handle trip info
                 this.getTrip(this.trip_id)
 
-            } else {
-                // handle trips list
-                //this.loadList();
+            } else if (this.autoload) {
+                // handle trips list with autoload
+                this.loadList();
             }
         },
 
@@ -219,7 +230,7 @@ export default {
                 this.last_search = (this.last_search === null) ? {date: this.today} : this.last_search;
             }
             this.trips.is_loading = true;
-            axios.post(this.url('/showcase/trips'), {search: this.last_search}, {headers: {'X-Ap-External-Session': this.session}})
+            axios.post(this.url('/showcase/trips'), {search: this.last_search, excursion_id: this.excursion_id}, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     this.trips.list = response.data['trips'];
                     this.trips.date = response.data['date'];
