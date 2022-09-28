@@ -217,7 +217,7 @@ export default {
 
     data: () => ({
         form: null,
-        agreement: false,
+        agreement: true,
         agreement_valid: true,
     }),
 
