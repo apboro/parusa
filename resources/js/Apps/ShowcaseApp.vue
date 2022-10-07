@@ -132,6 +132,25 @@ export default {
         }
         this.media = urlParams.get('media');
 
+        if (urlParams.has('ap_showcase_date')) {
+            if (this.last_search === null) {
+                this.last_search = {};
+            }
+            this.last_search['date'] = urlParams.get('ap_showcase_date');
+        }
+        if (urlParams.has('ap_showcase_persons')) {
+            if (this.last_search === null) {
+                this.last_search = {};
+            }
+            this.last_search['persons'] = Number(urlParams.get('ap_showcase_persons'));
+        }
+        if (urlParams.has('ap_showcase_programs')) {
+            if (this.last_search === null) {
+                this.last_search = {};
+            }
+            this.last_search['programs'] = Number(urlParams.get('ap_showcase_programs'));
+        }
+
         // get order secret if set
         this.order_secret = localStorage.getItem('ap-showcase-order-secret');
 
