@@ -235,6 +235,10 @@ class TerminalCurrentOrderController extends ApiController
                 $payments = LifePosSales::getSalePayments($order->external_id);
                 if (isset($payments['items']) && count($payments['items']) > 0) {
                     foreach ($payments['items'] as $receivedPayment) {
+                        if (!isset($receivedPayment['type_of']) || $receivedPayment['type_of'] !== 'SalePayment') {
+                            continue;
+                        }
+
                         // add payment
                         // search existing payment to update
                         if (!empty($receivedPayment['guid'])) {
