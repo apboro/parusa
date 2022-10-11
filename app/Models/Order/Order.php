@@ -17,6 +17,7 @@ use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Model;
 use App\Models\Partner\Partner;
+use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\Tickets\Ticket;
@@ -53,6 +54,7 @@ use Illuminate\Support\Facades\DB;
  * @property Terminal|null $terminal
  * @property Position|null $cashier
  * @property Collection $tickets
+ * @property Collection $payments
  */
 class Order extends Model implements Statusable, Typeable
 {
@@ -319,5 +321,15 @@ class Order extends Model implements Statusable, Typeable
             /** @var Ticket $ticket */
             $ticket->payCommission();
         }
+    }
+
+    /**
+     * Payments list for this order.
+     *
+     * @return  HasMany
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'order_id', 'id');
     }
 }

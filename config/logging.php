@@ -78,6 +78,12 @@ return [
             'level' => 'info',
         ],
 
+        'lifepos_sync' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/lifepos_sync.log'),
+            'level' => 'info',
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
