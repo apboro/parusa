@@ -8,7 +8,7 @@
                        :is-loading="order.is_loading"
                        :order-data="order.data"
                        :secret="order_secret"
-                       :crm_url="crm_url"
+                       :crm_url="crmUrl"
                        :debug="debug"
                        :session="session"
                        @close="closeOrder"
@@ -16,7 +16,7 @@
             <TicketsSelect v-else-if="trip_id"
                            :trip="trip.data"
                            :trip-id="trip_id"
-                           :crm_url="crm_url"
+                           :crm_url="crmUrl"
                            :debug="debug"
                            :is-loading="trip.is_loading"
                            :session="session"
@@ -31,7 +31,7 @@
                        :trips="trips.list"
                        :is-loading="trips.is_loading"
                        :last-search="last_search"
-                       :crm_url="crm_url"
+                       :crm_url="crmUrl"
                        :debug="debug"
                        :session="session"
                        @search="loadList"
@@ -64,6 +64,7 @@ export default {
     },
 
     data: () => ({
+        crm_url_override: null,
         session: null,
         options: {
             partner: null,
@@ -121,6 +122,7 @@ export default {
             if (typeof config['excursion_id'] !== "undefined" && typeof config['excursion_id'] === 'number') {
                 this.excursion_id = config['excursion_id'];
             }
+            this.crm_url_override = config['crm_url_override'];
         }
 
         // get initial parameters
@@ -164,6 +166,12 @@ export default {
         window.addEventListener('popstate', this.handleNavigation);
     },
 
+    computed: {
+        crmUrl() {
+            return this.crm_url_override ? this.crm_url_override : this.crm_url;
+        },
+    },
+
     methods: {
         /**
          * Helper function for url making.
@@ -172,7 +180,7 @@ export default {
          * @returns {string}
          */
         url(path) {
-            return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
+            return this.crmUrl + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
         },
 
         /**

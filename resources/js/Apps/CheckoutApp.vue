@@ -5,7 +5,7 @@
             <template v-if="!has_error">
                 <OrderHeader v-if="order" :order="order"/>
                 <OrderInfo :order="order"
-                           :crm_url="crm_url"
+                           :crm_url="crmUrl"
                            :debug="debug"
                 />
                 <OrderContacts :order="order"/>
@@ -49,6 +49,7 @@ export default {
     },
 
     data: () => ({
+        crm_url_override: null,
         processing: true,
         is_cancelling: false,
 
@@ -61,14 +62,27 @@ export default {
     }),
 
     created() {
+        // get config defined outside
+        const configElement = document.getElementById('ap-checkout-config');
+        const config = configElement !== null ? JSON.parse(configElement.innerHTML) : null;
+        if (config !== null) {
+            this.crm_url_override = config['crm_url_override'];
+        }
+
         let secret = localStorage.getItem('ap-checkout-order-secret');
 
         this.init(secret);
     },
 
+    computed: {
+        crmUrl() {
+            return this.crm_url_override ? this.crm_url_override : this.crm_url;
+        },
+    },
+
     methods: {
         url(path) {
-            return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
+            return this.crmUrl + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
         },
 
         init(secret, force = false) {
