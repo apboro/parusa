@@ -67,8 +67,8 @@ class RatesListController extends ApiEditController
         $list = $query->get();
 
         /** @var Collection $list */
-        $list = $list->map(function (TicketsRatesList $ratesList) {
-            return $this->rateToArray($ratesList, true);
+        $list = $list->map(function (TicketsRatesList $ratesList) use($current) {
+            return $this->rateToArray($ratesList, true, $current->isStaff());
         });
 
         $excursions = $excursionId !== null ? null : Excursion::query()

@@ -20,10 +20,11 @@ trait RateToArray
      *
      * @param TicketsRatesList $list
      * @param bool $zeroPrice
+     * @param bool $sitePrice
      *
      * @return  array
      */
-    protected function rateToArray(TicketsRatesList $list, bool $zeroPrice = false): array
+    protected function rateToArray(TicketsRatesList $list, bool $zeroPrice = false, bool $sitePrice = false): array
     {
         $now = Carbon::now()->startOfDay();
         $overridden = false;
@@ -36,12 +37,12 @@ trait RateToArray
             });
         }
 
-        $rates = $rates->map(function (TicketRate $rate) use (&$overridden) {
+        $rates = $rates->map(function (TicketRate $rate) use (&$overridden, $sitePrice) {
             /** @var TicketPartnerRate $partnerRate */
             $partnerRate = $rate->partnerRates && $rate->partnerRates->count() === 1 ? $rate->partnerRates[0] : null;
             $overridden = $overridden || $partnerRate !== null;
 
-            return [
+            $r = [
                 'id' => $rate->id,
                 'grade_id' => $rate->grade_id,
                 'base_price' => $rate->base_price,
@@ -52,6 +53,10 @@ trait RateToArray
                 'partner_commission_type' => $partnerRate->commission_type ?? null,
                 'partner_commission_value' => $partnerRate->commission_value ?? null,
             ];
+            if ($sitePrice) {
+                $r['site_price'] = $rate->site_price;
+            }
+            return $r;
         });
 
         return [

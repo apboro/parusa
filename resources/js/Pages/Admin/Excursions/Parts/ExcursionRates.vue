@@ -10,7 +10,7 @@
 
         <GuiHeading bold mb-10>Действующий тариф</GuiHeading>
         <GuiMessage text-red border mt-5 v-if="currentRate === null">Действующий тариф не задан</GuiMessage>
-        <TicketRate v-else :rate="currentRate">
+        <TicketRate v-else :rate="currentRate" :with-site-price="true">
             <GuiActionsMenu :title="null" v-if="editable">
                 <span class="link" @click="edit(currentRate)">Редактировать</span>
                 <span class="link" @click="createFrom(currentRate)">Копировать тариф</span>
@@ -27,7 +27,7 @@
 
         <GuiHeading bold mt-30 mb-10>Будущие тарифы</GuiHeading>
         <GuiMessage text-red border mt-5 v-if="comingRates.length === 0">Будущих тарифов нет</GuiMessage>
-        <TicketRate v-else v-for="rate in comingRates" :rate="rate">
+        <TicketRate v-else v-for="rate in comingRates" :rate="rate" :with-site-price="true">
             <GuiActionsMenu :title="null" v-if="editable">
                 <span class="link" @click="edit(rate)">Редактировать</span>
                 <span class="link" @click="createFrom(rate)">Копировать тариф</span>
@@ -39,7 +39,7 @@
             <GuiExpand @expand="archive = $event"/>
         </GuiHeading>
         <GuiMessage border mt-5 v-if="archive && archivedRates.length === 0">Прошлых тарифов нет</GuiMessage>
-        <TicketRate v-else-if="archive" v-for="rate in archivedRates" :rate="rate">
+        <TicketRate v-else-if="archive" v-for="rate in archivedRates" :rate="rate" :with-site-price="true">
             <GuiActionsMenu :title="null" v-if="editable">
                 <span class="link" @click="edit(rate)">Редактировать</span>
                 <span class="link" @click="createFrom(rate)">Копировать тариф</span>

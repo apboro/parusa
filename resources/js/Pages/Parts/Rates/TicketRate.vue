@@ -15,6 +15,7 @@
             <tr>
                 <th>Тип билета</th>
                 <th>Базовая стоимость билета, руб.</th>
+                <th v-if="withSitePrice">Цена для сайта, руб.</th>
                 <th v-if="minMax">Минимальный и максимальный диапазон стоимости билета, руб.<sup v-if="hints===true">1</sup></th>
                 <th colspan="2">Комиссионное вознаграждение партнёров за продажу билета, руб.<sup v-if="hints===true">2</sup></th>
                 <th v-if="overridable" colspan="2">Специальные условия</th>
@@ -24,6 +25,7 @@
             <tr v-for="item in rates">
                 <td>{{ gradeName(item['grade_id']) }}</td>
                 <td>{{ item['base_price'] }} руб.</td>
+                <td v-if="withSitePrice">{{ item['site_price'] ? item['site_price'] + ' руб.' : '—' }}</td>
                 <td v-if="minMax">{{ item['min_price'] }} - {{ item['max_price'] }} руб.</td>
 
                 <td v-if="item['commission_type'] === 'percents'" :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['commission_value'] }}%</td>
@@ -69,6 +71,7 @@ export default {
         overridable: {type: Boolean, default: false},
         hints: {type: Boolean, default: true},
         minMax: {type: Boolean, default: true},
+        withSitePrice: {type: Boolean, default: false},
     },
 
     computed: {

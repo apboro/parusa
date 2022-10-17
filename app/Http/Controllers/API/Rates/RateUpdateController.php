@@ -52,6 +52,7 @@ class RateUpdateController extends ApiEditController
         ];
         for ($i = 0; $i < $count; $i++) {
             $rules["rates.$i.base_price"] = 'required|numeric|min:0|bail';
+            $rules["rates.$i.site_price"] = 'nullable|numeric|min:0|bail';
             $rules["rates.$i.min_price"] = 'required|numeric|min:0|bail';
             $rules["rates.$i.max_price"] = "required|numeric|gte:rates.$i.base_price|min:0|bail";
             $rules["rates.$i.commission_type"] = 'required';
@@ -113,6 +114,7 @@ class RateUpdateController extends ApiEditController
                 /** @var TicketRate $existing */
                 $existing = $rates->where('grade_id', $rate['grade_id'])->first();
                 $existing->base_price = $rate['base_price'];
+                $existing->site_price = $rate['site_price'] ?? null;
                 $existing->min_price = $rate['min_price'];
                 $existing->max_price = $rate['max_price'];
                 $existing->commission_type = $rate['commission_type'];
@@ -147,7 +149,7 @@ class RateUpdateController extends ApiEditController
 
         return APIResponse::success($ratesList->wasRecentlyCreated ? 'Тариф добавлен' : 'Тариф изменён',
             [
-                'rate' => $this->rateToArray($ratesList, true),
+                'rate' => $this->rateToArray($ratesList, true, true),
             ]
         );
     }

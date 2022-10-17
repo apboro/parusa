@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $base_price
  * @property int $min_price
  * @property int $max_price
+ * @property int|null $site_price
  * @property string $commission_type
  * @property int $commission_value
  * @property Carbon $created_at
@@ -129,6 +130,30 @@ class TicketRate extends Model
     public function setMaxPriceAttribute(float $value): void
     {
         $this->attributes['max_price'] = PriceConverter::priceToStore($value);
+    }
+
+    /**
+     * Convert site_price from store value to real price.
+     *
+     * @param int|null $value
+     *
+     * @return  float
+     */
+    public function getSitePriceAttribute(?int $value): ?float
+    {
+        return $value === null ? null : PriceConverter::storeToPrice($value);
+    }
+
+    /**
+     * Convert site_price to store value.
+     *
+     * @param float|null $value
+     *
+     * @return  void
+     */
+    public function setSitePriceAttribute(?float $value): void
+    {
+        $this->attributes['site_price'] = $value === null ? null : PriceConverter::priceToStore($value);
     }
 
     /**
