@@ -132,7 +132,7 @@ export default {
         } else {
             this.options.partner = config !== null && typeof config['partner'] !== "undefined" && config['partner'] !== null ? Number(config['partner']) : null;
         }
-        this.media = urlParams.get('media');
+        this.options.media = urlParams.get('media');
 
         if (urlParams.has('ap_showcase_date')) {
             if (this.last_search === null) {

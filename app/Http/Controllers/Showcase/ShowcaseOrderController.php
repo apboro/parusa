@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiEditController;
 use App\Http\Middleware\ExternalProtect;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
@@ -45,16 +46,29 @@ class ShowcaseOrderController extends ApiEditController
             return response()->json(['message' => 'Ошибка сессии.'], 400);
         }
 
+        /** @var ?Partner $partner */
+        $partner = $originalKey['partner_id'] ? Partner::query()->where('id', $originalKey['partner_id'])->first() : null;
+        $isPartnerSite = $originalKey['is_partner'];
+        $media = $originalKey['media'] ?? null;
+
         /** @var Trip $trip */
         $trip = Trip::query()
             ->where('id', $request->input('trip'))
             ->where('start_at', '>', Carbon::now())
             ->whereIn('status_id', [TripStatus::regular])
             ->whereIn('sale_status_id', [TripSaleStatus::selling])
-            ->whereHas('excursion.ratesLists', function (Builder $query) {
+            ->whereHas('excursion.ratesLists', function (Builder $query) use ($isPartnerSite) {
                 $query
                     ->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
-                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)');
+                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
+                    ->whereHas('rates', function (Builder $query) use ($isPartnerSite) {
+                        $query->where('grade_id', '!=', TicketGrade::guide);
+                        if ($isPartnerSite) {
+                            $query->where('site_price', '>', 0);
+                        } else {
+                            $query->where('base_price', '>', 0);
+                        }
+                    });
             })
             ->first();
 
@@ -104,7 +118,7 @@ class ShowcaseOrderController extends ApiEditController
         foreach ($data['rate'] as $gradeId => $grade) {
             if ($grade['quantity'] > 0) {
                 // get rate
-                /** @var TicketRate */
+                /** @var TicketRate $rate */
                 $rate = $rates->rates->where('grade_id', $gradeId)->first();
                 if ($rate === null) {
                     return APIResponse::error('Нет продажи билетов на этот рейс.');
@@ -114,16 +128,12 @@ class ShowcaseOrderController extends ApiEditController
                         'trip_id' => $trip->id,
                         'grade_id' => $gradeId,
                         'status_id' => TicketStatus::showcase_creating,
+                        'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
                     ]);
                     $tickets[] = $ticket;
                 }
             }
         }
-
-        /** @var ?Partner $partner */
-        $partner = $originalKey['partner_id'] ? Partner::query()->where('id', $originalKey['partner_id'])->first() : null;
-        $isPartnerSite = $originalKey['is_partner'];
-        $media = $cookies['media'] ?? null;
 
         if ($media === 'qr') {
             $orderType = OrderType::qr_code;
@@ -145,7 +155,8 @@ class ShowcaseOrderController extends ApiEditController
                 null,
                 $data['email'],
                 $data['name'],
-                $data['phone']
+                $data['phone'],
+                $isPartnerSite === true // strict price checking only for partner site
             );
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());

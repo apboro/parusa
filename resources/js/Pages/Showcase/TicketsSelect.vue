@@ -40,10 +40,12 @@
                 <ExcursionInfo ref="excursion"
                                :crm_url="crm_url"
                                :debug="debug"
+                               :session="session"
                 />
                 <PierInfo ref="pier"
                           :crm_url="crm_url"
                           :debug="debug"
+                          :session="session"
                 />
             </div>
 
@@ -110,6 +112,10 @@
                     </ShowcaseInputCheckbox>
                 </ShowcaseFieldWrapper>
             </div>
+
+            <template v-if="has_error">
+                <ShowcaseMessage>Ошибка: {{ error_message }}</ShowcaseMessage>
+            </template>
 
             <div class="ap-showcase__checkout">
                 <div class="ap-showcase__checkout-total">
@@ -219,6 +225,8 @@ export default {
         form: null,
         agreement: true,
         agreement_valid: true,
+        has_error: false,
+        error_message: null,
     }),
 
     created() {

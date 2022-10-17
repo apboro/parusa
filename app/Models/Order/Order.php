@@ -213,7 +213,7 @@ class Order extends Model implements Statusable, Typeable
      * Order factory.
      *
      * @param int $typeId Order initiator
-     * @param Ticket[] $tickets Array of tickets to order
+     * @param Ticket $tickets Array of tickets to order
      * @param int $statusId Order initial status
      * @param int|null $partnerId Partner ID
      * @param int|null $positionId Position of partner made this order (or null)
@@ -222,6 +222,7 @@ class Order extends Model implements Statusable, Typeable
      * @param string|null $email Buyer details
      * @param string|null $name Buyer details
      * @param string|null $phone Buyer details
+     * @param bool $strictPrice
      *
      * @return  Order
      * @see OrderType
@@ -230,7 +231,7 @@ class Order extends Model implements Statusable, Typeable
      * @see Partner
      * @see Position
      */
-    public static function make(int $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?int $terminalPositionId, ?string $email, ?string $name, ?string $phone): Order
+    public static function make(int $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?int $terminalPositionId, ?string $email, ?string $name, ?string $phone, bool $strictPrice = true): Order
     {
         if (empty($tickets)) {
             throw new WrongOrderException('Невозможно создать заказ без билетов.');
@@ -271,7 +272,7 @@ class Order extends Model implements Statusable, Typeable
             // calc base price if not set
             if ($ticket->base_price === null) {
                 $ticket->base_price = $ticket->getCurrentPrice();
-            } else if ($ticket->base_price < $rate->min_price || $ticket->base_price > $rate->max_price) {
+            } else if ($strictPrice && ($ticket->base_price < $rate->min_price || $ticket->base_price > $rate->max_price)) {
                 throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Неверна указана цена билета.');
             }
         }
