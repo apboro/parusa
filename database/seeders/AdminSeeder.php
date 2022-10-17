@@ -23,6 +23,11 @@ class AdminSeeder extends Seeder
             $admin->staffPosition()->create(['title' => 'Админинстратор', 'is_staff' => true]);
             $admin->profile()->create(['lastname' => 'Администратор', 'firstname' => 'Администратор', 'gender' => 'male']);
             $admin->staffPosition->roles()->attach(Role::admin);
+        } else {
+            $admin = User::query()->where('id', 1)->first();
+            $admin->login = 'admin';
+            $admin->password = Hash::make('admin');
+            $admin->save();
         }
         if (User::query()->where('id', 2)->count() === 0) {
             $admin = User::factory()->create(['login' => 'nechaev@mail.ru', 'password' => Hash::make('000000')]);
