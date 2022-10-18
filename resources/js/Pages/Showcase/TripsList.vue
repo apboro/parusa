@@ -45,7 +45,14 @@
                         </thead>
                         <tbody>
                         <tr v-for="trip in trips">
-                            <td>{{ trip['start_time'] }}</td>
+                            <td>
+                                <div>
+                                    {{ trip['start_time'] }}
+                                </div>
+                                <div style="color: #747474;">
+                                    {{ trip['start_date'] }}
+                                </div>
+                            </td>
                             <td>
                                 <span class="ap-link" @click="showPierInfo(trip)">Причал "{{ trip['pier'] }}"</span>
                                 <span>{{ trip['ship'] }}</span>
@@ -66,7 +73,13 @@
                         </tbody>
                     </table>
                 </div>
-                <ShowcaseMessage border v-else>Рейсы с заданными параметрами не найдены</ShowcaseMessage>
+
+                <ShowcaseMessage border v-else>
+                    Рейсы с заданными параметрами не найдены.
+                    <div v-if="next_date" style="margin-top: 10px">
+                        Ближайшая дата рейса <span class="ap-link" @click="setNextDate">{{ next_date_caption }}</span>
+                    </div>
+                </ShowcaseMessage>
             </template>
         </ShowcaseLoadingProgress>
 
@@ -119,6 +132,8 @@ export default {
 
         date: {type: String, default: null},
         trips: {type: Array, default: null},
+        next_date: {type: String, default: null},
+        next_date_caption: {type: String, default: null},
         isLoading: {type: Boolean, default: false},
 
         lastSearch: {type: Object, default: null},
@@ -173,6 +188,11 @@ export default {
 
         showExcursionInfo(trip) {
             this.$refs.excursion.show(trip['excursion_id']);
+        },
+
+        setNextDate() {
+            this.search_parameters.date = this.next_date;
+            this.$emit('search', this.search_parameters);
         },
     }
 }

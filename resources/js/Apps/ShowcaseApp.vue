@@ -29,6 +29,8 @@
                        :today="today"
                        :date="trips.date"
                        :trips="trips.list"
+                       :next_date="trips.next_date"
+                       :next_date_caption="trips.next_date_caption"
                        :is-loading="trips.is_loading"
                        :last-search="last_search"
                        :crm_url="crmUrl"
@@ -89,6 +91,8 @@ export default {
         trips: {
             date: null,
             list: null,
+            next_date: null,
+            next_date_caption: null,
             is_loading: false,
         },
 
@@ -261,6 +265,8 @@ export default {
                 .then(response => {
                     this.trips.list = response.data['trips'];
                     this.trips.date = response.data['date'];
+                    this.trips.next_date = response.data['next_date'];
+                    this.trips.next_date_caption = response.data['next_date_caption'];
                 })
                 .catch(error => {
                     this.state.error_message = error.response.data['message'];
