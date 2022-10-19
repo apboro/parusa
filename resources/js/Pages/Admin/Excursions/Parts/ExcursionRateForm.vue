@@ -16,10 +16,10 @@
             <thead>
             <tr>
                 <th class="w-15"></th>
-                <th class="p-10 w-15">Базовая стоимость (БС) билетов, руб.</th>
-                <th class="p-10 w-15">Цена для сайта, руб.</th>
-                <th class="p-10 w-30" colspan="2">Минимальный и максимальный диапазон стоимости билетов, руб.</th>
-                <th class="p-10 w-40" colspan="3">Комиссионное вознаграждение партнёров за продажу билетов, руб.</th>
+                <th class="w-15 p-10">Базовая стоимость (БС) билетов, руб.</th>
+                <th class="w-20 p-10" colspan="2">Минимальный и максимальный диапазон стоимости билетов, руб.</th>
+                <th class="w-35 p-10" colspan="3">Комиссионное вознаграждение партнёров за продажу билетов, руб.</th>
+                <th class="w-15 p-10">Цена для сайта, руб.</th>
             </tr>
             </thead>
             <tbody>
@@ -34,15 +34,12 @@
                     />
                 </td>
                 <td>
-                    <FormNumber :form="form" :name="'rates.' + key + '.site_price'" :hide-title="true" :small="true"/>
-                </td>
-                <td>
                     <FormNumber :form="form" :name="'rates.' + key + '.min_price'" :hide-title="true" :small="true"/>
                 </td>
                 <td>
                     <FormNumber :form="form" :name="'rates.' + key + '.max_price'" :hide-title="true" :small="true"/>
                 </td>
-                <td class="w-15">
+                <td class="w-50px">
                     <FormDropdown :form="form" :name="'rates.' + key + '.commission_type'"
                                   :identifier="'id'"
                                   :show="'name'"
@@ -55,13 +52,16 @@
                                   ]"
                     />
                 </td>
-                <td class="w-15">
+                <td class="w-50px">
                     <FormNumber :form="form" :name="'rates.' + key + '.commission_value'" :hide-title="true" :small="true"/>
                 </td>
-                <td class="pl-10 pt-15" v-if="form.values['rates.' + key + '.commission_type'] === 'fixed'">
+                <td class="w-50px pl-10 pt-15" v-if="form.values['rates.' + key + '.commission_type'] === 'fixed'">
                     {{ Math.floor(Number(form.values['rates.' + key + '.commission_value']) * 100) / 100 }} руб.
                 </td>
                 <td class="pl-10 pt-15" v-else>{{ Math.floor(form.values['rates.' + key + '.commission_value'] * form.values['rates.' + key + '.base_price']) / 100 }} руб.</td>
+                <td>
+                    <FormNumber :form="form" :name="'rates.' + key + '.site_price'" :hide-title="true" :small="true"/>
+                </td>
             </tr>
             </tbody>
         </table>
@@ -153,7 +153,7 @@ $base_black_color: #1e1e1e !default;
     font-family: $project_font;
     border-collapse: collapse;
     margin: 10px 0 0;
-    width: 990px;
+    width: 1100px;
 
     & thead {
         color: #424242;

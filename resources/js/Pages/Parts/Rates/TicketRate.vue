@@ -15,17 +15,16 @@
             <tr>
                 <th>Тип билета</th>
                 <th>Базовая стоимость билета, руб.</th>
-                <th v-if="withSitePrice">Цена для сайта, руб.</th>
                 <th v-if="minMax">Минимальный и максимальный диапазон стоимости билета, руб.<sup v-if="hints===true">1</sup></th>
                 <th colspan="2">Комиссионное вознаграждение партнёров за продажу билета, руб.<sup v-if="hints===true">2</sup></th>
                 <th v-if="overridable" colspan="2">Специальные условия</th>
+                <th v-if="withSitePrice" style="color: #4a0d8d">Цена для сайта, руб.</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="item in rates">
                 <td>{{ gradeName(item['grade_id']) }}</td>
                 <td>{{ item['base_price'] }} руб.</td>
-                <td v-if="withSitePrice">{{ item['site_price'] ? item['site_price'] + ' руб.' : '—' }}</td>
                 <td v-if="minMax">{{ item['min_price'] }} - {{ item['max_price'] }} руб.</td>
 
                 <td v-if="item['commission_type'] === 'percents'" :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['commission_value'] }}%</td>
@@ -45,6 +44,8 @@
                     <td v-else-if="item['partner_commission_type'] === 'fixed'">{{ item['partner_commission_value'] }} руб.</td>
                     <td v-else>—</td>
                 </template>
+
+                <td v-if="withSitePrice" style="color: #4a0d8d">{{ item['site_price'] ? item['site_price'] + ' руб.' : '—' }}</td>
             </tr>
             </tbody>
         </table>
