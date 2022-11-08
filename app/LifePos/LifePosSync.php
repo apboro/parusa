@@ -36,6 +36,7 @@ class LifePosSync
             ->whereDoesntHave('payments', function (Builder $query) {
                 $query->where('gate', 'lifepos');
             })
+            ->whereIn('status_id', [OrderStatus::terminal_paid, OrderStatus::terminal_returned])
             ->select(['id', 'external_id'])
             ->when($fromId, function (Builder $query) use ($fromId) {
                 $query->where('id', '>=', $fromId);
