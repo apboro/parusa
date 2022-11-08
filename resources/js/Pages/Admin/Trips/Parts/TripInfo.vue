@@ -44,9 +44,9 @@
         </GuiContainer>
 
         <GuiContainer mt-30 v-if="editable">
-            <GuiButton @clicked="edit" :disabled="blocked">Редактировать</GuiButton>
-            <GuiText text-red mt-10 v-if="blocked">
-                <div class="mb-5">Рейс нельзя редактировать, на него есть оформленные билеты</div>
+            <GuiButton @clicked="edit" v-if="!blocked">Редактировать</GuiButton>
+            <GuiText mt-10 v-if="blocked">
+                <div class="mb-5 mt-50" style="font-size:14px">* Рейс нельзя редактировать, на него есть оформленные билеты.</div>
             </GuiText>
         </GuiContainer>
 
