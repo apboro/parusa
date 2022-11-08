@@ -167,6 +167,7 @@ export default {
 
         monthToLocale(month) {
             const date = new Date();
+            date.setDate(1);
             date.setMonth(month);
 
             return date.toLocaleString(this.locale, {month: 'long'});
@@ -174,6 +175,7 @@ export default {
 
         monthToLocale2(month) {
             const date = new Date();
+            date.setDate(1);
             date.setMonth(month);
 
             return String(date.toLocaleString(this.locale, {day: '2-digit', month: 'long'})).substring(3);
