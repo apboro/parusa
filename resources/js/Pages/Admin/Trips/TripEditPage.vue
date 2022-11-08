@@ -26,8 +26,6 @@
         </GuiContainer>
 
         <GuiContainer mt-20 w-700px>
-            <FormDictionary :form="form" :name="'status_id'" :dictionary="'trip_statuses'" :fresh="true"/>
-            <FormDictionary :form="form" :name="'sale_status_id'" :dictionary="'trip_sale_statuses'" :fresh="true"/>
             <FormNumber :form="form" :name="'tickets_total'"/>
             <FormDictionary :form="form" :name="'discount_status_id'" :dictionary="'trip_discount_statuses'" :fresh="true"/>
             <FormNumber :form="form" :name="'cancellation_time'"/>

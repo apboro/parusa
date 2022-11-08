@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Trips;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\TripSaleStatus;
+use App\Models\Dictionaries\TripStatus;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
 use Carbon\Carbon;
@@ -20,8 +22,6 @@ class TripEditController extends ApiEditController
         'end_pier_id' => 'required',
         'ship_id' => 'required',
         'excursion_id' => 'required',
-        'status_id' => 'required',
-        'sale_status_id' => 'required',
         'tickets_total' => 'required|integer|min:1|bail',
         'discount_status_id' => 'required',
         'cancellation_time' => 'required|integer|min:0',
@@ -34,8 +34,6 @@ class TripEditController extends ApiEditController
         'end_pier_id' => 'Причал прибытия',
         'ship_id' => 'Теплоход',
         'excursion_id' => 'Экскурсия',
-        'status_id' => 'Статус движения',
-        'sale_status_id' => 'Статус продаж',
         'tickets_total' => 'Общее количество билетов',
         'discount_status_id' => 'Скидки от базовой цены на кассах',
         'cancellation_time' => 'Время аннулирования брони на рейс, мин.',
@@ -81,8 +79,6 @@ class TripEditController extends ApiEditController
                 'end_pier_id' => $trip->end_pier_id,
                 'ship_id' => $trip->ship_id,
                 'excursion_id' => $trip->excursion_id,
-                'status_id' => $trip->status_id,
-                'sale_status_id' => $trip->sale_status_id,
                 'tickets_total' => $trip->tickets_total,
                 'discount_status_id' => $trip->discount_status_id,
                 'cancellation_time' => $trip->cancellation_time,
@@ -321,8 +317,8 @@ class TripEditController extends ApiEditController
         $trip->end_pier_id = $data['end_pier_id'];
         $trip->ship_id = $data['ship_id'];
         $trip->excursion_id = $data['excursion_id'];
-        $trip->setStatus($data['status_id'], false);
-        $trip->setSaleStatus($data['sale_status_id'], false);
+        $trip->setStatus(TripStatus::default, false);
+        $trip->setSaleStatus(TripSaleStatus::default, false);
         $trip->tickets_total = $data['tickets_total'];
         $trip->discount_status_id = $data['discount_status_id'];
         $trip->cancellation_time = $data['cancellation_time'];

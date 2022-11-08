@@ -44,7 +44,10 @@
         </GuiContainer>
 
         <GuiContainer mt-30 v-if="editable">
-            <GuiButton @click="edit">Редактировать</GuiButton>
+            <GuiButton @clicked="edit" :disabled="blocked">Редактировать</GuiButton>
+            <GuiText text-red mt-10 v-if="blocked">
+                <div class="mb-5">Рейс нельзя редактировать, на него есть оформленные билеты</div>
+            </GuiText>
         </GuiContainer>
 
         <FormPopUp :title="form_title"
@@ -69,6 +72,7 @@ import GuiButton from "@/Components/GUI/GuiButton";
 import FormPopUp from "@/Components/FormPopUp";
 import FormDictionary from "@/Components/Form/FormDictionary";
 import FormNumber from "@/Components/Form/FormNumber";
+import GuiText from "../../../../Components/GUI/GuiText";
 
 export default {
     props: {
@@ -80,6 +84,7 @@ export default {
     emits: ['update'],
 
     components: {
+        GuiText,
         FormNumber,
         FormDictionary,
         FormPopUp,
@@ -87,6 +92,12 @@ export default {
         GuiHint,
         GuiValue,
         GuiContainer,
+    },
+
+    computed: {
+        blocked() {
+            return this.data['tickets_sold'] || this.data['tickets_reserved'];
+        }
     },
 
     data: () => ({
