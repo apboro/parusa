@@ -32,4 +32,12 @@ export default [
             {'title': 'Реестр транзакций по кассам', 'route': 'transactions-registry'},
         ]
     },
+    {
+        'title': 'СТАТИСТИКА', 'route': '',
+        'items': [
+            {'title': 'Продажи с сайта Алые Паруса', 'route': 'statistics-sales'},
+            {'title': 'Статистика за сегодня', 'route': 'statistics-sales-today'},
+        ]
+    },
+
 ];

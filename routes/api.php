@@ -24,6 +24,7 @@ Route::prefix('api')->middleware(['api', 'auth:sanctum'])->group(function () {
 
     require base_path('routes/api/account.php');
     require base_path('routes/api/settings.php');
+    require base_path('routes/api/statistics.php');
 
     Route::any('{any}', [NotFoundController::class, 'notFound'])->where('any', '.*');
 });
