@@ -14,17 +14,27 @@
                 />
             </LayoutFiltersItem>
         </LayoutFilters>
-        <ListTable v-if="data.list && Object.keys(data.list).length > 0"
-                   :titles="['Экскурсия', 'Продажа, руб.','Возвраты, руб.']">
+        <ListTable v-if="data.list && Object.keys(data.list).length > 0" :titles="['Экскурсия', 'Продажа, руб.','Возвраты, руб.']">
             <ListTableRow v-for="row in data.list">
                 <ListTableCell>
-                    {{ row['name'] ? row['name'] : 'ИТОГО:'}}
+                    {{ row['name'] }}
                 </ListTableCell>
                 <ListTableCell>
-                    {{ row['total_sold'] ? row['total_sold'] : row['total_plus']}} руб.
+                    {{ row['sold_amount'] }} руб.
                 </ListTableCell>
                 <ListTableCell>
-                    {{ row['total_returns'] ? row['total_returns'] + ' руб.' : row['total_minus'] ? row['total_minus'] + ' руб.' : 'нет'}}
+                    {{ row['returned_amount'] }} руб.
+                </ListTableCell>
+            </ListTableRow>
+            <ListTableRow>
+                <ListTableCell>
+                    Итого
+                </ListTableCell>
+                <ListTableCell>
+                    {{ data.payload['sold_amount_total'] }} руб.
+                </ListTableCell>
+                <ListTableCell>
+                    {{ data.payload['return_amount_total'] }} руб.
                 </ListTableCell>
             </ListTableRow>
         </ListTable>

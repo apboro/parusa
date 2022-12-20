@@ -10,6 +10,7 @@ use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
+use App\Models\Tickets\Ticket;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -24,7 +25,7 @@ class StatisticsSalesController extends ApiController
 
     protected array $rememberFilters = [
         'date_from',
-        'date_to'
+        'date_to',
     ];
 
     protected string $rememberKey = CookieKeys::statistics_sales_list;
@@ -57,53 +58,45 @@ class StatisticsSalesController extends ApiController
 
         $orders = $query->get();
 
-        $tickets_array = [];
+        $result = [];
+
+        $soldAmountTotal = 0;
+        $returnAmountTotal = 0;
+
         foreach ($orders as $order) {
+            /** @var Order $order */
             foreach ($order->tickets as $ticket) {
-                $order_array['excursion_id'] = $ticket->trip->excursion->id;
-                $order_array['base_price'] = $ticket->base_price;
-                $order_array['excursion_name'] = $ticket->trip->excursion->name;
-                $order_array['status_id'] = $ticket->status_id;
-                $tickets_array[] = $order_array;
-            }
-        }
+                /** @var Ticket $ticket */
 
-        $result=[];
-        $sum_plus=0;
-        $sum_minus=0;
-        foreach ($tickets_array as $ticket) {
-            $result[$ticket['excursion_id']]['name'] = $ticket['excursion_name'];
+                $soldAmount = $ticket->status_id === TicketStatus::showcase_paid ? $ticket->base_price : 0;
+                $soldAmountTotal += $soldAmount;
 
-            if ($ticket['status_id'] != TicketStatus::showcase_returned) {
-                if (isset($result[$ticket['excursion_id']]) and key_exists('total_sold', $result[$ticket['excursion_id']])) {
-                    $result[$ticket['excursion_id']]['total_sold'] += $ticket['base_price'];
+                $returnedAmount = $ticket->status_id === TicketStatus::showcase_returned ? $ticket->base_price : 0;
+                $returnAmountTotal += $returnedAmount;
+
+                if (!isset($result[$ticket->trip->excursion_id])) {
+                    $result[$ticket->trip->excursion_id] = [
+                        'name' => $ticket->trip->excursion->name,
+                        'sold_amount' => $soldAmount,
+                        'returned_amount' => $returnedAmount,
+                    ];
                 } else {
-                    $result[$ticket['excursion_id']]['total_sold'] = $ticket['base_price'];
+                    $result[$ticket->trip->excursion_id]['sold_amount'] += $soldAmount;
+                    $result[$ticket->trip->excursion_id]['returned_amount'] += $returnedAmount;
                 }
-                $sum_plus += $ticket['base_price'];
-            } else {
-                if (isset($result[$ticket['excursion_id']]) and key_exists('total_returns', $result[$ticket['excursion_id']])) {
-                    $result[$ticket['excursion_id']]['total_returns'] += $ticket['base_price'];
-                } else {
-                    $result[$ticket['excursion_id']]['total_returns'] = $ticket['base_price'];
-                }
-                $sum_minus +=$ticket['base_price'];
+
             }
-            if (!key_exists('total_returns', $result[$ticket['excursion_id']]))
-            {
-                $result[$ticket['excursion_id']]['total_returns'] = 0;
-            }
-            $result['totals'] = [
-                'total_plus' =>$sum_plus,
-                'total_minus' =>$sum_minus,
-            ];
         }
 
         return APIResponse::list(
-            new LengthAwarePaginator($result,100,999),
+            new LengthAwarePaginator($result, 100, 999),
+            null,
             $filters,
             $this->defaultFilters,
-            []
+            [
+                'sold_amount_total' => $soldAmountTotal,
+                'return_amount_total' => $returnAmountTotal,
+            ]
         );
     }
 

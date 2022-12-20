@@ -147,10 +147,12 @@ class StatisticsSalesTodayController extends ApiController
 
         return
             [
-                'sum_paid_site_sales_today' => $sumPaidSiteSalesToday,
-                'total_tickets_today' => $totalTicketsToday,
-                'sum_returned_site_sales_today' => $sumReturnedSalesToday,
-                'last_site_sale_today' => $lastSiteSaleToday ? Carbon::parse($lastSiteSaleToday)->format('H:i') : '—',
+                'today_sold_amount' => $sumPaidSiteSalesToday,
+                'today_return_amount' => $sumReturnedSalesToday,
+                'today_tickets_sold' => $totalTicketsToday,
+                'last_sale' => $lastSiteSaleToday ? Carbon::parse($lastSiteSaleToday)->format('H:i') : '—',
+                'period_start' => $periodStart->format('H:i, d.m.Y'),
+                'period_end' => $periodEnd->format('H:i, d.m.Y'),
             ];
 
     }

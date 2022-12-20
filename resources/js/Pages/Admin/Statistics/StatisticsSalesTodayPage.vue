@@ -2,7 +2,7 @@
     <LayoutPage :loading="list.is_loading" :title="$route.meta['title']">
         <div>
             <gui-message>
-            Мобильные кассы
+                Мобильные кассы
             </gui-message>
         </div>
         <ListTable v-if="list.is_loaded && list.data && list.data.terminals && list.data.terminals.length > 0"
@@ -52,15 +52,15 @@
                     Витрина на сайте "Алые паруса"
                 </ListTableCell>
                 <ListTableCell>
-                    <div style="margin-bottom: 5px;">приход общ.: {{list.data.site.sum_paid_site_sales_today}} руб.</div>
-                    <div style="margin-bottom: 5px;">возврат общ.: {{list.data.sum_returned_site_sales_today ? list.data.sum_returned_site_sales_today : 'нет'}}</div>
+                    <div style="margin-bottom: 5px;">приход общ.: {{ list.data['site']['today_sold_amount'] }} руб.</div>
+                    <div style="margin-bottom: 5px;">возврат общ.: {{ list.data['site']['today_return_amount'] }} руб.</div>
+                    <div class="text-gray" style="font-size: 11px; white-space: nowrap;">{{ list.data['site']['period_start'] }} — {{ list.data['site']['period_end'] }}</div>
                 </ListTableCell>
                 <ListTableCell>
-                    {{list.data.site.total_tickets_today}}
+                    {{ list.data['site']['today_tickets_sold'] }}
                 </ListTableCell>
                 <ListTableCell>
-                    {{list.data.site.last_site_sale_today}}
-                    <div class="text-gray" style="font-size: 11px; white-space: nowrap;">{{ list.data.terminals[0]['period_start'] }} — {{ list.data.terminals[0]['period_end'] }}</div>
+                    {{ list.data['site']['last_sale'] }}
                 </ListTableCell>
             </ListTableRow>
         </ListTable>
