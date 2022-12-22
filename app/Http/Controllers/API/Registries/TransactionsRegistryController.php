@@ -34,7 +34,14 @@ class TransactionsRegistryController extends ApiController
 
     protected string $rememberKey = CookieKeys::transactions_registry_list;
 
-    public ?int $terminalId;
+    /**
+     * Initialize default filters.
+     */
+    public function __construct()
+    {
+        $this->defaultFilters['date_from'] = Carbon::now()->startOfDay()->format('Y-m-d\TH:i');
+        $this->defaultFilters['date_to'] = Carbon::now()->endOfDay()->format('Y-m-d\TH:i');
+    }
 
     /**
      * Get transactions list.
@@ -45,19 +52,17 @@ class TransactionsRegistryController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
-        $this->defaultFilters['date_from'] = Carbon::now()->startOfDay()->format('Y-m-d\TH:i');
-        $this->defaultFilters['date_to'] = Carbon::now()->endOfDay()->format('Y-m-d\TH:i');
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $dateFrom = Carbon::parse($filters['date_from'])->seconds(0)->microseconds(0);
-        $dateTo = Carbon::parse($filters['date_to'])->seconds(59)->microseconds(999);
-
         $filters['date_from'] = $dateFrom->format('Y-m-d\TH:i');
+
+        $dateTo = Carbon::parse($filters['date_to'])->seconds(59)->microseconds(999);
         $filters['date_to'] = $dateTo->format('Y-m-d\TH:i');
 
-        $this->terminalId = null;
+        $terminalId = $this->getTerminalId($request);
 
-        $query = $this->getListQuery($request, $filters, Currents::get($request));
+        $query = $this->getListQuery($request->search(), $filters, $terminalId);
 
         $queryBackup = $query->clone();
         $payments = $query->paginate($request->perPage(10, $this->rememberKey));
@@ -104,7 +109,7 @@ class TransactionsRegistryController extends ApiController
             $filters,
             $this->defaultFilters,
             [
-                'terminal' => $this->terminalId,
+                'terminal' => $terminalId,
                 'date_from' => $dateFrom->format('d.m.Y, H:i'),
                 'date_to' => $dateTo->format('d.m.Y, H:i'),
                 'sale_total' => $saleTotal,
@@ -119,6 +124,155 @@ class TransactionsRegistryController extends ApiController
             ]
         )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
+
+    public function export(ApiListRequest $request): JsonResponse
+    {
+        $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
+
+        $dateFrom = Carbon::parse($filters['date_from'])->seconds(0)->microseconds(0);
+        $filters['date_from'] = $dateFrom->format('Y-m-d\TH:i');
+
+        $dateTo = Carbon::parse($filters['date_to'])->seconds(59)->microseconds(999);
+        $filters['date_to'] = $dateTo->format('Y-m-d\TH:i');
+
+        $terminalId = $this->getTerminalId($request);
+
+        $payments = $this->getListQuery($request->search(), $filters, $terminalId)->get();
+
+        $titles = [
+            'Дата и время',
+            '№ заказа',
+            'Тип',
+            'Сумма',
+            'Касса',
+            'Кассир',
+        ];
+
+        $payments->transform(function (Payment $payment) {
+            return [
+                'date' => $payment->created_at->format('d.m.Y H:i'),
+                'order_id' => $payment->order_id,
+                'status' => $payment->status->name,
+                'total' => $payment->total,
+                'terminal' => $payment->terminal->name ?? null,
+                'position' => $payment->position ? $payment->position->user->profile->compactName : null,
+            ];
+        });
+
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->setActiveSheetIndex(0)->setTitle('Транзакции')->setShowRowColHeaders(true);
+
+        $spreadsheet->getActiveSheet()->fromArray($titles, '—', 'A1');
+        $spreadsheet->getActiveSheet()->fromArray($payments->toArray(), '—', 'A2');
+        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] as $col) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        ob_start();
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        $export = ob_get_clean();
+
+        return APIResponse::response([
+            'file' => base64_encode($export),
+            'file_name' => 'Транзакции ' . Carbon::now()->format('Y-m-d H:i'),
+            'type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    /**
+     * Build payments list query.
+     *
+     * @param array $search
+     * @param array $filters
+     * @param int|null $terminalId
+     *
+     * @return Builder
+     */
+    protected function getListQuery(array $search, array $filters, ?int $terminalId): Builder
+    {
+        $query = Payment::query()
+            ->with(['status', 'order', 'terminal', 'position', 'position.user', 'position.user.profile']);
+
+        if ($terminalId !== null) {
+            $query->where('terminal_id', $terminalId);
+        }
+
+        if (!empty($filters['select'])) {
+            switch ($filters['select']) {
+                case 'no-order':
+                    $query->whereNull('order_id');
+                    break;
+                case 'no-terminal':
+                    $query->whereNull('terminal_id');
+                    break;
+                case 'no-cashier':
+                    $query->whereNull('position_id');
+                    break;
+                case 'no-fiscal':
+                    $query->whereNull('fiscal');
+                    break;
+            }
+        }
+
+        // apply search
+        if ($search) {
+            foreach ($search as $term) {
+                $query->where(function (Builder $query) use ($term) {
+                    $query
+                        ->where('external_id', 'LIKE', "$term%")
+                        ->orWhereHas('order', function (Builder $query) use ($term) {
+                            $query
+                                ->where('id', $term)
+                                ->orWhere('external_id', 'LIKE', "$term%");
+                        });
+                    if (is_numeric($term)) {
+                        $value = PriceConverter::priceToStore((float)$term);
+                        $query
+                            ->orWhere('total', $value)
+                            ->orWhere('by_card', $value)
+                            ->orWhere('by_cash', $value);
+                    }
+                });
+            }
+        } else {
+            // apply filters
+            if (!empty($filters['date_from'])) {
+                $query->where('created_at', '>=', $filters['date_from']);
+            }
+            if (!empty($filters['date_to'])) {
+                $query->where('created_at', '<=', $filters['date_to']);
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * Get terminalId for current user.
+     *
+     * @param APIListRequest $request
+     *
+     * @return  int|null
+     */
+    public function getTerminalId(APIListRequest $request): ?int
+    {
+        $filters = $request->input('filters');
+        $current = Currents::get($request);
+
+        if ($current->isStaffAdmin()) {
+            if ($request->has('terminal_id') && $request->input('terminal_id') !== null) {
+                return $request->input('terminal_id');
+            } else if (!empty($filters['terminal_id'])) {
+                return $filters['terminal_id'];
+            }
+        } else if ($current->isStaffTerminal()) {
+            return $current->terminalId();
+        }
+
+        return null;
+    }
+
 
     /**
      * Get transactions list.
@@ -144,127 +298,4 @@ class TransactionsRegistryController extends ApiController
             'fiscal' => $fiscal,
         ]);
     }
-
-    public function export(ApiListRequest $request): JsonResponse
-    {
-        $this->defaultFilters['date_from'] = Carbon::now()->startOfDay()->format('Y-m-d\TH:i');
-        $this->defaultFilters['date_to'] = Carbon::now()->endOfDay()->format('Y-m-d\TH:i');
-        $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
-
-        $now = Carbon::now();
-
-        $query = $this->getListQuery($request, $filters, Currents::get($request));
-
-        $titles = [
-            'Дата и время',
-            '№ заказа',
-            'Тип',
-            'Чек',
-            'Сумма',
-            'Касса',
-            'Кассир'
-        ];
-        $payments=$query->get();
-        $payments->transform(function (Payment $payment) {
-            return [
-                'date' => $payment->created_at->format('d.m.Y H:i'),
-                'order_id' => $payment->order_id,
-                'status' => $payment->status->name,
-                'fiscal' => $payment->fiscal,
-                'total' => $payment->total,
-                'terminal' => $payment->terminal->name ?? null,
-                'position' => $payment->position ? $payment->position->user->profile->compactName : null,
-            ];
-        });
-
-        $spreadsheet = new Spreadsheet();
-
-        $spreadsheet->setActiveSheetIndex(0)->setTitle('Транзакции по кассам')->setShowRowColHeaders(true);
-
-        $spreadsheet->getActiveSheet()->fromArray($titles, '—', 'A1');
-        $spreadsheet->getActiveSheet()->fromArray($payments->toArray(), '—', 'A2');
-        foreach(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] as $col) {
-            $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
-        }
-
-        ob_start();
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->save('php://output');
-        $export = ob_get_clean();
-
-        return APIResponse::response([
-            'file' => base64_encode($export),
-            'file_name' => 'Транзакции по кассам ' . $now->format('Y-m-d H:i'),
-            'type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]);
-    }
-
-    protected function getListQuery(ApiListRequest $request, array $filters, Currents $current): Builder
-    {
-        $dateFrom = Carbon::parse($filters['date_from'])->seconds(0)->microseconds(0);
-        $dateTo = Carbon::parse($filters['date_to'])->seconds(59)->microseconds(999);
-
-        $query = Payment::query()
-            ->with(['status', 'order', 'terminal', 'position', 'position.user', 'position.user.profile']);
-
-        if ($current->isStaffAdmin()) {
-            if ($request->has('terminal_id') && $request->input('terminal_id') !== null) {
-                $query->where('terminal_id', $this->terminalId = $request->input('terminal_id'));
-            } else if (!empty($filters['terminal_id'])) {
-                $query->where('terminal_id', $this->terminalId = $filters['terminal_id']);
-            }
-        } else if ($current->isStaffTerminal()) {
-            $query->where('terminal_id', $this->terminalId = $current->terminalId());
-        }
-
-        if (!empty($filters['select'])) {
-            switch ($filters['select']) {
-                case 'no-order':
-                    $query->whereNull('order_id');
-                    break;
-                case 'no-terminal':
-                    $query->whereNull('terminal_id');
-                    break;
-                case 'no-cashier':
-                    $query->whereNull('position_id');
-                    break;
-                case 'no-fiscal':
-                    $query->whereNull('fiscal');
-                    break;
-            }
-        }
-
-        // apply search
-        if ($terms = $request->search()) {
-            foreach ($terms as $term) {
-                $query->where(function (Builder $query) use ($term) {
-                    $query
-                        ->where('external_id', 'LIKE', "$term%")
-                        ->orWhereHas('order', function (Builder $query) use ($term) {
-                            $query
-                                ->where('id', $term)
-                                ->orWhere('external_id', 'LIKE', "$term%");
-                        });
-                    if (is_numeric($term)) {
-                        $value = PriceConverter::priceToStore((float)$term);
-                        $query
-                            ->orWhere('total', $value)
-                            ->orWhere('by_card', $value)
-                            ->orWhere('by_cash', $value);
-                    }
-                });
-            }
-        } else {
-            // apply filters
-            if (!empty($filters['date_from'])) {
-                $query->where('created_at', '>=', $dateFrom);
-            }
-            if (!empty($filters['date_to'])) {
-                $query->where('created_at', '<=', $dateTo);
-            }
-        }
-        return $query;
-    }
-
-
 }

@@ -27,7 +27,6 @@
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
         "laravel/sail": "^1.0.1",
-        "laravel/telescope": "^4.10",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^5.10",
         "phenx/php-font-lib": "0.5.4",
@@ -63,8 +62,7 @@
     "extra": {
         "laravel": {
             "dont-discover": [
-                "itsgoingd/clockwork",
-                "laravel/telescope"
+                "itsgoingd/clockwork"
             ]
         }
     },

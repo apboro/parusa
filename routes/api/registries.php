@@ -24,7 +24,7 @@ Route::post('/registries/ticket', [TicketsRegistryItemController::class, 'view']
 
 Route::post('/registries/transactions', [TransactionsRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_terminal']);
 Route::post('/registries/transactions/fiscal', [TransactionsRegistryController::class, 'fiscal'])->middleware(['allow:staff_admin,staff_terminal']);
-Route::post('/registries/transactions/export', [TransactionsRegistryController::class, 'export'])->middleware(['allow:staff_admin,staff_terminal']);
+Route::post('/registries/transactions/export', [TransactionsRegistryController::class, 'export'])->middleware(['allow:staff_admin']);
 
 Route::post('/registries/ticket/download', [TicketRenderController::class, 'download'])->middleware(['allow:staff_admin,staff_terminal,partner']);
 Route::post('/registries/ticket/print', [TicketRenderController::class, 'print'])->middleware(['allow:staff_admin,staff_terminal,partner']);
