@@ -61,7 +61,6 @@ class LifePosSync
             }
         }
 
-        Log::channel('lifepos_sync')->info("Missing payments synchronized for orders from: $fromId, to: $toId");
         if (!empty($updatedOrders)) {
             Log::channel('lifepos_sync')->info("Updated: " . implode(', ', $updatedOrders));
         }
@@ -209,12 +208,9 @@ class LifePosSync
                 }
             }
 
-            Log::channel('lifepos_sync')->info("Returns synchronized for orders");
             if (!empty($updatedOrders)) {
                 Log::channel('lifepos_sync')->info("Updated: " . implode(', ', $updatedOrders));
             }
-        } else {
-            Log::channel('lifepos_sync')->info("Returns synchronized for orders");
         }
     }
 }
