@@ -55,6 +55,8 @@ class OrdersRegistryItemController extends ApiController
             $returnable = $order->hasStatus(OrderStatus::terminal_paid) || $order->hasStatus(OrderStatus::terminal_partial_returned);
         } else if ($current->isRepresentative()) {
             $returnable = $order->hasStatus(OrderStatus::partner_paid) || $order->hasStatus(OrderStatus::partner_partial_returned);
+        } else if ($current->isStaffAdmin()) {
+            $returnable = $order->hasStatus(OrderStatus::showcase_paid) || $order->hasStatus(OrderStatus::showcase_partial_returned);
         } else {
             $returnable = false;
         }
@@ -90,7 +92,7 @@ class OrdersRegistryItemController extends ApiController
             'email' => $order->email,
             'phone' => $order->phone,
             'can_buy' => $current->isRepresentative() || $current->isStaffTerminal(),
-            'can_return' => $current->isRepresentative(), // terminal users can not return tickets from CRM yet -> || $current->isStaffTerminal(),
+            'can_return' => $current->isRepresentative() || $current->isStaffAdmin(), // terminal users can not return tickets from CRM yet -> || $current->isStaffTerminal(),
             'returnable' => $returnable,
             'is_actual' => in_array($order->status_id, OrderStatus::order_returnable_statuses, true),
             'is_printable' => in_array($order->status_id, OrderStatus::order_printable_statuses, true)

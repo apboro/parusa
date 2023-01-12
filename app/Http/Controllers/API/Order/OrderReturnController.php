@@ -6,12 +6,24 @@ use App\Exceptions\Account\AccountException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
+use App\Models\Payments\Payment;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketReturn;
 use App\Models\User\Helpers\Currents;
+use App\SberbankAcquiring\Connection;
+use App\SberbankAcquiring\Helpers\Currency;
+use App\SberbankAcquiring\Helpers\MeasurementUnit;
+use App\SberbankAcquiring\Helpers\PaymentMethodType;
+use App\SberbankAcquiring\Helpers\PaymentObject;
+use App\SberbankAcquiring\Helpers\TaxSystem;
+use App\SberbankAcquiring\Helpers\TaxType;
+use App\SberbankAcquiring\HttpClient\CurlClient;
+use App\SberbankAcquiring\Options;
+use App\SberbankAcquiring\Sber;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,7 +36,6 @@ class OrderReturnController extends ApiController
      * @param Request $request
      *
      * @return JsonResponse
-     * @throws AccountException
      */
     public function return(Request $request): JsonResponse
     {
@@ -39,7 +50,7 @@ class OrderReturnController extends ApiController
             $query->where('partner_id', $current->partnerId());
         } else if ($current->isStaff() && $current->role() && $current->terminalId() !== null && $current->role()->matches(Role::terminal)) {
             $query->where('terminal_id', $current->terminalId());
-        } else {
+        } else if (!$current->isStaffAdmin()) {
             return APIResponse::error('Неверно заданы параметры');
         }
 
@@ -78,7 +89,7 @@ class OrderReturnController extends ApiController
                             }
                             $ticket->refundTicket($current->position());
                             $ticket->refundCommission($current->position());
-                            $ticket->setStatus(TicketStatus::partner_returned);
+                            $ticket->setStatus(TicketStatus::partner_returned, false);
                             $ticket->save();
                             $ticket->return()->save(new TicketReturn(['reason' => $reasonOfReturn]));
                         }
@@ -94,9 +105,78 @@ class OrderReturnController extends ApiController
             }
             $successMessage = 'Возврат оформлен.';
 
+        } else if ($current->isStaffAdmin()) {
+            // Returning tickets buougt
+            try {
+                if ($order->external_id === null) {
+                    throw new Exception('Отсутствует внешний ID заказа');
+                }
+                $tickets = [];
+                $returnAmount = 0;
+                foreach ($order->tickets as $ticket) {
+                    /** @var Ticket $ticket */
+                    if (in_array($ticket->id, $ticketsToReturnIds, true)) {
+                        if (!$ticket->hasStatus(TicketStatus::showcase_paid)) {
+                            throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
+                        }
+                        $tickets[] = $ticket;
+                        $returnAmount += $ticket->base_price;
+                    }
+                }
+
+                // send return request to sber
+                $isProduction = env('SBER_ACQUIRING_PRODUCTION');
+                $connection = new Connection([
+                    'token' => env('SBER_ACQUIRING_TOKEN'),
+                    'userName' => env('SBER_ACQUIRING_USER'),
+                    'password' => env('SBER_ACQUIRING_PASSWORD'),
+                ], new CurlClient(), $isProduction);
+                $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
+                $sber = new Sber($connection, $options);
+
+                $response = $sber->refundOrder($order->external_id, $returnAmount * 100);
+
+                if (!$response->isSuccess()) {
+                    throw new Exception($response->errorMessage());
+                }
+
+                // todo make fiscal
+
+                // change order and tickets status
+                foreach ($tickets as $ticket) {
+                    /** @var Ticket $ticket */
+                    $ticket->refundCommission($current->position());
+                    $ticket->setStatus(TicketStatus::showcase_returned, false);
+                    $ticket->save();
+                    $ticket->return()->save(new TicketReturn(['reason' => $reasonOfReturn]));
+                }
+                if ($order->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() === 0) {
+                    $order->setStatus(OrderStatus::showcase_returned);
+                } else {
+                    $order->setStatus(OrderStatus::showcase_partial_returned);
+                }
+
+                // add transaction
+                $payment = new Payment();
+                $payment->gate = 'sber';
+                $payment->order_id = $order->id;
+                $payment->status_id = PaymentStatus::return;
+                $payment->fiscal = '';
+                $payment->total = $returnAmount;
+                $payment->by_card = $returnAmount;
+                $payment->by_cash = 0;
+                $payment->external_id = null;
+                $payment->save();
+            } catch (Exception $exception) {
+                return APIResponse::error($exception->getMessage());
+            }
+
+            $successMessage = 'Возврат оформлен.';
+
         } else if ($current->isStaff() && $current->role() && $current->terminalId() !== null && $current->role()->matches(Role::terminal)) {
             // Terminal return
             // Run lifepos process
+            return APIResponse::error('Данный функционал недоступен');
         } else {
             return APIResponse::error('Неверно заданы параметры');
         }

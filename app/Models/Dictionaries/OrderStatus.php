@@ -53,8 +53,8 @@ class OrderStatus extends AbstractDictionary
         self::terminal_paid,
         self::terminal_partial_returned,
         self::terminal_wait_for_return,
-        // TODO self::showcase_paid,
-        // TODO self::showcase_partial_returned,
+        self::showcase_paid,
+        self::showcase_partial_returned,
     ];
 
     public const order_printable_statuses = [

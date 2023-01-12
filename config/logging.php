@@ -84,6 +84,12 @@ return [
             'level' => 'info',
         ],
 
+        'sber_payments' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/sber_payments.log'),
+            'level' => 'info',
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),

@@ -10,7 +10,7 @@
 
         <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>
 
-        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve">
+        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve || is_returning">
             <ListTableRow v-for="ticket in info.data['tickets']">
                 <ListTableCell>
                     <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
@@ -33,13 +33,16 @@
                         </GuiIconButton>
                     </div>
                 </ListTableCell>
+                <ListTableCell v-if="is_returning" class="va-middle">
+                    <InputCheckbox v-model="to_return" :value="ticket['id']" :disabled="!ticket['returnable']"/>
+                </ListTableCell>
             </ListTableRow>
             <ListTableRow :no-highlight="true">
                 <ListTableCell colspan="3"/>
                 <ListTableCell><b>Итого: {{ info.data['tickets_count'] }}</b></ListTableCell>
                 <ListTableCell><b>{{ info.data['total'] }} руб.</b></ListTableCell>
                 <ListTableCell/>
-                <ListTableCell v-if="isReserve"/>
+                <ListTableCell v-if="isReserve || is_returning"/>
             </ListTableRow>
         </ListTable>
 
@@ -55,9 +58,12 @@
         <template v-if="info.is_loaded">
             <template v-if="!isReserve">
                 <GuiContainer>
-                    <GuiButton :disabled="!info.data['is_printable']" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
-                    <GuiButton :disabled="!info.data['is_printable'] || !info.data['email']" @clicked="emailOrder">Отправить клиенту на почту</GuiButton>
-                    <GuiButton :disabled="!info.data['is_printable']" @clicked="printOrder">Распечатать</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning || !info.data['email']" @clicked="emailOrder">Отправить клиенту на почту</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
+                    <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
+                    </GuiButton>
+                    <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>
                 </GuiContainer>
             </template>
             <template v-else>
@@ -128,6 +134,9 @@ export default {
     data: () => ({
         info: data('/api/registries/order'),
         form: form(null, '/api/registries/order/buyer'),
+        is_returning: false,
+        to_return: [],
+        returning_progress: false,
     }),
 
     computed: {
@@ -248,6 +257,47 @@ export default {
                     this.info.data['email'] = result.values['email'];
                     this.info.data['phone'] = result.values['phone'];
                 })
+        },
+
+        makeReturn() {
+            if (this.is_returning === false) {
+                this.to_return = [];
+                this.is_returning = true;
+                return;
+            }
+
+            if (this.to_return.length === 0) {
+                this.$toast.error('Не выбраны билеты для возврата', 3000);
+                return;
+            }
+            this.$dialog.show('Подтвердите оформление возврата', 'question', 'red', [
+                this.$dialog.button('yes', 'Продолжить', 'red'),
+                this.$dialog.button('no', 'Отмена', 'blue'),
+            ]).then(result => {
+                if (result === 'yes') {
+                    // logic
+                    this.returning_progress = true;
+                    axios.post('/api/order/return', {
+                        id: this.orderId,
+                        tickets: this.to_return,
+                    })
+                        .then((response) => {
+                            this.$toast.success(response.data.message, 5000);
+                            this.info.load({id: this.orderId});
+                        })
+                        .catch(error => {
+                            this.$toast.error(error.response.data.message, 5000);
+                        })
+                        .finally(() => {
+                            this.returning_progress = false;
+                            this.is_returning = false;
+                        });
+                }
+            });
+        },
+
+        cancelReturn() {
+            this.is_returning = false;
         },
     }
 }

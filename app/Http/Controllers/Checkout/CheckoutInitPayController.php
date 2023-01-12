@@ -61,53 +61,59 @@ class CheckoutInitPayController extends ApiController
         $orderId = $order->id . ' (' . Carbon::now()->format('d.m.Y H:i:s') . ')';
         $finishedUrl = env('SHOWCASE_PAYMENT_PAGE') . '?order=' . $secret . '&status=finished';
         $phone = preg_replace('/[^\d+]/', '', $order->phone);
-        $count = 1;
-        $items = $order->tickets->map(function (Ticket $ticket) use (&$count) {
-            return [
-                'positionId' => $count++,
-                'name' => sprintf('Билет N%s (%s) на рейс N%s, %s',
-                    $ticket->id, mb_strtolower($ticket->grade->name), $ticket->trip->id, $ticket->trip->start_at->format('d.m.Y H:i'),
-                ),
-                'quantity' => [
-                    'value' => 1,
-                    'measure' => MeasurementUnit::pcs,
-                ],
-                'itemAmount' => (int)($ticket->base_price * 100),
-                'itemCode' => $ticket->id,
-                'tax' => [
-                    'taxType' => TaxType::no_vat,
-                ],
-                'itemPrice' => (int)($ticket->base_price * 100),
-                'itemAttributes' => [
-                    'attributes' => [
-                        ['name' => 'paymentMethod', 'value' => PaymentMethodType::full_payment],
-                        ['name' => 'paymentObject', 'value' => PaymentObject::service],
-                    ],
-                ],
-            ];
-        });
+        // Нет документации по частичному возврату с корзиной заказов, без неё работает
+        // $count = 1;
+        // $items = $order->tickets->map(function (Ticket $ticket) use (&$count) {
+        //     return [
+        //         'positionId' => $count++,
+        //         'name' => sprintf(
+        //             'Билет N%s (%s) на рейс N%s, %s',
+        //             $ticket->id, mb_strtolower($ticket->grade->name), $ticket->trip->id, $ticket->trip->start_at->format('d.m.Y H:i'),
+        //         ),
+        //         'quantity' => [
+        //             'value' => 1,
+        //             'measure' => MeasurementUnit::pcs,
+        //         ],
+        //         'itemAmount' => (int)($ticket->base_price * 100),
+        //         'itemCode' => $ticket->id,
+        //         'tax' => [
+        //             'taxType' => TaxType::no_vat,
+        //         ],
+        //         'itemPrice' => (int)($ticket->base_price * 100),
+        //         'itemAttributes' => [
+        //             'attributes' => [
+        //                 ['name' => 'paymentMethod', 'value' => PaymentMethodType::full_payment],
+        //                 ['name' => 'paymentObject', 'value' => PaymentObject::service],
+        //             ],
+        //         ],
+        //     ];
+        // });
         $data = [
             'jsonParams' => [
                 'email' => $order->email,
                 'phone' => $phone,
             ],
-            'taxSystem' => TaxSystem::simplified_income_minus_expences,
-            'orderBundle' => [
-                'orderCreationDate' => $order->created_at->format('Y-m-d\TH:i:s'),
-                'customerDetails' => [
-                    'email' => $order->email,
-                    //'phone' => $phone,
-                ],
-                'cartItems' => ['items' => $items->toArray()],
-            ],
+            // Нет документации по частичному возврату с корзиной заказов, без неё работает
+            // 'taxSystem' => TaxSystem::simplified_income_minus_expences,
+            // 'orderBundle' => [
+            //     'orderCreationDate' => $order->created_at->format('Y-m-d\TH:i:s'),
+            //     'customerDetails' => [
+            //         'email' => $order->email,
+            //         //'phone' => $phone,
+            //     ],
+            //     'cartItems' => ['items' => $items->toArray()],
+            // ],
         ];
+        if (env('SBER_ACQUIRING_CALLBACK_ENABLE')) {
+            $data['dynamicCallbackUrl'] = route('sberNotification');
+        }
 
         $isProduction = env('SBER_ACQUIRING_PRODUCTION');
         $connection = new Connection([
             'token' => env('SBER_ACQUIRING_TOKEN'),
             'userName' => env('SBER_ACQUIRING_USER'),
             'password' => env('SBER_ACQUIRING_PASSWORD'),
-        ], new CurlClient, $isProduction);
+        ], new CurlClient(), $isProduction);
         $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
         $sber = new Sber($connection, $options);
         try {
@@ -144,7 +150,9 @@ class CheckoutInitPayController extends ApiController
     {
         /** @var Order $order */
         $order = Order::query()
-            ->with(['status', 'tickets', 'tickets.grade', 'tickets.trip', 'tickets.trip.startPier', 'tickets.trip.startPier.info', 'tickets.trip.excursion', 'tickets.trip.excursion.info'])
+            ->with(
+                ['status', 'tickets', 'tickets.grade', 'tickets.trip', 'tickets.trip.startPier', 'tickets.trip.startPier.info', 'tickets.trip.excursion', 'tickets.trip.excursion.info']
+            )
             ->where('id', $id)
             ->whereIn('status_id', [OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::showcase_paid, OrderStatus::showcase_canceled])
             ->whereIn('type_id', [OrderType::qr_code, OrderType::partner_site, OrderType::site])

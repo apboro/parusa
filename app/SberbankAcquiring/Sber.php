@@ -192,24 +192,29 @@ class Sber
 //        return $this->execute($this->prefixDefault . 'reverse.do', $data);
 //    }
 
-//    /**
-//     * Refund an existing order.
-//     *
-//     * @see https://securepayments.sberbank.ru/wiki/doku.php/integration:api:rest:requests:refund
-//     *
-//     * @param int|string $orderId An order identifier
-//     * @param int $amount An amount to refund
-//     * @param array $data Additional data
-//     *
-//     * @return array A server's response
-//     */
-//    public function refundOrder($orderId, int $amount, array $data = []): array
-//    {
-//        $data['orderId'] = $orderId;
-//        $data['amount'] = $amount;
-//
-//        return $this->execute($this->prefixDefault . 'refund.do', $data);
-//    }
+    /**
+     * Refund an existing order.
+     *
+     * @see https://securepayments.sberbank.ru/wiki/doku.php/integration:api:rest:requests:refund
+     *
+     * @param int|string $orderId An order identifier
+     * @param int $amount An amount to refund
+     * @param array $data Additional data
+     *
+     * @return Response A server's response
+     *
+     * @throws Exception\NetworkException
+     * @throws ResponseParsingException
+     */
+    public function refundOrder($orderId, int $amount, array $data = []): Response
+    {
+        $data['orderId'] = $orderId;
+        $data['amount'] = $amount;
+
+        $request = new Request(Connection::ENDPOINT_DEFAULT, 'refund.do', $data);
+
+        return $this->connection->send($request);
+    }
 
     /**
      * Get an existing order's status by Sberbank's gateway identifier.

@@ -193,6 +193,7 @@ class TransactionsRegistryController extends ApiController
     protected function getListQuery(array $search, array $filters, ?int $terminalId): Builder
     {
         $query = Payment::query()
+            ->where('gate', 'lifepos')
             ->with(['status', 'order', 'terminal', 'position', 'position.user', 'position.user.profile']);
 
         if ($terminalId !== null) {

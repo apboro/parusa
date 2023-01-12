@@ -81,6 +81,7 @@ class TicketStatus extends AbstractDictionary
     ];
 
     public const ticket_returnable_statuses = [
+        self::showcase_paid,
         self::partner_paid,
         self::terminal_paid,
         self::terminal_wait_for_return,

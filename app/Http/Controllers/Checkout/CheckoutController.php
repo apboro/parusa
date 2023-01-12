@@ -8,8 +8,10 @@ use App\Http\Controllers\ApiController;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
+use App\Models\Payments\Payment;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\Notifications\OrderNotification;
@@ -216,6 +218,20 @@ class CheckoutController extends ApiController
         $order->tickets->map(function (Ticket $ticket) {
             $ticket->setStatus(TicketStatus::showcase_paid);
         });
+
+        // todo make fiscal
+
+        // add payment
+        $payment = new Payment();
+        $payment->gate = 'sber';
+        $payment->order_id = $order->id;
+        $payment->status_id = PaymentStatus::sale;
+        $payment->fiscal = '';
+        $payment->total = $response['amount'] / 100 ?? null;
+        $payment->by_card = $response['amount'] / 100 ?? null;
+        $payment->by_cash = 0;
+        $payment->external_id = $response['authRefNum'] ?? null;
+        $payment->save();
 
         try {
             $order->payCommissions();
