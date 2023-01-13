@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\API\Order;
 
-use App\Exceptions\Account\AccountException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\LifePay\CloudPrint;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\Role;
@@ -16,11 +16,6 @@ use App\Models\Tickets\TicketReturn;
 use App\Models\User\Helpers\Currents;
 use App\SberbankAcquiring\Connection;
 use App\SberbankAcquiring\Helpers\Currency;
-use App\SberbankAcquiring\Helpers\MeasurementUnit;
-use App\SberbankAcquiring\Helpers\PaymentMethodType;
-use App\SberbankAcquiring\Helpers\PaymentObject;
-use App\SberbankAcquiring\Helpers\TaxSystem;
-use App\SberbankAcquiring\Helpers\TaxType;
 use App\SberbankAcquiring\HttpClient\CurlClient;
 use App\SberbankAcquiring\Options;
 use App\SberbankAcquiring\Sber;
@@ -106,7 +101,7 @@ class OrderReturnController extends ApiController
             $successMessage = 'Возврат оформлен.';
 
         } else if ($current->isStaffAdmin()) {
-            // Returning tickets buougt
+            // Returning tickets bought
             try {
                 if ($order->external_id === null) {
                     throw new Exception('Отсутствует внешний ID заказа');
@@ -140,8 +135,6 @@ class OrderReturnController extends ApiController
                     throw new Exception($response->errorMessage());
                 }
 
-                // todo make fiscal
-
                 // change order and tickets status
                 foreach ($tickets as $ticket) {
                     /** @var Ticket $ticket */
@@ -167,6 +160,9 @@ class OrderReturnController extends ApiController
                 $payment->by_cash = 0;
                 $payment->external_id = null;
                 $payment->save();
+
+                CloudPrint::createReceipt($order, $tickets,CloudPrint::refund , $payment);
+
             } catch (Exception $exception) {
                 return APIResponse::error($exception->getMessage());
             }

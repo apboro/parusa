@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Classes\EmailReceiver;
+use App\LifePay\CloudPrint;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
@@ -60,13 +61,16 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             return;
         }
 
+        $tickets = [];
+
         // update order status
         $order->setStatus(OrderStatus::showcase_paid);
-        $order->tickets->map(function (Ticket $ticket) {
+        $order->tickets->map(function (Ticket $ticket) use (&$tickets) {
             $ticket->setStatus(TicketStatus::showcase_paid);
+            $tickets[] = $ticket;
         });
 
-        // todo make fiscal
+        CloudPrint::createReceipt($order, $tickets,CloudPrint::payment , $order->payments->first());
 
         // send tickets
         try {

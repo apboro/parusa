@@ -96,6 +96,12 @@ return [
             'level' => 'info',
         ],
 
+        'cloud_print' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/cloud_print.log'),
+            'level' => 'info',
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
