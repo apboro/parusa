@@ -10,7 +10,7 @@ class SberNotificationsController
 {
     public function sberNotification(Request $request): Response
     {
-        Log::channel('sber_payments')->info(json_encode($request->all()));
+        Log::channel('sber_payments')->info('Callback received: ' . json_encode($request->all()));
 
         return response('OK', 200);
     }

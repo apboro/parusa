@@ -24,6 +24,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use JsonException;
 
 class CheckoutController extends ApiController
@@ -197,20 +198,26 @@ class CheckoutController extends ApiController
         try {
             $response = $sber->getOrderStatus($order->external_id);
         } catch (Exception $exception) {
+            Log::channel('sber_payments')->error(sprintf('Order [%s] get status client error: %s', $order->id, $exception->getMessage()));
             return APIResponse::error($exception->getMessage());
         }
 
         if (!$response->isSuccess()) {
+            Log::channel('sber_payments')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->errorMessage()));
             return APIResponse::error($response->errorMessage());
         }
 
         if (!\App\SberbankAcquiring\OrderStatus::isDeposited($response['orderStatus'] ?? 0)) {
             // perform paying error handling
-            return APIResponse::error(!empty($response['actionCodeDescription']) ? $response['actionCodeDescription'] : 'Оплата не прошла', [$response->all()]);
+            $error = !empty($response['actionCodeDescription']) ? $response['actionCodeDescription'] : 'Оплата не прошла';
+            Log::channel('sber_payments')->info(sprintf('Order [%s] payment unsuccessful: %s', $order->id, $error));
+
+            return APIResponse::error($error, [$response->all()]);
         }
 
         // set order status
         $order->setStatus(OrderStatus::showcase_confirmed);
+        Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
         // add payment
         $payment = new Payment();

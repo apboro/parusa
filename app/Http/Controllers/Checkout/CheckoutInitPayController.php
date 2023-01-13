@@ -11,11 +11,11 @@ use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\SberbankAcquiring\Connection;
 use App\SberbankAcquiring\Helpers\Currency;
-use App\SberbankAcquiring\Helpers\MeasurementUnit;
-use App\SberbankAcquiring\Helpers\PaymentMethodType;
-use App\SberbankAcquiring\Helpers\PaymentObject;
-use App\SberbankAcquiring\Helpers\TaxSystem;
-use App\SberbankAcquiring\Helpers\TaxType;
+// use App\SberbankAcquiring\Helpers\MeasurementUnit;
+// use App\SberbankAcquiring\Helpers\PaymentMethodType;
+// use App\SberbankAcquiring\Helpers\PaymentObject;
+// use App\SberbankAcquiring\Helpers\TaxSystem;
+// use App\SberbankAcquiring\Helpers\TaxType;
 use App\SberbankAcquiring\HttpClient\CurlClient;
 use App\SberbankAcquiring\Options;
 use App\SberbankAcquiring\Sber;
@@ -24,6 +24,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use JsonException;
 
 class CheckoutInitPayController extends ApiController
@@ -119,16 +120,21 @@ class CheckoutInitPayController extends ApiController
         try {
             $response = $sber->registerOrder($orderId, $order->total() * 100, env('SHOWCASE_ORDER_LIFETIME', 0) * 60, $finishedUrl, $data);
         } catch (Exception $exception) {
+            Log::channel('sber_payments')->error(sprintf('Order [%s] registration client error: %s', $orderId, $exception->getMessage()));
             return APIResponse::error($exception->getMessage());
         }
 
         if (!$response->isSuccess()) {
+            Log::channel('sber_payments')->error(sprintf('Order [%s] registration error: %s', $orderId, $response->errorMessage()));
             return APIResponse::error($response->errorMessage());
         }
 
         $order->external_id = $response['orderId'];
         $order->setStatus(OrderStatus::showcase_wait_for_pay, false);
         $order->save();
+
+        Log::channel('sber_payments')->info(sprintf('Order [%s] registered [ID:%s]', $orderId, $order->external_id));
+
         $order->tickets->map(function (Ticket $ticket) {
             // P.S. All tickets are valid for now
             $ticket->setStatus(TicketStatus::showcase_wait_for_pay);

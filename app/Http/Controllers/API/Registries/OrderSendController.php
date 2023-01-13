@@ -10,9 +10,11 @@ use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\User\Helpers\Currents;
 use App\Notifications\OrderNotification;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class OrderSendController extends ApiController
@@ -37,6 +39,13 @@ class OrderSendController extends ApiController
         }
 
         Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+
+        try {
+            Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+        } catch (Exception $exception) {
+            Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
+            return APIResponse::error("Ошибка отправки билетов: " . $exception->getMessage());
+        }
 
         return APIResponse::success("Заказ отправлен на почту {$order->email}");
     }

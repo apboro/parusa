@@ -60,16 +60,20 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             return;
         }
 
-        // make fiscal
-
         // update order status
         $order->setStatus(OrderStatus::showcase_paid);
         $order->tickets->map(function (Ticket $ticket) {
             $ticket->setStatus(TicketStatus::showcase_paid);
         });
 
+        // todo make fiscal
+
         // send tickets
-        Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+        try {
+            Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+        } catch (Exception $exception) {
+            Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
+        }
 
         // pay commission
         try {

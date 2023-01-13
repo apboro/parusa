@@ -14,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use JsonException;
 
 class CheckoutOrderController extends ApiEditController
@@ -71,6 +72,8 @@ class CheckoutOrderController extends ApiEditController
                 'back_link' => $backLink,
             ]);
         }
+
+        Log::channel('sber_payments')->info(sprintf('Order [%s] cancelled by customer [ID:%s]', $order->id, $order->external_id));
 
         return APIResponse::success('Заказ расформирован.', [
             'back_link' => $backLink,

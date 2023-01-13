@@ -19,6 +19,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use JsonException;
 
 class ShowcaseOrderInfoController extends ApiEditController
@@ -80,34 +81,46 @@ class ShowcaseOrderInfoController extends ApiEditController
             try {
                 $response = $sber->getOrderStatus($order->external_id);
             } catch (Exception $exception) {
+                Log::channel('sber_payments')->error(sprintf('Order [%s] get status client error: %s', $order->id, $exception->getMessage()));
                 $checkFailed = true;
             }
-            if (!$checkFailed && isset($response) && $response->isSuccess() && \App\SberbankAcquiring\OrderStatus::isDeposited($response['orderStatus'] ?? 0)) {
-                // set order status
-                $order->setStatus(OrderStatus::showcase_confirmed);
+            if (!$checkFailed && isset($response)) {
+                if ($response->isSuccess() && \App\SberbankAcquiring\OrderStatus::isDeposited($response['orderStatus'] ?? 0)) {
+                    // set order status
+                    $order->setStatus(OrderStatus::showcase_confirmed);
+                    Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
-                // add payment
-                $payment = Payment::query()->where('gate', 'sber')->where('order_id', $order->id)->first();
-                if ($payment === null) {
-                    $payment = new Payment();
+                    // add payment
+                    $payment = Payment::query()->where('gate', 'sber')->where('order_id', $order->id)->first();
+                    if ($payment === null) {
+                        $payment = new Payment();
+                    }
+                    $payment->gate = 'sber';
+                    $payment->order_id = $order->id;
+                    $payment->status_id = PaymentStatus::sale;
+                    $payment->fiscal = '';
+                    $payment->total = $response['amount'] / 100 ?? null;
+                    $payment->by_card = $response['amount'] / 100 ?? null;
+                    $payment->by_cash = 0;
+                    $payment->save();
+
+                    $order->refresh();
+
+                    // Make job to do in background:
+                    // make fiscal
+                    // send tickets
+                    // pay commission
+                    // update order status
+                    ProcessShowcaseConfirmedOrder::dispatch($order->id);
+                } else {
+                    if (!$response->isSuccess()) {
+                        Log::channel('sber_payments')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->errorMessage()));
+                    }
+                    if (!\App\SberbankAcquiring\OrderStatus::isDeposited($response['orderStatus'] ?? 0)) {
+                        $error = !empty($response['actionCodeDescription']) ? $response['actionCodeDescription'] : 'Оплата не прошла';
+                        Log::channel('sber_payments')->info(sprintf('Order [%s] payment unsuccessful: %s', $order->id, $error));
+                    }
                 }
-                $payment->gate = 'sber';
-                $payment->order_id = $order->id;
-                $payment->status_id = PaymentStatus::sale;
-                $payment->fiscal = '';
-                $payment->total = $response['amount'] / 100 ?? null;
-                $payment->by_card = $response['amount'] / 100 ?? null;
-                $payment->by_cash = 0;
-                $payment->save();
-
-                $order->refresh();
-
-                // Make job to do in background:
-                // make fiscal
-                // send tickets
-                // pay commission
-                // update order status
-                ProcessShowcaseConfirmedOrder::dispatch($order->id);
             }
         }
 
