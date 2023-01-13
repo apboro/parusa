@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Registries;
 
+use App\Helpers\Fiscal;
 use App\Helpers\PriceConverter;
 use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
@@ -15,7 +16,6 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -274,7 +274,6 @@ class TransactionsRegistryController extends ApiController
         return null;
     }
 
-
     /**
      * Get transactions list.
      *
@@ -285,12 +284,10 @@ class TransactionsRegistryController extends ApiController
     public function fiscal(ApiListRequest $request): JsonResponse
     {
         $gate = $request->input('gate');
-        $id = $request->input('id');
-
-        $name = $gate . '/' . $id . '.txt';
+        $fiscal = $request->input('id');
 
         try {
-            $fiscal = Storage::disk('fiscal')->get($name);
+            $fiscal = Fiscal::get($gate, $fiscal);
         } catch (FileNotFoundException $e) {
             return APIResponse::error('Информация о чеке не найдена.');
         }

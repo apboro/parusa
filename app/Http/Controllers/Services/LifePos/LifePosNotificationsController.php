@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Services\LifePos;
 
+use App\Helpers\Fiscal;
 use App\Http\Controllers\ApiController;
 use App\LifePos\LifePosSales;
 use App\Models\Dictionaries\OrderStatus;
@@ -16,7 +17,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class LifePosNotificationsController extends ApiController
 {
@@ -169,9 +169,8 @@ class LifePosNotificationsController extends ApiController
 
         // store fiscal data
         $print = $input['sources']['print_view'];
-        $name = '/lifepos/' . $input['guid'] . '.txt';
 
-        Storage::disk('fiscal')->put($name, $print);
+        Fiscal::put('lifepos', $input['guid'], $print);
     }
 
     /**

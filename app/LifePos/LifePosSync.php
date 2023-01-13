@@ -2,6 +2,7 @@
 
 namespace App\LifePos;
 
+use App\Helpers\Fiscal;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\TicketStatus;
@@ -16,7 +17,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use JsonException;
 
 class LifePosSync
@@ -125,9 +125,7 @@ class LifePosSync
                     $receipt = LifePosSales::getFiscal($receivedPayment['fiscal_document']['guid']);
                     if (isset($receipt['sources']['print_view'])) {
                         $print = $receipt['sources']['print_view'];
-                        $name = '/lifepos/' . $receipt['guid'] . '.txt';
-                        Storage::disk('fiscal')->put($name, $print);
-
+                        Fiscal::put('lifepos', $receipt['guid'], $print);
                     }
                 }
             }

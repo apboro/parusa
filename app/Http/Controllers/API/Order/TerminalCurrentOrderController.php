@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Helpers\Fiscal;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\LifePos\LifePosSales;
@@ -16,7 +17,6 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 
 class TerminalCurrentOrderController extends ApiController
@@ -266,9 +266,7 @@ class TerminalCurrentOrderController extends ApiController
                             $receipt = LifePosSales::getFiscal($receivedPayment['fiscal_document']['guid']);
                             if (isset($receipt['sources']['print_view'])) {
                                 $print = $receipt['sources']['print_view'];
-                                $name = '/lifepos/' . $receipt['guid'] . '.txt';
-
-                                Storage::disk('fiscal')->put($name, $print);
+                                Fiscal::put('lifepos', $receipt['guid'], $print);
                             }
                         }
 
