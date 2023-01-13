@@ -42,6 +42,7 @@ class OrderStatus extends AbstractDictionary
 
     public const showcase_creating = 61;
     public const showcase_wait_for_pay = 62;
+    public const showcase_confirmed = 72;
     public const showcase_paid = 71;
     public const showcase_returned = 81;
     public const showcase_partial_returned = 82;

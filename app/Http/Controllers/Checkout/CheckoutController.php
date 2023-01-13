@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers\Checkout;
 
-use App\Classes\EmailReceiver;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Jobs\ProcessShowcaseConfirmedOrder;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PaymentStatus;
-use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\Payments\Payment;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
-use App\Notifications\OrderNotification;
 use App\SberbankAcquiring\Connection;
 use App\SberbankAcquiring\Helpers\Currency;
 use App\SberbankAcquiring\HttpClient\CurlClient;
@@ -26,8 +24,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 use JsonException;
 
 class CheckoutController extends ApiController
@@ -210,16 +206,11 @@ class CheckoutController extends ApiController
 
         if (!\App\SberbankAcquiring\OrderStatus::isDeposited($response['orderStatus'] ?? 0)) {
             // perform paying error handling
-            return APIResponse::error($response['actionCodeDescription'] ?? 'Оплата не прошла', [$response->all()]);
+            return APIResponse::error(!empty($response['actionCodeDescription']) ? $response['actionCodeDescription'] : 'Оплата не прошла', [$response->all()]);
         }
 
         // set order status
-        $order->setStatus(OrderStatus::showcase_paid);
-        $order->tickets->map(function (Ticket $ticket) {
-            $ticket->setStatus(TicketStatus::showcase_paid);
-        });
-
-        // todo make fiscal
+        $order->setStatus(OrderStatus::showcase_confirmed);
 
         // add payment
         $payment = new Payment();
@@ -230,17 +221,14 @@ class CheckoutController extends ApiController
         $payment->total = $response['amount'] / 100 ?? null;
         $payment->by_card = $response['amount'] / 100 ?? null;
         $payment->by_cash = 0;
-        $payment->external_id = $response['authRefNum'] ?? null;
         $payment->save();
 
-        try {
-            $order->payCommissions();
-        } catch (Exception $exception) {
-            Log::error($exception->getMessage());
-        }
-
-        // email tickets
-        Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+        // Make job to do in background:
+        // make fiscal
+        // send tickets
+        // pay commission
+        // update order status
+        ProcessShowcaseConfirmedOrder::dispatch($order->id);
 
         // response OK
         $backLink = $container['ref'] ?? env('SHOWCASE_AP_PAGE');
@@ -251,7 +239,7 @@ class CheckoutController extends ApiController
             $backLink .= '?status=finished';
         }
 
-        return APIResponse::success('Заказ оплачен. Билеты высланы на электронную почту.', [
+        return APIResponse::success('Заказ оплачен. Высылаем чек и билеты на электронную почту.', [
             'is_ordered' => true,
             'back_link' => $backLink,
         ]);

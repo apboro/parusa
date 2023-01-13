@@ -70,7 +70,7 @@ export default {
             if (this.orderData === null) {
                 return null;
             }
-            if (typeof this.orderData['is_payed'] !== "undefined" && this.orderData['is_payed']) {
+            if (typeof this.orderData['is_payed'] !== "undefined" && (this.orderData['is_confirmed'] || this.orderData['is_payed'])) {
                 return 'payed';
             }
             if (typeof this.orderData['is_actual'] !== "undefined" && this.orderData['is_actual'] === false || this.expired_internal) {

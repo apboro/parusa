@@ -113,6 +113,7 @@ class StatusesSeeder extends GenericSeeder
             OrderStatus::terminal_wait_for_return => ['name' => 'Ожидает возврата'],
             OrderStatus::showcase_creating => ['name' => 'Оформление'],
             OrderStatus::showcase_wait_for_pay => ['name' => 'Ожидает оплаты'],
+            OrderStatus::showcase_confirmed => ['name' => 'Оплата подтверждена'],
             OrderStatus::showcase_paid => ['name' => 'Оплачен'],
             OrderStatus::showcase_returned => ['name' => 'Оформлен возврат'],
             OrderStatus::showcase_partial_returned => ['name' => 'Оформлен частичный возврат'],

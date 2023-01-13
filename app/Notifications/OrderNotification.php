@@ -7,16 +7,21 @@ use App\Helpers\TicketPdf;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Settings;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class OrderNotification extends Notification
+class OrderNotification extends Notification implements ShouldQueue
 {
+    use Queueable;
+
     /** @var Order $order */
     public Order $order;
 
     public function __construct(Order $order)
     {
         $this->order = $order;
+        $this->connection = 'database';
     }
 
     /**
@@ -36,7 +41,7 @@ class OrderNotification extends Notification
      */
     public function toMail(): MailMessage
     {
-        $message = new MailMessage;
+        $message = new MailMessage();
         $message->subject("Заказ N{$this->order->id}");
         $text = explode("\n", Settings::get('buyer_email_welcome'));
         foreach ($text as $line) {
