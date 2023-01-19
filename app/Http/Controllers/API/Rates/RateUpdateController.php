@@ -133,6 +133,7 @@ class RateUpdateController extends ApiEditController
                     'base_price' => $rate['base_price'],
                     'min_price' => $rate['min_price'],
                     'max_price' => $rate['max_price'],
+                    'site_price' => $rate['site_price'] ?? null,
                     'commission_type' => $rate['commission_type'],
                     'commission_value' => $rate['commission_value'],
                 ]);
@@ -147,7 +148,8 @@ class RateUpdateController extends ApiEditController
 
         $ratesList->refresh();
 
-        return APIResponse::success($ratesList->wasRecentlyCreated ? 'Тариф добавлен' : 'Тариф изменён',
+        return APIResponse::success(
+            $ratesList->wasRecentlyCreated ? 'Тариф добавлен' : 'Тариф изменён',
             [
                 'rate' => $this->rateToArray($ratesList, true, true),
             ]

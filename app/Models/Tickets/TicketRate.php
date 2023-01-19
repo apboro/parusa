@@ -36,6 +36,7 @@ class TicketRate extends Model
         'base_price',
         'min_price',
         'max_price',
+        'site_price',
         'commission_type',
         'commission_value',
     ];
