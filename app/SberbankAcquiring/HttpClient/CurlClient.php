@@ -12,7 +12,7 @@ class CurlClient implements HttpClientInterface
     /** @var resource CURL instance. */
     private $curl;
 
-    /** @var array CURL options*/
+    /** @var array CURL options */
     private array $options;
 
     public function __construct(array $options = [])
@@ -34,6 +34,12 @@ class CurlClient implements HttpClientInterface
         if (null === $this->curl) {
             $this->curl = curl_init();
             curl_setopt_array($this->curl, $this->options);
+            if ($cert = env('CURL_CERT_FILE')) {
+                curl_setopt($this->curl, CURLOPT_CAINFO, storage_path($cert));
+            }
+            if (env('CURL_CERT_DISABLE')) {
+                curl_setopt($this->curl, CURLOPT_SSL_VERIFYPEER, false);
+            }
         }
 
         return $this->curl;
