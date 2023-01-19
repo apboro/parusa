@@ -38,7 +38,6 @@ class CloudPrint
             'customer_email' => $order->email,
             'customer_name' => $order->name,
             'order_number' => (string)$order->id,
-            'ext_id' => (string)$order->id,
             'card_amount' => 0,
             'purchase' => [
                 'products' => [],
