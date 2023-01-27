@@ -34,6 +34,7 @@ class CloudPrint
             'mode' => 'email',
             'test' => env('CLOUD_PRINT_TEST') ? 1 : 0,
             'target_serial' => env('CLOUD_PRINT_SERIAL'),
+            'target_service' => 'lifepayCloud',
             'type' => $type,
             'customer_email' => $order->email,
             'customer_name' => $order->name,
