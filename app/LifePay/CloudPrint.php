@@ -42,6 +42,7 @@ class CloudPrint
             'purchase' => [
                 'products' => [],
             ],
+            'callback_url' => route('cloudPrintNotification'),
         ];
 
         foreach ($tickets as $ticket) {
