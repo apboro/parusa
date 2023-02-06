@@ -1,6 +1,6 @@
 <template>
     <LayoutPage :title="titleProxy">
-        <template #actions>
+        <template v-if="accepted" #actions>
             <GuiActionsMenu>
                 <router-link class="link" :to="{ name: 'trip-edit', params: { id: 0 }, query: linkQuery}">Добавить рейс</router-link>
             </GuiActionsMenu>
@@ -14,6 +14,7 @@
 import LayoutPage from "@/Components/Layout/LayoutPage";
 import TripsList from "@/Pages/Admin/Trips/Parts/TripsList";
 import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
+import roles from "@/Mixins/roles.vue";
 
 export default {
     components: {
@@ -21,10 +22,14 @@ export default {
         TripsList,
         LayoutPage
     },
+    mixins: [roles],
 
     computed: {
         titleProxy() {
             return String(this.title !== null ? this.title : this.$route.meta['title']);
+        },
+        accepted() {
+            return this.hasRole(['admin', 'office_manager']);
         },
         linkQuery() {
             let query = {};

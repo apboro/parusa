@@ -1,5 +1,5 @@
 <template>
-    <div class="application__menu-item"
+    <div class="application__menu-item" v-if="accepted"
          :class="['application__menu-item-'+level, hovered ? 'application__menu-item-hovered' : '']"
          @mouseenter="show"
          @mouseleave="hide"
@@ -27,6 +27,9 @@
 
 <script>
 import IconDropdown from "../Icons/IconDropdown";
+import roles from "@/Mixins/roles.vue";
+
+
 export default {
     name: "LayoutMenuItem",
     components: {IconDropdown},
@@ -34,7 +37,7 @@ export default {
         item: Object,
         level: {type: Number, default: 0},
     },
-
+    mixins: [roles],
     data: () => ({
         hovered: false,
     }),
@@ -49,6 +52,9 @@ export default {
         children() {
             return typeof this.item.items !== 'undefined' && this.item.items.length > 0 ? this.item.items : null;
         },
+        accepted() {
+            return this.item['roles'] === undefined || this.hasRole(this.item['roles']);
+        }
     },
 
     methods: {

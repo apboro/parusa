@@ -11,6 +11,7 @@ use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\User\Helpers\Currents;
 use App\Models\User\User;
+use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -68,6 +69,18 @@ class FrontendController extends Controller
             return $this->adminPage($current, $loginVariantsCount > 1);
         }
 
+        if ($current->isStaff() && $current->role() !== null && $current->role()->matches(Role::office_manager)) {
+            return $this->adminPage($current, $loginVariantsCount > 1);
+        }
+
+        if ($current->isStaff() && $current->role() !== null && $current->role()->matches(Role::piers_manager)) {
+            return $this->adminPage($current, $loginVariantsCount > 1);
+        }
+
+        if ($current->isStaff() && $current->role() !== null && $current->role()->matches(Role::accountant)) {
+            return $this->adminPage($current, $loginVariantsCount > 1);
+        }
+
         // terminal user role selected
         if ($current->isStaff() && $current->terminal() !== null && $current->role() !== null && $current->role()->matches(Role::terminal)) {
             return $this->terminalPage($current, $loginVariantsCount > 1);
@@ -102,7 +115,7 @@ class FrontendController extends Controller
             if ($position->hasStatus(PositionStatus::active)) {
                 foreach ($position->roles as $role) {
                     /** @var Role $role */
-                    if ($role->matches(Role::admin)) {
+                    if (in_array($role->id, [Role::admin, Role::office_manager, Role::piers_manager, Role::accountant])) {
                         // Staff with admin role
                         $variants[] = $this->variantRecord($position, $role, null);
                         continue;
@@ -224,6 +237,9 @@ class FrontendController extends Controller
                 'positions' => $canChangePosition,
                 'can_reserve' => false,
             ], JSON_THROW_ON_ERROR),
+            'roles' => json_encode($current->position()->roles->map(function (Role $role) {
+                return $role->toConst();
+            }), JSON_THROW_ON_ERROR),
         ])
             ->withCookie($current->positionToCookie())
             ->withCookie($current->roleToCookie())

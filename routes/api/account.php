@@ -7,7 +7,7 @@ use App\Http\Controllers\API\Account\TransactionsListController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/account', [TransactionsListController::class, 'list'])->middleware('allow:staff_admin,partner');
-Route::post('/account/limit', [AccountLimitController::class, 'setAccountLimit'])->middleware('allow:staff_admin');
-Route::post('/account/refill', [AccountRefillController::class, 'refill'])->middleware('allow:staff_admin');
-Route::post('/account/delete', [TransactionDeleteController::class, 'delete'])->middleware('allow:staff_admin');
+Route::post('/account/limit', [AccountLimitController::class, 'setAccountLimit'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant' );
+Route::post('/account/refill', [AccountRefillController::class, 'refill'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/account/delete', [TransactionDeleteController::class, 'delete'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 

@@ -43,19 +43,19 @@ class DictionaryController extends ApiController
     protected array $dictionaries = [
         'excursion_programs' => ['class' => ExcursionProgram::class, 'allow' => 'staff_admin,staff_terminal,partner'],
         'excursion_statuses' => ['class' => ExcursionStatus::class, 'allow' => 'staff_admin'],
-        'excursions' => ['class' => Excursion::class, 'allow' => 'staff_admin,staff_terminal,partner'],
-        'order_types' => ['class' => OrderType::class, 'allow' => 'staff_admin,partner'],
+        'excursions' => ['class' => Excursion::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,staff_terminal,partner'],
+        'order_types' => ['class' => OrderType::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner'],
         'partner_statuses' => ['class' => PartnerStatus::class, 'allow' => 'staff_admin'],
         'partner_types' => ['class' => PartnerType::class, 'allow' => 'staff_admin'],
         'partners' => ['class' => Partner::class, 'allow' => 'staff_admin'],
         'payment_statuses' => ['class' => PaymentStatus::class, 'allow' => 'staff_admin'],
-        'pier_statuses' => ['class' => PiersStatus::class, 'allow' => 'staff_admin'],
-        'piers' => ['class' => Pier::class, 'allow' => 'staff_admin,staff_terminal,partner'],
+        'pier_statuses' => ['class' => PiersStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant'],
+        'piers' => ['class' => Pier::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,staff_terminal,partner'],
         'position_access_statuses' => ['class' => PositionAccessStatus::class, 'allow' => 'staff_admin'],
         'position_statuses' => ['class' => PositionStatus::class, 'allow' => 'staff_admin'],
         'representatives' => ['class' => User::class, 'allow' => 'staff_admin'],
         'roles' => ['class' => Role::class, 'allow' => 'staff_admin'],
-        'ships' => ['class' => Ship::class, 'allow' => 'staff_admin'],
+        'ships' => ['class' => Ship::class, 'allow' => 'staff_admin,staff_office_manager'],
         'ships_statuses' => ['class' => ShipStatus::class, 'allow' => 'staff_admin'],
         'terminal_positions' => ['class' => TerminalPositions::class, 'allow' => 'staff_admin'],
         'terminal_statuses' => ['class' => TerminalStatus::class, 'allow' => 'staff_admin'],
@@ -64,9 +64,9 @@ class DictionaryController extends ApiController
         'transaction_primary_types' => ['class' => AccountTransactionTypePrimary::class, 'allow' => 'staff_admin,partner'],
         'transaction_refill_types' => ['class' => AccountTransactionTypeRefill::class, 'allow' => 'staff_admin'],
         'transaction_types' => ['class' => AccountTransactionType::class, 'allow' => 'staff_admin'],
-        'trip_discount_statuses' => ['class' => TripDiscountStatus::class, 'allow' => 'staff_admin'],
-        'trip_sale_statuses' => ['class' => TripSaleStatus::class, 'allow' => 'staff_admin'],
-        'trip_statuses' => ['class' => TripStatus::class, 'allow' => 'staff_admin'],
+        'trip_discount_statuses' => ['class' => TripDiscountStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant'],
+        'trip_sale_statuses' => ['class' => TripSaleStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant'],
+        'trip_statuses' => ['class' => TripStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant'],
         'user_contact_types' => ['class' => UserContactType::class, 'allow' => 'staff_admin'],
         'user_statuses' => ['class' => UserStatus::class, 'allow' => 'staff_admin'],
     ];
@@ -136,7 +136,7 @@ class DictionaryController extends ApiController
         $rules = explode(',', $abilities);
 
         foreach ($rules as $rule) {
-            $set = explode('_', $rule);
+            $set = explode('_', $rule, 2);
             if ($set[0] === 'partner' && $current->isRepresentative()) {
                 return true;
             }
@@ -147,6 +147,15 @@ class DictionaryController extends ApiController
                 return true;
             }
             if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'terminal' && $current->isStaffTerminal()) {
+                return true;
+            }
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'office_manager' && $current->isStaffOfficeManager()) {
+                return true;
+            }
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'piers_manager' && $current->isStaffPiersManager()) {
+                return true;
+            }
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'accountant' && $current->isStaffAccountant()) {
                 return true;
             }
         }

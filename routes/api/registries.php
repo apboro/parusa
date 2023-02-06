@@ -19,8 +19,8 @@ Route::post('/registries/order/buyer', [OrdersRegistryBuyerController::class, 'b
 
 Route::post('/registries/reserves', [ReservesRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_terminal,partner']);
 
-Route::post('/registries/tickets', [TicketsRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_terminal,partner']);
-Route::post('/registries/ticket', [TicketsRegistryItemController::class, 'view'])->middleware(['allow:staff_admin,staff_terminal,partner']);
+Route::post('/registries/tickets', [TicketsRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,staff_terminal,partner']);
+Route::post('/registries/ticket', [TicketsRegistryItemController::class, 'view'])->middleware(['allow:staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,staff_terminal,partner']);
 
 Route::post('/registries/transactions', [TransactionsRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_terminal']);
 Route::post('/registries/transactions/fiscal', [TransactionsRegistryController::class, 'fiscal'])->middleware(['allow:staff_admin,staff_terminal']);

@@ -1,42 +1,47 @@
 export default [
     {
         'title': 'ПРИЧАЛЫ И РЕЙСЫ', 'route': '',
+        'roles': ['admin', 'office_manager', 'piers_manager', 'accountant'],
         'items': [
-            {'title': 'Рейсы', 'route': 'trip-list'},
-            {'title': 'Причалы', 'route': 'pier-list'},
+            {'title': 'Рейсы', 'route': 'trip-list',   'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
+            {'title': 'Причалы', 'route': 'pier-list', 'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
         ]
     },
     {
         'title': 'ПАРТНЕРЫ, КАССЫ', 'route': '',
+        'roles': ['admin', 'office_manager', 'piers_manager', 'accountant'],
         'items': [
-            {'title': 'Компании-партнёры', 'route': 'partners-list'},
-            {'title': 'Представители', 'route': 'representatives-list'},
-            {'title': 'Мобильные кассы', 'route': 'terminals-list'},
+            {'title': 'Компании-партнёры', 'route': 'partners-list',    'roles': ['admin', 'office_manager']},
+            {'title': 'Представители', 'route': 'representatives-list', 'roles': ['admin', 'office_manager']},
+            {'title': 'Мобильные кассы', 'route': 'terminals-list',     'roles': ['admin', 'office_manager']},
         ]
     },
     {
         'title': 'КОМПАНИЯ', 'route': '',
+        'roles': ['admin', 'office_manager', 'accountant'],
         'items': [
-            {'title': 'Сотрудники', 'route': 'staff-list'},
-            {'title': 'Каталог экскурсий', 'route': 'excursion-list'},
-            {'title': 'Настройки', 'route': 'settings'},
-            {'title': 'Справочники', 'route': 'dictionaries'},
+            {'title': 'Сотрудники', 'route': 'staff-list',            'roles': ['admin', 'office_manager', 'accountant']},
+            {'title': 'Каталог экскурсий', 'route': 'excursion-list', 'roles': ['admin', 'office_manager', 'accountant']},
+            {'title': 'Настройки', 'route': 'settings',               'roles': ['admin', 'office_manager', 'accountant']},
+            {'title': 'Справочники', 'route': 'dictionaries',         'roles': ['admin', 'office_manager', 'accountant']},
         ]
     },
     {
         'title': 'РЕЕСТРЫ', 'route': '',
+        'roles': ['admin', 'office_manager', 'accountant'],
         'items': [
-            {'title': 'Реестр заказов', 'route': 'orders-registry'},
-            {'title': 'Реестр билетов', 'route': 'tickets-registry'},
-            {'title': 'Реестр броней', 'route': 'reserves-registry'},
-            {'title': 'Реестр транзакций по кассам', 'route': 'transactions-registry'},
+            {'title': 'Реестр заказов', 'route': 'orders-registry',                    'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
+            {'title': 'Реестр билетов', 'route': 'tickets-registry',                   'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
+            {'title': 'Реестр броней', 'route': 'reserves-registry',                   'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
+            {'title': 'Реестр транзакций по кассам', 'route': 'transactions-registry', 'roles': ['admin', 'accountant']},
         ]
     },
     {
         'title': 'СТАТИСТИКА', 'route': '',
+        'roles': ['admin'],
         'items': [
-            {'title': 'Продажи с сайта Алые Паруса', 'route': 'statistics-sales'},
-            {'title': 'Статистика за сегодня', 'route': 'statistics-sales-today'},
+            {'title': 'Продажи с сайта Алые Паруса', 'route': 'statistics-sales', 'roles': ['admin']},
+            {'title': 'Статистика за сегодня', 'route': 'statistics-sales-today', 'roles': ['admin']},
         ]
     },
 

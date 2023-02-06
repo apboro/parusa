@@ -216,6 +216,36 @@ class Currents
     }
 
     /**
+     * Whether is staff position with officeManager role.
+     *
+     * @return  bool
+     */
+    public function isStaffOfficeManager(): bool
+    {
+        return $this->position() && $this->position()->is_staff && $this->role() && $this->role()->matches(Role::office_manager);
+    }
+
+    /**
+     * Whether is staff position with piersManager role.
+     *
+     * @return  bool
+     */
+    public function isStaffPiersManager(): bool
+    {
+        return $this->position() && $this->position()->is_staff && $this->role() && $this->role()->matches(Role::piers_manager);
+    }
+
+    /**
+     * Whether is staff position with accountant role.
+     *
+     * @return  bool
+     */
+    public function isStaffAccountant(): bool
+    {
+        return $this->position() && $this->position()->is_staff && $this->role() && $this->role()->matches(Role::accountant);
+    }
+
+    /**
      * Get user id.
      *
      * @return  int|null
