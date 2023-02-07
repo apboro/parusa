@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use App\Http\APIResponse;
 use App\Http\Response;
-use App\Models\Dictionaries\Role;
 use App\Models\User\Helpers\Currents;
 use Closure;
 use Illuminate\Http\Request;

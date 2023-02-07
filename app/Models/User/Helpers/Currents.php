@@ -3,8 +3,6 @@
 namespace App\Models\User\Helpers;
 
 use App\Exceptions\User\BadUserPositionException;
-use App\Exceptions\User\BadUserRoleException;
-use App\Exceptions\User\BadUserTerminalException;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\Role;
@@ -97,7 +95,11 @@ class Currents
         }
 
         /** @var Role $role */
-        $role = $position->roles()->where(['id' => $roleId])->first();
+        // assign role only for side parts, e.g. terminal page
+        $role = $position->roles()
+            ->where(['id' => $roleId])
+            ->whereIn('id', [Role::terminal])
+            ->first();
         if ($role === null) {
             return;
         }
@@ -202,7 +204,7 @@ class Currents
      */
     public function isStaffAdmin(): bool
     {
-        return $this->position() && $this->position()->is_staff && $this->role() && $this->role()->matches(Role::admin);
+        return $this->position() && $this->position()->is_staff && $this->hasRole(Role::admin);
     }
 
     /**
@@ -212,7 +214,7 @@ class Currents
      */
     public function isStaffTerminal(): bool
     {
-        return $this->position() && $this->position()->is_staff && $this->role() && $this->terminalId() && $this->role()->matches(Role::terminal);
+        return $this->position() && $this->position()->is_staff && $this->hasRole(Role::terminal);
     }
 
     /**
@@ -273,6 +275,30 @@ class Currents
     public function role(): ?Role
     {
         return $this->role;
+    }
+
+    /**
+     * Check current position role set.
+     *
+     * @param int|array $roleId
+     *
+     * @return bool
+     */
+    public function hasRole($roleId): bool
+    {
+        if (!$this->position()) {
+            return false;
+        }
+
+        $roles = is_array($roleId) ? $roleId : [$roleId];
+
+        foreach ($roles as $role) {
+            if ($this->position()->hasRole($role)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -20,6 +20,8 @@ use JsonException;
 
 class FrontendController extends Controller
 {
+    protected array $adminSideRoles = [Role::admin];
+
     /**
      * Handle requests to frontend index.
      *
@@ -63,14 +65,14 @@ class FrontendController extends Controller
             return $this->partnerPage($current, $loginVariantsCount > 1);
         }
 
-        // admin side
-        if ($current->isStaff() && $current->role() !== null && $current->role()->matches(Role::admin)) {
-            return $this->adminPage($current, $loginVariantsCount > 1);
-        }
-
         // terminal user role selected
         if ($current->isStaff() && $current->terminal() !== null && $current->role() !== null && $current->role()->matches(Role::terminal)) {
             return $this->terminalPage($current, $loginVariantsCount > 1);
+        }
+
+        // admin side
+        if ($current->isStaff() && $current->hasRole($this->adminSideRoles)) {
+            return $this->adminPage($current, $loginVariantsCount > 1);
         }
 
         // return select page in all others cases
@@ -100,25 +102,33 @@ class FrontendController extends Controller
                 continue;
             }
             if ($position->hasStatus(PositionStatus::active)) {
+                $adminSideRoles = [];
+                $terminalSideRoles = [];
                 foreach ($position->roles as $role) {
                     /** @var Role $role */
-                    if ($role->matches(Role::admin)) {
-                        // Staff with admin role
-                        $variants[] = $this->variantRecord($position, $role, null);
-                        continue;
+                    if (in_array($role->id, $this->adminSideRoles, true)) {
+                        $adminSideRoles[] = $role;
                     }
                     if ($role->matches(Role::terminal)) {
-                        // Staff with terminal role
-                        $terminals = Terminal::query()->with(['pier', 'pier.info'])
-                            ->where('status_id', TerminalStatus::enabled)
-                            ->whereHas('staff', function (Builder $query) use ($position) {
-                                $query->where('id', $position->id);
-                            })
-                            ->get();
-                        foreach ($terminals as $terminal) {
-                            /** @var Terminal $terminal */
-                            $variants[] = $this->variantRecord($position, $role, $terminal);
-                        }
+                        $terminalSideRoles[] = $role;
+                    }
+                }
+
+                if (!empty($adminSideRoles)) {
+                    // Staff with admin role
+                    $variants[] = $this->variantRecord($position, $adminSideRoles, null);
+                }
+                if (!empty($terminalSideRoles)) {
+                    // Staff with terminal role
+                    $terminals = Terminal::query()->with(['pier', 'pier.info'])
+                        ->where('status_id', TerminalStatus::enabled)
+                        ->whereHas('staff', function (Builder $query) use ($position) {
+                            $query->where('id', $position->id);
+                        })
+                        ->get();
+                    foreach ($terminals as $terminal) {
+                        /** @var Terminal $terminal */
+                        $variants[] = $this->variantRecord($position, $terminalSideRoles, $terminal);
                     }
                 }
             }
@@ -131,15 +141,17 @@ class FrontendController extends Controller
      * Make login variant record.
      *
      * @param Position $position
-     * @param Role|null $role
+     * @param array|null $roles
      * @param Terminal|null $terminal
      *
      * @return  array
      */
-    protected function variantRecord(Position $position, ?Role $role, ?Terminal $terminal): array
+    protected function variantRecord(Position $position, ?array $roles, ?Terminal $terminal): array
     {
         if ($position->is_staff) {
-            if ($role && $terminal && $role->matches(Role::terminal)) {
+            if ($roles !== null && $terminal) {
+                /** @var Role $role */
+                $role = $roles[0] ?? null;
                 $title = "$terminal->name ({$terminal->pier->name})";
             } else {
                 $title = __('common.root account caption');
@@ -148,13 +160,21 @@ class FrontendController extends Controller
             $title = $position->partner->name;
         }
 
+        if(isset($role)) {
+            $roleNames = $role->name;
+        } else {
+            $roleNames = $roles ? implode(', ', array_map(static function (Role $role) {
+                return $role->name;
+            }, $roles)) : null;
+        }
+
         return [
             'is_staff' => $position->is_staff,
             'position_id' => $position->id,
             'position' => $position->title,
             'organization' => $title,
             'role_id' => $role->id ?? null,
-            'role' => $role->name ?? null,
+            'role' => $roleNames,
             'terminal_id' => $terminal->id ?? null,
             'terminal' => $terminal ? "$terminal->name ({$terminal->pier->name})" : null,
         ];
@@ -309,7 +329,7 @@ class FrontendController extends Controller
     /**
      * Prepare text to json encoding.
      *
-     * @param string $text
+     * @param string|null $text
      *
      * @return  string
      */
