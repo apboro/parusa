@@ -13,21 +13,21 @@ use App\Http\Controllers\API\Partners\PartnerViewController;
 use App\Http\Controllers\Storage\PartnerDocumentController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/partners', [PartnersListController::class, 'list'])->middleware('allow:staff_admin');
+Route::post('/partners', [PartnersListController::class, 'list'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 
-Route::post('/partners/view', [PartnerViewController::class, 'get'])->middleware('allow:staff_admin');
-Route::post('/partners/properties', [PartnerPropertiesController::class, 'properties'])->middleware('allow:staff_admin');
-Route::post('/partners/representative/details', [PartnerRepresentativesController::class, 'details'])->middleware('allow:staff_admin');
-Route::post('/partners/representative/attach', [PartnerRepresentativesController::class, 'attach'])->middleware('allow:staff_admin');
-Route::post('/partners/representative/detach', [PartnerRepresentativesController::class, 'detach'])->middleware('allow:staff_admin');
-Route::post('/partners/representative/status', [PartnerRepresentativeStatusController::class, 'setStatus'])->middleware('allow:staff_admin');
+Route::post('/partners/view', [PartnerViewController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/partners/properties', [PartnerPropertiesController::class, 'properties'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/partners/representative/details', [PartnerRepresentativesController::class, 'details'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/partners/representative/attach', [PartnerRepresentativesController::class, 'attach'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/partners/representative/detach', [PartnerRepresentativesController::class, 'detach'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/partners/representative/status', [PartnerRepresentativeStatusController::class, 'setStatus'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 
-Route::post('/partners/get', [PartnerEditController::class, 'get'])->middleware('allow:staff_admin');
-Route::post('/partners/update', [PartnerEditController::class, 'update'])->middleware('allow:staff_admin');
+Route::post('/partners/get', [PartnerEditController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/partners/update', [PartnerEditController::class, 'update'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 
-Route::post('/partners/delete', [PartnerDeleteController::class, 'delete'])->middleware('allow:staff_admin');
+Route::post('/partners/delete', [PartnerDeleteController::class, 'delete'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 
-Route::get('/partners/files/{file}', [PartnerDocumentController::class, 'get'])->middleware('allow:staff_admin,partner');
+Route::get('/partners/files/{file}', [PartnerDocumentController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,partner');
 
 Route::post('/partners/details', [PartnerDetailsController::class, 'get'])->middleware(['allow:partner']);
 

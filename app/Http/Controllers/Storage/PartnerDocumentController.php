@@ -23,7 +23,7 @@ class PartnerDocumentController extends Controller
         $current = Currents::get($request);
 
         /** @var File $document */
-        if ($current->isStaffAdmin()) {
+        if ($current->isStaffAdmin() || $current->isStaffOfficeManager() || $current->isStaffAccountant()) {
             $document = File::query()->where('filename', $file)->firstOrFail();
         } else if ($current->isRepresentative() && $current->partner() !== null) {
             $document = $current->partner()->files()->where('filename', $file)->firstOrFail();

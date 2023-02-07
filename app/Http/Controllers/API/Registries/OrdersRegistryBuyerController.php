@@ -34,7 +34,7 @@ class OrdersRegistryBuyerController extends ApiEditController
         $current = Currents::get($request);
         if ($current->isRepresentative()) {
             $query->where('partner_id', $current->partnerId());
-        } else if ($current->isStaffAdmin()) {
+        } else if ($current->isStaffAdmin() || $current->isStaffOfficeManager() || $current->isStaffAccountant()) {
             if ($request->input('partner_id')) {
                 $query->where('partner_id', $request->input('partner_id'));
             }

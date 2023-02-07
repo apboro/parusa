@@ -46,7 +46,7 @@ class TicketsRegistryController extends ApiController
     public function list(ApiListRequest $request): JsonResponse
     {
         $current = Currents::get($request);
-
+        //TODO add check request from which page
         $this->defaultFilters['date_from'] = Carbon::now()->startOfDay()->format('Y-m-d\TH:i');
         $this->defaultFilters['date_to'] = Carbon::now()->endOfDay()->format('Y-m-d\TH:i');
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);

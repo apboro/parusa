@@ -112,7 +112,22 @@ class FrontendController extends Controller
                 $variants[] = $this->variantRecord($position, null, null);
                 continue;
             }
-            if ($position->hasStatus(PositionStatus::active)) {
+            if ($position->is_staff && $position->hasStatus(PositionStatus::active)) {
+//                $adminSideRoles = [];
+//                $terminalSideRoles = [];
+//                foreach ($position->roles as $role) {
+//                    if (in_array($role->id, [Role::admin, Role::office_manager, Role::piers_manager, Role::accountant])) {
+//                        $adminSideRoles[] = $role;
+//                    } else if ($role->matches(Role::terminal)) {
+//                        $terminalSideRoles[] = $role;
+//                    }
+//                }
+//                if(!empty($adminSideRoles)) {
+//
+//                    $variants[] = $this->variantRecord($position, $adminSideRoles, null);
+//                }
+
+
                 foreach ($position->roles as $role) {
                     /** @var Role $role */
                     if (in_array($role->id, [Role::admin, Role::office_manager, Role::piers_manager, Role::accountant])) {

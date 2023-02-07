@@ -207,7 +207,7 @@ class TransactionsRegistryController extends ApiController
         $query = Payment::query()
             ->with(['status', 'order', 'terminal', 'position', 'position.user', 'position.user.profile']);
 
-        if ($current->isStaffAdmin()) {
+        if ($current->isStaffAdmin() || $current->isStaffAccountant()) {
             if ($request->has('terminal_id') && $request->input('terminal_id') !== null) {
                 $query->where('terminal_id', $this->terminalId = $request->input('terminal_id'));
             } else if (!empty($filters['terminal_id'])) {

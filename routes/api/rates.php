@@ -6,7 +6,7 @@ use App\Http\Controllers\API\Rates\RatesListController;
 use App\Http\Controllers\API\Rates\RateUpdateController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/rates', [RatesListController::class, 'list'])->middleware(['allow:staff_admin,partner']);
-Route::post('/rates/update', [RateUpdateController::class, 'update'])->middleware(['allow:staff_admin']);
-Route::post('/rates/override', [RateOverrideController::class, 'override'])->middleware(['allow:staff_admin']);
-Route::post('/rates/delete', [RateDeleteController::class, 'delete'])->middleware(['allow:staff_admin']);
+Route::post('/rates', [RatesListController::class, 'list'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant,partner']);
+Route::post('/rates/update', [RateUpdateController::class, 'update'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);
+Route::post('/rates/override', [RateOverrideController::class, 'override'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);
+Route::post('/rates/delete', [RateDeleteController::class, 'delete'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);
