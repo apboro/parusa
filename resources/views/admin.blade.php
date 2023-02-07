@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
     <script>
         window.user = '{!! $user !!}';
+        window.roles = '{!! $roles !!}';
     </script>
 </head>
 <body>

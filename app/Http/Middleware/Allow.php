@@ -29,7 +29,7 @@ class Allow
         $current = Currents::get($request);
 
         foreach ($rules as $rule) {
-            $set = explode('_', $rule);
+            $set = explode('_', $rule, 2);
             if ($set[0] === 'partner' && $current->isRepresentative()) {
                 return $next($request);
             }
@@ -40,6 +40,15 @@ class Allow
                 return $next($request);
             }
             if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'terminal' && $current->isStaffTerminal()) {
+                return $next($request);
+            }
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'office_manager' && $current->isStaffOfficeManager()) {
+                return $next($request);
+            }
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'piers_manager' && $current->isStaffPiersManager()) {
+                return $next($request);
+            }
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'accountant' && $current->isStaffAccountant()) {
                 return $next($request);
             }
         }

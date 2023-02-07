@@ -34,7 +34,7 @@
             </GuiValue>
         </GuiContainer>
 
-        <GuiContainer mt-30 v-if="editable">
+        <GuiContainer mt-30 v-if="editable && accepted">
             <GuiButton @click="edit">Редактировать</GuiButton>
         </GuiContainer>
 
@@ -65,6 +65,7 @@ export default {
         pierId: {type: Number, required: true},
         data: {type: Object},
         editable: {type: Boolean, default: false},
+        accepted: {type: Boolean, default: false},
     },
 
     emits: ['update'],

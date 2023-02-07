@@ -4,7 +4,7 @@
                 :link="{name: 'pier-list'}"
                 :link-title="'К списку причалов'"
     >
-        <template v-slot:actions>
+        <template v-if="accepted" v-slot:actions>
             <GuiActionsMenu>
                 <span class="link" @click="deletePier">Удалить причал</span>
             </GuiActionsMenu>
@@ -12,7 +12,7 @@
 
         <LayoutRoutedTabs :tabs="{description: 'Описание причала', schedule: 'Расписание рейсов'}" @change="tab = $event"/>
 
-        <PierInfo v-if="tab === 'description'" :data="data.data" :pier-id="pierId" :editable="true" @update="update"/>
+        <PierInfo v-if="tab === 'description'" :data="data.data" :pier-id="pierId" :editable="true" :accepted="accepted" @update="update"/>
 
         <GuiHeading v-if="tab === 'schedule' && trips_title !== null" mt-15>{{ trips_title }}</GuiHeading>
         <TripsList v-if="tab === 'schedule'" :pier-id="pierId" @setTitle="trips_title = $event"/>
@@ -28,6 +28,7 @@ import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 import GuiHeading from "@/Components/GUI/GuiHeading";
 import TripsList from "@/Pages/Admin/Trips/Parts/TripsList";
 import PierInfo from "@/Pages/Admin/Piers/Parts/PierInfo";
+import roles from "@/Mixins/roles.vue";
 
 export default {
     components: {
@@ -39,7 +40,7 @@ export default {
         TripsList,
     },
 
-    mixins: [DeleteEntry],
+    mixins: [roles, DeleteEntry],
 
     data: () => ({
         data: data('/api/piers/view'),
@@ -56,6 +57,9 @@ export default {
         },
         title() {
             return this.data.is_loaded ? this.data.data['name'] : '...';
+        },
+        accepted(){
+            return this.hasRole(['admin', 'office_manager']);
         }
     },
 

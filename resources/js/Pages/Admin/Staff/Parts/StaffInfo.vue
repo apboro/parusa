@@ -35,7 +35,7 @@
             <GuiValueArea :title="'Заметки'" v-text="data['notes']"/>
         </GuiContainer>
 
-        <GuiContainer mt-15 v-if="editable">
+        <GuiContainer t-15 v-if="editable && accepted">
             <GuiButton @click="edit">Редактировать</GuiButton>
         </GuiContainer>
 
@@ -60,6 +60,7 @@ import GuiButton from "@/Components/GUI/GuiButton";
 import FormPopUp from "@/Components/FormPopUp";
 import FormDictionary from "@/Components/Form/FormDictionary";
 import form from "@/Core/Form";
+import roles from "@/Mixins/roles.vue";
 
 export default {
     props: {
@@ -79,10 +80,17 @@ export default {
         GuiValue,
         GuiContainer
     },
+    mixins: [roles],
 
     data: () => ({
         form: form(null, '/api/staff/properties'),
     }),
+
+    computed: {
+        accepted() {
+            return this.hasRole(['admin']);
+        }
+    },
 
     methods: {
         edit() {

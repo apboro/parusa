@@ -43,7 +43,7 @@
             <GuiHint mt-5 mb-10>При значении 0 бронь будет сохраняться до отправки рейса.</GuiHint>
         </GuiContainer>
 
-        <GuiContainer mt-30 v-if="editable">
+        <GuiContainer mt-30 v-if="editable && accepted">
             <GuiButton @clicked="edit" v-if="!blocked">Редактировать</GuiButton>
             <GuiText mt-10 v-if="blocked">
                 <div class="mb-5 mt-50" style="font-size:14px">* Рейс нельзя редактировать, на него есть оформленные билеты.</div>
@@ -73,6 +73,7 @@ import FormPopUp from "@/Components/FormPopUp";
 import FormDictionary from "@/Components/Form/FormDictionary";
 import FormNumber from "@/Components/Form/FormNumber";
 import GuiText from "../../../../Components/GUI/GuiText";
+import roles from "@/Mixins/roles.vue";
 
 export default {
     props: {
@@ -80,6 +81,7 @@ export default {
         data: {type: Object},
         editable: {type: Boolean, default: false},
     },
+    mixins: [roles],
 
     emits: ['update'],
 
@@ -97,7 +99,10 @@ export default {
     computed: {
         blocked() {
             return this.data['tickets_sold'] || this.data['tickets_reserved'];
-        }
+        },
+        accepted() {
+            return this.hasRole(['admin', 'office_manager']);
+        },
     },
 
     data: () => ({

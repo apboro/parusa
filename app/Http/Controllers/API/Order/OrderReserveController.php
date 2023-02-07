@@ -210,7 +210,7 @@ class OrderReserveController extends ApiController
 
         if ($current->isRepresentative()) {
             $query->where('partner_id', $current->partnerId());
-        } else if (!$current->isStaffAdmin() && !$current->isStaffTerminal()) {
+        } else if (!($current->isStaffAdmin() || $current->isStaffOfficeManager() || $current->isStaffAccountant()) && !$current->isStaffTerminal()) {
             return null;
         }
 

@@ -4,7 +4,7 @@
                 :link="{name: 'trip-list'}"
                 :link-title="'К списку рейсов'"
     >
-        <template v-slot:actions>
+        <template v-if="accepted" v-slot:actions>
             <GuiActionsMenu>
                 <span class="link" @click="deleteTrip">Удалить рейс</span>
             </GuiActionsMenu>
@@ -26,6 +26,7 @@ import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 import TripInfo from "@/Pages/Admin/Trips/Parts/TripInfo";
 import DeleteEntry from "@/Mixins/DeleteEntry";
 import AdminTicketsRegistry from "@/Pages/Admin/Registries/Parts/AdminTicketsRegistry";
+import roles from "@/Mixins/roles.vue";
 
 export default {
     components: {
@@ -36,7 +37,7 @@ export default {
         TripInfo,
     },
 
-    mixins: [DeleteEntry],
+    mixins: [roles, DeleteEntry],
 
     data: () => ({
         data: data('/api/trips/view'),
@@ -52,7 +53,10 @@ export default {
         },
         title() {
             return this.data.is_loaded ? String(this.data.data['name']) : 'Рейс №...';
-        }
+        },
+        accepted() {
+            return this.hasRole(['admin', 'office_manager']);
+        },
     },
 
     created() {

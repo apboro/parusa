@@ -60,17 +60,17 @@ export default [
     {path: '/terminals/:id', name: 'terminals-view', component: TerminalsViewPage, meta: {title: 'Просмотр мобильной кассы'}},
     {path: '/terminals/:id/edit', name: 'terminals-edit', component: TerminalsEditPage, meta: {title: 'Редактирование мобильной кассы'}},
 
-    {path: '/piers', name: 'pier-list', component: PiersListPage, meta: {title: 'Причалы'}},
-    {path: '/piers/:id', name: 'pier-view', component: PierViewPage, meta: {title: 'Просмотр причала'}},
-    {path: '/piers/:id/edit', name: 'pier-edit', component: PierEditPage, meta: {title: 'Редактирование причала'}},
+    {path: '/piers', name: 'pier-list', component: PiersListPage, meta: {title: 'Причалы', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/piers/:id', name: 'pier-view', component: PierViewPage, meta: {title: 'Просмотр причала', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/piers/:id/edit', name: 'pier-edit', component: PierEditPage, meta: {title: 'Редактирование причала', roles: ['admin', 'office_manager']}},
 
     {path: '/excursions', name: 'excursion-list', component: ExcursionsListPage, meta: {title: 'Каталог экскурсий'}},
     {path: '/excursions/:id', name: 'excursion-view', component: ExcursionViewPage, meta: {title: 'Просмотр экскурсии'}},
     {path: '/excursions/:id/edit', name: 'excursion-edit', component: ExcursionEditPage, meta: {title: 'Редактирование экскурсии'}},
 
-    {path: '/trips', name: 'trip-list', component: TripsListPage, meta: {title: 'Список рейсов'}},
-    {path: '/trips/:id', name: 'trip-view', component: TripViewPage, meta: {title: 'Просмотр рейса'}},
-    {path: '/trips/:id/edit', name: 'trip-edit', component: TripEditPage, meta: {title: 'Редактирование рейса'}},
+    {path: '/trips', name: 'trip-list', component: TripsListPage, meta: {title: 'Список рейсов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/trips/:id', name: 'trip-view', component: TripViewPage, meta: {title: 'Просмотр рейса', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/trips/:id/edit', name: 'trip-edit', component: TripEditPage, meta: {title: 'Редактирование рейса', roles: ['admin', 'office_manager']}},
 
     {path: '/dictionaries', name: 'dictionaries', component: DictionariesPage, meta: {title: 'Справочники'}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},

@@ -4,7 +4,7 @@
                 :link="{name: 'staff-list'}"
                 :link-title="'К списку сотрудников'"
     >
-        <template v-slot:actions>
+        <template v-if="accepted" v-slot:actions>
             <GuiActionsMenu>
                 <span class="link" @click="deleteStaff">Удалить сотрудника</span>
             </GuiActionsMenu>
@@ -28,6 +28,7 @@ import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 import StaffInfo from "@/Pages/Admin/Staff/Parts/StaffInfo";
 import StaffAccess from "@/Pages/Admin/Staff/Parts/StaffAccess";
 import StaffRoles from "@/Pages/Admin/Staff/Parts/StaffRoles";
+import roles from "@/Mixins/roles.vue";
 
 export default {
     components: {
@@ -39,7 +40,8 @@ export default {
         LayoutRoutedTabs,
     },
 
-    mixins: [DeleteEntry],
+    mixins: [roles, DeleteEntry],
+
 
     data: () => ({
         data: data('/api/staff/view'),
@@ -56,6 +58,9 @@ export default {
         },
         title() {
             return this.data.is_loaded ? this.data.data['full_name'] : '...';
+        },
+        accepted() {
+            return this.hasRole(['admin']);
         }
     },
 

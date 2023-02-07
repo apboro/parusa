@@ -90,7 +90,7 @@
                     <GuiIconButton v-if="trip['chained']" :class="'mr-5'" :color="'blue'" @click="chainInfo(trip)">
                         <IconLink/>
                     </GuiIconButton>
-                    <GuiActionsMenu :title="null">
+                    <GuiActionsMenu v-if="accepted" :title="null">
                         <router-link :to="{name: 'trip-edit', params: {id: trip['id']}}" class="link">Редактировать</router-link>
                         <router-link :to="{name: 'trip-edit', params: {id: 0}, query: {from: trip['id']}}" class="link">Копировать рейс</router-link>
                         <span class="link" @click="remove(trip)">Удалить</span>
@@ -142,6 +142,7 @@ import FormPopUp from "@/Components/FormPopUp";
 import GuiContainer from "@/Components/GUI/GuiContainer";
 import FormDictionary from "@/Components/Form/FormDictionary";
 import form from "@/Core/Form";
+import roles from "@/Mixins/roles.vue";
 
 export default {
     props: {
@@ -169,7 +170,7 @@ export default {
         TripDeletePopup,
     },
 
-    mixins: [deleteEntry],
+    mixins: [roles, deleteEntry],
 
     data: () => ({
         list: list('/api/trips'),
@@ -198,6 +199,9 @@ export default {
             return 'Список рейсов'
                 + (this.list.payload['date'] ? ' на ' + this.list.payload['date'] : '')
                 + (!isNaN(this.list.payload['day']) ? ', ' + ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'][this.list.payload['day']] : '');
+        },
+        accepted() {
+            return this.hasRole(['admin', 'office_manager']);
         },
     },
 

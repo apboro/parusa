@@ -8,9 +8,9 @@ use App\Http\Controllers\API\Staff\StaffPropertiesController;
 use App\Http\Controllers\API\Staff\StaffViewController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/staff', [StaffListController::class, 'list'])->middleware(['allow:staff_admin']);
+Route::post('/staff', [StaffListController::class, 'list'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);
 
-Route::post('/staff/view', [StaffViewController::class, 'view'])->middleware(['allow:staff_admin']);
+Route::post('/staff/view', [StaffViewController::class, 'view'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);
 Route::post('/staff/properties', [StaffPropertiesController::class, 'properties'])->middleware(['allow:staff_admin']);
 Route::post('/staff/access/set', [StaffAccessController::class, 'set'])->middleware(['allow:staff_admin']);
 Route::post('/staff/access/release', [StaffAccessController::class, 'release'])->middleware(['allow:staff_admin']);

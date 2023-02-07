@@ -1,6 +1,6 @@
 <template>
     <LayoutPage :title="$route.meta['title']" :loading="list.is_loading">
-        <template v-slot:actions>
+        <template v-if="accepted" v-slot:actions>
             <GuiActionsMenu>
                 <router-link class="link" :to="{ name: 'pier-edit', params: { id: 0 }}">Добавить причал</router-link>
             </GuiActionsMenu>
@@ -49,6 +49,7 @@ import ListTableCell from "@/Components/ListTable/ListTableCell";
 import GuiActivityIndicator from "@/Components/GUI/GuiActivityIndicator";
 import GuiMessage from "@/Components/GUI/GuiMessage";
 import Pagination from "@/Components/Pagination";
+import roles from "@/Mixins/roles.vue";
 
 export default {
     components: {
@@ -61,6 +62,7 @@ export default {
         GuiMessage,
         Pagination,
     },
+    mixins:[ roles ],
 
     data: () => ({
         list: list('/api/piers'),
@@ -68,6 +70,12 @@ export default {
 
     created() {
         this.list.initial();
+    },
+
+    computed: {
+        accepted() {
+            return this.hasRole(['admin', 'office_manager']);
+        }
     },
 }
 </script>
