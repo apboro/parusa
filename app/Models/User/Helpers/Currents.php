@@ -224,7 +224,7 @@ class Currents
      */
     public function isStaffOfficeManager(): bool
     {
-        return $this->position() && $this->position()->is_staff && $this->role() && $this->role()->matches(Role::office_manager);
+        return $this->position() && $this->position()->is_staff && $this->hasRole(Role::office_manager);
     }
 
     /**
@@ -234,7 +234,7 @@ class Currents
      */
     public function isStaffPiersManager(): bool
     {
-        return $this->position() && $this->position()->is_staff && $this->role() && $this->role()->matches(Role::piers_manager);
+        return $this->position() && $this->position()->is_staff && $this->hasRole(Role::piers_manager);
     }
 
     /**
@@ -244,7 +244,7 @@ class Currents
      */
     public function isStaffAccountant(): bool
     {
-        return $this->position() && $this->position()->is_staff && $this->role() && $this->role()->matches(Role::accountant);
+        return $this->position() && $this->position()->is_staff && $this->hasRole(Role::accountant);
     }
 
     /**

@@ -20,7 +20,7 @@ use JsonException;
 
 class FrontendController extends Controller
 {
-    protected array $adminSideRoles = [Role::admin];
+    protected array $adminSideRoles = [Role::admin, Role::accountant, Role::piers_manager, Role::office_manager];
 
     /**
      * Handle requests to frontend index.
@@ -244,6 +244,9 @@ class FrontendController extends Controller
                 'positions' => $canChangePosition,
                 'can_reserve' => false,
             ], JSON_THROW_ON_ERROR),
+            'roles' => json_encode($current->position()->roles->map(function (Role $role) {
+                return $role->toConst();
+            }), JSON_THROW_ON_ERROR),
         ])
             ->withCookie($current->positionToCookie())
             ->withCookie($current->roleToCookie())
