@@ -12,7 +12,7 @@
 
         <LayoutRoutedTabs :tabs="{description: 'Описание рейса', tickets: 'Проданные билеты'}" @change="tab = $event"/>
 
-        <TripInfo v-if="tab === 'description'" :trip-id="tripId" :data="data.data" :editable="true" @update="update"/>
+        <TripInfo v-if="tab === 'description'" :trip-id="tripId" :data="data.data" :editable="accepted" @update="update"/>
         <AdminTicketsRegistry v-if="tab === 'tickets'" :trip-id="tripId"/>
 
     </LayoutPage>

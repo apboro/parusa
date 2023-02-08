@@ -13,8 +13,8 @@
         <LayoutRoutedTabs :tabs="{personal: 'Персональные данные', access: 'Доступ', roles: 'Роли'}" @change="tab = $event"/>
 
         <StaffInfo v-if="tab === 'personal'" :data="data.data" :staff-id="staffId" :editable="true" @update="update"/>
-        <StaffAccess v-if="tab === 'access'" :data="data.data" :staff-id="staffId" :editable="true" @update="update"/>
-        <StaffRoles v-if="tab === 'roles'" :data="data.data" :staff-id="staffId" :editable="true" @update="update"/>
+        <StaffAccess v-if="tab === 'access'" :data="data.data" :staff-id="staffId" :editable="accepted" @update="update"/>
+        <StaffRoles v-if="tab === 'roles'" :data="data.data" :staff-id="staffId" :editable="accepted" @update="update"/>
 
     </LayoutPage>
 </template>

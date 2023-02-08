@@ -79,10 +79,10 @@
                 <ListTableCell>{{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})</ListTableCell>
                 <ListTableCell>
                     <div>
-                        <span class="link" @click="statusChange(trip)">{{ trip['status'] }}</span>
+                        <span :class="{'link': accepted}" @click="statusChange(trip)">{{ trip['status'] }}</span>
                     </div>
                     <div>
-                        <span class="link" v-if="trip['has_rate']" @click="saleStatusChange(trip)">{{ trip['sale_status'] }}</span>
+                        <span :class="{'link': accepted}" v-if="trip['has_rate']" @click="saleStatusChange(trip)">{{ trip['sale_status'] }}</span>
                         <span class="text-red" v-else><IconExclamation :class="'h-1em inline'"/> Тариф не задан</span>
                     </div>
                 </ListTableCell>
@@ -260,9 +260,11 @@ export default {
                 })
         },
         statusChange(trip) {
+            if(!this.accepted) return;
             this.showForm(trip, 'Статус движения', 'status_id', 'required', 'trip_statuses');
         },
         saleStatusChange(trip) {
+            if(!this.accepted) return;
             this.showForm(trip, 'Статус продаж', 'sale_status_id', 'required', 'trip_sale_statuses');
         },
     },

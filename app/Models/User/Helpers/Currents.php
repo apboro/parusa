@@ -197,14 +197,19 @@ class Currents
         return $this->position() && !$this->position()->is_staff && $this->partnerId() !== null;
     }
 
+    protected function isStaffNotInTerminalMode(): bool
+    {
+        return $this->position() && $this->position()->is_staff && ($this->role() === null || !$this->role()->matches(Role::terminal));
+    }
+
     /**
-     * Whether is staff position with admin roel.
+     * Whether is staff position with admin role.
      *
      * @return  bool
      */
     public function isStaffAdmin(): bool
     {
-        return $this->position() && $this->position()->is_staff && $this->hasRole(Role::admin);
+        return $this->isStaffNotInTerminalMode() && $this->hasRole(Role::admin);
     }
 
     /**
@@ -218,23 +223,23 @@ class Currents
     }
 
     /**
-     * Whether is staff position with officeManager role.
+     * Whether is staff position with office_manager role.
      *
      * @return  bool
      */
     public function isStaffOfficeManager(): bool
     {
-        return $this->position() && $this->position()->is_staff && $this->hasRole(Role::office_manager);
+        return $this->isStaffNotInTerminalMode() && $this->hasRole(Role::office_manager);
     }
 
     /**
-     * Whether is staff position with piersManager role.
+     * Whether is staff position with piers_manager role.
      *
      * @return  bool
      */
     public function isStaffPiersManager(): bool
     {
-        return $this->position() && $this->position()->is_staff && $this->hasRole(Role::piers_manager);
+        return $this->isStaffNotInTerminalMode() && $this->hasRole(Role::piers_manager);
     }
 
     /**
@@ -244,7 +249,7 @@ class Currents
      */
     public function isStaffAccountant(): bool
     {
-        return $this->position() && $this->position()->is_staff && $this->hasRole(Role::accountant);
+        return $this->isStaffNotInTerminalMode() && $this->hasRole(Role::accountant);
     }
 
     /**

@@ -41,7 +41,7 @@ class APIResponse
      *
      * @return  JsonResponse
      */
-    public static function forbidden(string $message = 'Доступ запрещён'): JsonResponse
+    public static function forbidden(string $message = 'Действие запрещено'): JsonResponse
     {
         return response()->json([
             'message' => $message,

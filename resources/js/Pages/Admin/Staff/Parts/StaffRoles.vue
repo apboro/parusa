@@ -4,12 +4,13 @@
             <template v-for="(role, key) in allRoles">
                 <InputCheckbox v-if="role['enabled']"
                                :key="key"
+                               :disabled="!editable"
                                v-model="roles"
                                :label="role['name']"
                                :value="role['id']"
                 />
             </template>
-            <GuiContainer mt-20>
+            <GuiContainer v-if="editable" mt-20>
                 <GuiButton :color="'green'" @click="apply">Применить</GuiButton>
             </GuiContainer>
         </GuiContainer>

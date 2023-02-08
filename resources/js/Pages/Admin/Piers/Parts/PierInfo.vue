@@ -34,7 +34,7 @@
             </GuiValue>
         </GuiContainer>
 
-        <GuiContainer mt-30 v-if="editable && accepted">
+        <GuiContainer mt-30 v-if="editable">
             <GuiButton @click="edit">Редактировать</GuiButton>
         </GuiContainer>
 
