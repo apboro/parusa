@@ -35,7 +35,7 @@
             <GuiValueArea :title="'Заметки'" v-text="data['notes']"/>
         </GuiContainer>
 
-        <GuiContainer t-15 v-if="editable && accepted">
+        <GuiContainer t-15 v-if="editable">
             <GuiButton @click="edit">Редактировать</GuiButton>
         </GuiContainer>
 
@@ -85,12 +85,6 @@ export default {
     data: () => ({
         form: form(null, '/api/staff/properties'),
     }),
-
-    computed: {
-        accepted() {
-            return this.hasRole(['admin']);
-        }
-    },
 
     methods: {
         edit() {

@@ -65,7 +65,6 @@ export default {
         pierId: {type: Number, required: true},
         data: {type: Object},
         editable: {type: Boolean, default: false},
-        accepted: {type: Boolean, default: false},
     },
 
     emits: ['update'],

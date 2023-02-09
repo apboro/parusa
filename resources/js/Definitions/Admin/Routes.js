@@ -32,46 +32,46 @@ import StatisticsSalesPage from "@/Pages/Admin/Statistics/StatisticsSalesPage.vu
 import StatisticsSalesTodayPage from "@/Pages/Admin/Statistics/StatisticsSalesTodayPage.vue";
 
 export default [
-    {path: '/', name: 'home', component: TripsListPage, meta: {title: 'Список рейсов'}},
-    {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки'}},
-    {path: '/registry/orders', name: 'orders-registry', component: OrdersRegistryPage, meta: {title: 'Реестр заказов'}},
-    {path: '/registry/orders/:id', name: 'order-info', component: OrderPage, meta: {title: 'Заказ'}},
-    {path: '/registry/tickets', name: 'tickets-registry', component: TicketsRegistryPage, meta: {title: 'Реестр билетов'}},
-    {path: '/registry/tickets/:id', name: 'ticket-info', component: TicketInfoPage, meta: {title: 'Билет'}},
-    {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней'}},
-    {path: '/registry/transactions', name: 'transactions-registry', component: TransactionsRegistryPage, meta: {title: 'Реестр транзакций по кассам'}},
+    {path: '/', name: 'home', component: TripsListPage, meta: {title: 'Список рейсов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки', roles: ['admin']}},
+    {path: '/registry/orders', name: 'orders-registry', component: OrdersRegistryPage, meta: {title: 'Реестр заказов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/registry/orders/:id', name: 'order-info', component: OrderPage, meta: {title: 'Заказ', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/registry/tickets', name: 'tickets-registry', component: TicketsRegistryPage, meta: {title: 'Реестр билетов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/registry/tickets/:id', name: 'ticket-info', component: TicketInfoPage, meta: {title: 'Билет', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/registry/transactions', name: 'transactions-registry', component: TransactionsRegistryPage, meta: {title: 'Реестр транзакций по кассам', roles: ['admin', 'accountant']}},
 
-    {path: '/statistics/sales', name: 'statistics-sales', component: StatisticsSalesPage, meta: {title: 'Статистика продаж'}},
-    {path: '/statistics/sales-today', name: 'statistics-sales-today', component: StatisticsSalesTodayPage, meta: {title: 'Статистика продаж за сегодня'}},
+    {path: '/statistics/sales', name: 'statistics-sales', component: StatisticsSalesPage, meta: {title: 'Статистика продаж', roles: ['admin']}},
+    {path: '/statistics/sales-today', name: 'statistics-sales-today', component: StatisticsSalesTodayPage, meta: {title: 'Статистика продаж за сегодня', roles: ['admin']}},
 
-    {path: '/staff', name: 'staff-list', component: StaffListPage, meta: {title: 'Сотрудники'}},
-    {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника'}},
-    {path: '/staff/:id/edit', name: 'staff-edit', component: StaffEditPage, meta: {title: 'Редактирование сотрудника'}},
+    {path: '/staff', name: 'staff-list', component: StaffListPage, meta: {title: 'Сотрудники', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/staff/:id/edit', name: 'staff-edit', component: StaffEditPage, meta: {title: 'Редактирование сотрудника', roles: ['admin']}},
 
-    {path: '/partners', name: 'partners-list', component: PartnersListPage, meta: {title: 'Компании-партнёры'}},
-    {path: '/partners/:id', name: 'partners-view', component: PartnerViewPage, meta: {title: 'Просмотр партнёра'}},
-    {path: '/partners/:id/edit', name: 'partners-edit', component: PartnerEditPage, meta: {title: 'Редактирование партнёра'}},
+    {path: '/partners', name: 'partners-list', component: PartnersListPage, meta: {title: 'Компании-партнёры', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/partners/:id', name: 'partners-view', component: PartnerViewPage, meta: {title: 'Просмотр партнёра', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/partners/:id/edit', name: 'partners-edit', component: PartnerEditPage, meta: {title: 'Редактирование партнёра', roles: ['admin', 'office_manager', 'accountant']}},
 
-    {path: '/representatives', name: 'representatives-list', component: RepresentativesListPage, meta: {title: 'Представители'}},
-    {path: '/representatives/:id', name: 'representatives-view', component: RepresentativeViewPage, meta: {title: 'Просмотр представителя'}},
-    {path: '/representatives/:id/edit', name: 'representatives-edit', component: RepresentativeEditPage, meta: {title: 'Редактирование представителя'}},
+    {path: '/representatives', name: 'representatives-list', component: RepresentativesListPage, meta: {title: 'Представители', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/representatives/:id', name: 'representatives-view', component: RepresentativeViewPage, meta: {title: 'Просмотр представителя', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/representatives/:id/edit', name: 'representatives-edit', component: RepresentativeEditPage, meta: {title: 'Редактирование представителя', roles: ['admin', 'office_manager', 'accountant']}},
 
-    {path: '/terminals', name: 'terminals-list', component: TerminalsListPage, meta: {title: 'Мобильные кассы'}},
-    {path: '/terminals/:id', name: 'terminals-view', component: TerminalsViewPage, meta: {title: 'Просмотр мобильной кассы'}},
-    {path: '/terminals/:id/edit', name: 'terminals-edit', component: TerminalsEditPage, meta: {title: 'Редактирование мобильной кассы'}},
+    {path: '/terminals', name: 'terminals-list', component: TerminalsListPage, meta: {title: 'Мобильные кассы', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/terminals/:id', name: 'terminals-view', component: TerminalsViewPage, meta: {title: 'Просмотр мобильной кассы', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/terminals/:id/edit', name: 'terminals-edit', component: TerminalsEditPage, meta: {title: 'Редактирование мобильной кассы', roles: ['admin', 'office_manager', 'accountant']}},
 
     {path: '/piers', name: 'pier-list', component: PiersListPage, meta: {title: 'Причалы', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/piers/:id', name: 'pier-view', component: PierViewPage, meta: {title: 'Просмотр причала', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/piers/:id/edit', name: 'pier-edit', component: PierEditPage, meta: {title: 'Редактирование причала', roles: ['admin', 'office_manager']}},
 
-    {path: '/excursions', name: 'excursion-list', component: ExcursionsListPage, meta: {title: 'Каталог экскурсий'}},
-    {path: '/excursions/:id', name: 'excursion-view', component: ExcursionViewPage, meta: {title: 'Просмотр экскурсии'}},
-    {path: '/excursions/:id/edit', name: 'excursion-edit', component: ExcursionEditPage, meta: {title: 'Редактирование экскурсии'}},
+    {path: '/excursions', name: 'excursion-list', component: ExcursionsListPage, meta: {title: 'Каталог экскурсий', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/excursions/:id', name: 'excursion-view', component: ExcursionViewPage, meta: {title: 'Просмотр экскурсии', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/excursions/:id/edit', name: 'excursion-edit', component: ExcursionEditPage, meta: {title: 'Редактирование экскурсии', roles: ['admin', 'office_manager', 'accountant']}},
 
     {path: '/trips', name: 'trip-list', component: TripsListPage, meta: {title: 'Список рейсов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/trips/:id', name: 'trip-view', component: TripViewPage, meta: {title: 'Просмотр рейса', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/trips/:id/edit', name: 'trip-edit', component: TripEditPage, meta: {title: 'Редактирование рейса', roles: ['admin', 'office_manager']}},
 
-    {path: '/dictionaries', name: 'dictionaries', component: DictionariesPage, meta: {title: 'Справочники'}},
+    {path: '/dictionaries', name: 'dictionaries', component: DictionariesPage, meta: {title: 'Справочники', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 ];

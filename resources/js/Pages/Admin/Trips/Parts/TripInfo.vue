@@ -43,7 +43,7 @@
             <GuiHint mt-5 mb-10>При значении 0 бронь будет сохраняться до отправки рейса.</GuiHint>
         </GuiContainer>
 
-        <GuiContainer mt-30 v-if="editable && accepted">
+        <GuiContainer mt-30 v-if="editable">
             <GuiButton @clicked="edit" v-if="!blocked">Редактировать</GuiButton>
             <GuiText mt-10 v-if="blocked">
                 <div class="mb-5 mt-50" style="font-size:14px">* Рейс нельзя редактировать, на него есть оформленные билеты.</div>
@@ -99,9 +99,6 @@ export default {
     computed: {
         blocked() {
             return this.data['tickets_sold'] || this.data['tickets_reserved'];
-        },
-        accepted() {
-            return this.hasRole(['admin', 'office_manager']);
         },
     },
 
