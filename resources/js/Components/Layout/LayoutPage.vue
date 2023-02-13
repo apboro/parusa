@@ -88,7 +88,6 @@ $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
         padding-bottom: 20px;
         border-bottom: 1px solid $base_light_gray_color;
         display: flex;
-        flex-direction: row;
         height: $base_size_unit;
 
         &-main {
@@ -160,6 +159,28 @@ $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
         border-top: 1px solid $base_light_gray_color;
         font-family: $project_font;
         font-size: 16px;
+    }
+}
+
+@media (max-width: 767px) {
+    .layout-page__header {
+        flex-direction: column;
+        row-gap: 20px;
+        height: auto;
+        align-items: end;
+    }
+
+    .input-dropdown__list-item {
+        font-size: 13px !important;
+    }
+
+    .input-date__picker {
+        left: -20% !important;
+    }
+
+    .layout-page {
+        padding-left: 15px;
+        padding-right: 15px;
     }
 }
 </style>

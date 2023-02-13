@@ -84,7 +84,7 @@ export default {
     },
 
     data: () => ({
-        max_links: 7,
+        max_links: 4,
     }),
 
     computed: {
@@ -162,7 +162,6 @@ $base_lightest_gray_color: #f7f7f7 !default;
 
 .pagination {
     display: flex;
-    flex-direction: row;
     height: $base_size_unit;
     margin-top: 20px;
     @include no_selection;
@@ -251,6 +250,18 @@ $base_lightest_gray_color: #f7f7f7 !default;
                     height: math.div($base_size_unit, 2);
                 }
             }
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .pagination {
+        flex-direction: column;
+        height: auto;
+        row-gap: 10px;
+
+        &__links {
+            justify-content: center;
         }
     }
 }

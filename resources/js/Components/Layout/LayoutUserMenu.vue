@@ -36,12 +36,15 @@ export default {
     }),
     methods: {
         toggle() {
+            let userMenuName = document.querySelector('.application__user-menu-info');
             if (this.show_menu === true) {
+                userMenuName.style.display = 'none';
                 this.show_menu = false;
                 setTimeout(() => {
                     window.removeEventListener('click', this.close);
                 }, 100);
             } else {
+                userMenuName.style.display = 'flex';
                 this.show_menu = true;
                 setTimeout(() => {
                     window.addEventListener('click', this.close);
@@ -165,6 +168,22 @@ $base_primary_hover_color: #1e87f0 !default;
 
         & > *:hover {
             color: $base_primary_hover_color;
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .application__user-menu {
+        flex-direction: row-reverse;
+        justify-content: end;
+        margin-top: -35px;
+
+        &-drop {
+            margin-right: 10px;
+        }
+
+        &-info {
+            display: none;
         }
     }
 }

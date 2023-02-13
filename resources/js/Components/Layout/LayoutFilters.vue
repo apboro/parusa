@@ -16,13 +16,11 @@ export default {}
 <style lang="scss">
 .layout-filters {
     display: flex;
-    flex-direction: row;
     box-sizing: border-box;
     padding: 20px 0;
 
     &__filters {
         display: flex;
-        flex-direction: row;
         flex-grow: 1;
 
         & > * {
@@ -33,7 +31,6 @@ export default {}
 
     &__search {
         display: flex;
-        flex-direction: row;
         flex-grow: 0;
         justify-content: right;
 
@@ -41,6 +38,26 @@ export default {}
             max-width: 350px;
             flex-grow: 1;
         }
+    }
+}
+
+@media (max-width: 767px) {
+    .layout-filters {
+        flex-direction: column;
+        row-gap: 20px;
+
+        &__filters {
+            flex-direction: column;
+            row-gap: 20px;
+        }
+
+        &-item {
+            margin-right: 0;
+        }
+    }
+
+    .input-dropdown__list {
+        width: 100% !important;
     }
 }
 </style>

@@ -46,4 +46,10 @@ $base_text_gray_color: #3f3f3f !default;
         display: flex;
     }
 }
+
+@media (max-width: 767px) {
+    .layout-filters-item.w-25 {
+        width: 100%;
+    }
+}
 </style>

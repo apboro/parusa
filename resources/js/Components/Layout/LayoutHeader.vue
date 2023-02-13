@@ -62,7 +62,6 @@ $base_white_color: #ffffff !default;
         max-width: $page_max_width;
         margin: 0 auto 20px;
         display: flex;
-        flex-direction: row;
         height: $page_header_height;
         box-sizing: border-box;
     }
@@ -113,6 +112,98 @@ $base_white_color: #ffffff !default;
     &-personal, &-widgets {
         flex-grow: 0;
         height: 100%;
+    }
+}
+
+@media (max-width: 767px) {
+    .application__header {
+        height: auto;
+        width: calc(100% - 20px);
+        margin: 0 auto;
+
+        &-wrapper {
+            height: auto;
+            flex-direction: column;
+        }
+
+        &-personal {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        &-menu {
+            align-items: flex-start;
+            flex-direction: column;
+            padding-top: 20px;
+        }
+
+        &-menu.active {
+
+            .application__menu-burger {
+                span {
+                    transform: rotate(135deg);
+
+                    &::before {
+                        transform: rotate(90deg);
+                        top: 0;
+                    }
+
+                    &::after {
+                        display: none;
+                    }
+                }
+            }
+
+            .application__menu {
+                display: flex;
+            }
+        }
+    }
+
+    .application__menu {
+        flex-direction: column;
+        height: auto;
+        row-gap: 20px;
+        padding-top: 20px;
+        display: none;
+
+        &-submenu-0 {
+            bottom: -5px;
+        }
+
+        &-burger {
+            transition: all 0.3s ease;
+
+            span {
+                width: 20px;
+                height: 2px;
+                display: inline-block;
+                background: #0B68C2;
+                position: relative;
+
+                &::before {
+                    position: absolute;
+                    content: '';
+                    top: -7px;
+                    left: 0;
+                    width: 20px;
+                    height: 2px;
+                    display: inline-block;
+                    background: #0B68C2;
+                }
+
+                &::after {
+                    position: absolute;
+                    content: '';
+                    bottom: -7px;
+                    left: 0;
+                    width: 20px;
+                    height: 2px;
+                    display: inline-block;
+                    background: #0B68C2;
+                }
+            }
+        }
     }
 }
 </style>

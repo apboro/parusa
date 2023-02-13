@@ -69,4 +69,19 @@ $base_light_gray_color: #e5e5e5 !default;
         color: $base_black_color;
     }
 }
+
+@media (max-width: 767px) {
+  .value__title {
+    width: 130px;
+  }
+
+  .w-70 {
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
 </style>

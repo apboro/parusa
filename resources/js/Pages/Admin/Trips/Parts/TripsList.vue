@@ -61,23 +61,33 @@
         <ListTable v-if="list.list.length > 0" :titles="list.titles" :has-action="true">
             <ListTableRow v-for="trip in list.list">
                 <ListTableCell>
-                    <div><b>
-                        <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
-                    </b></div>
+                    <b class="mobile-table__cell_title">{{ list.titles[0] }}: </b>
+                    <div>
+                        <b>
+                            <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
+                        </b>
+                    </div>
                     <div>{{ trip['start_date'] }}</div>
                 </ListTableCell>
                 <ListTableCell>
+                    <b class="mobile-table__cell_title">{{ list.titles[1] }}: </b>
                     <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}</router-link>
                 </ListTableCell>
                 <ListTableCell>
+                    <b class="mobile-table__cell_title">{{ list.titles[2] }}: </b>
                     {{ trip['excursion'] }}
                 </ListTableCell>
                 <ListTableCell>
+                    <b class="mobile-table__cell_title">{{ list.titles[3] }}: </b>
                     <div>{{ trip['pier'] }}</div>
                     <div>{{ trip['ship'] }}</div>
                 </ListTableCell>
-                <ListTableCell>{{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})</ListTableCell>
                 <ListTableCell>
+                    <b class="mobile-table__cell_title">{{ list.titles[4] }}: </b>
+                    {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})
+                </ListTableCell>
+                <ListTableCell>
+                    <b class="mobile-table__cell_title">{{ list.titles[5] }}: </b>
                     <div>
                         <span :class="{'link': accepted}" @click="statusChange(trip)">{{ trip['status'] }}</span>
                     </div>
@@ -270,3 +280,38 @@ export default {
     },
 }
 </script>
+
+<style lang="scss">
+.mobile-table__cell_title {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .list-table {
+        margin-top: 30px;
+        border-top: 1px solid #0B68C2;
+    }
+
+    .mobile-table__cell_title {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .list-table__header {
+        display: none;
+    }
+
+    .list-table__row {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .list-table__cell {
+        padding: 13px 0 !important;
+    }
+
+    .list-table__row:not(.list-table__row-no-even-odd):nth-child(even) {
+        background-color: #ffffff !important;
+    }
+}
+</style>
