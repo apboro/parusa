@@ -7,12 +7,15 @@ use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Payments\Payment;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class TicketsRegistryController extends ApiController
 {
@@ -52,83 +55,12 @@ class TicketsRegistryController extends ApiController
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $partnerId = $current->isStaff() ? $request->input('partner_id') : $current->partnerId();
-
         $tripId = $request->input('trip_id');
         $excursionId = $request->input('excursion_id');
         $pierId = $request->input('pier_id');
         $shipId = $request->input('ship_id');
 
-        $query = Ticket::query()->orderBy('updated_at', 'desc')
-            ->with(
-                ['status', 'order', 'order.terminal', 'order.cashier', 'order.type', 'order.partner', 'order.position', 'order.position.user.profile', 'transaction', 'grade', 'trip', 'trip.startPier', 'trip.excursion']
-            )
-            ->whereIn('status_id', array_merge(TicketStatus::ticket_had_paid_statuses, TicketStatus::ticket_reserved_statuses))
-            ->when($partnerId, function (Builder $query) use ($partnerId) {
-                $query->whereHas('order', function (Builder $query) use ($partnerId) {
-                    $query->where('partner_id', $partnerId);
-                });
-            })
-            ->when($tripId, function (Builder $query) use ($tripId) {
-                $query->where('trip_id', $tripId);
-            })
-            ->when(($excursionId || !empty($filters['excursion_id'])), function (Builder $query) use ($excursionId, $filters) {
-                $query->whereHas('trip', function (Builder $query) use ($excursionId, $filters) {
-                    $query->where('excursion_id', $excursionId ?? $filters['excursion_id']);
-                });
-            })
-            ->when($pierId, function (Builder $query) use ($pierId) {
-                $query->whereHas('trip', function (Builder $query) use ($pierId) {
-                    $query->where('pier_id', $pierId);
-                });
-            })
-            ->when($shipId, function (Builder $query) use ($shipId) {
-                $query->whereHas('trip', function (Builder $query) use ($shipId) {
-                    $query->where('ship_id', $shipId);
-                });
-            });
-
-        // apply search
-        if ($terms = $request->search()) {
-            $query->where(function (Builder $query) use ($terms) {
-                $query
-                    ->whereIn('id', $terms)
-                    ->orWhereHas('order', function (Builder $query) use ($terms) {
-                        $query->whereIn('id', $terms);
-                        foreach ($terms as $term) {
-                            $query->orWhere('name', 'LIKE', '%' . $term . '%')
-                                ->orWhere('email', 'LIKE', '%' . $term . '%')
-                                ->orWhere('phone', 'LIKE', '%' . $term . '%');
-                        }
-                    });
-            });
-        } else {
-            // apply filters
-            if (!$tripId) {
-                if (empty($filters['date_from'])) {
-                    $filters['date_from'] = $this->defaultFilters['date_from'];
-                }
-                if (empty($filters['date_to'])) {
-                    $filters['date_to'] = $this->defaultFilters['date_to'];
-                }
-                $query->where('created_at', '>=', Carbon::parse($filters['date_from']));
-                $query->where('created_at', '<=', Carbon::parse($filters['date_to']));
-            }
-            if (!empty($filters['order_type_id'])) {
-                $query->whereHas('order', function (Builder $query) use ($filters) {
-                    $query->where('type_id', $filters['order_type_id']);
-                });
-            }
-            if (!empty($filters['terminal_id'])) {
-                $query->whereHas('order', function (Builder $query) use ($filters) {
-                    $query->where('terminal_id', $filters['terminal_id']);
-                });
-            }
-            if (!empty($filters['trip_date'])) {
-                $query->whereHas('trip', function (Builder $query) use ($filters) {
-                    $query->whereDate('start_at', Carbon::parse($filters['trip_date']));
-                });
-            }
-        }
+        $query = $this->getListQuery($request->search(), $filters, $partnerId, $tripId, $excursionId, $pierId, $shipId);
 
         $tickets = $query->paginate($request->perPage());
 
@@ -168,5 +100,169 @@ class TicketsRegistryController extends ApiController
             $this->defaultFilters,
             []
         )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
+    }
+
+    public function export(ApiListRequest $request): JsonResponse
+    {
+        $current = Currents::get($request);
+        $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
+
+        $dateFrom = Carbon::parse($filters['date_from'])->seconds(0)->microseconds(0);
+        $filters['date_from'] = $dateFrom->format('Y-m-d\TH:i');
+
+        $dateTo = Carbon::parse($filters['date_to'])->seconds(59)->microseconds(999);
+        $filters['date_to'] = $dateTo->format('Y-m-d\TH:i');
+
+        $partnerId = $current->isStaff() ? $request->input('partner_id') : $current->partnerId();
+        $tripId = $request->input('trip_id');
+        $excursionId = $request->input('excursion_id');
+        $pierId = $request->input('pier_id');
+        $shipId = $request->input('ship_id');
+
+        $tickets = $this->getListQuery($request->search(), $filters, $partnerId, $tripId, $excursionId, $pierId, $shipId)->get();
+
+        $titles = [
+            '№ билета',
+            '№ заказа',
+            'Дата продажи',
+            'Время продажи',
+            'Тип билета',
+            'Стоимость',
+            'Комиссия, руб.',
+            'Рейс',
+            'Номер рейса',
+            'Способ продажи',
+            'Продавец',
+            'Промоутер',
+            'Статус',
+        ];
+
+        $tickets->transform(function (Ticket $ticket) {
+            return [
+                'id' => $ticket->id,
+                'order_id' => $ticket->order_id,
+                'date' => $ticket->created_at->format('d.m.Y'),
+                'time' => $ticket->created_at->format('H:i'),
+                'type' => $ticket->grade->name,
+                'amount' => $ticket->base_price,
+                'commission_amount' => $ticket->transaction !== null ? $ticket->transaction->amount : null,
+                'excursion' => $ticket->trip->excursion->name,
+                'trip_id' => $ticket->trip_id,
+                'order_type' => $ticket->order->type->name,
+                'partner' => $ticket->order->partner->name ?? null,
+                'sale_by' => $ticket->order->position ? $ticket->order->position->user->profile->compactName : null,
+                'status' => $ticket->status->name,
+            ];
+        });
+
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->setActiveSheetIndex(0)->setTitle('Транзакции')->setShowRowColHeaders(true);
+
+        $spreadsheet->getActiveSheet()->fromArray($titles, '—', 'A1');
+        $spreadsheet->getActiveSheet()->fromArray($tickets->toArray(), '—', 'A2');
+        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] as $col) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        ob_start();
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        $export = ob_get_clean();
+
+        return APIResponse::response([
+            'file' => base64_encode($export),
+            'file_name' => 'Билеты ' . Carbon::now()->format('Y-m-d H:i'),
+            'type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    /**
+     * Build tickets list query.
+     *
+     * @param array $search
+     * @param array $filters
+     * @param int|null $partnerId
+     * @param int|null $tripId
+     * @param int|null $excursionId
+     * @param int|null $pierId
+     * @param int|null $shipId
+     *
+     * @return Builder
+     */
+    protected function getListQuery(array $search, array $filters, $partnerId, $tripId, $excursionId, $pierId, $shipId): Builder
+    {
+        $query = Ticket::query()->orderBy('updated_at', 'desc')
+            ->with(
+                ['status', 'order', 'order.terminal', 'order.cashier', 'order.type', 'order.partner', 'order.position', 'order.position.user.profile', 'transaction', 'grade', 'trip', 'trip.startPier', 'trip.excursion']
+            )
+            ->whereIn('status_id', array_merge(TicketStatus::ticket_had_paid_statuses, TicketStatus::ticket_reserved_statuses))
+            ->when($partnerId, function (Builder $query) use ($partnerId) {
+                $query->whereHas('order', function (Builder $query) use ($partnerId) {
+                    $query->where('partner_id', $partnerId);
+                });
+            })
+            ->when($tripId, function (Builder $query) use ($tripId) {
+                $query->where('trip_id', $tripId);
+            })
+            ->when(($excursionId || !empty($filters['excursion_id'])), function (Builder $query) use ($excursionId, $filters) {
+                $query->whereHas('trip', function (Builder $query) use ($excursionId, $filters) {
+                    $query->where('excursion_id', $excursionId ?? $filters['excursion_id']);
+                });
+            })
+            ->when($pierId, function (Builder $query) use ($pierId) {
+                $query->whereHas('trip', function (Builder $query) use ($pierId) {
+                    $query->where('pier_id', $pierId);
+                });
+            })
+            ->when($shipId, function (Builder $query) use ($shipId) {
+                $query->whereHas('trip', function (Builder $query) use ($shipId) {
+                    $query->where('ship_id', $shipId);
+                });
+            });
+
+        // apply search
+        if ($search) {
+            $query->where(function (Builder $query) use ($search) {
+                $query
+                    ->whereIn('id', $search)
+                    ->orWhereHas('order', function (Builder $query) use ($search) {
+                        $query->whereIn('id', $search);
+                        foreach ($search as $term) {
+                            $query->orWhere('name', 'LIKE', '%' . $term . '%')
+                                ->orWhere('email', 'LIKE', '%' . $term . '%')
+                                ->orWhere('phone', 'LIKE', '%' . $term . '%');
+                        }
+                    });
+            });
+        } else {
+            // apply filters
+            if (!$tripId) {
+                if (empty($filters['date_from'])) {
+                    $filters['date_from'] = $this->defaultFilters['date_from'];
+                }
+                if (empty($filters['date_to'])) {
+                    $filters['date_to'] = $this->defaultFilters['date_to'];
+                }
+                $query->where('created_at', '>=', Carbon::parse($filters['date_from']));
+                $query->where('created_at', '<=', Carbon::parse($filters['date_to']));
+            }
+            if (!empty($filters['order_type_id'])) {
+                $query->whereHas('order', function (Builder $query) use ($filters) {
+                    $query->where('type_id', $filters['order_type_id']);
+                });
+            }
+            if (!empty($filters['terminal_id'])) {
+                $query->whereHas('order', function (Builder $query) use ($filters) {
+                    $query->where('terminal_id', $filters['terminal_id']);
+                });
+            }
+            if (!empty($filters['trip_date'])) {
+                $query->whereHas('trip', function (Builder $query) use ($filters) {
+                    $query->whereDate('start_at', Carbon::parse($filters['trip_date']));
+                });
+            }
+        }
+        return $query;
     }
 }
