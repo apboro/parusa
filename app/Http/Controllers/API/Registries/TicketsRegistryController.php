@@ -7,7 +7,6 @@ use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\TicketStatus;
-use App\Models\Payments\Payment;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
@@ -161,7 +160,7 @@ class TicketsRegistryController extends ApiController
 
         $spreadsheet->getActiveSheet()->fromArray($titles, '—', 'A1');
         $spreadsheet->getActiveSheet()->fromArray($tickets->toArray(), '—', 'A2');
-        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] as $col) {
+        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'] as $col) {
             $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
         }
 
@@ -190,7 +189,7 @@ class TicketsRegistryController extends ApiController
      *
      * @return Builder
      */
-    protected function getListQuery(array $search, array $filters, $partnerId, $tripId, $excursionId, $pierId, $shipId): Builder
+    protected function getListQuery(array $search, array $filters, ?int $partnerId, ?int $tripId, ?int $excursionId, ?int $pierId, ?int $shipId): Builder
     {
         $query = Ticket::query()->orderBy('updated_at', 'desc')
             ->with(

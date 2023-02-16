@@ -159,16 +159,9 @@ import ListTableRow from "@/Components/ListTable/ListTableRow";
 import ListTableCell from "@/Components/ListTable/ListTableCell";
 import GuiMessage from "@/Components/GUI/GuiMessage";
 import Pagination from "@/Components/Pagination";
-import PopUp from "@/Components/PopUp";
-import GuiHint from "@/Components/GUI/GuiHint";
-import ScrollBox from "@/Components/ScrollBox";
 import InputDate from "@/Components/Inputs/InputDate";
 import InputDateTime from "@/Components/Inputs/InputDateTime";
-import InputDropDown from "@/Components/Inputs/InputDropDown";
 import GuiButton from "@/Components/GUI/GuiButton";
-import GuiContainer from "@/Components/GUI/GuiContainer";
-import GuiHeading from "@/Components/GUI/GuiHeading";
-import GuiValue from "@/Components/GUI/GuiValue";
 import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu.vue";
 
 export default {
@@ -182,16 +175,9 @@ export default {
 
     components: {
         GuiActionsMenu,
-        GuiValue,
-        GuiHeading,
-        GuiContainer,
-        InputDropDown,
         GuiButton,
         InputDateTime,
         InputDate,
-        ScrollBox,
-        GuiHint,
-        PopUp,
         Pagination,
         GuiMessage,
         ListTableCell,
