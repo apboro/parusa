@@ -1,18 +1,18 @@
 <template>
     <div>
-        <GuiContainer w-50 mt-30>
+        <GuiContainer w-50 mt-30 mobile-100>
             <GuiValue :title="'Номер рейса'">{{ data['id'] }}</GuiValue>
             <GuiValue :title="'Отправление'">{{ data['start_at'] }}</GuiValue>
             <GuiValue :title="'Прибытие'">{{ data['end_at'] }}</GuiValue>
             <GuiValue :title="'Время в пути'">{{ data['duration'] }} мин.</GuiValue>
         </GuiContainer>
-        <GuiContainer w-50 mt-30>
+        <GuiContainer w-50 mt-30 mobile-100>
             <GuiValue :title="'Причал отправления'">{{ data['start_pier'] }}</GuiValue>
             <GuiValue :title="'Причал прибытия'">{{ data['end_pier'] }}</GuiValue>
             <GuiValue :title="'Теплоход'">{{ data['ship'] }}</GuiValue>
             <GuiValue :title="'Экскурсия'">{{ data['excursion'] }}</GuiValue>
         </GuiContainer>
-        <GuiContainer w-50 mt-30>
+        <GuiContainer w-50 mt-30 mobile-100>
             <GuiValue :title="'Статус движения'">
                 <span class="link" v-if="editable" @click="statusChange">{{ data['status'] }}</span>
                 <span v-else>{{ data['status'] }}</span>
@@ -22,7 +22,7 @@
                 <span v-else>{{ data['sale_status'] }}</span>
             </GuiValue>
         </GuiContainer>
-        <GuiContainer w-50 mt-30>
+        <GuiContainer w-50 mt-30 mobile-100>
             <GuiValue :title="'Общее количество билетов'">
                 <span class="link" v-if="editable" @click="ticketsCountChange">{{ data['tickets_total'] }}</span>
                 <span v-else>{{ data['tickets_total'] }}</span>
@@ -31,7 +31,7 @@
             <GuiValue :title="'Забронировано'">{{ data['tickets_reserved'] }}</GuiValue>
             <GuiValue :title="'Свободно'">{{ data['tickets_total'] - data['tickets_sold'] - data['tickets_reserved'] }}</GuiValue>
         </GuiContainer>
-        <GuiContainer w-50 mt-30>
+        <GuiContainer w-50 mt-30 mobile-100>
             <GuiValue :title="'Скидки от базовой цены на кассах'">
                 <span class="link" v-if="editable" @click="discountStatusChange">{{ data['discount_status'] }}</span>
                 <span v-else>{{ data['discount_status'] }}</span>
@@ -43,7 +43,7 @@
             <GuiHint mt-5 mb-10>При значении 0 бронь будет сохраняться до отправки рейса.</GuiHint>
         </GuiContainer>
 
-        <GuiContainer mt-30 v-if="editable">
+        <GuiContainer mt-30 v-if="editable" mobile-100>
             <GuiButton @clicked="edit" v-if="!blocked">Редактировать</GuiButton>
             <GuiText mt-10 v-if="blocked">
                 <div class="mb-5 mt-50" style="font-size:14px">* Рейс нельзя редактировать, на него есть оформленные билеты.</div>

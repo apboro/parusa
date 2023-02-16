@@ -58,36 +58,30 @@
             </LayoutFiltersItem>
         </LayoutFilters>
 
-        <ListTable v-if="list.list.length > 0" :titles="list.titles" :has-action="true">
-            <ListTableRow v-for="trip in list.list">
-                <ListTableCell>
-                    <b class="mobile-table__cell_title">{{ list.titles[0] }}: </b>
+        <ListTableResponsive v-if="list.list.length > 0" :titles="list.titles" :has-action="true">
+            <ListTableResponsiveRow v-for="trip in list.list">
+                <ListTableResponsiveCell :mobile-title="list.titles[0]">
                     <div>
                         <b>
                             <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
                         </b>
                     </div>
                     <div>{{ trip['start_date'] }}</div>
-                </ListTableCell>
-                <ListTableCell>
-                    <b class="mobile-table__cell_title">{{ list.titles[1] }}: </b>
+                </ListTableResponsiveCell>
+                <ListTableResponsiveCell :mobile-title="list.titles[1]">
                     <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}</router-link>
-                </ListTableCell>
-                <ListTableCell>
-                    <b class="mobile-table__cell_title">{{ list.titles[2] }}: </b>
+                </ListTableResponsiveCell>
+                <ListTableResponsiveCell :mobile-title="list.titles[2]">
                     {{ trip['excursion'] }}
-                </ListTableCell>
-                <ListTableCell>
-                    <b class="mobile-table__cell_title">{{ list.titles[3] }}: </b>
+                </ListTableResponsiveCell>
+                <ListTableResponsiveCell :mobile-title="list.titles[3]">
                     <div>{{ trip['pier'] }}</div>
                     <div>{{ trip['ship'] }}</div>
-                </ListTableCell>
-                <ListTableCell>
-                    <b class="mobile-table__cell_title">{{ list.titles[4] }}: </b>
+                </ListTableResponsiveCell>
+                <ListTableResponsiveCell :mobile-title="list.titles[4]">
                     {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})
-                </ListTableCell>
-                <ListTableCell>
-                    <b class="mobile-table__cell_title">{{ list.titles[5] }}: </b>
+                </ListTableResponsiveCell>
+                <ListTableResponsiveCell :mobile-title="list.titles[5]">
                     <div>
                         <span :class="{'link': accepted}" @click="statusChange(trip)">{{ trip['status'] }}</span>
                     </div>
@@ -95,8 +89,8 @@
                         <span :class="{'link': accepted}" v-if="trip['has_rate']" @click="saleStatusChange(trip)">{{ trip['sale_status'] }}</span>
                         <span class="text-red" v-else><IconExclamation :class="'h-1em inline'"/> Тариф не задан</span>
                     </div>
-                </ListTableCell>
-                <ListTableCell :nowrap="true" :class="'flex justify-end'">
+                </ListTableResponsiveCell>
+                <ListTableResponsiveCell :nowrap="true" :class="'flex justify-end'">
                     <GuiIconButton v-if="trip['chained']" :class="'mr-5'" :color="'blue'" @click="chainInfo(trip)">
                         <IconLink/>
                     </GuiIconButton>
@@ -105,9 +99,9 @@
                         <router-link :to="{name: 'trip-edit', params: {id: 0}, query: {from: trip['id']}}" class="link">Копировать рейс</router-link>
                         <span class="link" @click="remove(trip)">Удалить</span>
                     </GuiActionsMenu>
-                </ListTableCell>
-            </ListTableRow>
-        </ListTable>
+                </ListTableResponsiveCell>
+            </ListTableResponsiveRow>
+        </ListTableResponsive>
 
         <GuiMessage border v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
 
@@ -143,9 +137,9 @@ import IconBackward from "@/Components/Icons/IconBackward";
 import IconForward from "@/Components/Icons/IconForward";
 import GuiMessage from "@/Components/GUI/GuiMessage";
 import Pagination from "@/Components/Pagination";
-import ListTable from "@/Components/ListTable/ListTable";
-import ListTableRow from "@/Components/ListTable/ListTableRow";
-import ListTableCell from "@/Components/ListTable/ListTableCell";
+import ListTableResponsive from "@/Components/ListTable/ListTableResponsive";
+import ListTableResponsiveRow from "@/Components/ListTable/ListTableResponsiveRow";
+import ListTableResponsiveCell from "@/Components/ListTable/ListTableResponsiveCell";
 import IconExclamation from "@/Components/Icons/IconExclamation";
 import IconLink from "@/Components/Icons/IconLink";
 import FormPopUp from "@/Components/FormPopUp";
@@ -172,7 +166,7 @@ export default {
         InputDate,
         GuiIconButton, IconForward, IconBackward,
         IconLink,
-        ListTableCell, ListTableRow, ListTable,
+        ListTableResponsiveCell, ListTableResponsiveRow, ListTableResponsive,
         GuiActionsMenu,
         IconExclamation,
         GuiMessage,
@@ -282,36 +276,7 @@ export default {
 </script>
 
 <style lang="scss">
-.mobile-table__cell_title {
-    display: none;
-}
 
-@media (max-width: 767px) {
-    .list-table {
-        margin-top: 30px;
-        border-top: 1px solid #0B68C2;
-    }
 
-    .mobile-table__cell_title {
-        display: block;
-        margin-bottom: 5px;
-    }
 
-    .list-table__header {
-        display: none;
-    }
-
-    .list-table__row {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .list-table__cell {
-        padding: 13px 0 !important;
-    }
-
-    .list-table__row:not(.list-table__row-no-even-odd):nth-child(even) {
-        background-color: #ffffff !important;
-    }
-}
 </style>
