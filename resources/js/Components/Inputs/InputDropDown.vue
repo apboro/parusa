@@ -456,6 +456,7 @@ $input_remove_color: #FF1E00 !default;
         }
 
         &-item {
+            z-index: 500;
             box-sizing: border-box;
             color: $input_color;
             cursor: pointer;

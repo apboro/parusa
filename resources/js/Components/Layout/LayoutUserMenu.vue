@@ -134,12 +134,11 @@ $base_primary_hover_color: #1e87f0 !default;
     &-actions {
         position: absolute;
         right: 0;
-        bottom: 5px;
-        transform: translateY(100%);
+        left: 0;
+        bottom: -80px;
         box-sizing: border-box;
         padding: 12px 20px;
         border-radius: 2px;
-        min-width: 100%;
         z-index: 50;
         background-color: $base_white_color;
         box-shadow: $shadow_2;
@@ -175,7 +174,7 @@ $base_primary_hover_color: #1e87f0 !default;
 @media (max-width: 767px) {
     .application__user-menu {
         flex-direction: row-reverse;
-        justify-content: end;
+        justify-content: flex-end;
         margin-top: -35px;
 
         &-drop {
