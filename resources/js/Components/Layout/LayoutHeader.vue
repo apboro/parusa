@@ -127,7 +127,7 @@ $base_white_color: #ffffff !default;
         }
 
         &-personal {
-            display: flex;
+            display: inline-flex;
             justify-content: flex-end;
         }
 
