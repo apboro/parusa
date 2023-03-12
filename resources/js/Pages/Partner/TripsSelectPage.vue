@@ -83,7 +83,7 @@
                     </table>
                 </ListTableCell>
                 <ListTableCell>
-                    <GuiButton @click="addToOrder(trip)">Выбрать</GuiButton>
+                    <GuiButton @click="trip['excursion__only_parus'] ?null: addToOrder(trip)" :disabled="trip['excursion__only_parus']?true:false">Выбрать</GuiButton>
                 </ListTableCell>
             </ListTableRow>
         </ListTable>

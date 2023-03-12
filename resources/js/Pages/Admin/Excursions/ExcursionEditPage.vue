@@ -7,6 +7,7 @@
         <GuiContainer mt-30>
             <FormString :form="form" :name="'name'"/>
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'excursion_statuses'"/>
+            <FormCheckBox :form="form" :name="'only_parus'" label=""/>
             <FormImages :form="form" :name="'images'"/>
             <FormDictionary :form="form" :name="'programs'" :dictionary="'excursion_programs'" :multi="true" :fresh="true"/>
             <FormNumber :form="form" :name="'duration'"/>
@@ -33,12 +34,15 @@ import FormDictionary from "@/Components/Form/FormDictionary";
 import FormImages from "@/Components/Form/FormImages";
 import FormNumber from "@/Components/Form/FormNumber";
 import FormText from "@/Components/Form/FormText";
+import FormCheckBox from "@/Components/Form/FormCheckBox";
+
 
 export default {
     components: {
         FormText,
         FormNumber,
         FormImages,
+        FormCheckBox,
         FormDictionary,
         FormString,
         GuiButton,

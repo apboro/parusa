@@ -19,6 +19,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 
+
+use Illuminate\Support\Facades\Log;
+use function Ramsey\Uuid\Lazy\toString;
+
 class TripsSelectListController extends ApiController
 {
     protected array $defaultFilters = [
@@ -115,6 +119,7 @@ class TripsSelectListController extends ApiController
                 'start_time' => $trip->start_at->format('H:i'),
                 'excursion_id' => $excursion->id,
                 'excursion' => $excursion->name,
+                'excursion__only_parus' => $excursion->only_parus ,
                 'programs' => $excursion->programs->map(function (ExcursionProgram $program) {
                     return $program->name;
                 }),
@@ -130,7 +135,7 @@ class TripsSelectListController extends ApiController
                 'chained' => $trip->getAttribute('chains_count') > 0,
             ];
         });
-
+        Log::info($trips);
         return APIResponse::list($trips,
             [
                 'start' => 'Отправление',
