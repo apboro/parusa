@@ -22,6 +22,8 @@ use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
+use App\Models\Sails\Trip;
+
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use Carbon\Carbon;
@@ -32,6 +34,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Support\Facades\Log;
 /**
  * @property int $id
  * @property int $status_id
@@ -237,6 +240,8 @@ class Order extends Model implements Statusable, Typeable
             throw new WrongOrderException('Невозможно создать заказ без билетов.');
         }
 
+        Log::info(serialize($tickets));
+
         $now = Carbon::now();
 
         /** @var int[][] $available */
@@ -244,9 +249,19 @@ class Order extends Model implements Statusable, Typeable
 
         // check tickets
         foreach ($tickets as $ticket) {
-            // check trip and rate
+
+            // check trip, rate, isOnlyParus
             $trip = $ticket->trip;
-            $rateList = $trip ? $trip->getRate() : null;
+
+            if ($partnerId) {
+                if ($trip->isOnlyParus()){
+
+                }
+                throw new WrongOrderException('Невозможно оформить заказ с выбранными билетами. Их можно приобрести только на сайте.');
+
+            }
+
+             $rateList = $trip ? $trip->getRate() : null;
             /** @var TicketRate $rate */
             $rate = $rateList ? $rateList->rates()->where('grade_id', $ticket->grade_id)->first() : null;
 

@@ -163,6 +163,17 @@ class Excursion extends Model implements Statusable, AsDictionary
      */
     public function partnerShowcaseHide(): BelongsToMany
     {
-        return $this->belongsToMany(Partner::class, 'partner_excursion_showcase_disabling', 'excursion_id','partner_id',);
+        return $this->belongsToMany(Partner::class, 'partner_excursion_showcase_disabling', 'excursion_id','partner_id');
     }
+
+    public function hasOnlyParus (?int $id) :bool
+    {
+        return $this
+            ->where ('id','=', $id)
+            ->where('only_parus', '=',1)
+//            ->orWherenull('only_parus')
+            ->exists()
+            ;
+    }
+
 }

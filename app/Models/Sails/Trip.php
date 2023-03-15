@@ -231,6 +231,14 @@ class Trip extends Model implements Statusable
         return $this->excursion->hasRateForDate($this->start_at);
     }
 
+    public function isOnlyParus ():bool
+    {
+        $this->loadMissing('excursion');
+
+        return $this->excursion->hasOnlyParus($this->id);
+
+    }
+
     /**
      * Get rate list for this trip.
      *
