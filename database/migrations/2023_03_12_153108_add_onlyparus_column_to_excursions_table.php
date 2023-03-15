@@ -28,6 +28,8 @@ class AddOnlyparusColumnToExcursionsTable extends Migration
     {
         Schema::table('excursions', function (Blueprint $table) {
             //
+            $table->dropColumn('only_parus');
+
         });
     }
 }
