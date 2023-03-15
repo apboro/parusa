@@ -7,7 +7,7 @@
         <GuiContainer mt-30>
             <FormString :form="form" :name="'name'"/>
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'excursion_statuses'"/>
-            <FormCheckBox :form="form" :name="'only_parus'" label=""/>
+            <FormCheckBox :form="form" :name="'only_site'" :hide-title="true"/>
             <FormImages :form="form" :name="'images'"/>
             <FormDictionary :form="form" :name="'programs'" :dictionary="'excursion_programs'" :multi="true" :fresh="true"/>
             <FormNumber :form="form" :name="'duration'"/>

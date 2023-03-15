@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $id
  * @property string $name
  * @property int $status_id
+ * @property bool $only_site
  *
  * @property ExcursionStatus $status
  * @property Collection $programs
@@ -35,6 +36,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Excursion extends Model implements Statusable, AsDictionary
 {
     use HasStatus, HasFactory, ExcursionAsDictionary;
+
+    protected $casts = [
+        'only_site' => 'bool',
+    ];
 
     /** @var array Default attributes. */
     protected $attributes = [
@@ -165,15 +170,4 @@ class Excursion extends Model implements Statusable, AsDictionary
     {
         return $this->belongsToMany(Partner::class, 'partner_excursion_showcase_disabling', 'excursion_id','partner_id');
     }
-
-    public function hasOnlyParus (?int $id) :bool
-    {
-        return $this
-            ->where ('id','=', $id)
-            ->where('only_parus', '=',1)
-//            ->orWherenull('only_parus')
-            ->exists()
-            ;
-    }
-
 }

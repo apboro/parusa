@@ -22,7 +22,7 @@ class ExcursionEditController extends ApiEditController
     protected array $titles = [
         'name' => 'Название',
         'status_id' => 'Статус',
-        'only_parus' => 'Эксклюзивный рейс - билеты продаются только через сайт Алые Паруса ',
+        'only_site' => 'Эксклюзивная экскурсия - билеты продаются только через сайт Алые Паруса',
         'images' => 'Фотография экскурсии',
         'programs' => 'Типы программы',
         'duration' => 'Продолжительность, минут',
@@ -53,7 +53,7 @@ class ExcursionEditController extends ApiEditController
             [
                 'name' => $excursion->name,
                 'status_id' => $excursion->status_id,
-                'only_parus' => ($excursion->only_parus)?true:false,
+                'only_site' => $excursion->only_site,
                 'images' => $excursion->images->map(function (Image $image) {
                     return ['id' => $image->id, 'url' => $image->url];
                 }),
@@ -96,7 +96,7 @@ class ExcursionEditController extends ApiEditController
         }
 
         $excursion->setAttribute('name', $data['name']);
-        $excursion->setAttribute('only_parus', $data['only_parus']);
+        $excursion->setAttribute('only_site', $data['only_site']);
         $excursion->setStatus($data['status_id'], false);
         $excursion->save();
 

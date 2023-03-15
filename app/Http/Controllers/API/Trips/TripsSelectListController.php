@@ -21,20 +21,20 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class TripsSelectListController extends ApiController
 {
-protected array $defaultFilters = [
-'date' => null,
-'program_id' => null,
-'excursion_id' => null,
-'start_pier_id' => null,
-];
+    protected array $defaultFilters = [
+        'date' => null,
+        'program_id' => null,
+        'excursion_id' => null,
+        'start_pier_id' => null,
+    ];
 
-protected array $rememberFilters = [
-'program_id',
-'excursion_id',
-'start_pier_id',
-];
+    protected array $rememberFilters = [
+        'program_id',
+        'excursion_id',
+        'start_pier_id',
+    ];
 
-protected string $rememberKey = CookieKeys::trips_select_list;
+    protected string $rememberKey = CookieKeys::trips_select_list;
 
     /**
      * Get trips list.
@@ -74,9 +74,7 @@ protected string $rememberKey = CookieKeys::trips_select_list;
                 $query->whereDate('start_at', '<=', $date)->whereDate('end_at', '>=', $date);
             })
             ->whereHas('excursion', function ($query) {
-                $query->where('only_parus', '=',0)
-                    ->orWherenull('only_parus')
-                ;
+                $query->where('only_site', false);
             });
 
         // apply filters
@@ -136,7 +134,8 @@ protected string $rememberKey = CookieKeys::trips_select_list;
             ];
         });
 
-        return APIResponse::list($trips,
+        return APIResponse::list(
+            $trips,
             [
                 'start' => 'Отправление',
                 'excursion' => 'Экскурсия',

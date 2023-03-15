@@ -20,7 +20,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 
-
 class ShowcaseTripsController extends ApiController
 {
     /**
@@ -59,19 +58,12 @@ class ShowcaseTripsController extends ApiController
                 $query->whereHas('excursion', function (Builder $query) use ($partnerId) {
                     $query->whereDoesntHave('partnerShowcaseHide', function (Builder $query) use ($partnerId) {
                         $query->where('partner_id', $partnerId);
-                    })
-                    ->where('only_parus', '=',0)
-                    ->orWherenull('only_parus')
-                    ;
+                    });
                 });
             })
-            ->when($excursionId !== null, function (Builder $query) use ($excursionId,$partnerId) {
-                $query->where('excursion_id', $excursionId)
-                ;
-
+            ->when($excursionId !== null, function (Builder $query) use ($excursionId, $partnerId) {
+                $query->where('excursion_id', $excursionId);
             })
-
-
             ->withCount(['tickets'])
             ->with('excursion.ratesLists', function (HasMany $query) use ($date) {
                 $query
@@ -93,8 +85,6 @@ class ShowcaseTripsController extends ApiController
             })
             ->orderBy('trips.start_at');
 
-
-
         $listQueryDup = $listQuery->clone();
 
         $trips = $listQuery
@@ -108,7 +98,7 @@ class ShowcaseTripsController extends ApiController
             });
         }
 
-        if($trips->count() === 0) {
+        if ($trips->count() === 0) {
             $next = $listQueryDup
                 ->where('trips.start_at', '>=', $date)
                 ->oldest('trips.start_at')
@@ -169,8 +159,6 @@ class ShowcaseTripsController extends ApiController
         $partnerId = $originalKey['partner_id'] ?? null;
 
         $id = $request->input('id');
-
-
 
         /** @var Trip $trip */
         $trip = $this->baseTripQuery($partnerId === null)
@@ -243,6 +231,11 @@ class ShowcaseTripsController extends ApiController
                             $query->where('base_price', '>', 0);
                         }
                     });
+            })
+            ->when(!$forRootSite, function (Builder $query) {
+                $query->whereHas('excursion', function (Builder $query) {
+                    $query->where('only_site', false);
+                });
             });
     }
 }

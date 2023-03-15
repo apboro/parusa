@@ -22,7 +22,6 @@ use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
-use App\Models\Sails\Trip;
 
 use App\Traits\HasStatus;
 use App\Traits\HasType;
@@ -34,7 +33,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
 
-use Illuminate\Support\Facades\Log;
 /**
  * @property int $id
  * @property int $status_id
@@ -216,7 +214,7 @@ class Order extends Model implements Statusable, Typeable
      * Order factory.
      *
      * @param int $typeId Order initiator
-     * @param Ticket $tickets Array of tickets to order
+     * @param Ticket[] $tickets Array of tickets to order
      * @param int $statusId Order initial status
      * @param int|null $partnerId Partner ID
      * @param int|null $positionId Position of partner made this order (or null)
@@ -240,8 +238,6 @@ class Order extends Model implements Statusable, Typeable
             throw new WrongOrderException('Невозможно создать заказ без билетов.');
         }
 
-        Log::info(serialize($tickets));
-
         $now = Carbon::now();
 
         /** @var int[][] $available */
@@ -250,15 +246,11 @@ class Order extends Model implements Statusable, Typeable
         // check tickets
         foreach ($tickets as $ticket) {
 
-            // check trip, rate, isOnlyParus
+            // check trip, rate, site sales only option
             $trip = $ticket->trip;
 
-            if ($partnerId) {
-                if ($trip->isOnlyParus()){
-
-                }
+            if ($typeId !== OrderType::site && $trip->isOnlySite()) {
                 throw new WrongOrderException('Невозможно оформить заказ с выбранными билетами. Их можно приобрести только на сайте.');
-
             }
 
              $rateList = $trip ? $trip->getRate() : null;

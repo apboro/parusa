@@ -231,12 +231,16 @@ class Trip extends Model implements Statusable
         return $this->excursion->hasRateForDate($this->start_at);
     }
 
-    public function isOnlyParus ():bool
+    /**
+     * Is only AP site sales enabled.
+     *
+     * @return bool
+     */
+    public function isOnlySite(): bool
     {
         $this->loadMissing('excursion');
 
-        return $this->excursion->hasOnlyParus($this->id);
-
+        return $this->excursion->only_site;
     }
 
     /**
