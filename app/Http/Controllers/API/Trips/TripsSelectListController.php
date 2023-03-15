@@ -19,26 +19,22 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-
-use Illuminate\Support\Facades\Log;
-use function Ramsey\Uuid\Lazy\toString;
-
 class TripsSelectListController extends ApiController
 {
-    protected array $defaultFilters = [
-        'date' => null,
-        'program_id' => null,
-        'excursion_id' => null,
-        'start_pier_id' => null,
-    ];
+protected array $defaultFilters = [
+'date' => null,
+'program_id' => null,
+'excursion_id' => null,
+'start_pier_id' => null,
+];
 
-    protected array $rememberFilters = [
-        'program_id',
-        'excursion_id',
-        'start_pier_id',
-    ];
+protected array $rememberFilters = [
+'program_id',
+'excursion_id',
+'start_pier_id',
+];
 
-    protected string $rememberKey = CookieKeys::trips_select_list;
+protected string $rememberKey = CookieKeys::trips_select_list;
 
     /**
      * Get trips list.
@@ -76,6 +72,11 @@ class TripsSelectListController extends ApiController
             ->where('start_at', '>', $now)
             ->whereHas('excursion.ratesLists', function (Builder $query) use ($date) {
                 $query->whereDate('start_at', '<=', $date)->whereDate('end_at', '>=', $date);
+            })
+            ->whereHas('excursion', function ($query) {
+                $query->where('only_parus', '=',0)
+                    ->orWherenull('only_parus')
+                ;
             });
 
         // apply filters
@@ -119,7 +120,6 @@ class TripsSelectListController extends ApiController
                 'start_time' => $trip->start_at->format('H:i'),
                 'excursion_id' => $excursion->id,
                 'excursion' => $excursion->name,
-                'excursion__only_parus' => $excursion->only_parus ,
                 'programs' => $excursion->programs->map(function (ExcursionProgram $program) {
                     return $program->name;
                 }),
@@ -135,7 +135,7 @@ class TripsSelectListController extends ApiController
                 'chained' => $trip->getAttribute('chains_count') > 0,
             ];
         });
-        Log::info($trips);
+
         return APIResponse::list($trips,
             [
                 'start' => 'Отправление',
