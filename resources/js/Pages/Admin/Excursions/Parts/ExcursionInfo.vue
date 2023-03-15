@@ -8,6 +8,9 @@
                 <span class="link" v-if="editable" @click="statusChange"><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
                 <span v-else><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
             </GuiValue>
+            <GuiValue :title="'Эксклюзивная'">
+                {{ data['only_site'] ? 'Продажа только на сайте Алые Паруса' : 'Нет' }}
+            </GuiValue>
         </GuiContainer>
 
         <GuiContainer w-50 mt-30 inline pl-20 v-if="data['images'] && data['images'][0]">

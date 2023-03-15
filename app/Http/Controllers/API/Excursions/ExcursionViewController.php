@@ -42,6 +42,7 @@ class ExcursionViewController extends ApiController
             'duration' => $excursion->info->duration,
             'description' => $excursion->info->description,
             'announce' => $excursion->info->announce,
+            'only_site' => $excursion->only_site,
         ];
 
         // send response
