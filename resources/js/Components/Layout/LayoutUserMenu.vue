@@ -77,7 +77,7 @@ $base_primary_color: #1660ad !default;
 $base_primary_hover_color: #1e87f0 !default;
 
 .application__user-menu {
-    display: flex;
+    display: inline-flex;
     flex-grow: 0;
     flex-shrink: 0;
     align-items: center;
