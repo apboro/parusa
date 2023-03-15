@@ -170,7 +170,7 @@ class ShowcaseTripsController extends ApiController
 
         $id = $request->input('id');
 
-        Log::info('parner '.$partnerId);
+
 
         /** @var Trip $trip */
         $trip = $this->baseTripQuery($partnerId === null)
