@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Checkout;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\QrCode\QrCodesStatisticController;
 use App\Jobs\ProcessShowcaseConfirmedOrder;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\OrderStatus;
@@ -236,6 +237,16 @@ class CheckoutController extends ApiController
         // pay commission
         // update order status
         ProcessShowcaseConfirmedOrder::dispatch($order->id);
+
+        try {
+            $existingCookieHash = $request->cookie('qrCodeHash');
+            if ($existingCookieHash) {
+                QrCodesStatisticController::addPayment($existingCookieHash);
+            }
+        } catch (Exception $e) {
+            Log::channel('sber_payments')->error('Error with qrstatistics: '. $e->getMessage());
+        }
+
 
         // response OK
         $backLink = $container['ref'] ?? env('SHOWCASE_AP_PAGE');

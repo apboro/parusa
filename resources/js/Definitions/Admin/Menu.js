@@ -42,6 +42,7 @@ export default [
         'items': [
             {'title': 'Продажи с сайта Алые Паруса', 'route': 'statistics-sales', 'roles': ['admin']},
             {'title': 'Статистика за сегодня', 'route': 'statistics-sales-today', 'roles': ['admin']},
+            {'title': 'Статистика QR-коды', 'route': 'statistics-qr-codes', 'roles': ['admin']},
         ]
     },
 

@@ -30,6 +30,7 @@ import TransactionsRegistryPage from "@/Pages/Admin/Registries/TransactionsRegis
 import NotFound from '@/Pages/NotFound';
 import StatisticsSalesPage from "@/Pages/Admin/Statistics/StatisticsSalesPage.vue";
 import StatisticsSalesTodayPage from "@/Pages/Admin/Statistics/StatisticsSalesTodayPage.vue";
+import StatisticsQrCodesPage from "@/Pages/Admin/Statistics/StatisticsQrCodesPage.vue";
 
 export default [
     {path: '/', name: 'home', component: TripsListPage, meta: {title: 'Список рейсов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
@@ -43,6 +44,7 @@ export default [
 
     {path: '/statistics/sales', name: 'statistics-sales', component: StatisticsSalesPage, meta: {title: 'Статистика продаж', roles: ['admin']}},
     {path: '/statistics/sales-today', name: 'statistics-sales-today', component: StatisticsSalesTodayPage, meta: {title: 'Статистика продаж за сегодня', roles: ['admin']}},
+    {path: '/statistics/qr_codes', name: 'statistics-qr-codes', component: StatisticsQrCodesPage, meta: {title: 'Статистика QR-коды', roles: ['admin']}},
 
     {path: '/staff', name: 'staff-list', component: StaffListPage, meta: {title: 'Сотрудники', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника', roles: ['admin', 'office_manager', 'accountant']}},
