@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 class QrCodesStatistic extends Model
 {
     protected $guarded=[];
+    public $timestamps=false;
     protected $casts = [
         'is_visit' => 'bool',
         'is_payment' => 'bool',

@@ -15,17 +15,13 @@ class CreateQrCodesStatisticsTable extends Migration
     {
         Schema::create('qr_codes_statistics', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('qr_code_id');
+            $table->unsignedSmallInteger('qr_code_id');
             $table->boolean('is_visit')->default(false);
             $table->boolean('is_payment')->default(false);
-            $table->unsignedSmallInteger('partner_id');
-            $table->timestamps();
+            $table->dateTime('created_at');
 
             $table->foreign('qr_code_id')->on('qr_codes')
                 ->references('id');
-            $table->foreign('partner_id')->on('partners')
-                ->references('id');
-
         });
     }
 

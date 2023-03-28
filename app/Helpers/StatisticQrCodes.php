@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\QrCode;
+namespace App\Helpers;
 
-use App\Http\Controllers\Controller;
 use App\Models\QrCode;
 use App\Models\QrCodesStatistic;
+use Carbon\Carbon;
 
-class QrCodesStatisticController extends Controller
+class StatisticQrCodes
 {
     public static function addVisit(QrCode $qrCode)
     {
         QrCodesStatistic::create([
             'qr_code_id' => $qrCode->id,
-            'partner_id' => $qrCode->partner_id,
-            'is_visit' => true
+            'is_visit' => true,
+            'created_at' => Carbon::now()
         ]);
     }
 
@@ -22,8 +22,8 @@ class QrCodesStatisticController extends Controller
         $qrCode = QrCode::where('hash', $qrCodeHash)->first();
         QrCodesStatistic::create([
             'qr_code_id' => $qrCode->id,
-            'partner_id' => $qrCode->partner_id,
-            'is_payment' => true
+            'is_payment' => true,
+            'created_at' => Carbon::now()
         ]);
     }
 }

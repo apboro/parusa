@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\APIListRequest;
 use App\Models\QrCodesStatistic;
 use Carbon\Carbon;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class StatisticsQrCodesController extends Controller
 {
@@ -31,7 +30,6 @@ class StatisticsQrCodesController extends Controller
         $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('Y-m-d');
         $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d');
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
-        $partnerId = $request->input('partner_id');
 
         $query = QrCodesStatistic::query()->with('qr_code');
 
@@ -43,7 +41,9 @@ class StatisticsQrCodesController extends Controller
             $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
         }
         if (!empty($filters['partner_id'])) {
-            $query->where('partner_id', $filters['partner_id']);
+            $query->whereHas('qr_code', function ($query) use ($filters) {
+                $query->where('partner_id', $filters['partner_id']);
+            });
         }
         $query->selectRaw("SUM(is_visit) as visits_count")
         ->selectRaw("SUM(is_payment) as payed_tickets_count")

@@ -14,7 +14,7 @@ class CreateQrCodesTable extends Migration
     public function up()
     {
         Schema::create('qr_codes', function (Blueprint $table) {
-            $table->id();
+            $table->smallIncrements('id');
             $table->string('name');
             $table->string('link');
             $table->unsignedSmallInteger('partner_id');
