@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\API\Partners\PartnerSettingsController;
 use App\Http\Controllers\Showcase\ShowcaseInfoController;
 use App\Http\Controllers\Showcase\ShowcaseInitController;
 use App\Http\Controllers\Showcase\ShowcaseOrderController;
