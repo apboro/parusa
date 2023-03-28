@@ -6,13 +6,10 @@ use App\Helpers\StatisticQrCodes;
 use App\Http\Controllers\Controller;
 use App\Models\QrCode;
 use Carbon\Carbon;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Redirector;
 
 class QrCodeRedirectController extends Controller
 {
-    public function redirect(string $hash): Application|RedirectResponse|Redirector
+    public function redirect(string $hash)
     {
         $existingCookieHash = request()->cookie('qrCodeHash');
         if ($existingCookieHash && !env('REGENERATE_COOKIE')) {
