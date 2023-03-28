@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'checkout/*'],
+    'paths' => ['api/*', 'checkout/*', 'showcase/*', 'qrlink/*'],
 
     'allowed_methods' => ['POST'],
 

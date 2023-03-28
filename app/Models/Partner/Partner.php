@@ -14,6 +14,7 @@ use App\Models\Dictionaries\PartnerType;
 use App\Models\Excursions\Excursion;
 use App\Models\Model;
 use App\Models\Positions\Position;
+use App\Models\QrCode;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use Carbon\Carbon;
@@ -146,5 +147,11 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
     public function excursionsShowcaseHide(): BelongsToMany
     {
         return $this->belongsToMany(Excursion::class, 'partner_excursion_showcase_disabling', 'partner_id', 'excursion_id');
+    }
+
+    public function qrCodes():hasMany
+    {
+        return $this->hasMany(QrCode::class, 'partner_id', 'id');
+
     }
 }
