@@ -5,25 +5,33 @@ namespace App\Http\Controllers\QrCode;
 use App\Helpers\StatisticQrCodes;
 use App\Http\Controllers\Controller;
 use App\Models\QrCode;
-use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class QrCodeRedirectController extends Controller
 {
-    public function redirect(string $hash)
+    public function redirect(string $hash, Request $request)
     {
-        $existingCookieHash = request()->cookie('qrCodeHash');
-        if ($existingCookieHash && !env('REGENERATE_COOKIE')) {
+        $existingCookieHash = (string)$request->cookie('qrCodeHash');
+
+        if ($existingCookieHash && env('QR_NOT_REWRITE_COOKIE')) {
             $hash = $existingCookieHash;
         }
 
-        /**@var \App\Models\QrCode $qrCode */
-        $qrCode = QrCode::where('hash', $hash)->first();
-        $link = $qrCode->link . '?ap_showcase_persons=&ap_showcase_date='
-            . Carbon::now()->format('Y-m-d') . '&partner=' . $qrCode->partner->id;
-        if (!$existingCookieHash) {
-            StatisticQrCodes::addVisit($qrCode);
+        /**@var QrCode|null $qrCode */
+        $qrCode = QrCode::query()->where('hash', $hash)->first();
+
+        if ($qrCode) {
+            $link = $qrCode->link;
+
+            if (!$existingCookieHash) {
+                StatisticQrCodes::addVisit($qrCode);
+            }
+
+            return redirect($link)->withCookie(cookie('qrCodeHash', $hash, 30240));
         }
 
-        return redirect($link)->withCookie(cookie('qrCodeHash', $hash, 30240));
+        $link = env('QR_FALLBACK_LINK');
+
+        return redirect($link);
     }
 }
