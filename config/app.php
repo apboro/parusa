@@ -28,6 +28,8 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    'mail_send' => env('APP_MAIL_SEND', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

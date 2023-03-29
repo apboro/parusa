@@ -83,7 +83,7 @@ class RepresentativeAccessController extends ApiEditController
         $user->password = Hash::make($data['password']);
         $user->save();
 
-        if ($request->data['isSendEmail'] && config('app.env') === 'production') {
+        if ($request->data['isSendEmail'] && config('app.env') === 'production' && config('app.mail_send')) {
             Mail::send(
                 'email.invite',
                 [
