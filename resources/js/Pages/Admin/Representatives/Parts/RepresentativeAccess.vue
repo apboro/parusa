@@ -8,6 +8,15 @@
             <FormString :form="form" :name="'login'"/>
             <FormString :form="form" :name="'password'" :type="'password'"/>
             <FormString :form="form" :name="'password_confirmation'" :type="'password'"/>
+            <FieldCheckBox
+                :form="form"
+                :name="isSendEmail"
+                label="Отправить доступы на e-mail"
+                v-model="isSendEmail"
+                @change="updateSendEmail"
+                ref="input"
+            />
+            <FormString v-if="isSendEmail" :form="form" :name="'email'"/>
             <GuiButton v-if="editable" :class="'mt-20'" :color="'green'" @click="openAccess">Открыть доступ в систему</GuiButton>
         </GuiContainer>
     </LoadingProgress>
@@ -21,17 +30,20 @@ import GuiMessage from "@/Components/GUI/GuiMessage";
 import GuiValue from "@/Components/GUI/GuiValue";
 import GuiButton from "@/Components/GUI/GuiButton";
 import FormString from "@/Components/Form/FormString";
+import FieldCheckBox from "@/Components/Fields/FieldCheckBox.vue";
 
 export default {
     props: {
         representativeId: {type: Number, required: true},
         data: {type: Object, required: true},
         editable: {type: Boolean, default: false},
+        isSendEmail: false,
     },
 
     emits: ['update'],
 
     components: {
+        FieldCheckBox,
         FormString,
         GuiButton,
         GuiValue,
@@ -57,11 +69,21 @@ export default {
     },
 
     methods: {
+        updateSendEmail() {
+            let rulesEmail = this.isSendEmail ? 'required|email|bail' : 'nullable|email|bail';
+
+            this.form.set('email', this.data['email'], rulesEmail, 'Email', true);
+            this.form.set('isSendEmail', this.isSendEmail ?? false, 'required', 'Отправить доступы на e-mail', true);
+        },
         updateForm() {
+            let rulesEmail = this.isSendEmail ? 'required|email|bail' : 'nullable|email|bail';
+
             this.form.reset();
             this.form.set('login', this.data['email'], 'required|min:6|bail', 'Логин', true);
+            this.form.set('email', this.data['email'], rulesEmail, 'Email', true);
             this.form.set('password', null, 'required|min:6|bail', 'Новый пароль', true);
             this.form.set('password_confirmation', null, 'same:password', 'Подтверждение пароля', true);
+            this.form.set('isSendEmail', this.isSendEmail ?? false, 'required', 'Отправить доступы на e-mail', true);
             this.form.load();
         },
 
@@ -94,11 +116,15 @@ export default {
                 return;
             }
 
+            let rulesEmail = this.isSendEmail ? 'required|email|bail' : 'nullable|email|bail';
+
             this.form.save({id: this.representativeId})
                 .then(response => {
                     this.$emit('update', response['payload']);
                     this.form.set('password', null, 'required|min:6|bail', 'Новый пароль', true);
                     this.form.set('password_confirmation', null, 'same:password', 'Подтверждение пароля', true);
+                    this.form.set('email', null, rulesEmail, 'Email', true);
+                    this.form.set('isSendEmail', this.isSendEmail ?? false, 'required', 'Отправить доступы на e-mail', true);
                 })
         },
     }

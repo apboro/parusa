@@ -8,6 +8,7 @@ use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class RepresentativeAccessController extends ApiEditController
 {
@@ -81,6 +82,20 @@ class RepresentativeAccessController extends ApiEditController
         $user->login = $data['login'];
         $user->password = Hash::make($data['password']);
         $user->save();
+
+        if ($request->data['isSendEmail'] && config('app.env') === 'production') {
+            Mail::send(
+                'email.invite',
+                [
+                    'login' => $data['login'],
+                    'password' => $data['password']
+                ],
+                function($message) use ($request) {
+                    $message->to($request->data['email']);
+                    $message->subject('Вы успешно зарегистрированы в системе «Алые Паруса»');
+                }
+            );
+        }
 
         return APIResponse::success(
             'Доступ в систему для представителя открыт',
