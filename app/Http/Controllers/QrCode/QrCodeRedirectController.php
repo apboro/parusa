@@ -11,12 +11,6 @@ class QrCodeRedirectController extends Controller
 {
     public function redirect(string $hash, Request $request)
     {
-        $existingCookieHash = (string)$request->cookie('qrCodeHash');
-
-        if ($existingCookieHash && env('QR_NOT_REWRITE_COOKIE')) {
-            $hash = $existingCookieHash;
-        }
-
         /**@var QrCode|null $qrCode */
         $qrCode = QrCode::query()->where('hash', $hash)->first();
 
@@ -28,9 +22,7 @@ class QrCodeRedirectController extends Controller
 
         $link = $qrCode->link;
 
-        if (!$existingCookieHash && !env('QR_NOT_REWRITE_COOKIE')) {
-            StatisticQrCodes::addVisit($qrCode);
-        }
+        StatisticQrCodes::addVisit($qrCode);
 
         return redirect($link)->withCookie(cookie('qrCodeHash', $hash, 30240));
     }
