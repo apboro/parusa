@@ -10,13 +10,11 @@
             <FormString :form="form" :name="'password_confirmation'" :type="'password'"/>
             <FormCheckBox
                 :form="form"
-                :name="isSendEmail"
+                :name="'is_send_email'"
                 label="Отправить доступы на e-mail"
-                v-model="isSendEmail"
                 @change="updateSendEmail"
-                ref="input"
             />
-            <FormString v-if="isSendEmail" :form="form" :name="'email'"/>
+            <FormString v-if="form.values['is_send_email']" :form="form" :name="'email'"/>
             <GuiButton v-if="editable" :class="'mt-20'" :color="'green'" @click="openAccess">Открыть доступ в систему</GuiButton>
         </GuiContainer>
     </LoadingProgress>
@@ -38,7 +36,6 @@ export default {
         representativeId: {type: Number, required: true},
         data: {type: Object, required: true},
         editable: {type: Boolean, default: false},
-        isSendEmail: false,
     },
 
     emits: ['update'],
@@ -71,21 +68,18 @@ export default {
     },
 
     methods: {
-        updateSendEmail() {
-            let rulesEmail = this.isSendEmail ? 'required|email|bail' : 'nullable|email|bail';
-
+        updateSendEmail(value) {
+            let rulesEmail = value ? 'required|email|bail' : 'nullable|email|bail';
             this.form.set('email', this.data['email'], rulesEmail, 'Email', true);
-            this.form.set('isSendEmail', this.isSendEmail ?? false, 'required', 'Отправить доступы на e-mail', true);
         },
-        updateForm() {
-            let rulesEmail = this.isSendEmail ? 'required|email|bail' : 'nullable|email|bail';
 
+        updateForm() {
             this.form.reset();
             this.form.set('login', this.data['email'], 'required|min:6|bail', 'Логин', true);
-            this.form.set('email', this.data['email'], rulesEmail, 'Email', true);
             this.form.set('password', null, 'required|min:6|bail', 'Новый пароль', true);
             this.form.set('password_confirmation', null, 'same:password', 'Подтверждение пароля', true);
-            this.form.set('isSendEmail', this.isSendEmail ?? false, 'required', 'Отправить доступы на e-mail', true);
+            this.form.set('is_send_email', false, null, 'Отправить доступы на e-mail', true);
+            this.form.set('email', this.data['email'], null, 'Email', true);
             this.form.load();
         },
 

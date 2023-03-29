@@ -5,10 +5,13 @@ namespace App\Http\Controllers\API\Representatives;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\User\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use RuntimeException;
 
 class RepresentativeAccessController extends ApiEditController
 {
@@ -16,12 +19,14 @@ class RepresentativeAccessController extends ApiEditController
         'login' => 'required|min:6|unique:users',
         'password' => 'required|min:6',
         'password_confirmation' => 'required|same:password',
+        'email' => 'required_if:is_send_email,true|email',
     ];
 
     protected array $titles = [
         'login' => 'Логин',
         'password' => 'Новый пароль',
         'password_confirmation' => 'Подтверждение пароля',
+        'email' => 'Email',
     ];
 
     /**
@@ -66,6 +71,7 @@ class RepresentativeAccessController extends ApiEditController
      */
     public function set(Request $request): JsonResponse
     {
+        /** @var User $user */
         if (($user = $this->getRepresentativeUser($request)) === null) {
             return APIResponse::notFound('Представитель не найден');
         }
@@ -73,32 +79,45 @@ class RepresentativeAccessController extends ApiEditController
         // Validate data
         $data = $this->getData($request);
 
-        if ($errors = $this->validate($data, $this->rules, $this->titles)) {
+        if ($errors = $this->validate($data, $this->rules, $this->titles, [
+            'email.required_if' => 'Обязательно для заполнения',
+        ])) {
             return APIResponse::validationError($errors);
         }
 
-        /** @var User $user */
+        $messageIsSent = false;
 
-        $user->login = $data['login'];
-        $user->password = Hash::make($data['password']);
-        $user->save();
+        try {
+            DB::transaction(function () use ($user, $data, &$messageIsSent) {
+                $user->login = $data['login'];
+                $user->password = Hash::make($data['password']);
+                $user->save();
 
-        if ($request->data['isSendEmail'] && config('app.mail_send')) {
-            Mail::send(
-                'email.invite',
-                [
-                    'login' => $data['login'],
-                    'password' => $data['password']
-                ],
-                function($message) use ($request) {
-                    $message->to($request->data['email']);
-                    $message->subject('Вы успешно зарегистрированы в системе «Алые Паруса»');
+                if ($data['is_send_email'] && config('app.mail_send')) {
+                    try {
+                        Mail::send(
+                            'email.invite',
+                            [
+                                'login' => $data['login'],
+                                'password' => $data['password'],
+                            ],
+                            function ($message) use ($data) {
+                                $message->to($data['email']);
+                                $message->subject('Вы успешно зарегистрированы в системе «Алые Паруса»');
+                            }
+                        );
+                        $messageIsSent = true;
+                    } catch (Exception $exception) {
+                        throw new RuntimeException('Ошибка отправки почты: ' . $exception->getMessage());
+                    }
                 }
-            );
+            });
+        } catch (RuntimeException $exception) {
+            return APIResponse::error($exception->getMessage());
         }
 
         return APIResponse::success(
-            'Доступ в систему для представителя открыт',
+            'Доступ в систему для представителя открыт.' . ($messageIsSent ? ' Уведомление отправлено.' : null),
             [
                 'has_access' => true,
                 'login' => $user->login,
