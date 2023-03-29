@@ -8,7 +8,7 @@
             <FormString :form="form" :name="'login'"/>
             <FormString :form="form" :name="'password'" :type="'password'"/>
             <FormString :form="form" :name="'password_confirmation'" :type="'password'"/>
-            <FieldCheckBox
+            <FormCheckBox
                 :form="form"
                 :name="isSendEmail"
                 label="Отправить доступы на e-mail"
@@ -31,6 +31,7 @@ import GuiValue from "@/Components/GUI/GuiValue";
 import GuiButton from "@/Components/GUI/GuiButton";
 import FormString from "@/Components/Form/FormString";
 import FieldCheckBox from "@/Components/Fields/FieldCheckBox.vue";
+import FormCheckBox from "@/Components/Form/FormCheckBox.vue";
 
 export default {
     props: {
@@ -43,6 +44,7 @@ export default {
     emits: ['update'],
 
     components: {
+        FormCheckBox,
         FieldCheckBox,
         FormString,
         GuiButton,
