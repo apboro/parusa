@@ -20,18 +20,18 @@ class QrCodeRedirectController extends Controller
         /**@var QrCode|null $qrCode */
         $qrCode = QrCode::query()->where('hash', $hash)->first();
 
-        if ($qrCode) {
-            $link = $qrCode->link;
+        if ($qrCode === null) {
+            $link = env('QR_FALLBACK_LINK');
 
-            if (!$existingCookieHash) {
-                StatisticQrCodes::addVisit($qrCode);
-            }
-
-            return redirect($link)->withCookie(cookie('qrCodeHash', $hash, 30240));
+            return redirect($link);
         }
 
-        $link = env('QR_FALLBACK_LINK');
+        $link = $qrCode->link;
 
-        return redirect($link);
+        if (!$existingCookieHash && !env('QR_NOT_REWRITE_COOKIE')) {
+            StatisticQrCodes::addVisit($qrCode);
+        }
+
+        return redirect($link)->withCookie(cookie('qrCodeHash', $hash, 30240));
     }
 }
