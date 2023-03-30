@@ -11,6 +11,7 @@ use App\Models\Dictionaries\AccountTransactionTypeRefill;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\PartnerOrderType;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\PaymentStatus;
@@ -45,6 +46,7 @@ class DictionaryController extends ApiController
         'excursion_statuses' => ['class' => ExcursionStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
         'excursions' => ['class' => Excursion::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,staff_terminal,partner'],
         'order_types' => ['class' => OrderType::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner'],
+        'partner_order_types' => ['class' => PartnerOrderType::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner'],
         'partner_statuses' => ['class' => PartnerStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
         'partner_types' => ['class' => PartnerType::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
         'partners' => ['class' => Partner::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],

@@ -2,6 +2,7 @@
 
 namespace App\Models\Dictionaries;
 
+
 /**
  * @property int $id
  * @property string $name
