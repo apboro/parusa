@@ -56,7 +56,8 @@ class StatisticsQrCodesController extends Controller
 
         return APIResponse::list(
             $qrcodes,
-            ['Название', 'Ссылка','Визиты','Покупки','QR-код']
+            ['Название', 'Ссылка','Визиты','Покупки','QR-код'],
+            $filters,
         );
     }
 }
