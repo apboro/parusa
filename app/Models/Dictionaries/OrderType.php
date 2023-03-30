@@ -2,8 +2,6 @@
 
 namespace App\Models\Dictionaries;
 
-use App\Models\Dictionaries\Interfaces\AsDictionary;
-use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @property int $id
@@ -11,7 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property bool $enabled
  * @property int $order
  */
-class OrderType extends AbstractDictionary implements AsDictionary
+class OrderType extends AbstractDictionary
 {
     /** @var int Личный кабинет партнёра */
     public const partner_sale = 1;
@@ -33,15 +31,4 @@ class OrderType extends AbstractDictionary implements AsDictionary
 
     /** @var string Referenced table name. */
     protected $table = 'dictionary_order_types';
-
-    public static function asDictionary(): Builder
-    {
-        $ids = [
-            self::qr_code,
-            self::site,
-            self::partner_site,
-            self::partner_sale,
-        ];
-        return self::query()->whereIn('id', $ids);
-    }
 }
