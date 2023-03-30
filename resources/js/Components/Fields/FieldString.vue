@@ -34,7 +34,7 @@ export default {
         errors: {type: Array, default: null},
         hideTitle: {type: Boolean, default: false},
 
-        placeholder: {type: String, default: null},
+        //placeholder: {type: String, default: null},
         small: {type: Boolean, default: false},
 
         type: {type: String, default: 'text', validation: (value) => ['text', 'password'].indexOf(value) !== -1},
