@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Partners;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Excursions\Excursion;
 use App\Models\User\Helpers\Currents;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
@@ -24,7 +26,7 @@ class PartnerSettingsController extends ApiController
     public function settings(Request $request): JsonResponse
     {
         $current = Currents::get($request);
-        $showcaseUrl = env('SHOWCASE_AP_PAGE');
+        $showcaseUrl = config('app.showcase_ap_page');
 
         $code = "<!-- Загрузка скрипта -->\n";
         $code .= "<script src=\"" . env('APP_URL') . "/js/showcase.js\"></script>\n";
@@ -38,6 +40,45 @@ class PartnerSettingsController extends ApiController
             'link' => $this->appLink($showcaseUrl, $current->partnerId()),
             'code' => $code,
             'qr_target_page' => null,
+        ]);
+    }
+
+    /**
+     * Get partner widget 2 to display.
+     *
+     * @param Request $request
+     *
+     * @return  JsonResponse
+     */
+    public function widget2(Request $request): JsonResponse
+    {
+        $current = Currents::get($request);
+        $showcaseUrl = config('app.showcase_ap_page2');
+
+        $excursions = Excursion::query()
+            ->where('status_id', ExcursionStatus::active)
+            ->orderBy('name')
+            ->get();
+
+
+        if ($request->excursions) {
+            $strExcursions = implode(',', $request->excursions);
+            $codeExcursions = "\"excursions\": " . $strExcursions;
+        }
+
+        $code = "<!-- Загрузка скрипта -->\n";
+        $code .= "<script src=\"" . env('APP_URL') . "/js/showcase2.js\"></script>\n";
+        $code .= "<!-- Настройки -->\n";
+        $code .= "<script id=\"ap-showcase-config\" type=\"application/json\">{\"partner\": " . $current->partnerId() . (isset($codeExcursions) ? ", $codeExcursions" : " ") . "}</script>";
+        $code .= "\n<!-- Вставить в то место, где нужно разместить приложение -->\n";
+        $code .= "<div id=\"ap-showcase2\"></div>";
+
+        return APIResponse::response([
+            'partner_id' => $current->partnerId(),
+            'link' => $this->appLink($showcaseUrl, $current->partnerId()),
+            'code' => $code,
+            'qr_target_page' => null,
+            'excursions' => $excursions
         ]);
     }
 

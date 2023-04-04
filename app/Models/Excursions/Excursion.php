@@ -10,6 +10,7 @@ use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Model;
 use App\Models\Partner\Partner;
+use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketsRatesList;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
@@ -54,6 +55,11 @@ class Excursion extends Model implements Statusable, AsDictionary
     public function status(): HasOne
     {
         return $this->hasOne(ExcursionStatus::class, 'id', 'status_id');
+    }
+
+    public function trips(): hasMany
+    {
+        return $this->hasMany(Trip::class, 'excursion_id', 'id');
     }
 
     /**

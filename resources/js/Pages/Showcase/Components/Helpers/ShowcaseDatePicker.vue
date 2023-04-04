@@ -34,6 +34,7 @@
 <script>
 import IconBackward from "@/Components/Icons/IconBackward";
 import IconForward from "@/Components/Icons/IconForward";
+import moment from "moment";
 
 export default {
     emits: ['selected'],
@@ -47,6 +48,7 @@ export default {
         date: {type: Object, default: null},
         from: {type: Object, default: null},
         to: {type: Object, default: null},
+        dates: {type: Array, default: null},
     },
 
     watch: {
@@ -121,14 +123,16 @@ export default {
                     let month = firstDayOfWeek === 1 ? 0 : -1;
 
                     for (let i = 0; i < 42; i++) {
+                        let newDate = new Date(this.selected.year + '-' + (this.selected.month + 1) + '-' + day);
+                        let formattedDate = moment(newDate).format('YYYY-MM-DD');
                         list[i] = {
                             value: day,
                             month: month,
                             caption: day,
-                            enabled: (!this.from || (this.selected.year > this.from.getFullYear() || (this.selected.year === this.from.getFullYear()
+                            enabled: (this.dates !== null) ? this.dates.includes(formattedDate) : ((!this.from || (this.selected.year > this.from.getFullYear() || (this.selected.year === this.from.getFullYear()
                                     && (this.selected.month + month > this.from.getMonth() || this.selected.month + month === this.from.getMonth() && day >= this.from.getDate()))))
                                 && (!this.to || (this.selected.year < this.to.getFullYear() || (this.selected.year === this.to.getFullYear()
-                                    && (this.selected.month + month < this.to.getMonth() || this.selected.month + month === this.to.getMonth() && day <= this.to.getDate())))),
+                                    && (this.selected.month + month < this.to.getMonth() || this.selected.month + month === this.to.getMonth() && day <= this.to.getDate()))))),
                             sibling: month !== 0,
                             current: (month === 0 && day === this.current.date && this.selected.month === this.current.month && this.selected.year === this.current.year),
                             selected: (this.date
