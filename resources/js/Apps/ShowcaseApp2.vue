@@ -1,5 +1,28 @@
 <template>
-    <Trips2List
+    <ShowcaseLoadingProgress :loading="state.is_initializing || state.is_loading" :opacity="100">
+        <template v-if="state.has_error">
+            <ShowcaseMessage>Ошибка: {{ state.error_message }}</ShowcaseMessage>
+        </template>
+        <template v-else>
+            <OrderInfo v-if="order_secret"
+                       :is-loading="order.is_loading"
+                       :order-data="order.data"
+                       :secret="order_secret"
+                       :crm_url="crmUrl"
+                       :debug="debug"
+                       :session="session"
+                       @close="closeOrder"
+            />
+            <TicketsSelect v-else-if="trip_id"
+                           :trip="trip.data"
+                           :trip-id="trip_id"
+                           :crm_url="crmUrl"
+                           :debug="debug"
+                           :is-loading="trip.is_loading"
+                           :session="session"
+                           @select="selectTrip"
+            />
+            <Trips2List v-else
                 :date_from="search_options.date_from"
                 :date_to="search_options.date_to"
                 :programs="search_options.programs"
@@ -18,7 +41,10 @@
                 :session="session"
                 @search="loadList"
                 @select="selectTrip"
-    />
+            />
+
+        </template>
+    </ShowcaseLoadingProgress>
 </template>
 
 <script>
@@ -63,7 +89,7 @@ export default {
             programs: [],
             dates: [],
             items: [],
-            checked: [],
+            checked: null,
         },
         last_search: null,
 
@@ -246,7 +272,7 @@ export default {
             if (search !== null) {
                 this.last_search = search;
             } else {
-                this.last_search = (this.last_search === null) ? {date: this.today} : this.last_search;
+                this.last_search = (this.last_search === null) ? {date: this.search_options.checked ?? this.today} : this.last_search;
             }
             this.trips.is_loading = true;
             axios.post(this.url('/showcase/trips2'), {
@@ -259,6 +285,7 @@ export default {
                     this.trips.date = response.data['date'];
                     this.trips.next_date = response.data['next_date'];
                     this.trips.next_date_caption = response.data['next_date_caption'];
+                    this.search_options.checked = this.last_search.date;
                 })
                 .catch(error => {
                     this.state.error_message = error.response.data['message'];
@@ -285,11 +312,13 @@ export default {
          * @param trip_id
          */
         selectTrip(trip_id) {
-            const url = new URL(window.location.href);
+            let url = new URL(window.location.href);
             if (trip_id !== null) {
-                url.searchParams.set('ap-tid', trip_id);
+                url = url + '&ap-tid=' + trip_id;
+                // url.searchParams.set('ap-tid', trip_id);
             } else {
-                url.searchParams.delete('ap-tid');
+                url = this.removeParam("ap-tid", url);
+                // url.searchParams.delete('ap-tid');
             }
 
             if (trip_id !== this.trip_id) {
@@ -297,6 +326,25 @@ export default {
             }
             this.trip_id = trip_id;
             this.updateState();
+        },
+
+        removeParam(key, sourceURL) {
+            let splitUrl = sourceURL.search.split('?'),
+                rtn = splitUrl[0],
+                param,
+                params_arr = [],
+                queryString = (sourceURL.search.indexOf("?") !== -1) ? splitUrl[1] : '';
+            if (queryString !== '') {
+                params_arr = queryString.split('&');
+                for (var i = params_arr.length - 1; i >= 0; i -= 1) {
+                    param = params_arr[i].split('=')[0];
+                    if (param === key) {
+                        params_arr.splice(i, 1);
+                    }
+                }
+                rtn = rtn + '?' + params_arr.join('&');
+            }
+            return rtn;
         },
 
         /**

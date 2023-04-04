@@ -57,6 +57,7 @@ class PartnerSettingsController extends ApiController
 
         $excursions = Excursion::query()
             ->where('status_id', ExcursionStatus::active)
+            ->where('only_site', false)
             ->orderBy('name')
             ->get();
 

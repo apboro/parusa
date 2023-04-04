@@ -6,8 +6,8 @@
             :description="description"
             :value="value"
             :checked="checked"
+            :ischecked="ischecked"
             v-model="proxyValue"
-            @change="search"
         >
         </ShowcaseRadio>
     </div>
@@ -27,7 +27,8 @@ export default {
         title: {type: [String], default: null},
         description: {type: [String], default: null},
         valid: {type: Boolean, default: true},
-        checked: {type: Boolean, default: true},
+        checked: {type: String, default: null},
+        ischecked: {type: Boolean, default: true},
         disabled: {type: Boolean, default: false},
         label: {type: String, default: null},
         small: {type: Boolean, default: false},
@@ -58,14 +59,9 @@ export default {
             set(value) {
                 this.$emit('update:modelValue', value);
                 this.$emit('change', value, this.name);
+                this.search_parameters.date = value;
+                this.$emit('search', this.search_parameters);
             }
-        }
-    },
-
-    methods: {
-        search() {
-            this.search_parameters.date = this.proxyValue;
-            this.$emit('search', this.search_parameters);
         },
     },
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="ap-radio-date__wrapper ap-radio-date__wrapper__checked" v-if="checked && this.title !== null && this.description !== null">
+    <div class="ap-radio-date__wrapper ap-radio-date__wrapper__checked" v-if="ischecked && this.title !== null && this.description !== null">
         <span class="ap-checkbox__block">
             <span class="ap-checkbox__title ap-checkbox__title__checked">{{ this.title }}</span>
             <span class="ap-checkbox__description ap-checkbox__description__checked">{{ this.description }}</span>
@@ -81,7 +81,7 @@ export default {
         modelValue: {type: String, default: null},
         from: {type: String, default: null},
         to: {type: String, default: null},
-        checked: {type: Boolean, default: true},
+        ischecked: {type: Boolean, default: true},
         placeholder: {type: String, default: null},
         disabled: {type: Boolean, default: false},
         dates: {type: Array, default: null},

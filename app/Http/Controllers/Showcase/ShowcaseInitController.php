@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Showcase;
 use App\Http\Controllers\ApiController;
 use App\Http\Middleware\ExternalProtect;
 use App\Models\Dictionaries\ExcursionProgram;
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Sails\Trip;
 use Carbon\Carbon;
@@ -99,39 +100,34 @@ class ShowcaseInitController extends ApiController
             ->whereIn('excursion_id', $excursionsIDs)
             ->whereIn('status_id', [TripStatus::regular])
             ->whereDate('start_at', '>=', $currentDate)
-//            ->whereHas('excursion.ratesLists', function (Builder $query) use ($forRootSite) {
-//                $query
-//                    ->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
-//                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
-//                    ->whereHas('rates', function (Builder $query) use ($forRootSite) {
-//                        $query->where('grade_id', '!=', TicketGrade::guide);
-//                        if ($forRootSite) {
-//                            $query->where('site_price', '>', 0);
-//                        } else {
-//                            $query->where('base_price', '>', 0);
-//                        }
-//                    });
-//            })
-//            ->when(!$forRootSite, function (Builder $query) {
-//                $query->whereHas('excursion', function (Builder $query) {
-//                    $query->where('only_site', false);
-//                });
-//            })
+            ->whereHas('excursion.ratesLists', function (Builder $query) {
+                $query
+                    ->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
+                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
+                    ->whereHas('rates', function (Builder $query) {
+                        $query->where('grade_id', '!=', TicketGrade::guide);
+                            $query->where('base_price', '>', 0);
+                    });
+            })
+            ->whereHas('excursion', function (Builder $query) {
+                $query->where('only_site', false);
+            })
             ->get()
             ->sortBy('start_at');
         $tripsDate = $trips->pluck('start_at')->toArray();
         $dates = [];
+        $today = Carbon::now()->format('Y-m-d');
 
         if (!empty($tripsDate)) {
             foreach ($tripsDate as $date) {
+                if (Carbon::now() > $date) {
+                    continue;
+                }
                 $dates[] = $date->format('Y-m-d');
             }
         }
         $dates = array_unique($dates);
 
-        $checked = count($trips) > 0 ? $trips->first()->start_at->format('Y-m-d') : null;
-
-        $today = Carbon::now()->format('Y-m-d');
         $tomorrow = Carbon::now()->addDay()->format('Y-m-d');
         $aftertomorrow = Carbon::now()->addDays(2)->format('Y-m-d');
 
@@ -141,6 +137,9 @@ class ShowcaseInitController extends ApiController
 
             foreach ($trips as $trip) {
                 $start = $trip->start_at;
+                if (Carbon::now() > $start) {
+                    continue;
+                }
                 $date = (clone ($start))->format('Y-m-d');
 
                 if ($today === $date) {
@@ -170,6 +169,7 @@ class ShowcaseInitController extends ApiController
 
             }
         }
+        $checked = count($dates) > 0 ? $dates[0] : null;
         $items = array_values($items);
 
         return response()->json([

@@ -154,15 +154,12 @@ class ShowcaseTripsController extends ApiController
 
         $date = $request->input('search.date');
         $persons = $request->input('search.persons');
-        $programs = $request->input('search.programs');
         $excursionsIDs = $request->input('excursions') !== null ? explode(',', $request->input('excursions')) : null;
-
+//        dd($request);
         if ($date === null) {
             return response()->json(['message' => 'Не задана дата'], 500);
         }
         $date = Carbon::parse($date);
-
-        $excursionId = $request->input('excursion_id');
 
         $listQuery = $this->baseTripQuery($partnerId === null)
             ->with(['status', 'startPier', 'ship', 'excursion', 'excursion.info', 'excursion.programs'])
@@ -281,9 +278,10 @@ class ShowcaseTripsController extends ApiController
                 'excursion' => $trip->excursion->name,
                 'excursion_id' => $trip->excursion_id,
                 'duration' => $trip->excursion->info->duration,
-                'images' => $trip->excursion->images->map(function (Image $image) {
-                    return $image->url;
-                }),
+//                'images' => $trip->excursion->images->map(function (Image $image) {
+//                    return $image->url;
+//                }),
+                'images' => null,
                 'rates' => array_values($rates->toArray()),
             ],
         ]);

@@ -5,7 +5,7 @@
             :from="from"
             :to="to"
             :dates="dates"
-            :checked="checked"
+            :ischecked="ischecked"
             :placeholder="placeholder"
             :disabled="disabled"
             :small="small"
@@ -34,17 +34,23 @@ export default {
         valid: {type: Boolean, default: true},
         disabled: {type: Boolean, default: false},
         placeholder: {type: String, default: null},
-        checked: {type: Boolean, default: true},
+        checked: {type: String, default: null},
+        ischecked: {type: Boolean, default: true},
         dates: {type: Array, default: null},
         small: {type: Boolean, default: false},
         clearable: {type: Boolean, default: false},
         pickOnClear: {type: Boolean, default: true},
     },
 
-    emits: ['update:modelValue', 'change'],
+    emits: ['update:modelValue', 'change', 'search'],
 
     data: () => ({
         isFocused: false,
+        search_parameters: {
+            date: null,
+            persons: null,
+            programs: null,
+        },
     }),
 
     computed: {
@@ -58,6 +64,8 @@ export default {
             set(value) {
                 this.$emit('update:modelValue', value);
                 this.$emit('change', value, this.name);
+                this.search_parameters.date = value;
+                this.$emit('search', this.search_parameters);
             }
         },
     },

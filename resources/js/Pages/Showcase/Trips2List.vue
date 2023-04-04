@@ -3,7 +3,7 @@
         <div class="ap-showcase__search" v-if="items !== null && items.length > 0">
             <div class="ap-showcase__search-item" :class="`ap-showcase__search-item-`+key" v-for="(date, key) in items">
                 <Showcase2InputCheckbox v-model="checked"
-                                        :checked="checked === date.date"
+                                        :ischecked="checked === date.date"
                                         :title="date.title"
                                         :description="date.description"
                                         :value="date.date"
@@ -14,8 +14,9 @@
                                :from="date_from"
                                :to="date_to"
                                :dates="dates"
-                               :checked="!items.map(i => i['date']).includes(checked)"
+                               :ischecked="!items.map(i => i['date']).includes(checked)"
                                :original="date_filter"
+                               @search="search"
                                ref="date">
             </ShowcaseRadioDate>
         </div>

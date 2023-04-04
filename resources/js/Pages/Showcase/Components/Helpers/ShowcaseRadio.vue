@@ -1,5 +1,5 @@
 <template>
-    <label class="ap-checkbox" :class="checked ? 'ap-checkbox__checked' : ''">
+    <label class="ap-checkbox" :class="ischecked ? 'ap-checkbox__checked' : ''">
         <input class="ap-checkbox__input" type="radio"
                v-model="proxyValue"
                :value="value"
@@ -10,8 +10,8 @@
 <!--        </span>-->
 
         <span class="ap-checkbox__block">
-            <span class="ap-checkbox__title" :class="checked ? 'ap-checkbox__title__checked' : ''">{{ this.title }}</span>
-            <span class="ap-checkbox__description" :class="checked ? 'ap-checkbox__description__checked' : ''">{{ this.description }}</span>
+            <span class="ap-checkbox__title" :class="ischecked ? 'ap-checkbox__title__checked' : ''">{{ this.title }}</span>
+            <span class="ap-checkbox__description" :class="ischecked ? 'ap-checkbox__description__checked' : ''">{{ this.description }}</span>
         </span>
     </label>
 </template>
@@ -28,7 +28,8 @@ export default {
         title: {type: [String], default: null},
         description: {type: [String], default: null},
         valid: {type: Boolean, default: true},
-        checked: {type: Boolean, default: false},
+        checked: {type: String, default: null},
+        ischecked: {type: Boolean, default: false},
         disabled: {type: Boolean, default: false},
         small: {type: Boolean, default: false},
     },
@@ -167,9 +168,9 @@ export default {
         }
         &__title {
             color: $showcase_text_color;
-            text-transform: none;
+            text-transform: capitalize;
             font-family: $showcase_font;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 400;
 
             &__checked {
