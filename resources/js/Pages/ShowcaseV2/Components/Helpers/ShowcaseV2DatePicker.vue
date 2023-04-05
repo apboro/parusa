@@ -22,7 +22,7 @@
                     'ap-date-picker__calendar-item-current': item['current'],
                     'ap-date-picker__calendar-item-selected': item['selected'],
                   }, item['class']]"
-                  @click="calendarSelect(item['value'], item['enabled'], item['month'])"
+                  @click="!item['sibling'] ? calendarSelect(item['value'], item['enabled'], item['month']) : null"
                   v-html="item['caption']"
             ></span>
         </div>
@@ -365,7 +365,9 @@ export default {
             }
 
             &-sibling:not(&-disabled):not(&-selected) {
-                opacity: 0.6;
+                color: $showcase_disabled_color;
+                opacity: 0.4;
+                cursor: default;
             }
 
             &-current {
@@ -384,6 +386,12 @@ export default {
                 color: $showcase_white_color !important;
                 background-color: $showcase_primary_hover_color;
                 opacity: 1;
+            }
+
+            &-sibling:not(&-disabled):not(&-selected):hover {
+                color: $showcase_text_color !important;
+                background-color: transparent !important;
+                opacity: 0.4;
             }
         }
 
