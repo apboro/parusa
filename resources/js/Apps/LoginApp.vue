@@ -113,7 +113,7 @@ body {
     flex-direction: column;
     align-items: center;
     width: 725px;
-    height: 847.2px;
+    height: auto;
     box-sizing: border-box;
     padding: 100px;
     position: relative;
@@ -121,6 +121,7 @@ body {
     border: 5px solid #23AAA1;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.25);
     border-radius: 50px;
+    transform: scale(0.7);
 
     .input-field__title {
         font-weight: 400;
@@ -227,9 +228,8 @@ body {
 @media (max-width: 767px) {
     .login {
         width: 100%;
-        padding: 20px;
-        border: none;
-        box-shadow: none;
+        padding: 40px 20px;
+        border-radius: 0px;
 
         .input-field__title {
             font-size: 16px;
