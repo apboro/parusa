@@ -77,28 +77,30 @@ class ShowcaseV2InitController extends ApiController
 
         $items = [];
 
-        foreach (array_chunk($tripsDates, 4)[0] as $date) {
-            /** @var Carbon $date */
-            $diff = $today->diffInDays($date);
-            switch ($diff) {
-                case 0:
-                    $title = 'Сегодня';
-                    break;
-                case 1:
-                    $title = 'Завтра';
-                    break;
-                case 2:
-                    $title = 'Послезавтра';
-                    break;
-                default:
-                    $title = $date->translatedFormat('l');
-            }
+        if (count($tripsDates)) {
+            foreach (array_chunk($tripsDates, 4)[0] as $date) {
+                /** @var Carbon $date */
+                $diff = $today->diffInDays($date);
+                switch ($diff) {
+                    case 0:
+                        $title = 'Сегодня';
+                        break;
+                    case 1:
+                        $title = 'Завтра';
+                        break;
+                    case 2:
+                        $title = 'Послезавтра';
+                        break;
+                    default:
+                        $title = $date->translatedFormat('l');
+                }
 
-            $items[] = [
-                'title' => $title,
-                'description' => "$date->day {$date->translatedFormat('F')}",
-                'date' => $date->format('Y-m-d'),
-            ];
+                $items[] = [
+                    'title' => $title,
+                    'description' => "$date->day {$date->translatedFormat('F')}",
+                    'date' => $date->format('Y-m-d'),
+                ];
+            }
         }
 
         $checked = count($tripsDates) > 0 ? $tripsDates[0]->format('Y-m-d') : null;

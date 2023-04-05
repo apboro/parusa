@@ -46,8 +46,8 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
         $listQuery = Trip::saleTripQuery($partnerId === null)
             ->with(['status', 'startPier', 'ship', 'excursion', 'excursion.info', 'excursion.programs'])
             ->when(!empty($excursionsIDs), function (Builder $query) use ($excursionsIDs) {
-                $query->whereHas('excursions', function (Builder $builder) use ($excursionsIDs) {
-                    $builder->whereIn('excursions.id', $excursionsIDs);
+                $query->whereHas('excursion', function (Builder $builder) use ($excursionsIDs) {
+                    $builder->whereIn('id', $excursionsIDs);
                 });
             })
             ->orderBy('trips.start_at');

@@ -143,10 +143,9 @@ export default {
         } else {
             this.options.partner = config !== null && typeof config['partner'] !== "undefined" && config['partner'] !== null ? Number(config['partner']) : null;
         }
-        console.log('urlParams');
-        console.log(urlParams.has('excursions'));
-        if (urlParams.has('excursions')) {
-            this.options.excursions = urlParams.get('excursions');
+
+        if (urlParams.has('excursions[]')) {
+            this.options.excursions = urlParams.getAll('excursions[]');
         }
         this.options.media = urlParams.get('media');
 
@@ -316,11 +315,11 @@ export default {
         selectTrip(trip_id) {
             let url = new URL(window.location.href);
             if (trip_id !== null) {
-                url = url + '&ap-tid=' + trip_id;
-                // url.searchParams.set('ap-tid', trip_id);
+                // url = url + '&ap-tid=' + trip_id;
+                url.searchParams.set('ap-tid', trip_id);
             } else {
-                url = this.removeParam("ap-tid", url);
-                // url.searchParams.delete('ap-tid');
+                // url = this.removeParam("ap-tid", url);
+                url.searchParams.delete('ap-tid');
             }
 
             if (trip_id !== this.trip_id) {
