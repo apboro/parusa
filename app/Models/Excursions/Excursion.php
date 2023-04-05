@@ -58,11 +58,6 @@ class Excursion extends Model implements Statusable, AsDictionary
         return $this->hasOne(ExcursionStatus::class, 'id', 'status_id');
     }
 
-    public function trips(): hasMany
-    {
-        return $this->hasMany(Trip::class, 'excursion_id', 'id');
-    }
-
     /**
      * All trips for this excursion
      *

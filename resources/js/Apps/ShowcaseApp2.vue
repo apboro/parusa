@@ -215,7 +215,7 @@ export default {
          */
         init() {
             return new Promise((resolve, reject) => {
-                axios.post(this.url('/showcase/init2'), {
+                axios.post(this.url('/showcase_v2/init'), {
                     is_partner: this.options.is_partner_page,
                     partner_id: this.options.partner,
                     excursions: this.options.excursions,
@@ -275,7 +275,7 @@ export default {
                 this.last_search = (this.last_search === null) ? {date: this.search_options.checked ?? this.today} : this.last_search;
             }
             this.trips.is_loading = true;
-            axios.post(this.url('/showcase/trips2'), {
+            axios.post(this.url('/showcase_v2/trips'), {
                 search: this.last_search,
                 excursion_id: this.excursion_id,
                 excursions: this.options.excursions,
@@ -354,7 +354,7 @@ export default {
          */
         getTrip(trip_id) {
             this.trip.is_loading = true;
-            axios.post(this.url('/showcase/trip'), {id: trip_id}, {headers: {'X-Ap-External-Session': this.session}})
+            axios.post(this.url('/showcase_v2/trip'), {id: trip_id}, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     this.trip.data = response.data['trip'];
                 })
@@ -373,7 +373,7 @@ export default {
          */
         getOrderInfo(order_secret) {
             this.order.is_loading = true;
-            axios.post(this.url('/showcase/order/info'), {secret: order_secret}, {headers: {'X-Ap-External-Session': this.session}})
+            axios.post(this.url('/showcase_v2/order/info'), {secret: order_secret}, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     this.order.data = response.data['order'];
                 })

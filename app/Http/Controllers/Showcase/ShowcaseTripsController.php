@@ -7,8 +7,6 @@ use App\Http\Middleware\ExternalProtect;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\TicketGrade;
-use App\Models\Dictionaries\TripSaleStatus;
-use App\Models\Dictionaries\TripStatus;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
@@ -154,8 +152,7 @@ class ShowcaseTripsController extends ApiController
 
         $date = $request->input('search.date');
         $persons = $request->input('search.persons');
-        $excursionsIDs = $request->input('excursions') !== null ? explode(',', $request->input('excursions')) : null;
-//        dd($request);
+
         if ($date === null) {
             return response()->json(['message' => 'Не задана дата'], 500);
         }
@@ -278,10 +275,9 @@ class ShowcaseTripsController extends ApiController
                 'excursion' => $trip->excursion->name,
                 'excursion_id' => $trip->excursion_id,
                 'duration' => $trip->excursion->info->duration,
-//                'images' => $trip->excursion->images->map(function (Image $image) {
-//                    return $image->url;
-//                }),
-                'images' => null,
+                'images' => $trip->excursion->images->map(function (Image $image) {
+                    return $image->url;
+                }),
                 'rates' => array_values($rates->toArray()),
             ],
         ]);
