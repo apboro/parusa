@@ -1,11 +1,10 @@
 {
-    "/js/login.js": "/js/login.js",
-    "/js/admin.js": "/js/admin.js",
-    "/js/partner.js": "/js/partner.js",
-    "/js/terminal.js": "/js/terminal.js",
-    "/js/showcase.js": "/js/showcase.js",
-    "/js/showcase2.js": "/js/showcase2.js",
-    "/js/checkout.js": "/js/checkout.js",
-    "/css/app.css": "/css/app.css",
-    "/css/select.css": "/css/select.css"
+    "/js/login.js": "/js/login.js?id=79c9ae283611c3342227be3706541af0",
+    "/js/admin.js": "/js/admin.js?id=2cb3e5acb54a06ffa138929695bed311",
+    "/js/partner.js": "/js/partner.js?id=9a999868b12dd94f2ecbf20523e0bce6",
+    "/js/terminal.js": "/js/terminal.js?id=a8a5e916591e81fbaef67ce7262a0280",
+    "/js/showcase.js": "/js/showcase.js?id=16fcc7bf593c3b39de3e38e77ad640d6",
+    "/js/checkout.js": "/js/checkout.js?id=4a2170139eec4c7b76fef4de4f87b6aa",
+    "/css/app.css": "/css/app.css?id=ca52b48e4aedb1c459a8436ceefd6b47",
+    "/css/select.css": "/css/select.css?id=d5046275a46eec817517768616450513"
 }

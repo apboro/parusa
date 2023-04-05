@@ -18,4 +18,5 @@ class CookieKeys
     public const reserves_registry_list = 'reserves_registry_list';
     public const terminals_list = 'terminals_list';
     public const statistics_sales_list = 'statistics_sales_list';
+    public const qr_codes_list = 'qr_codes_list';
 }
