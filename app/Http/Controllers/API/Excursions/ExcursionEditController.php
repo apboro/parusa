@@ -96,7 +96,7 @@ class ExcursionEditController extends ApiEditController
         }
 
         $excursion->setAttribute('name', $data['name']);
-        $excursion->setAttribute('only_site', $data['only_site']);
+        $excursion->setAttribute('only_site', $data['only_site'] ?? false);
         $excursion->setStatus($data['status_id'], false);
         $excursion->save();
 
