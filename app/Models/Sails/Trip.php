@@ -6,6 +6,7 @@ use App\Exceptions\Trips\WrongTripDiscountStatusException;
 use App\Exceptions\Trips\WrongTripSaleStatusException;
 use App\Exceptions\Trips\WrongTripStatusException;
 use App\Interfaces\Statusable;
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TripDiscountStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
@@ -18,6 +19,7 @@ use App\Models\Tickets\TicketsRatesList;
 use App\Settings;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -263,5 +265,38 @@ class Trip extends Model implements Statusable
     public function chains(): BelongsToMany
     {
         return $this->belongsToMany(TripChain::class, 'trip_chain_has_trip', 'trip_id', 'chain_id');
+    }
+
+    /**
+     * Actual trips query for sale parts.
+     *
+     * @param bool $forRootSite
+     *
+     * @return  Builder
+     */
+    public static function saleTripQuery(bool $forRootSite = false): Builder
+    {
+        return Trip::query()
+            ->where('start_at', '>', Carbon::now())
+            ->whereIn('status_id', [TripStatus::regular])
+            ->whereIn('sale_status_id', [TripSaleStatus::selling])
+            ->whereHas('excursion.ratesLists', function (Builder $query) use ($forRootSite) {
+                $query
+                    ->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
+                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
+                    ->whereHas('rates', function (Builder $query) use ($forRootSite) {
+                        $query->where('grade_id', '!=', TicketGrade::guide);
+                        if ($forRootSite) {
+                            $query->where('site_price', '>', 0);
+                        } else {
+                            $query->where('base_price', '>', 0);
+                        }
+                    });
+            })
+            ->when(!$forRootSite, function (Builder $query) {
+                $query->whereHas('excursion', function (Builder $query) {
+                    $query->where('only_site', false);
+                });
+            });
     }
 }

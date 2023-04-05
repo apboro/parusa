@@ -34,4 +34,5 @@ Route::post('/partners/details', [PartnerDetailsController::class, 'get'])->midd
 
 Route::post('/partners/partner/info', [PartnerInfoController::class, 'get'])->middleware(['allow:partner']);
 Route::post('/partners/partner/settings', [PartnerSettingsController::class, 'settings'])->middleware(['allow:partner']);
+Route::post('/partners/partner/settings/widget', [PartnerSettingsController::class, 'widget'])->middleware(['allow:partner']);
 Route::post('/partners/partner/settings/qr', [PartnerSettingsController::class, 'qr'])->middleware(['allow:partner']);

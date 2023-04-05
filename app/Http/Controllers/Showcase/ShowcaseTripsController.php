@@ -52,7 +52,7 @@ class ShowcaseTripsController extends ApiController
 
         $excursionId = $request->input('excursion_id');
 
-        $listQuery = $this->baseTripQuery($partnerId === null)
+        $listQuery = Trip::saleTripQuery($partnerId === null)
             ->with(['status', 'startPier', 'ship', 'excursion', 'excursion.info', 'excursion.programs'])
             ->when($partnerId, function (Builder $query) use ($partnerId) {
                 $query->whereHas('excursion', function (Builder $query) use ($partnerId) {
@@ -161,7 +161,7 @@ class ShowcaseTripsController extends ApiController
         $id = $request->input('id');
 
         /** @var Trip $trip */
-        $trip = $this->baseTripQuery($partnerId === null)
+        $trip = Trip::saleTripQuery($partnerId === null)
             ->where('id', $id)
             ->with(['startPier', 'excursion', 'excursion.info', 'excursion.programs'])
             ->first();
@@ -204,38 +204,5 @@ class ShowcaseTripsController extends ApiController
                 'rates' => array_values($rates->toArray()),
             ],
         ]);
-    }
-
-    /**
-     * Actual trips query.
-     *
-     * @param bool $forRootSite
-     *
-     * @return  Builder
-     */
-    protected function baseTripQuery(bool $forRootSite = false): Builder
-    {
-        return Trip::query()
-            ->where('start_at', '>', Carbon::now())
-            ->whereIn('status_id', [TripStatus::regular])
-            ->whereIn('sale_status_id', [TripSaleStatus::selling])
-            ->whereHas('excursion.ratesLists', function (Builder $query) use ($forRootSite) {
-                $query
-                    ->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
-                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
-                    ->whereHas('rates', function (Builder $query) use ($forRootSite) {
-                        $query->where('grade_id', '!=', TicketGrade::guide);
-                        if ($forRootSite) {
-                            $query->where('site_price', '>', 0);
-                        } else {
-                            $query->where('base_price', '>', 0);
-                        }
-                    });
-            })
-            ->when(!$forRootSite, function (Builder $query) {
-                $query->whereHas('excursion', function (Builder $query) {
-                    $query->where('only_site', false);
-                });
-            });
     }
 }
