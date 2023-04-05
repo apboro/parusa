@@ -278,10 +278,9 @@ class ShowcaseTripsController extends ApiController
                 'excursion' => $trip->excursion->name,
                 'excursion_id' => $trip->excursion_id,
                 'duration' => $trip->excursion->info->duration,
-//                'images' => $trip->excursion->images->map(function (Image $image) {
-//                    return $image->url;
-//                }),
-                'images' => null,
+                'images' => $trip->excursion->images->map(function (Image $image) {
+                    return $image->url;
+                }),
                 'rates' => array_values($rates->toArray()),
             ],
         ]);
