@@ -22,7 +22,7 @@
                     'ap-date-picker__calendar-item-current': item['current'],
                     'ap-date-picker__calendar-item-selected': item['selected'],
                   }, item['class']]"
-                  @click="!item['sibling'] ? calendarSelect(item['value'], item['enabled'], item['month']) : null"
+                  @click="calendarSelect(item['value'], item['enabled'], item['month'])"
                   v-html="item['caption']"
             ></span>
         </div>
@@ -34,7 +34,6 @@
 <script>
 import IconBackward from "@/Components/Icons/IconBackward";
 import IconForward from "@/Components/Icons/IconForward";
-import moment from "moment";
 
 export default {
     emits: ['selected'],
@@ -123,8 +122,7 @@ export default {
                     let month = firstDayOfWeek === 1 ? 0 : -1;
 
                     for (let i = 0; i < 42; i++) {
-                        let newDate = new Date(this.selected.year + '-' + (this.selected.month + 1) + '-' + day);
-                        let formattedDate = moment(newDate).format('YYYY-MM-DD');
+                        let formattedDate = this.selected.year + '-' + String(this.selected.month + 1 + month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
                         list[i] = {
                             value: day,
                             month: month,
@@ -365,9 +363,7 @@ export default {
             }
 
             &-sibling:not(&-disabled):not(&-selected) {
-                color: $showcase_disabled_color;
-                opacity: 0.4;
-                cursor: default;
+                opacity: 0.6;
             }
 
             &-current {
@@ -386,12 +382,6 @@ export default {
                 color: $showcase_white_color !important;
                 background-color: $showcase_primary_hover_color;
                 opacity: 1;
-            }
-
-            &-sibling:not(&-disabled):not(&-selected):hover {
-                color: $showcase_text_color !important;
-                background-color: transparent !important;
-                opacity: 0.4;
             }
         }
 
