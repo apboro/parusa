@@ -133,6 +133,9 @@ export default {
             if (typeof config['excursion_id'] !== "undefined" && typeof config['excursion_id'] === 'number') {
                 this.excursion_id = config['excursion_id'];
             }
+            if (typeof config['excursions'] !== "undefined" && typeof config['excursions'] === 'object') {
+                this.options.excursions = config['excursions'];
+            }
             this.crm_url_override = config['crm_url_override'];
         }
 
