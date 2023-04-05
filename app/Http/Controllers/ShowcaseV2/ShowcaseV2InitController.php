@@ -70,7 +70,6 @@ class ShowcaseV2InitController extends ApiController
             ->orderBy('start_at')
             ->select(DB::raw('DATE(start_at) start_at'))
             ->groupBy(DB::RAW('DATE(start_at)'))
-            ->limit(4)
             ->pluck('start_at')
             ->toArray();
 
@@ -78,7 +77,7 @@ class ShowcaseV2InitController extends ApiController
 
         $items = [];
 
-        foreach ($tripsDates as $date) {
+        foreach (array_chunk($tripsDates, 4)[0] as $date) {
             /** @var Carbon $date */
             $diff = $today->diffInDays($date);
             switch ($diff) {
@@ -109,7 +108,9 @@ class ShowcaseV2InitController extends ApiController
             'programs' => $programs->toArray(),
             'date_from' => $checked,
             'date_to' => null,
-            'dates' => $tripsDates,
+            'dates' => array_map(function (Carbon $date) {
+                return $date->format('Y-m-d');
+            }, $tripsDates),
             'items' => $items,
             'checked' => $checked,
         ], 200, [ExternalProtect::HEADER_NAME => Crypt::encrypt(json_encode($originalKey, JSON_THROW_ON_ERROR))]);
