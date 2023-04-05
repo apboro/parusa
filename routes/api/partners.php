@@ -13,7 +13,6 @@ use App\Http\Controllers\API\Partners\PartnerViewController;
 use App\Http\Controllers\Storage\PartnerDocumentController;
 use Illuminate\Support\Facades\Route;
 
-
 Route::post('/partners', [PartnersListController::class, 'list'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 
 Route::post('/partners/view', [PartnerViewController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
@@ -34,4 +33,5 @@ Route::post('/partners/details', [PartnerDetailsController::class, 'get'])->midd
 
 Route::post('/partners/partner/info', [PartnerInfoController::class, 'get'])->middleware(['allow:partner']);
 Route::post('/partners/partner/settings', [PartnerSettingsController::class, 'settings'])->middleware(['allow:partner']);
+Route::post('/partners/partner/settings/widget', [PartnerSettingsController::class, 'widget'])->middleware(['allow:partner']);
 Route::post('/partners/partner/settings/qr', [PartnerSettingsController::class, 'qr'])->middleware(['allow:partner']);

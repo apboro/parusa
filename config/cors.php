@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'checkout/*', 'showcase/*', 'qrlink/*'],
+    'paths' => ['api/*', 'checkout/*'],
 
     'allowed_methods' => ['POST'],
 
-    'allowed_origins' => ['http://127.0.0.1:8000', 'https://parusa.opxx.ru', 'https://cp.parus-a.ru', 'https://parus-a.ru'],
+    'allowed_origins' => ['http://127.0.0.1:8000', 'https://parusa.opxcx.ru', 'https://cp.parus-a.ru', 'https://parus-a.ru'],
 
     'allowed_origins_patterns' => [],
 

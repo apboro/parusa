@@ -1,0 +1,110 @@
+<template>
+    <ShowcaseV2PopUp :title="title" ref="popup">
+        <div class="ap-showcase__text">
+            <div class="ap-showcase__text-image" v-if="info.data['images'][0]">
+                <ShowcaseV2Gallery :images="[info.data['images'][0]]" :alt="info.data['name']"/>
+            </div>
+            <div class="ap-showcase__text-paragraph" v-for="paragraph in description">{{ paragraph }}</div>
+
+            <div class="ap-showcase__title">Карта маршрута</div>
+
+            <ShowcaseV2Gallery class="ap-showcase__gallery_pt" v-if="info.data['map_images'] && info.data['map_images'][0]" :images="[info.data['map_images'][0]]"
+                             :alt="info.data['name']"/>
+        </div>
+    </ShowcaseV2PopUp>
+</template>
+
+<script>
+import data from "@/Core/Data";
+import ShowcaseV2PopUp from "@/Pages/ShowcaseV2/Components/ShowcaseV2PopUp";
+import IconArrowRight from "@/Components/Icons/IconArrowRight";
+import ShowcaseV2Gallery from "@/Pages/ShowcaseV2/Components/ShowcaseV2Gallery";
+
+export default {
+    props: {
+        crm_url: {type: String, default: 'https://cp.parus-a.ru'},
+        debug: {type: Boolean, default: false},
+        session: {type: String, default: null},
+    },
+
+    components: {
+        ShowcaseV2Gallery,
+        IconArrowRight,
+        ShowcaseV2PopUp,
+    },
+
+    computed: {
+        title() {
+            return 'Экскурсия — ' + this.info.data['name'];
+        },
+        description() {
+            return typeof this.info.data['description'] !== "undefined" && this.info.data['description'] !== null ? this.info.data['description'].split('\n') : [];
+        },
+    },
+
+    data: () => ({
+        info: data('/showcase/excursion'),
+    }),
+
+    methods: {
+        show(id) {
+            this.info.url = this.url('/showcase/excursion');
+            this.info.reset();
+            this.$refs.popup.show();
+            this.$refs.popup.process(true);
+            this.info.load({id: id}, {'X-Ap-External-Session': this.session})
+                .finally(() => {
+                    this.$refs.popup.process(false);
+                })
+        },
+        url(path) {
+            return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
+        },
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+@import "../variables";
+$showcase_font: Gilroy;
+$showcase_text_color: #2e2e2e !default;
+
+.ap-showcase__title {
+    font-family: $showcase_font;
+    margin: 20px 0;
+    font-size: 20px;
+    color: $showcase_link_color;
+    font-weight: bold;
+    clear: both;
+}
+
+.ap-showcase__text {
+    font-family: $showcase_font;
+    color: $showcase_text_color;
+    font-size: 16px;
+    margin: 0 0 10px 0;
+    line-height: 22px;
+
+    &-image {
+        float: left;
+        width: 400px;
+        margin: 0 30px 15px 0;
+    }
+
+    &-paragraph {
+        margin-bottom: 10px;
+    }
+}
+
+.ap-showcase__gallery_pt {
+    margin-top: 30px;
+}
+
+@media screen and (max-width: 800px) {
+    .ap-showcase__text {
+        &-image {
+            width: 100%;
+        }
+    }
+}
+</style>

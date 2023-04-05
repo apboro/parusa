@@ -7,8 +7,6 @@ use App\Http\Middleware\ExternalProtect;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\TicketGrade;
-use App\Models\Dictionaries\TripSaleStatus;
-use App\Models\Dictionaries\TripStatus;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
@@ -44,6 +42,7 @@ class ShowcaseTripsController extends ApiController
         $date = $request->input('search.date');
         $persons = $request->input('search.persons');
         $programs = $request->input('search.programs');
+        $excursionsIDs = $request->input('excursions') !== null ? explode(',', $request->input('excursions')) : null;
 
         if ($date === null) {
             return response()->json(['message' => 'Не задана дата'], 500);
@@ -52,7 +51,7 @@ class ShowcaseTripsController extends ApiController
 
         $excursionId = $request->input('excursion_id');
 
-        $listQuery = $this->baseTripQuery($partnerId === null)
+        $listQuery = Trip::saleTripQuery($partnerId === null)
             ->with(['status', 'startPier', 'ship', 'excursion', 'excursion.info', 'excursion.programs'])
             ->when($partnerId, function (Builder $query) use ($partnerId) {
                 $query->whereHas('excursion', function (Builder $query) use ($partnerId) {
@@ -139,6 +138,84 @@ class ShowcaseTripsController extends ApiController
         ]);
     }
 
+    public function trips2(Request $request): JsonResponse
+    {
+        $originalKey = $request->header(ExternalProtect::HEADER_NAME);
+
+        try {
+            $originalKey = $originalKey ? json_decode(Crypt::decrypt($originalKey), true, 512, JSON_THROW_ON_ERROR) : null;
+        } catch (Exception $exception) {
+            return response()->json(['message' => 'Ошибка сессии.'], 400);
+        }
+
+        $partnerId = $originalKey['partner_id'] ?? null;
+
+        $date = $request->input('search.date');
+        $persons = $request->input('search.persons');
+
+        if ($date === null) {
+            return response()->json(['message' => 'Не задана дата'], 500);
+        }
+        $date = Carbon::parse($date);
+
+        $listQuery = $this->baseTripQuery($partnerId === null)
+            ->with(['status', 'startPier', 'ship', 'excursion', 'excursion.info', 'excursion.programs'])
+            ->orderBy('trips.start_at');
+
+        $listQueryDup = $listQuery->clone();
+
+        $trips = $listQuery
+            ->where('trips.start_at', '>=', $date)
+            ->where('trips.start_at', '<=', $date->clone()->addDay()->setTime(4, 30))
+            ->get();
+
+        if ($persons) {
+            $trips = $trips->filter(function (Trip $trip) use ($persons) {
+                return $trip->tickets_total - $trip->getAttribute('tickets_count') >= $persons;
+            });
+        }
+
+        if ($trips->count() === 0) {
+            $next = $listQueryDup
+                ->where('trips.start_at', '>=', $date)
+                ->oldest('trips.start_at')
+                ->value('trips.start_at');
+            $next = $next ? Carbon::parse($next) : null;
+        }
+
+        $trips = $trips->map(function (Trip $trip) use ($partnerId) {
+            /** @var TicketsRatesList $rateList */
+            $rateList = $trip->excursion->ratesLists->first();
+            /** @var TicketRate $adult */
+            $adult = $rateList->rates->where('grade_id', TicketGrade::adult)->first();
+            $adultPrice = $partnerId === null ? $adult->site_price : $adult->base_price;
+
+            return [
+                'id' => $trip->id,
+                'start_time' => $trip->start_at->format('H:i'),
+                'start_date' => $trip->start_at->translatedFormat('j F Y') . ' г.',
+                'pier' => $trip->startPier->name,
+                'pier_id' => $trip->start_pier_id,
+                'ship' => $trip->ship->name,
+                'excursion' => $trip->excursion->name,
+                'excursion_id' => $trip->excursion_id,
+                'programs' => $trip->excursion->programs->map(function (ExcursionProgram $program) {
+                    return $program->name;
+                }),
+                'duration' => $trip->excursion->info->duration,
+                'price' => $adultPrice ?? null,
+                'status' => $trip->status->name,
+            ];
+        });
+
+        return response()->json([
+            'date' => $date->translatedFormat('j F Y') . ' г.',
+            'trips' => array_values($trips->toArray()),
+            'next_date' => isset($next) ? $next->format('Y-m-d') : null,
+            'next_date_caption' => isset($next) ? $next->translatedFormat('j F Y') . ' г.' : null,
+        ]);
+    }
+
     /**
      * Get trip info for showcase application.
      *
@@ -161,7 +238,7 @@ class ShowcaseTripsController extends ApiController
         $id = $request->input('id');
 
         /** @var Trip $trip */
-        $trip = $this->baseTripQuery($partnerId === null)
+        $trip = Trip::saleTripQuery($partnerId === null)
             ->where('id', $id)
             ->with(['startPier', 'excursion', 'excursion.info', 'excursion.programs'])
             ->first();
@@ -204,38 +281,5 @@ class ShowcaseTripsController extends ApiController
                 'rates' => array_values($rates->toArray()),
             ],
         ]);
-    }
-
-    /**
-     * Actual trips query.
-     *
-     * @param bool $forRootSite
-     *
-     * @return  Builder
-     */
-    protected function baseTripQuery(bool $forRootSite = false): Builder
-    {
-        return Trip::query()
-            ->where('start_at', '>', Carbon::now())
-            ->whereIn('status_id', [TripStatus::regular])
-            ->whereIn('sale_status_id', [TripSaleStatus::selling])
-            ->whereHas('excursion.ratesLists', function (Builder $query) use ($forRootSite) {
-                $query
-                    ->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
-                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
-                    ->whereHas('rates', function (Builder $query) use ($forRootSite) {
-                        $query->where('grade_id', '!=', TicketGrade::guide);
-                        if ($forRootSite) {
-                            $query->where('site_price', '>', 0);
-                        } else {
-                            $query->where('base_price', '>', 0);
-                        }
-                    });
-            })
-            ->when(!$forRootSite, function (Builder $query) {
-                $query->whereHas('excursion', function (Builder $query) {
-                    $query->where('only_site', false);
-                });
-            });
     }
 }
