@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Partners;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Excursions\Excursion;
 use App\Models\User\Helpers\Currents;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;

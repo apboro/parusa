@@ -22,7 +22,7 @@
                            :session="session"
                            @select="selectTrip"
             />
-            <Trips2List v-else
+            <TripsV2List v-else
                 :date_from="search_options.date_from"
                 :date_to="search_options.date_to"
                 :programs="search_options.programs"
@@ -52,7 +52,7 @@ import ShowcaseMessage from "@/Pages/Showcase/Components/ShowcaseMessage";
 import ShowcaseLoadingProgress from "@/Pages/Showcase/Components/ShowcaseLoadingProgress";
 import TicketsSelect from "@/Pages/Showcase/TicketsSelect";
 import OrderInfo from "@/Pages/Showcase/OrderInfo";
-import Trips2List from "@/Pages/Showcase/Trips2List.vue";
+import TripsV2List from "@/Pages/ShowcaseV2/TripsV2List.vue";
 
 export default {
     props: {
@@ -61,7 +61,7 @@ export default {
     },
 
     components: {
-        Trips2List,
+        TripsV2List,
         OrderInfo,
         TicketsSelect,
         ShowcaseLoadingProgress,
@@ -143,6 +143,8 @@ export default {
         } else {
             this.options.partner = config !== null && typeof config['partner'] !== "undefined" && config['partner'] !== null ? Number(config['partner']) : null;
         }
+        console.log('urlParams');
+        console.log(urlParams.has('excursions'));
         if (urlParams.has('excursions')) {
             this.options.excursions = urlParams.get('excursions');
         }
