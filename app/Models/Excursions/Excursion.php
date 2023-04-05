@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection $tripImages
  * @property Collection $ratesLists
  * @property Collection $partnerShowcaseHide
+ * @property Collection<Trip> $trips
  */
 class Excursion extends Model implements Statusable, AsDictionary
 {
@@ -57,6 +58,16 @@ class Excursion extends Model implements Statusable, AsDictionary
         return $this->hasOne(ExcursionStatus::class, 'id', 'status_id');
     }
 
+    public function trips(): hasMany
+    {
+        return $this->hasMany(Trip::class, 'excursion_id', 'id');
+    }
+
+    /**
+     * All trips for this excursion
+     *
+     * @return HasMany
+     */
     public function trips(): hasMany
     {
         return $this->hasMany(Trip::class, 'excursion_id', 'id');

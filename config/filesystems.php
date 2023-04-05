@@ -56,6 +56,13 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/fiscal'),
         ],
+        'qrcodes' => [
+            'driver' => 'local',
+            'root' => storage_path('app/qrcodes'),
+            'url' => '/storage/qrcodes',
+            'visibility'=>'public'
+        ],
+
 
         's3' => [
             'driver' => 's3',
@@ -83,6 +90,7 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('storage/qrcodes') => storage_path('app/qrcodes'),
     ],
 
 ];

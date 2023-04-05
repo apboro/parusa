@@ -11,8 +11,9 @@
         <div class="login__actions">
             <GuiButton @clicked="login">Войти</GuiButton>
         </div>
-        <div class="login__actions">
-            <span class="link" @click="forgot">Забыл пароль</span>
+        <div class="login__divider"></div>
+        <div class="">
+            <span class="link" @click="forgot">Забыли пароль?</span>
         </div>
     </div>
 </template>
@@ -111,31 +112,99 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 400px;
-    box-shadow: $shadow_1;
-    background-color: #fff;
-    border-radius: 3px;
+    width: 725px;
+    height: 847.2px;
     box-sizing: border-box;
-    padding: 30px;
+    padding: 100px;
+    position: relative;
+    background: #FFFFFF;
+    border: 5px solid #23AAA1;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.25);
+    border-radius: 50px;
+
+    .input-field__title {
+        font-weight: 400;
+        font-size: 30px;
+        line-height: 38px;
+        color: #000000;
+        width: auto;
+    }
 
     &__logo {
         width: 100%;
         height: auto;
+
+        img {
+            width: 100%;
+        }
     }
 
     &__divider {
         width: 100%;
-        border-bottom: 1px solid #d9d9d9;
-        margin: 20px 0;
+        border-bottom: 1px solid #959595;
+        margin: 50px 0;
+    }
+
+    &__form {
+        margin-top: 25px;
+
+        .input-field__wrapper {
+            flex-grow: unset;
+        }
+
+        .input-field__required .input-field__title:after {
+            display: none;
+        }
+
+        .input-wrapper {
+            border: 1px solid #959595;
+            border-radius: 5px;
+        }
+
+        .input-field {
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .input-field__input {
+            width: 381px;
+        }
+
+        .input-string {
+            height: 58px;
+
+            &__input {
+                height: 58px;
+            }
+        }
     }
 
     &__actions {
         margin-top: 15px;
         text-align: center;
+
+        .button {
+            padding: 15px 25px;
+            width: 150px;
+            height: 67px;
+            background: #23AAA1;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 30px;
+            line-height: 37px;
+            color: #FFFFFF;
+            text-transform: none;
+            border: none;
+        }
     }
 
-    .input-field__title {
-        width: 80px;
+    .link {
+        font-weight: 400;
+        font-size: 30px;
+        line-height: 38px;
+        text-align: center;
+        text-decoration-line: underline;
+        color: #000000;
     }
 }
 
@@ -152,6 +221,44 @@ body {
 
     &:hover {
         color: $base_primary_hover_color;
+    }
+}
+
+@media (max-width: 767px) {
+    .login {
+        width: 100%;
+        padding: 20px;
+        border: none;
+        box-shadow: none;
+
+        .input-field__title {
+            font-size: 16px;
+        }
+
+        &__form {
+
+            .input-field__wrapper {
+                width: 70%;
+            }
+
+            .input-field__input {
+                width: 100%;
+            }
+        }
+
+        &__actions {
+
+            .button {
+                font-size: 20px;
+                height: auto;
+                padding: 10px 20px;
+            }
+        }
+
+        .link {
+            font-size: 24px;
+        }
+
     }
 }
 </style>
