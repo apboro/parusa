@@ -115,7 +115,7 @@ export default {
             data: null,
         },
 
-        autoload: false,
+        autoload: true,
         excursion_id: null,
     }),
 
