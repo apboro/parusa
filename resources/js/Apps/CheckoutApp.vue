@@ -34,7 +34,7 @@ import CheckoutButton from "@/Pages/Checkout/Components/CheckoutButton";
 
 export default {
     props: {
-        crm_url: {type: String, default: 'https://cp.parus-a.ru'},
+        crm_url: {type: String, default: 'https://lk.excurr.ru'},
         debug: {type: Boolean, default: false},
     },
 
