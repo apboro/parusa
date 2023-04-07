@@ -53,7 +53,7 @@ import OrderInfo from "@/Pages/Showcase/OrderInfo";
 
 export default {
     props: {
-        crm_url: {type: String, default: 'https://cp.parus-a.ru'},
+        crm_url: {type: String, default: 'https://lk.excurr.ru'},
         debug: {type: Boolean, default: false},
     },
 

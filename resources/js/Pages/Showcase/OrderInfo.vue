@@ -53,7 +53,7 @@ export default {
         isLoading: {type: Boolean, default: false},
         orderData: {type: Object, default: null},
         secret: {type: String, default: null},
-        crm_url: {type: String, default: 'https://cp.parus-a.ru'},
+        crm_url: {type: String, default: 'https://lk.excurr.ru'},
         debug: {type: Boolean, default: false},
         session: {type: String, default: null},
     },
