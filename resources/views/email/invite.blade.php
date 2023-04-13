@@ -1,4 +1,4 @@
 Вы успешно зарегистрированы в системе «Алые Паруса». Данные для выхода:
-Ссылка на систему: <a href="https://parusa.opxx.ru/login">https://parusa.opxx.ru/login</a>
+Ссылка на систему: <a href="{{env('APP_URL')}}">{{env('APP_URL')}}</a>
 <p>Логин – {{ $login }}</p>
 <p>Пароль – {{ $password }}</p>
