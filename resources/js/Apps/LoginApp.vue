@@ -118,7 +118,7 @@ body {
     padding: 100px;
     position: relative;
     background: #FFFFFF;
-    border: 5px solid #0B68C2;
+    border: 5px solid #23AAA1;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.25);
     border-radius: 50px;
     transform: scale(0.7);
