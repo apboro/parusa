@@ -188,7 +188,7 @@ body {
             padding: 15px 25px;
             width: 150px;
             height: 67px;
-            background: #0B68C2;
+            background: #23AAA1;
             border-radius: 15px;
             font-weight: 600;
             font-size: 30px;
@@ -252,6 +252,7 @@ body {
                 font-size: 20px;
                 height: auto;
                 padding: 10px 20px;
+                background-color: #23AAA1;
             }
         }
 
