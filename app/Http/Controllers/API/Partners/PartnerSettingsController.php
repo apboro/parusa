@@ -67,7 +67,7 @@ class PartnerSettingsController extends ApiController
         }
 
         $code = "<!-- Загрузка скрипта -->\n";
-        $code .= "<script src=\"" . env('APP_URL') . "/js/showcase2.js\"></script>\n";
+        $code .= "<script src=\"" . env('APP_URL') . "/js/showcase.js\"></script>\n";
         $code .= "<!-- Настройки -->\n";
         $code .= "<script id=\"ap-showcase-config\" type=\"application/json\">{" .
             implode(
@@ -79,10 +79,27 @@ class PartnerSettingsController extends ApiController
             )
             . "}</script>";
         $code .= "\n<!-- Вставить в то место, где нужно разместить приложение -->\n";
-        $code .= "<div id=\"ap-showcase2\"></div>";
+        $code .= "<div id=\"ap-showcase\"></div>";
+
+        $code2 = "<!-- Загрузка скрипта -->\n";
+        $code2 .= "<script src=\"" . env('APP_URL') . "/js/showcase2.js\"></script>\n";
+        $code2 .= "<!-- Настройки -->\n";
+        $code2 .= "<script id=\"ap-showcase-config\" type=\"application/json\">{" .
+            implode(
+                ', ',
+                array_filter([
+                    '"partner":' . $current->partnerId(),
+                    $codeExcursions ?? null,
+                ])
+            )
+            . "}</script>";
+        $code2 .= "\n<!-- Вставить в то место, где нужно разместить приложение -->\n";
+        $code2 .= "<div id=\"ap-showcase2\"></div>";
+
 
         return APIResponse::response([
             'code' => $code,
+            'code2' => $code2,
             'excursions' => $excursions->map(function (Excursion $excursion) {
                 return ['id' => $excursion->id, 'name' => $excursion->name];
             }),

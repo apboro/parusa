@@ -103,7 +103,7 @@ class RepresentativeAccessController extends ApiEditController
                             ],
                             function ($message) use ($data) {
                                 $message->to($data['email']);
-                                $message->subject('Вы успешно зарегистрированы в системе «Алые Паруса»');
+                                $message->subject('Вы успешно зарегистрированы в системе «EXCURR»');
                             }
                         );
                         $messageIsSent = true;

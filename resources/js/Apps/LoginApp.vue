@@ -118,7 +118,7 @@ body {
     padding: 100px;
     position: relative;
     background: #FFFFFF;
-    border: 5px solid #23AAA1;
+    border: 5px solid #0B68C2;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.25);
     border-radius: 50px;
     transform: scale(0.7);
@@ -188,7 +188,7 @@ body {
             padding: 15px 25px;
             width: 150px;
             height: 67px;
-            background: #23AAA1;
+            background: #0B68C2;
             border-radius: 15px;
             font-weight: 600;
             font-size: 30px;
