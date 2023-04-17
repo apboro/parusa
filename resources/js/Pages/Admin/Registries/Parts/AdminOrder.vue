@@ -10,7 +10,7 @@
 
         <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>
 
-        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve || is_returning">
+        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve || is_returning || is_transfer">
             <ListTableRow v-for="ticket in info.data['tickets']">
                 <ListTableCell>
                     <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
@@ -36,6 +36,9 @@
                 <ListTableCell v-if="is_returning" class="va-middle">
                     <InputCheckbox v-model="to_return" :value="ticket['id']" :disabled="!ticket['returnable']"/>
                 </ListTableCell>
+                <ListTableCell v-if="is_transfer" class="va-middle">
+                    <InputCheckbox v-model="to_transfer" :value="ticket['id']" :disabled="ticket['disabled']" @change="orderTransfer"/>
+                </ListTableCell>
             </ListTableRow>
             <ListTableRow :no-highlight="true">
                 <ListTableCell colspan="3"/>
@@ -55,15 +58,24 @@
             <GuiValue :title="'Телефон'">{{ info.data['phone'] }}</GuiValue>
         </GuiContainer>
 
+        <GuiContainer v-if="is_transfer" w-50 mt-30 mb-30 inline>
+            <GuiHeading mb-20>Дата</GuiHeading>
+            <GuiButton :class="'mb-20'" v-for="date in dates" @click="dateClicked(date)">{{ date }}</GuiButton>
+        </GuiContainer>
+
         <template v-if="info.is_loaded">
             <template v-if="!isReserve">
-                <GuiContainer>
+                <GuiContainer mb-20>
                     <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
                     <GuiButton :disabled="!info.data['is_printable'] || is_returning || !info.data['email']" @clicked="emailOrder">Отправить клиенту на почту</GuiButton>
                     <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
                     <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
                     </GuiButton>
                     <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>
+                </GuiContainer>
+                <GuiContainer>
+                    <GuiButton v-if="!is_transfer" @clicked="editTransferOrder" :color="'red'">Оформить перенос рейса</GuiButton>
+                    <GuiButton v-if="is_transfer" @clicked="editTransferOrder(true)">Отменить</GuiButton>
                 </GuiContainer>
             </template>
             <template v-else>
@@ -136,7 +148,10 @@ export default {
         form: form(null, '/api/registries/order/buyer'),
         is_returning: false,
         to_return: [],
+        is_transfer: false,
+        to_transfer: [],
         returning_progress: false,
+        dates: [],
     }),
 
     computed: {
@@ -298,6 +313,40 @@ export default {
 
         cancelReturn() {
             this.is_returning = false;
+        },
+
+        editTransferOrder(clear = false) {
+            this.is_transfer = !this.is_transfer;
+
+            if (clear) this.to_transfer = [];
+
+            this.info.data['tickets'].map((ticket) => {
+                ticket['disabled'] = false;
+                return ticket;
+            });
+        },
+
+        orderTransfer() {
+            axios.post('/api/order/transfer', {
+                id: this.orderId,
+                transfers: this.to_transfer,
+            })
+                .then(response => {
+                    this.info.data['tickets'] = response.data.data['tickets'];
+                    this.dates = response.data.data['dates'];
+                });
+        },
+
+        dateClicked(date) {
+            console.log(date)
+            // axios.post('/api/order/transfer', {
+            //     id: this.orderId,
+            //     transfers: this.to_transfer,
+            // })
+            //     .then(response => {
+            //         this.info.data['tickets'] = response.data.data['tickets'];
+            //         this.dates = response.data.data['dates'];
+            //     });
         },
     }
 }
