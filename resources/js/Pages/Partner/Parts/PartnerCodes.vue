@@ -1,9 +1,8 @@
 <template>
     <div>
-        <GuiValueArea mt-20 v-if="data['link']" :title="'Ссылка на витрину на сайте компании &quot;Алые Паруса&quot;'">
+        <GuiValueArea mt-20 v-if="data['link']" :title="'Реферальная ссылка'">
             <a class="link" :href="data['link']" target="_blank">{{ data['link'] }}</a>
         </GuiValueArea>
-        <GuiValueArea mt-30 v-if="data['code']" :title="'Код для вставки витрины на сайт'" :text-content="data['code']"/>
         <GuiValueArea mt-30 :title="'QR-код'">
             <LoadingProgress :loading="qr_generating">
                 <GuiText mb-10>Введите URL страницы, на котором размещено приложение "витрина"</GuiText>

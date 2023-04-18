@@ -98,7 +98,8 @@ export default {
         list: list('/api/qrcodes/list'),
         form: form(null, '/api/qrcodes/update_or_create'),
         form_title: 'Добавление QR-кода',
-        default_link: 'https://city-tours-spb.ru/podbor-reysa/',
+        default_link: 'https://city-tours-spb.ru/' +
+            '',
         qrcode_link: null,
         qr_image: null,
     }),

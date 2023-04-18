@@ -23,7 +23,7 @@ class QrCodeCreateController extends Controller
 
         $current = Currents::get($request);
 
-        $link = $data['link'] ?? 'https://city-tours-spb.ru/podbor-reysa/';
+        $link = $data['link'] ?? 'https://city-tours-spb.ru/';
 
         $qrCode = QrCode::firstOrCreate(['id' => $request->id],
             [

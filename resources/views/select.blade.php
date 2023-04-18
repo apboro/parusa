@@ -31,7 +31,7 @@
                 <input type="hidden" name="role_id" value="{{ $variant['role_id'] }}">
                 <input type="hidden" name="terminal_id" value="{{ $variant['terminal_id'] }}">
                 @csrf
-                <button class="button" type="submit">Войти в кабинет</button>
+                <button style="border: #23AAA1; background-color: #23AAA1; transition: background-color 0.5s ease-in-out;" class="button" type="submit">Войти в кабинет</button>
             </form>
         </div>
     </div>

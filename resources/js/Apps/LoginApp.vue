@@ -252,6 +252,7 @@ body {
                 font-size: 20px;
                 height: auto;
                 padding: 10px 20px;
+                background-color: #23AAA1;
             }
         }
 
