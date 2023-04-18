@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\Order;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Dictionaries\TripSaleStatus;
+use App\Models\Dictionaries\TripStatus;
 use App\Models\Order\Order;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
@@ -18,7 +20,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class OrderTransferController extends ApiController
 {
     /**
-     * Remove reserve.
+     * Get transfer trips.
      *
      * @param Request $request
      *
@@ -69,14 +71,18 @@ class OrderTransferController extends ApiController
             }])
             ->whereIn('excursion_id', $excursionIDs)
             ->whereDate('start_at', '>=', $currentDate)
+            ->where('status_id', TripStatus::regular)
+            ->where('sale_status_id', TripSaleStatus::selling)
+            ->whereHas('excursion.ratesLists', function (Builder $query) use ($currentDate) {
+                $query->whereDate('start_at', '<=', $currentDate)->whereDate('end_at', '>=', $currentDate);
+            })
             ->get();
 
-        $tripsDates = $trips->pluck('start_at');
-        $tripsDates = $tripsDates->map(function ($date) {
-            return Carbon::parse($date)->format('d.m.Y');
-        })->toArray();
-        $dates = array_unique($tripsDates);
+        $trips = $trips->filter(function (Trip $trip) use ($countTickets) {
+            return $trip->tickets_total >= $trip->getAttribute('tickets_count') + $countTickets;
+        });
 
+        $tripsDates = $trips->sortBy('start_at')->pluck('start_at');
         /** @var LengthAwarePaginator $trips */
         $trips->transform(function (Trip $trip) {
             /** @var TripChain $chain */
@@ -107,10 +113,69 @@ class OrderTransferController extends ApiController
             ];
         });
 
+        $tripsDates = $tripsDates->map(function ($date) {
+            return Carbon::parse($date)->format('d.m.Y');
+        })->toArray();
+        $dates = array_unique($tripsDates);
+
         return APIResponse::response([
             'tickets' => $tickets,
             'dates' => $dates,
             'trips' => $trips
         ]);
+    }
+
+    /**
+     * Transfer tickets to trip.
+     *
+     * @param Request $request
+     *
+     * @return  JsonResponse
+     */
+    public function update(Request $request): JsonResponse
+    {
+        if (empty($request->input('transfers'))) {
+            return APIResponse::error('Выберите билеты');
+        }
+
+        if (empty($request->input('tripId'))) {
+            return APIResponse::error('Выберите рейс');
+        }
+
+        $tickets = Ticket::query()
+            ->whereIn('id', $request->input('transfers'))
+            ->get();
+
+        $currentDate = Carbon::now();
+        $trip = Trip::query()
+            ->where([
+                'id' => $request->input('tripId'),
+                'status_id' => TripStatus::regular,
+                'sale_status_id' => TripSaleStatus::selling
+            ])
+            ->withCount(['tickets' => function(Builder $query) {
+                $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
+            }])
+            ->whereDate('start_at', '>=', $currentDate)
+            ->whereHas('excursion.ratesLists', function (Builder $query) use ($currentDate) {
+                $query->whereDate('start_at', '<=', $currentDate)->whereDate('end_at', '>=', $currentDate);
+            })
+            ->first();
+
+        if (empty($trip)) {
+            return APIResponse::error('Рейс не найден или недоступен');
+        }
+
+        if ($trip->tickets_total < $trip->getAttribute('tickets_count') + count($tickets)) {
+            return APIResponse::error('Нехватает мест в рейсе');
+        }
+
+        foreach ($tickets as $ticket) {
+            $ticket->update([
+                'trip_id' => $trip->id
+            ]);
+        }
+
+        return APIResponse::success('Билеты успешно перенесены.');
     }
 }

@@ -1,4 +1,12 @@
 <template>
+    <template v-if="has_error">
+        <CheckoutMessage>
+            <div>{{ error_message }}</div>
+            <a class="ap-checkout-link" :href="back_link" v-if="back_link">Вернуться к подбору билетов</a>
+            <CheckoutButton @clicked="close" v-else style="margin-top: 20px;">Закрыть</CheckoutButton>
+        </CheckoutMessage>
+    </template>
+
     <LayoutPage :title="title" :loading="processing" :breadcrumbs="breadcrumbs">
         <GuiContainer w-70>
             <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
@@ -61,6 +69,40 @@
         <GuiContainer v-if="is_transfer" w-50 mt-30 mb-30 inline>
             <GuiHeading mb-20>Дата</GuiHeading>
             <GuiButton :class="'mb-20'" v-for="date in dates" @click="dateClicked(date)">{{ date }}</GuiButton>
+            <GuiText v-if="dates.length < 1">Даты не найдены</GuiText>
+        </GuiContainer>
+
+        <GuiContainer v-if="is_visible_trips" mb-50>
+            <ListTable :titles="['Отправление', '№ Рейса', 'Осталось билетов (всего)', 'Статусы движение / продажа', '']">
+                <ListTableRow v-for="trip in trips_by_date">
+                    <ListTableCell>
+                        <div>
+                            <b>
+                                <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
+                            </b>
+                        </div>
+                        <div>{{ trip['start_date'] }}</div>
+                    </ListTableCell>
+                    <ListTableCell>
+                        <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}</router-link>
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})
+                    </ListTableCell>
+                    <ListTableCell>
+                        <div>
+                            <span :class="{'link': accepted}">{{ trip['status'] }}</span>
+                        </div>
+                        <div>
+                            <span :class="{'link': accepted}" v-if="trip['has_rate']">{{ trip['sale_status'] }}</span>
+                            <span class="text-red" v-else><IconExclamation :class="'h-1em inline'"/> Тариф не задан</span>
+                        </div>
+                    </ListTableCell>
+                    <ListTableCell class="va-middle">
+                        <GuiButton @clicked="showTripEdit(trip['id'])">Выбрать</GuiButton>
+                    </ListTableCell>
+                </ListTableRow>
+            </ListTable>
         </GuiContainer>
 
         <template v-if="info.is_loaded">
@@ -91,6 +133,14 @@
             <FormPhone :form="form" :name="'phone'"/>
         </FormPopUp>
 
+        <PopUp ref="order_transfer_popup" title="Оформление переноса рейса"
+               :buttons="[
+                    {result: 'yes', caption: 'Да', color: 'red'},
+                    {result: 'no', caption: 'Отмена', color: 'white'},
+                   ]"
+               :manual="true"
+        > Вы действительно ли вы хотите изменить дату рейса?
+        </PopUp>
     </LayoutPage>
 </template>
 
@@ -116,9 +166,26 @@ import form from "@/Core/Form";
 import FormPopUp from "@/Components/FormPopUp";
 import FormString from "@/Components/Form/FormString";
 import FormPhone from "@/Components/Form/FormPhone";
+import ListTableResponsive from "@/Components/ListTable/ListTableResponsive.vue";
+import ListTableResponsiveRow from "@/Components/ListTable/ListTableResponsiveRow.vue";
+import ListTableResponsiveCell from "@/Components/ListTable/ListTableResponsiveCell.vue";
+import PopUp from "@/Components/PopUp.vue";
+import GuiText from "@/Components/GUI/GuiText.vue";
+import IconExclamation from "@/Components/Icons/IconExclamation.vue";
+import roles from "@/Mixins/roles.vue";
+import CheckoutMessage from "@/Pages/Checkout/Components/CheckoutMessage.vue";
+import CheckoutButton from "@/Pages/Checkout/Components/CheckoutButton.vue";
 
 export default {
     components: {
+        CheckoutButton,
+        CheckoutMessage,
+        IconExclamation,
+        GuiText,
+        PopUp,
+        ListTableResponsiveCell,
+        ListTableResponsiveRow,
+        ListTableResponsive,
         FormPhone,
         FormString,
         FormPopUp,
@@ -141,7 +208,7 @@ export default {
         orderId: {type: Number, required: true},
     },
 
-    mixins: [DeleteEntry],
+    mixins: [DeleteEntry, roles],
 
     data: () => ({
         info: data('/api/registries/order'),
@@ -152,6 +219,13 @@ export default {
         to_transfer: [],
         returning_progress: false,
         dates: [],
+        is_visible_trips: false,
+        trips: null,
+        trips_by_date: null,
+
+        has_error: false,
+        error_message: null,
+        back_link: null,
     }),
 
     computed: {
@@ -169,7 +243,10 @@ export default {
                 return [{caption: 'Реестр броней', to: {name: 'reserves-registry'}}];
             }
             return [{caption: 'Реестр заказов', to: {name: 'orders-registry'}}];
-        }
+        },
+        accepted() {
+            return this.hasRole(['admin', 'office_manager']);
+        },
     },
 
     created() {
@@ -318,7 +395,11 @@ export default {
         editTransferOrder(clear = false) {
             this.is_transfer = !this.is_transfer;
 
-            if (clear) this.to_transfer = [];
+            if (clear) {
+                this.to_transfer = [];
+                this.dates = [];
+                this.is_visible_trips = false;
+            }
 
             this.info.data['tickets'].map((ticket) => {
                 ticket['disabled'] = false;
@@ -334,19 +415,43 @@ export default {
                 .then(response => {
                     this.info.data['tickets'] = response.data.data['tickets'];
                     this.dates = response.data.data['dates'];
-                });
+                    this.trips = response.data.data['trips'];
+                }).finally(() => {
+                    this.is_visible_trips = false;
+            });
         },
 
         dateClicked(date) {
-            console.log(date)
-            // axios.post('/api/order/transfer', {
-            //     id: this.orderId,
-            //     transfers: this.to_transfer,
-            // })
-            //     .then(response => {
-            //         this.info.data['tickets'] = response.data.data['tickets'];
-            //         this.dates = response.data.data['dates'];
-            //     });
+            this.trips_by_date = [];
+            this.trips.map(item => {
+                if (item['start_date'] === date) {
+                    this.trips_by_date.push(item);
+                }
+            });
+            this.is_visible_trips = true;
+        },
+
+        showTripEdit(tripId) {
+            this.$refs.order_transfer_popup.show()
+                .then(result => {
+                    if (result === 'yes') {
+                        axios.post('/api/order/transfer/update', {
+                            tripId: tripId,
+                            transfers: this.to_transfer,
+                        })
+                            .then((response) => {
+                                this.$toast.success(response.data.message, 5000);
+                                this.$refs.order_transfer_popup.hide();
+                                this.$router.go();
+                            })
+                            .catch(error => {
+                                this.$toast.error(error.response.data.message, 5000);
+                            })
+                            .finally(() => {
+                                this.$refs.order_transfer_popup.hide();
+                            });
+                    }
+                });
         },
     }
 }
