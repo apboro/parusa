@@ -31,6 +31,7 @@ class Ship extends Model implements Statusable, Typeable, AsDictionary
 {
     use HasStatus, HasType, HasFactory, ShipAsDictionary;
 
+    protected $guarded = [];
     /** @var array Default attributes. */
     protected $attributes = [
         'status_id' => ShipStatus::default,

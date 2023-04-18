@@ -35,6 +35,7 @@ class PierInfo extends Model
 
     /** @var string[] Fillable attributes. */
     protected $fillable = [
+        'pier_id',
         'work_time',
         'phone',
         'address',
@@ -42,6 +43,7 @@ class PierInfo extends Model
         'longitude',
         'description',
         'way_to',
+        'label'
     ];
 
     /**

@@ -23,11 +23,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property PierInfo $info
  * @property Collection $images
  * @property Collection $mapImages
+ * @property mixed $partner_inner_id
+ * @property mixed $partner_inner_parent_id
  */
 class Pier extends Model implements Statusable, AsDictionary
 {
     use HasStatus, HasFactory, PierAsDictionary;
-
+    protected $guarded =[];
     /** @var array Default attributes. */
     protected $attributes = [
         'status_id' => PiersStatus::default,

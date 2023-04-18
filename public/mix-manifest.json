@@ -1,11 +1,11 @@
 {
-    "/js/login.js": "/js/login.js?id=d9ffb51bb9f0eaeb7544",
-    "/js/admin.js": "/js/admin.js?id=26a4e2a12005297ce10c",
-    "/js/partner.js": "/js/partner.js?id=65e2add54581e833ab05",
-    "/js/terminal.js": "/js/terminal.js?id=c07e276b9733996f1263",
-    "/js/showcase.js": "/js/showcase.js?id=b36f3af1c6f6ed4148f9",
-    "/js/showcase2.js": "/js/showcase2.js?id=766017bc6d7aeebfbc3e",
-    "/js/checkout.js": "/js/checkout.js?id=acbd803e090136dfb1c9",
-    "/css/app.css": "/css/app.css?id=cd3a9affae02468699a3",
-    "/css/select.css": "/css/select.css?id=79f266d790919903cc26"
+    "/js/login.js": "/js/login.js",
+    "/js/admin.js": "/js/admin.js",
+    "/js/partner.js": "/js/partner.js",
+    "/js/terminal.js": "/js/terminal.js",
+    "/js/showcase.js": "/js/showcase.js",
+    "/js/showcase2.js": "/js/showcase2.js",
+    "/js/checkout.js": "/js/checkout.js",
+    "/css/app.css": "/css/app.css",
+    "/css/select.css": "/css/select.css"
 }
