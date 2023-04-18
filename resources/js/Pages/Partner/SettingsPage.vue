@@ -1,21 +1,22 @@
 <template>
     <LayoutPage :title="$route.meta['title']" :loading="data.is_loading">
-        <LayoutRoutedTabs :tabs="{codes: 'Коды'}"
-                          @change="tab = $event"
-        />
+        <LayoutRoutedTabs :tabs="{codes: 'Коды', widget: 'Виджет'}" @change="tab = $event"/>
 
         <PartnerCodes v-if="tab === 'codes'" :data="data.data"/>
+        <WidgetCodeGenerator v-if="tab === 'widget'"/>
     </LayoutPage>
 </template>
 
 <script>
 import LayoutPage from "@/Components/Layout/LayoutPage";
 import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
-import PartnerCodes from "@/Pages/Partner/Parts/PartnerCodes";
 import data from "@/Core/Data";
+import PartnerCodes from "@/Pages/Partner/Parts/PartnerCodes";
+import WidgetCodeGenerator from "./Parts/WidgetCodeGenerator";
 
 export default {
     components: {
+        WidgetCodeGenerator,
         PartnerCodes,
         LayoutRoutedTabs,
         LayoutPage,
