@@ -12,6 +12,7 @@ use App\Models\Tickets\TicketsRatesList;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -45,9 +46,20 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
 
         $listQuery = Trip::saleTripQuery($partnerId === null)
             ->with(['status', 'startPier', 'ship', 'excursion', 'excursion.info', 'excursion.programs'])
+            ->with('excursion.ratesLists', function (HasMany $query) use ($date) {
+                $query
+                    ->with('rates', function (HasMany $query) {
+                        $query
+                            ->with('grade')
+                            ->where('base_price', '>', 0)
+                            ->whereNotIn('grade_id', [TicketGrade::guide]);
+                    })
+                    ->whereDate('start_at', '<=', $date)
+                    ->whereDate('end_at', '>=', $date);
+            })
             ->when(!empty($excursionsIDs), function (Builder $query) use ($excursionsIDs) {
-                $query->whereHas('excursion', function (Builder $builder) use ($excursionsIDs) {
-                    $builder->whereIn('id', $excursionsIDs);
+                $query->whereHas('excursion', function (Builder $query) use ($excursionsIDs) {
+                    $query->whereIn('id', $excursionsIDs);
                 });
             })
             ->orderBy('trips.start_at');
