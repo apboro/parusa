@@ -45,7 +45,9 @@
                     <InputCheckbox v-model="to_return" :value="ticket['id']" :disabled="!ticket['returnable']"/>
                 </ListTableCell>
                 <ListTableCell v-if="is_transfer" class="va-middle">
-                    <InputCheckbox v-model="to_transfer" :value="ticket['id']" :disabled="ticket['disabled']" @change="orderTransfer"/>
+                    <InputCheckbox v-model="to_transfer" :value="ticket['id']"
+                                   :disabled="(!ticket['transferable'] || ticket['disabled']) || (this.excursion_id != null && this.excursion_id !== ticket['excursion_id'])"
+                                   @change="orderTransfer(ticket['excursion_id'])"/>
                 </ListTableCell>
             </ListTableRow>
             <ListTableRow :no-highlight="true">
@@ -68,8 +70,13 @@
 
         <GuiContainer v-if="is_transfer" w-50 mt-30 mb-30 inline>
             <GuiHeading mb-20>Дата</GuiHeading>
-            <GuiButton :class="'mb-20'" v-for="date in dates" @click="dateClicked(date)">{{ date }}</GuiButton>
-            <GuiText v-if="dates.length < 1">Даты не найдены</GuiText>
+            <OrderDateRadio
+                v-if="dates.length > 0"
+                :dates="dates"
+                ref="input"
+                @select="dateClicked"
+            />
+            <GuiText v-else>Даты не найдены</GuiText>
         </GuiContainer>
 
         <GuiContainer v-if="is_visible_trips" mb-50>
@@ -175,9 +182,11 @@ import IconExclamation from "@/Components/Icons/IconExclamation.vue";
 import roles from "@/Mixins/roles.vue";
 import CheckoutMessage from "@/Pages/Checkout/Components/CheckoutMessage.vue";
 import CheckoutButton from "@/Pages/Checkout/Components/CheckoutButton.vue";
+import OrderDateRadio from "@/Pages/Admin/Registries/Parts/Widgets/OrderDateRadio.vue";
 
 export default {
     components: {
+        OrderDateRadio,
         CheckoutButton,
         CheckoutMessage,
         IconExclamation,
@@ -222,6 +231,7 @@ export default {
         is_visible_trips: false,
         trips: null,
         trips_by_date: null,
+        excursion_id: null,
 
         has_error: false,
         error_message: null,
@@ -407,7 +417,9 @@ export default {
             });
         },
 
-        orderTransfer() {
+        orderTransfer(excursion_id) {
+            this.excursion_id = this.to_transfer.length > 0 ? excursion_id : null;
+
             axios.post('/api/order/transfer', {
                 id: this.orderId,
                 transfers: this.to_transfer,
@@ -422,13 +434,17 @@ export default {
         },
 
         dateClicked(date) {
-            this.trips_by_date = [];
-            this.trips.map(item => {
-                if (item['start_date'] === date) {
-                    this.trips_by_date.push(item);
-                }
-            });
-            this.is_visible_trips = true;
+            axios.post('/api/order/transfer/trips', {
+                transfers: this.to_transfer,
+                date: date.getFullYear() + '-' +  String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0'),
+            })
+                .then((response) => {
+                    this.trips_by_date = response.data.data['trips']
+                    this.is_visible_trips = true;
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data.message, 5000);
+                });
         },
 
         showTripEdit(tripId) {
@@ -450,6 +466,8 @@ export default {
                             .finally(() => {
                                 this.$refs.order_transfer_popup.hide();
                             });
+                    } else {
+                        this.$refs.order_transfer_popup.hide();
                     }
                 });
         },

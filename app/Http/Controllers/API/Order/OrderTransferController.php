@@ -54,6 +54,8 @@ class OrderTransferController extends ApiController
                 'trip_start_date' => $ticket->trip->start_at->format('d.m.Y'),
                 'trip_start_time' => $ticket->trip->start_at->format('H:i'),
                 'excursion' => $ticket->trip->excursion->name,
+                'excursion_id' => $ticket->trip->excursion->id,
+                'transferable' => in_array($ticket->status_id, TicketStatus::ticket_paid_statuses, true),
                 'pier' => $ticket->trip->startPier->name,
                 'grade' => $ticket->grade->name,
                 'status' => $ticket->status->name,
@@ -84,35 +86,6 @@ class OrderTransferController extends ApiController
 
         $tripsDates = $trips->sortBy('start_at')->pluck('start_at');
         /** @var LengthAwarePaginator $trips */
-        $trips->transform(function (Trip $trip) {
-            /** @var TripChain $chain */
-            $chain = $trip->chains->first();
-            $chainStart = $chain ? $chain->trips()->min('start_at') : null;
-            $chainEnd = $chain ? $chain->trips()->max('start_at') : null;
-
-            return [
-                'id' => $trip->id,
-                'start_date' => $trip->start_at->format('d.m.Y'),
-                'start_time' => $trip->start_at->format('H:i'),
-                'excursion' => $trip->excursion->name,
-                'pier' => $trip->startPier->name,
-                'ship' => $trip->ship->name,
-                'tickets_count' => $trip->getAttribute('tickets_count'),
-                'tickets_total' => $trip->tickets_total,
-                'status' => $trip->status->name,
-                'status_id' => $trip->status_id,
-                'sale_status' => $trip->saleStatus->name,
-                'has_rate' => $trip->hasRate(),
-                'sale_status_id' => $trip->sale_status_id,
-                'chained' => $trip->getAttribute('chains_count') > 0,
-                'chain_trips_count' => $chain ? $chain->getAttribute('trips_count') : null,
-                'chain_trips_start_at' => $chainStart ? Carbon::parse($chainStart)->format('d.m.Y') : null,
-                'chain_trips_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('d.m.Y') : null,
-                '_trip_start_at' => $trip->start_at->format('Y-m-d'),
-                '_chain_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('Y-m-d') : null,
-            ];
-        });
-
         $tripsDates = $tripsDates->map(function ($date) {
             return Carbon::parse($date)->format('d.m.Y');
         })->toArray();
@@ -121,7 +94,6 @@ class OrderTransferController extends ApiController
         return APIResponse::response([
             'tickets' => $tickets,
             'dates' => $dates,
-            'trips' => $trips
         ]);
     }
 
@@ -177,5 +149,74 @@ class OrderTransferController extends ApiController
         }
 
         return APIResponse::success('Билеты успешно перенесены.');
+    }
+
+    public function trips(Request $request): JsonResponse
+    {
+        $excursionIDs = [];
+        if (empty($request->input('date'))) {
+            return APIResponse::error('Выберите дату');
+        }
+
+        if (!empty($request->input('transfers'))) {
+            $queryTickets = Ticket::query()
+                ->whereIn('id', $request->input('transfers'))
+                ->with('trip.excursion')
+                ->get();
+            $excursionIDs = $queryTickets->pluck('trip')
+                ->flatten()->pluck('excursion')
+                ->flatten()->pluck('id')->unique()
+                ->toArray();
+        }
+        $countTickets = count($request->input('transfers'));
+
+        $startDate = Carbon::parse($request->input('date'));
+        $trips = Trip::query()
+            ->withCount(['tickets' => function(Builder $query) {
+                $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
+            }])
+            ->whereIn('excursion_id', $excursionIDs)
+            ->whereDate('start_at',  $startDate)
+            ->where('status_id', TripStatus::regular)
+            ->where('sale_status_id', TripSaleStatus::selling)
+            ->get();
+
+        $trips = $trips->filter(function (Trip $trip) use ($countTickets) {
+            return $trip->tickets_total >= $trip->getAttribute('tickets_count') + $countTickets;
+        });
+
+        /** @var LengthAwarePaginator $trips */
+        $trips->transform(function (Trip $trip) {
+            /** @var TripChain $chain */
+            $chain = $trip->chains->first();
+            $chainStart = $chain ? $chain->trips()->min('start_at') : null;
+            $chainEnd = $chain ? $chain->trips()->max('start_at') : null;
+
+            return [
+                'id' => $trip->id,
+                'start_date' => $trip->start_at->format('d.m.Y'),
+                'start_time' => $trip->start_at->format('H:i'),
+                'excursion' => $trip->excursion->name,
+                'pier' => $trip->startPier->name,
+                'ship' => $trip->ship->name,
+                'tickets_count' => $trip->getAttribute('tickets_count'),
+                'tickets_total' => $trip->tickets_total,
+                'status' => $trip->status->name,
+                'status_id' => $trip->status_id,
+                'sale_status' => $trip->saleStatus->name,
+                'has_rate' => $trip->hasRate(),
+                'sale_status_id' => $trip->sale_status_id,
+                'chained' => $trip->getAttribute('chains_count') > 0,
+                'chain_trips_count' => $chain ? $chain->getAttribute('trips_count') : null,
+                'chain_trips_start_at' => $chainStart ? Carbon::parse($chainStart)->format('d.m.Y') : null,
+                'chain_trips_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('d.m.Y') : null,
+                '_trip_start_at' => $trip->start_at->format('Y-m-d'),
+                '_chain_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('Y-m-d') : null,
+            ];
+        });
+
+        return APIResponse::response([
+            'trips' => $trips
+        ]);
     }
 }

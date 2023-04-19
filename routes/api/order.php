@@ -29,3 +29,4 @@ Route::post('/order/reserve/accept', [OrderReserveController::class, 'terminalOr
 
 Route::post('/order/transfer', [OrderTransferController::class, 'transfer'])->middleware(['allow:staff_terminal']);
 Route::post('/order/transfer/update', [OrderTransferController::class, 'update'])->middleware(['allow:staff_terminal']);
+Route::post('/order/transfer/trips', [OrderTransferController::class, 'trips'])->middleware(['allow:staff_terminal']);
