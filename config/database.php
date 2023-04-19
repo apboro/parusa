@@ -77,6 +77,20 @@ return [
             'schema' => 'public',
             'sslmode' => 'prefer',
         ],
+        'testing_parusa' => [
+            'driver' => 'pgsql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => 'testing_parusa',
+            'username' => 'testing_parusa',
+            'password' => 'mW5ihMGs',
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
