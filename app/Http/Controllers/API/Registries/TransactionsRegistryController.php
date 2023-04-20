@@ -261,7 +261,7 @@ class TransactionsRegistryController extends ApiController
         $filters = $request->input('filters');
         $current = Currents::get($request);
 
-        if ($current->isStaffAdmin()) {
+        if ($current->isStaffAdmin() || $current->isStaffAccountant()) {
             if ($request->has('terminal_id') && $request->input('terminal_id') !== null) {
                 return $request->input('terminal_id');
             } else if (!empty($filters['terminal_id'])) {

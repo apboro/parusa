@@ -123,6 +123,7 @@ class TripsSelectListController extends ApiController
                 }),
                 'pier_id' => $trip->start_pier_id,
                 'pier' => $trip->startPier->name,
+                'ship' => $trip->ship->name,
                 'tickets_count' => $trip->getAttribute('tickets_count'),
                 'tickets_total' => $trip->tickets_total,
                 'rates' => array_values($rates),

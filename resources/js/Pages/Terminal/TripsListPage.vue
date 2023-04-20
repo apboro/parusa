@@ -69,7 +69,8 @@
                     <div><span :style="{fontSize: '13px'}">{{ trip['programs'] && trip['programs'].length ? trip['programs'].join(', ') : '' }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
-                    {{ trip['pier'] }}
+                    <div>{{ trip['pier'] }}</div>
+                    <div>{{ trip['ship'] }}</div>
                 </ListTableCell>
                 <ListTableCell>
                     {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})
