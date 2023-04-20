@@ -30,6 +30,6 @@ class CreateDictionaryTripSaleStatusesTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trip_sale_statuses');
+        Schema::dropIfExists('dictionary_trip_sale_statuses');
     }
 }
