@@ -85,7 +85,7 @@ export default {
     },
 
     created() {
-        this.data.load({archive: true});
+        this.data.load({archive: true, partner_id: this.partnerId});
     },
 
     methods: {
