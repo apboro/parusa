@@ -39,6 +39,8 @@ class Excursion extends Model implements Statusable, AsDictionary
 {
     use HasStatus, HasFactory, ExcursionAsDictionary;
 
+    protected $guarded = [];
+
     protected $casts = [
         'only_site' => 'bool',
     ];
