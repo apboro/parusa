@@ -53,6 +53,9 @@ class TicketsRegistryController extends ApiController
         $this->defaultFilters['date_to'] = Carbon::now()->endOfDay()->format('Y-m-d\TH:i');
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
+        if (!$filters['date_from']) $filters['date_from'] = $this->defaultFilters['date_from'];
+        if (!$filters['date_to']) $filters['date_to'] = $this->defaultFilters['date_to'];
+
         $partnerId = $current->isStaff() ? $request->input('partner_id') : $current->partnerId();
         $tripId = $request->input('trip_id');
         $excursionId = $request->input('excursion_id');

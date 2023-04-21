@@ -212,8 +212,8 @@ export default {
             return this.$highlight(String(text), String(this.list.search), true);
         },
         resetDate() {
-            this.list.filters['date_from'] = new Date(new Date().setHours(3,0,0,0)).toISOString();
-            this.list.filters['date_to'] = new Date(new Date().setHours(26,59,0,0)).toISOString();
+            this.list.filters['date_from'] = null;
+            this.list.filters['date_to'] = null;
             this.list.load();
         },
         saleMethodChanged(value) {
