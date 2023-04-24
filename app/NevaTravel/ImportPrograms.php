@@ -3,6 +3,7 @@
 namespace App\NevaTravel;
 
 
+use App\Http\APIResponse;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Excursions\Excursion;
 use App\Models\Excursions\ExcursionInfo;
@@ -14,20 +15,19 @@ class ImportPrograms
     {
         $nevaApiData = new NevaTravelRepository();
         $nevaPrograms = $nevaApiData->getProgramsInfo();
-        foreach ($nevaPrograms['body'] as $nevaProgram)
-            $excursion = Excursion::updateOrCreate(['external_id' => $nevaProgram['id']],
-                [
-                    'name' => $nevaProgram['name'],
-                    'status_id' => $nevaProgram['is_active'] ? 1 : 2,
-                ]);
-        ExcursionInfo::updateOrCreate(['id' => $excursion->id],
-            [
-                'duration' => $nevaProgram['full_time'],
-            ]);
-        ExcursionProgram::updateOrCreate(['excursion_id' => $excursion->id],
-            [
-                'program_id'=>17
-            ]);
+        foreach ($nevaPrograms['body'] as $nevaProgram) {
+
+            $excursion = Excursion::firstOrNew(['external_id'=> $nevaProgram['id']]);
+            $excursion->setAttribute('name', $nevaProgram['name']);
+            $excursion->status_id = $nevaProgram['is_active'] ? 1 : 2;
+            $excursion->save();
+
+            $info = $excursion->info;
+            $info->setAttribute('duration', $nevaProgram['full_time']);
+            $info->save();
+
+            $excursion->programs()->sync(17);
+        }
     }
 
 }

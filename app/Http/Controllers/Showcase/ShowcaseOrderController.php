@@ -84,8 +84,7 @@ class ShowcaseOrderController extends ApiEditController
             return APIResponse::error('Нельзя оформить заказ без билетов.');
         }
 
-        $grades = array_keys
-        ($data['rate']);
+        $grades = array_keys($data['rate']);
         $count = 0;
 
         $rules = ['name' => 'required', 'email' => 'required|email|bail', 'phone' => 'required'];
@@ -136,7 +135,8 @@ class ShowcaseOrderController extends ApiEditController
             }
         }
 
-        if ($media === 'qr') {
+        $existingCookieHash = $request->cookie('qrCodeHash');
+        if ($existingCookieHash || $media === 'qr') {
             $orderType = OrderType::qr_code;
         } else if ($isPartnerSite) {
             $orderType = OrderType::partner_site;
