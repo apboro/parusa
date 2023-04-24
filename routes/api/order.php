@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\API\Order\OrderReserveController;
 use App\Http\Controllers\API\Order\OrderReturnController;
-use App\Http\Controllers\API\Order\OrderTransferController;
+use App\Http\Controllers\API\Order\OrderTicketReplacementController;
 use App\Http\Controllers\API\Order\PartnerMakeOrderController;
 use App\Http\Controllers\API\Order\TerminalCurrentOrderController;
 use App\Http\Controllers\API\Order\TerminalMakeOrderController;
@@ -27,6 +27,6 @@ Route::post('/order/reserve/cancel', [OrderReserveController::class, 'cancel']);
 Route::post('/order/reserve/order', [OrderReserveController::class, 'partnerOrder'])->middleware(['allow:partner']);
 Route::post('/order/reserve/accept', [OrderReserveController::class, 'terminalOrder'])->middleware(['allow:staff_terminal']);
 
-Route::post('/order/transfer', [OrderTransferController::class, 'transfer'])->middleware(['allow:staff_terminal']);
-Route::post('/order/transfer/update', [OrderTransferController::class, 'update'])->middleware(['allow:staff_terminal']);
-Route::post('/order/transfer/trips', [OrderTransferController::class, 'trips'])->middleware(['allow:staff_terminal']);
+Route::post('/order/replacement/get_available_dates', [OrderTicketReplacementController::class, 'getAvailableDates'])->middleware(['allow:staff_terminal']);
+Route::post('/order/replacement/get_trips_for_date', [OrderTicketReplacementController::class, 'getTripsForDate'])->middleware(['allow:staff_terminal']);
+Route::post('/order/replacement/make', [OrderTicketReplacementController::class, 'replaceTickets'])->middleware(['allow:staff_terminal']);
