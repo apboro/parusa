@@ -70,11 +70,11 @@
 
         <GuiContainer v-if="is_transfer" w-50 mt-30 mb-30 inline>
             <GuiHeading mb-20>Дата</GuiHeading>
-            <OrderDateRadio
+            <DatePicker
                 v-if="dates.length > 0"
                 :dates="dates"
                 ref="input"
-                @select="dateClicked"
+                @selected="dateClicked"
             />
             <GuiText v-else>Даты не найдены</GuiText>
         </GuiContainer>
@@ -182,11 +182,11 @@ import IconExclamation from "@/Components/Icons/IconExclamation.vue";
 import roles from "@/Mixins/roles.vue";
 import CheckoutMessage from "@/Pages/Checkout/Components/CheckoutMessage.vue";
 import CheckoutButton from "@/Pages/Checkout/Components/CheckoutButton.vue";
-import OrderDateRadio from "@/Pages/Admin/Registries/Parts/Widgets/OrderDateRadio.vue";
+import DatePicker from "@/Components/Inputs/Helpers/DatePicker.vue";
 
 export default {
     components: {
-        OrderDateRadio,
+        DatePicker,
         CheckoutButton,
         CheckoutMessage,
         IconExclamation,

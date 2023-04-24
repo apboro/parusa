@@ -87,7 +87,7 @@ class OrderTransferController extends ApiController
         $tripsDates = $trips->sortBy('start_at')->pluck('start_at');
         /** @var LengthAwarePaginator $trips */
         $tripsDates = $tripsDates->map(function ($date) {
-            return Carbon::parse($date)->format('d.m.Y');
+            return Carbon::parse($date)->format('Y-m-d');
         })->toArray();
         $dates = array_unique($tripsDates);
 
