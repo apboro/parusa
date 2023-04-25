@@ -32,6 +32,7 @@ class TicketRate extends Model
 
     /** @var string[] Fillable attributes. */
     protected $fillable = [
+        'rate_id',
         'grade_id',
         'base_price',
         'min_price',

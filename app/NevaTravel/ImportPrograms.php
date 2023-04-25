@@ -20,6 +20,7 @@ class ImportPrograms
             $excursion = Excursion::firstOrNew(['external_id'=> $nevaProgram['id']]);
             $excursion->setAttribute('name', $nevaProgram['name']);
             $excursion->status_id = $nevaProgram['is_active'] ? 1 : 2;
+            $excursion->source = 'Нева Трэвел';
             $excursion->save();
 
             $info = $excursion->info;

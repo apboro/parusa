@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class TicketsRatesList extends Model
 {
+    protected $guarded = [];
     /** @var string Referenced table name. */
     protected $table = 'tickets_rates_list';
 
