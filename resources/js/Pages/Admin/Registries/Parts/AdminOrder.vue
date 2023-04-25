@@ -398,9 +398,10 @@ export default {
             this.is_replacement = !this.is_replacement;
             if (clear) {
                 this.to_replace = [];
-                this.dates = [];
+                this.dates = null;
                 this.replacement_trips = null;
                 this.replacement_date = null;
+                this.excursion_id = null;
             }
         },
 
