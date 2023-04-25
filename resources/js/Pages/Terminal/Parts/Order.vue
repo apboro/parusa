@@ -10,7 +10,7 @@
 
         <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>
 
-        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve || is_returning">
+        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve || is_returning || is_replacement">
             <ListTableRow v-for="ticket in info.data['tickets']">
                 <ListTableCell>
                     {{ ticket['id'] }}
@@ -36,6 +36,11 @@
                 <ListTableCell v-if="is_returning" class="va-middle">
                     <InputCheckbox v-model="to_return" :value="ticket['id']" :disabled="!ticket['returnable']"/>
                 </ListTableCell>
+                <ListTableCell v-if="is_replacement" class="va-middle">
+                    <InputCheckbox v-model="to_replace" :value="ticket['id']"
+                                   :disabled="!ticket['transferable'] || (this.excursion_id !== null && this.excursion_id !== ticket['excursion_id'])"
+                                   @change="replacementTicketSelected(ticket['excursion_id'])"/>
+                </ListTableCell>
             </ListTableRow>
             <ListTableRow :no-highlight="true">
                 <ListTableCell colspan="3"/>
@@ -57,6 +62,45 @@
             <InputText v-model="reason_text"/>
         </GuiContainer>
 
+        <GuiContainer v-if="is_replacement" w-50 mt-30 mb-30 inline pl-30>
+            <GuiMessage v-if="dates === null" border>Выберите билеты для замены</GuiMessage>
+            <GuiMessage v-else-if="dates.length === 0" border>Нет подходящих рейсов</GuiMessage>
+            <template v-else>
+                <GuiHeading mb-20>Выберите дату рейса</GuiHeading>
+                <InputDate v-model="replacement_date" :dates="dates" placeholder="Выберите дату" @change="replacementDateSelected"/>
+                <GuiMessage v-if="replacement_trips && replacement_trips.length === null" border>На выбранную дату нет рейсов с достаточным количеством свободных мест</GuiMessage>
+            </template>
+        </GuiContainer>
+
+        <GuiContainer v-if="replacement_trips && replacement_trips.length" mb-50>
+            <ListTable :titles="['Отправление', '№ Рейса', 'Экскурсия', 'Осталось билетов', 'Статусы движение / продажа', '']">
+                <ListTableRow v-for="trip in replacement_trips">
+                    <ListTableCell>
+                        <div>
+                            <b>{{ trip['start_time'] }}</b>
+                        </div>
+                        <div>{{ trip['start_date'] }}</div>
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{ trip['id'] }}
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{ trip['excursion'] }}
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{ trip['tickets_total'] - trip['tickets_count'] }}
+                    </ListTableCell>
+                    <ListTableCell>
+                        <div>{{ trip['status'] }}</div>
+                        <div>{{ trip['sale_status'] }}</div>
+                    </ListTableCell>
+                    <ListTableCell class="va-middle">
+                        <GuiButton @clicked="selectReplacementTrip(trip['id'])">Выбрать</GuiButton>
+                    </ListTableCell>
+                </ListTableRow>
+            </ListTable>
+        </GuiContainer>
+
         <div v-if="info.is_loaded && !isReserve" class="flex">
             <GuiContainer inline-flex v-if="printable">
                 <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
@@ -65,6 +109,11 @@
                 <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
                 </GuiButton>
                 <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>
+            </GuiContainer>
+
+            <GuiContainer ml-20>
+                <GuiButton v-if="!is_replacement" @clicked="replaceTickets" :color="'red'">Оформить перенос рейса</GuiButton>
+                <GuiButton v-if="is_replacement" @clicked="replaceTickets(true)">Отменить</GuiButton>
             </GuiContainer>
         </div>
     </LayoutPage>
@@ -86,6 +135,8 @@ import InputCheckbox from "@/Components/Inputs/InputCheckbox";
 import InputText from "@/Components/Inputs/InputText";
 import DeleteEntry from "@/Mixins/DeleteEntry";
 import printJS from "print-js";
+import GuiMessage from "@/Components/GUI/GuiMessage.vue";
+import InputDate from "@/Components/Inputs/InputDate.vue";
 
 export default {
     props: {
@@ -94,6 +145,8 @@ export default {
     },
 
     components: {
+        InputDate,
+        GuiMessage,
         InputText,
         InputCheckbox,
         IconCross,
@@ -117,6 +170,17 @@ export default {
         reason_text: null,
         returning_progress: false,
         ordering: false,
+        is_replacement: false,
+        to_replace: [],
+
+        excursion_id: null,
+        dates: null,
+        replacement_date: null,
+        replacement_trips: null,
+
+        has_error: false,
+        error_message: null,
+        back_link: null,
     }),
 
     computed: {
@@ -259,6 +323,85 @@ export default {
                 .catch(error => {
                     this.$toast.error(error.response.data['message']);
                 });
+        },
+
+        replaceTickets(clear = false) {
+            this.is_replacement = !this.is_replacement;
+            if (clear) {
+                this.to_replace = [];
+                this.dates = [];
+                this.replacement_trips = null;
+                this.replacement_date = null;
+            }
+        },
+
+        replacementTicketSelected(excursion_id) {
+            if (this.to_replace.length === 0) {
+                this.excursion_id = null;
+                this.dates = null;
+                this.replacement_trips = null;
+                this.replacement_date = null
+            } else {
+                if (this.excursion_id === null) {
+                    this.returning_progress = true;
+                    axios.post('/api/order/replacement/get_available_dates', {excursion_id: excursion_id})
+                        .then(response => {
+                            this.dates = response.data.data['dates'];
+                        }).finally(() => {
+                        this.returning_progress = false;
+                    });
+                }
+                if (this.replacement_date !== null) {
+                    this.replacementDateSelected(this.replacement_date);
+                }
+                this.excursion_id = excursion_id;
+            }
+        },
+
+        replacementDateSelected(date) {
+            this.returning_progress = true;
+            axios.post('/api/order/replacement/get_trips_for_date', {
+                date: date,
+                excursion_id: this.excursion_id,
+                count: this.to_replace ? this.to_replace.length : null
+            })
+                .then((response) => {
+                    this.replacement_trips = response.data.data['trips'];
+                })
+                .catch(error => {
+                    this.replacement_trips = null;
+                    this.$toast.error(error.response.data.message, 5000);
+                })
+                .finally(() => {
+                    this.returning_progress = false;
+                });
+        },
+
+        selectReplacementTrip(tripId) {
+            this.$dialog.show('Перенести билеты на другой рейс рейса?', 'question', 'orange', [
+                this.$dialog.button('yes', 'Продолжить', 'orange'),
+                this.$dialog.button('no', 'Отмена', 'blue'),
+            ]).then(result => {
+                if (result === 'yes') {
+                    this.returning_progress = true;
+                    axios.post('/api/order/replacement/make', {
+                        order_id: this.orderId,
+                        trip_id: tripId,
+                        tickets: this.to_replace,
+                    })
+                        .then((response) => {
+                            this.$toast.success(response.data.message, 5000);
+                            this.replaceTickets(true);
+                            this.info.load({id: this.orderId});
+                        })
+                        .catch(error => {
+                            this.$toast.error(error.response.data.message, 5000);
+                        })
+                        .finally(() => {
+                            this.returning_progress = false;
+                        });
+                }
+            });
         },
     }
 }

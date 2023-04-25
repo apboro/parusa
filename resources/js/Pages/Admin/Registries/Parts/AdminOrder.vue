@@ -74,7 +74,7 @@
             <GuiMessage v-else-if="dates.length === 0" border>Нет подходящих рейсов</GuiMessage>
             <template v-else>
                 <GuiHeading mb-20>Выберите дату рейса</GuiHeading>
-                <InputDate v-model="replacement_date" :dates="dates" @change="replacementDateSelected"/>
+                <InputDate v-model="replacement_date" :dates="dates" placeholder="Выберите дату" @change="replacementDateSelected"/>
                 <GuiMessage v-if="replacement_trips && replacement_trips.length === null" border>На выбранную дату нет рейсов с достаточным количеством свободных мест</GuiMessage>
             </template>
         </GuiContainer>
