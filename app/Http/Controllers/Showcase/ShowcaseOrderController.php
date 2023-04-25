@@ -13,6 +13,7 @@ use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Order\Order;
 use App\Models\Partner\Partner;
+use App\Models\QrCode;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
@@ -84,8 +85,7 @@ class ShowcaseOrderController extends ApiEditController
             return APIResponse::error('Нельзя оформить заказ без билетов.');
         }
 
-        $grades = array_keys
-        ($data['rate']);
+        $grades = array_keys($data['rate']);
         $count = 0;
 
         $rules = ['name' => 'required', 'email' => 'required|email|bail', 'phone' => 'required'];
@@ -136,7 +136,14 @@ class ShowcaseOrderController extends ApiEditController
             }
         }
 
-        if ($media === 'qr') {
+        $partnerId = $partner->id ?? null;
+        $existingCookieHash = $request->cookie('qrCodeHash');
+        if ($existingCookieHash) {
+            /** @var QrCode|null $qrCode */
+            $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
+            $partnerId = $qrCode->partner_id ?? $partnerId;
+            $orderType = OrderType::qr_code;
+        } else if ($media === 'qr') {
             $orderType = OrderType::qr_code;
         } else if ($isPartnerSite) {
             $orderType = OrderType::partner_site;
@@ -150,7 +157,7 @@ class ShowcaseOrderController extends ApiEditController
                 $orderType,
                 $tickets,
                 OrderStatus::showcase_creating,
-                $partner->id ?? null,
+                $partnerId,
                 null,
                 null,
                 null,
