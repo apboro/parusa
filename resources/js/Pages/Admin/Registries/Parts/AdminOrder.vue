@@ -1,16 +1,25 @@
 <template>
+    <template v-if="has_error">
+        <CheckoutMessage>
+            <div>{{ error_message }}</div>
+            <a class="ap-checkout-link" :href="back_link" v-if="back_link">Вернуться к подбору билетов</a>
+            <CheckoutButton @clicked="close" v-else style="margin-top: 20px;">Закрыть</CheckoutButton>
+        </CheckoutMessage>
+    </template>
+
     <LayoutPage :title="title" :loading="processing" :breadcrumbs="breadcrumbs">
         <GuiContainer w-70>
             <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
             <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}</GuiValue>
             <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
-            <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
+            <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }}<span
+                v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
             <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }}<span v-if="info.data['cashier']">, {{ info.data['cashier'] }}</span></GuiValue>
         </GuiContainer>
 
         <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>
 
-        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve || is_returning">
+        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve || is_returning || is_replacement">
             <ListTableRow v-for="ticket in info.data['tickets']">
                 <ListTableCell>
                     <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
@@ -36,6 +45,11 @@
                 <ListTableCell v-if="is_returning" class="va-middle">
                     <InputCheckbox v-model="to_return" :value="ticket['id']" :disabled="!ticket['returnable']"/>
                 </ListTableCell>
+                <ListTableCell v-if="is_replacement" class="va-middle">
+                    <InputCheckbox v-model="to_replace" :value="ticket['id']"
+                                   :disabled="!ticket['transferable'] || (this.excursion_id !== null && this.excursion_id !== ticket['excursion_id'])"
+                                   @change="replacementTicketSelected(ticket['excursion_id'])"/>
+                </ListTableCell>
             </ListTableRow>
             <ListTableRow :no-highlight="true">
                 <ListTableCell colspan="3"/>
@@ -48,22 +62,67 @@
 
         <GuiContainer w-50 mt-30 mb-30 inline>
             <GuiHeading mb-20>Информация о плательщике
-                <IconEdit class="link w-20px ml-5" style="position: relative; top: 1px;" @click="editInfo"/>
+                <IconEdit v-if="!is_returning && !is_replacement" class="link w-20px ml-5" style="position: relative; top: 1px;" @click="editInfo"/>
             </GuiHeading>
             <GuiValue :title="'Имя'">{{ info.data['name'] }}</GuiValue>
             <GuiValue :title="'Email'">{{ info.data['email'] }}</GuiValue>
             <GuiValue :title="'Телефон'">{{ info.data['phone'] }}</GuiValue>
         </GuiContainer>
 
+        <GuiContainer v-if="is_replacement" w-50 mt-30 mb-30 inline pl-30>
+            <GuiMessage v-if="dates === null" border>Выберите билеты для замены</GuiMessage>
+            <GuiMessage v-else-if="dates.length === 0" border>Нет подходящих рейсов</GuiMessage>
+            <template v-else>
+                <GuiHeading mb-20>Выберите дату рейса</GuiHeading>
+                <InputDate v-model="replacement_date" :dates="dates" @change="replacementDateSelected"/>
+                <GuiMessage v-if="replacement_trips && replacement_trips.length === null" border>На выбранную дату нет рейсов с достаточным количеством свободных мест</GuiMessage>
+            </template>
+        </GuiContainer>
+
+        <GuiContainer v-if="replacement_trips && replacement_trips.length" mb-50>
+            <ListTable :titles="['Отправление', '№ Рейса', 'Экскурсия', 'Осталось билетов', 'Статусы движение / продажа', '']">
+                <ListTableRow v-for="trip in replacement_trips">
+                    <ListTableCell>
+                        <div>
+                            <b>
+                                <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
+                            </b>
+                        </div>
+                        <div>{{ trip['start_date'] }}</div>
+                    </ListTableCell>
+                    <ListTableCell>
+                        <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}</router-link>
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{ trip['excursion'] }}
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{ trip['tickets_total'] - trip['tickets_count'] }}
+                    </ListTableCell>
+                    <ListTableCell>
+                        <div>{{ trip['status'] }}</div>
+                        <div>{{ trip['sale_status'] }}</div>
+                    </ListTableCell>
+                    <ListTableCell class="va-middle">
+                        <GuiButton @clicked="selectReplacementTrip(trip['id'])">Выбрать</GuiButton>
+                    </ListTableCell>
+                </ListTableRow>
+            </ListTable>
+        </GuiContainer>
+
         <template v-if="info.is_loaded">
             <template v-if="!isReserve">
+                <GuiContainer mb-20>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning || is_replacement" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning || is_replacement || !info.data['email']" @clicked="emailOrder">Отправить клиенту на почту</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning || is_replacement" @clicked="printOrder">Распечатать</GuiButton>
+                </GuiContainer>
                 <GuiContainer>
-                    <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
-                    <GuiButton :disabled="!info.data['is_printable'] || is_returning || !info.data['email']" @clicked="emailOrder">Отправить клиенту на почту</GuiButton>
-                    <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
-                    <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
+                    <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress || is_replacement" @clicked="makeReturn" :color="'red'">Оформить возврат
                     </GuiButton>
                     <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>
+                    <GuiButton v-if="!is_replacement" @clicked="replaceTickets" :color="'red'">Оформить перенос рейса</GuiButton>
+                    <GuiButton v-if="is_replacement" @clicked="replaceTickets(true)">Отменить</GuiButton>
                 </GuiContainer>
             </template>
             <template v-else>
@@ -104,9 +163,30 @@ import form from "@/Core/Form";
 import FormPopUp from "@/Components/FormPopUp";
 import FormString from "@/Components/Form/FormString";
 import FormPhone from "@/Components/Form/FormPhone";
+import ListTableResponsive from "@/Components/ListTable/ListTableResponsive.vue";
+import ListTableResponsiveRow from "@/Components/ListTable/ListTableResponsiveRow.vue";
+import ListTableResponsiveCell from "@/Components/ListTable/ListTableResponsiveCell.vue";
+import PopUp from "@/Components/PopUp.vue";
+import GuiText from "@/Components/GUI/GuiText.vue";
+import IconExclamation from "@/Components/Icons/IconExclamation.vue";
+import roles from "@/Mixins/roles.vue";
+import CheckoutMessage from "@/Pages/Checkout/Components/CheckoutMessage.vue";
+import CheckoutButton from "@/Pages/Checkout/Components/CheckoutButton.vue";
+import GuiMessage from "@/Components/GUI/GuiMessage";
+import InputDate from "@/Components/Inputs/InputDate";
 
 export default {
     components: {
+        InputDate,
+        GuiMessage,
+        CheckoutButton,
+        CheckoutMessage,
+        IconExclamation,
+        GuiText,
+        PopUp,
+        ListTableResponsiveCell,
+        ListTableResponsiveRow,
+        ListTableResponsive,
         FormPhone,
         FormString,
         FormPopUp,
@@ -129,14 +209,25 @@ export default {
         orderId: {type: Number, required: true},
     },
 
-    mixins: [DeleteEntry],
+    mixins: [DeleteEntry, roles],
 
     data: () => ({
         info: data('/api/registries/order'),
         form: form(null, '/api/registries/order/buyer'),
         is_returning: false,
         to_return: [],
+        is_replacement: false,
+        to_replace: [],
+
+        excursion_id: null,
         returning_progress: false,
+        dates: null,
+        replacement_date: null,
+        replacement_trips: null,
+
+        has_error: false,
+        error_message: null,
+        back_link: null,
     }),
 
     computed: {
@@ -147,14 +238,17 @@ export default {
             return Boolean(this.info.data['is_reserve']);
         },
         processing() {
-            return this.info.is_loading || this.deleting;
+            return this.info.is_loading || this.deleting || this.returning_progress;
         },
         breadcrumbs() {
             if (this.isReserve) {
                 return [{caption: 'Реестр броней', to: {name: 'reserves-registry'}}];
             }
             return [{caption: 'Реестр заказов', to: {name: 'orders-registry'}}];
-        }
+        },
+        accepted() {
+            return this.hasRole(['admin', 'office_manager']);
+        },
     },
 
     created() {
@@ -298,6 +392,86 @@ export default {
 
         cancelReturn() {
             this.is_returning = false;
+        },
+
+        replaceTickets(clear = false) {
+            this.is_replacement = !this.is_replacement;
+            if (clear) {
+                this.to_replace = [];
+                this.dates = null;
+                this.replacement_trips = null;
+                this.replacement_date = null;
+                this.excursion_id = null;
+            }
+        },
+
+        replacementTicketSelected(excursion_id) {
+            if (this.to_replace.length === 0) {
+                this.excursion_id = null;
+                this.dates = null;
+                this.replacement_trips = null;
+                this.replacement_date = null
+            } else {
+                if (this.excursion_id === null) {
+                    this.returning_progress = true;
+                    axios.post('/api/order/replacement/get_available_dates', {excursion_id: excursion_id})
+                        .then(response => {
+                            this.dates = response.data.data['dates'];
+                        }).finally(() => {
+                        this.returning_progress = false;
+                    });
+                }
+                if (this.replacement_date !== null) {
+                    this.replacementDateSelected(this.replacement_date);
+                }
+                this.excursion_id = excursion_id;
+            }
+        },
+
+        replacementDateSelected(date) {
+            this.returning_progress = true;
+            axios.post('/api/order/replacement/get_trips_for_date', {
+                date: date,
+                excursion_id: this.excursion_id,
+                count: this.to_replace ? this.to_replace.length : null
+            })
+                .then((response) => {
+                    this.replacement_trips = response.data.data['trips'];
+                })
+                .catch(error => {
+                    this.replacement_trips = null;
+                    this.$toast.error(error.response.data.message, 5000);
+                })
+                .finally(() => {
+                    this.returning_progress = false;
+                });
+        },
+
+        selectReplacementTrip(tripId) {
+            this.$dialog.show('Перенести билеты на другой рейс рейса?', 'question', 'orange', [
+                this.$dialog.button('yes', 'Продолжить', 'orange'),
+                this.$dialog.button('no', 'Отмена', 'blue'),
+            ]).then(result => {
+                if (result === 'yes') {
+                    this.returning_progress = true;
+                    axios.post('/api/order/replacement/make', {
+                        order_id: this.orderId,
+                        trip_id: tripId,
+                        tickets: this.to_replace,
+                    })
+                        .then((response) => {
+                            this.$toast.success(response.data.message, 5000);
+                            this.replaceTickets(true);
+                            this.info.load({id: this.orderId});
+                        })
+                        .catch(error => {
+                            this.$toast.error(error.response.data.message, 5000);
+                        })
+                        .finally(() => {
+                            this.returning_progress = false;
+                        });
+                }
+            });
         },
     }
 }

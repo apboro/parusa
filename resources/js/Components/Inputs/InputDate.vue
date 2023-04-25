@@ -9,6 +9,7 @@
             :small="small"
             :clearable="clearable"
             :pickOnClear="pickOnClear"
+            :dates="dates"
             @focus="isFocused = true"
             @blur="isFocused = false"
             ref="input"
@@ -35,6 +36,7 @@ export default {
         small: {type: Boolean, default: false},
         clearable: {type: Boolean, default: false},
         pickOnClear: {type: Boolean, default: true},
+        dates: {type: Array, default: null},
     },
 
     emits: ['update:modelValue', 'change'],
