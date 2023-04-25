@@ -14,9 +14,9 @@ class AddNevaFieldsToShipsTable extends Migration
     public function up()
     {
         Schema::table('ships', function (Blueprint $table) {
-            $table->string('external_id')->nullable();
-            $table->string('label')->nullable();
-            $table->string('source')->nullable();
+            $table->string('external_id', 50)->nullable();
+            $table->string('label', 20)->nullable();
+            $table->string('source', 20)->nullable();
         });
     }
 

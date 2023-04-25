@@ -14,8 +14,8 @@ class AddIntegrationFieldsToExcursionsTable extends Migration
     public function up()
     {
         Schema::table('excursions', function (Blueprint $table) {
-            $table->string('external_id')->nullable();
-            $table->string('source')->nullable();
+            $table->string('external_id', 50)->nullable();
+            $table->string('source', 20)->nullable();
         });
     }
 

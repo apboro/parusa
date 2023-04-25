@@ -14,7 +14,7 @@ class AddExternalGradeToDictionaryTicketGradesTable extends Migration
     public function up()
     {
         Schema::table('dictionary_ticket_grades', function (Blueprint $table) {
-            $table->string('external_grade_name')->nullable();
+            $table->string('external_grade_name', 30)->nullable();
         });
     }
 

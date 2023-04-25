@@ -2,6 +2,7 @@
 
 namespace App\Models\Tickets;
 
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Excursions\Excursion;
 use App\Models\Model;
 use Carbon\Carbon;
@@ -50,5 +51,18 @@ class TicketsRatesList extends Model
     public function excursion(): BelongsTo
     {
         return $this->belongsTo(Excursion::class);
+    }
+
+    public function getShowcasePrice(?int $partnerId)
+    {
+        /** @var Collection<TicketRate> $prices */
+       /* $prices = $this->rates->whereIn('grade_id', TicketGrade::showcaseDisplayPrice)->get();
+        $adultPrice = $prices->first(function (TicketRate $rate) {
+            return $partnerId === null ? $rate->site_price : $rate->base_price;
+        });
+        if($adultPrice){
+
+        }*/
+        // todo empty adult price fixing
     }
 }
