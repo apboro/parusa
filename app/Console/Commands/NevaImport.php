@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\NevaTravel\ImportPiers;
+use App\NevaTravel\ImportPrograms;
+use App\NevaTravel\ImportProgramsPrices;
 use App\NevaTravel\ImportShips;
 use Illuminate\Console\Command;
 
@@ -41,7 +43,8 @@ class NevaImport extends Command
     {
         (new ImportShips())->run();
         (new ImportPiers())->run();
-
+        (new ImportPrograms())->run();
+        (new ImportProgramsPrices())->run();
         return 0;
     }
 }
