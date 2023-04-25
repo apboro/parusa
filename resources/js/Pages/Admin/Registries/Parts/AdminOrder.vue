@@ -400,6 +400,7 @@ export default {
                 this.to_replace = [];
                 this.dates = [];
                 this.replacement_trips = null;
+                this.replacement_date = null;
             }
         },
 
