@@ -6,6 +6,7 @@ use App\NevaTravel\ImportPiers;
 use App\NevaTravel\ImportPrograms;
 use App\NevaTravel\ImportProgramsPrices;
 use App\NevaTravel\ImportShips;
+use App\NevaTravel\ImportTrips;
 use Illuminate\Console\Command;
 
 class NevaImport extends Command
@@ -42,9 +43,19 @@ class NevaImport extends Command
     public function handle()
     {
         (new ImportShips())->run();
+        $this->info('Ships imported');
         (new ImportPiers())->run();
+        $this->info('Piers imported');
+
         (new ImportPrograms())->run();
+        $this->info('Programs imported');
+
         (new ImportProgramsPrices())->run();
+        $this->info('Prices imported');
+
+        (new ImportTrips())->run();
+        $this->info('Trips imported');
+
         return 0;
     }
 }
