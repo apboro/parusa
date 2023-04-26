@@ -3,13 +3,13 @@
 namespace App\NevaTravel;
 
 
-use App\Http\APIResponse;
-use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Excursions\Excursion;
-use App\Models\Excursions\ExcursionInfo;
+use App\Models\Piers\Pier;
 use App\Models\Sails\Trip;
 use App\Models\Ships\Ship;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Laravel\Telescope\Telescope;
 
 
 class ImportTrips
@@ -17,21 +17,37 @@ class ImportTrips
     public function run()
     {
         $nevaApiData = new NevaTravelRepository();
-        $nevaTrips = $nevaApiData->getSchedule([
-            'departure_time_from'=>'2023-04-25T15:30:00.000Z',
-            'departure_time_to'=>'2023-04-30T15:30:00.000Z'
-        ]);
 
         $meteors = Ship::whereNotNull('external_id')->pluck('external_id');
+        $piers = Pier::all();
+        $ships = Ship::all();
+        $excursions = Excursion::all();
 
-        foreach ($nevaTrips['body'] as $nevaTrip) {
-            $excursion = Excursion::where('external_id', $nevaTrip['program_id'])->first();
-            if ($meteors->contains($nevaTrip['ship_id'])){
-                Trip::createOrUpdate(['external_id'=>$nevaTrip['id']],
-                [
-                    'start_at'=>$nevaTrip['departure_time'],
+        for ($i = 0; $i <= 5; $i++) {
 
-                ]);
+            $nevaTrips = $nevaApiData->getCruisesInfo(['departure_date' => now()->addDays($i)->format('Y-m-d')]);
+            foreach ($nevaTrips['body'] as $nevaTrip) {
+
+                if ($meteors->contains($nevaTrip['ship_id'])) {
+
+                    $ship = $ships->firstWhere('external_id', $nevaTrip['ship_id']);
+
+                    Trip::updateOrCreate(['external_id' => $nevaTrip['id']],
+                        [
+                            'start_at' => Carbon::parse($nevaTrip['departure_date'])->format('Y-m-d H:i:s'),
+                            'end_at' => Carbon::parse($nevaTrip['default_arrival']['arrival_date'])->format('Y-m-d H:i:s'),
+                            'excursion_id' => $excursions->firstWhere('external_id', $nevaTrip['program_id'])->id,
+                            'start_pier_id' => $piers->firstWhere('external_id', $nevaTrip['pier_id'])->id,
+                            'end_pier_id' => $piers->firstWhere('external_id', $nevaTrip['default_arrival']['pier_id'])->id,
+                            'ship_id' => $ship->id,
+                            'cancellation_time' => 5,
+                            'status_id' => 1,
+                            'sale_status_id' => 1,
+                            'tickets_total' => round($ship->capacity * 0.8),
+                            'external_id' => $nevaTrip['id'],
+                            'source' => 'NevaTravelApi'
+                        ]);
+                }
             }
         }
     }

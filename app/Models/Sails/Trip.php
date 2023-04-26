@@ -56,6 +56,7 @@ class Trip extends Model implements Statusable
 {
     use HasStatus, HasFactory;
 
+    protected $guarded=[];
     /** @var array Attributes casting. */
     protected $casts = [
         'created_at' => 'datetime',

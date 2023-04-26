@@ -23,7 +23,7 @@ class ImportShips
                         'owner' => 'Нева Трэвэл',
                         'capacity' => $nevaShip['capacity'],
                         'label' => $nevaShip['label'],
-                        'source'=>'nevaTravelApi,'
+                        'source'=>'NevaTravelApi,'
                     ]);
             }
         }

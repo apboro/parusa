@@ -17,7 +17,7 @@ class ImportPiers
                     'external_parent_id' => $nevaPier['parent_id'],
                     'name' => $nevaPier['name'],
                     'status_id' => $nevaPier['is_active'] ? 1 : 2,
-                    'source'=>'nevaTravelApi',
+                    'source'=>'NevaTravelApi',
                 ]);
             PierInfo::updateOrCreate(['pier_id' => $pier->id],
                 [
