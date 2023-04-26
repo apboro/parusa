@@ -33,6 +33,7 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
 
         $date = $request->input('search.date');
         $persons = $request->input('search.persons');
+        $programs = $request->input('search.programs');
 
         $excursionsIDs = $request->input('excursions');
         if (!empty($excursionsIDs) && !is_array($excursionsIDs)) {
@@ -60,6 +61,13 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
             ->when(!empty($excursionsIDs), function (Builder $query) use ($excursionsIDs) {
                 $query->whereHas('excursion', function (Builder $query) use ($excursionsIDs) {
                     $query->whereIn('id', $excursionsIDs);
+                });
+            })
+            ->when($programs, function (Builder $query) use ($programs) {
+                $query->whereHas('excursion', function (Builder $query) use ($programs) {
+                    $query->whereHas('programs', function (Builder $query) use ($programs) {
+                        $query->where('id', $programs);
+                    });
                 });
             })
             ->orderBy('trips.start_at');
