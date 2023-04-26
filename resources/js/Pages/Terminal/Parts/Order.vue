@@ -4,7 +4,8 @@
             <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
             <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}</GuiValue>
             <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
-            <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
+            <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }}<span
+                v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
             <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }}<span v-if="info.data['cashier']">, {{ info.data['cashier'] }}</span></GuiValue>
         </GuiContainer>
 
@@ -47,7 +48,7 @@
                 <ListTableCell><b>Итого: {{ info.data['tickets_count'] }}</b></ListTableCell>
                 <ListTableCell><b>{{ info.data['total'] }} руб.</b></ListTableCell>
                 <ListTableCell/>
-                <ListTableCell v-if="isReserve || is_returning"/>
+                <ListTableCell v-if="isReserve || is_returning || is_replacement"/>
             </ListTableRow>
         </ListTable>
 
@@ -68,7 +69,7 @@
             <template v-else>
                 <GuiHeading mb-20>Выберите дату рейса</GuiHeading>
                 <InputDate v-model="replacement_date" :dates="dates" placeholder="Выберите дату" @change="replacementDateSelected"/>
-                <GuiMessage v-if="replacement_trips && replacement_trips.length === null" border>На выбранную дату нет рейсов с достаточным количеством свободных мест</GuiMessage>
+                <GuiMessage v-if="replacement_trips && replacement_trips.length === 0" border>На выбранную дату нет рейсов с достаточным количеством свободных мест</GuiMessage>
             </template>
         </GuiContainer>
 
@@ -95,7 +96,7 @@
                         <div>{{ trip['sale_status'] }}</div>
                     </ListTableCell>
                     <ListTableCell class="va-middle">
-                        <GuiButton @clicked="selectReplacementTrip(trip['id'])">Выбрать</GuiButton>
+                        <GuiButton @clicked="selectReplacementTrip(trip)">Выбрать</GuiButton>
                     </ListTableCell>
                 </ListTableRow>
             </ListTable>
@@ -103,10 +104,11 @@
 
         <div v-if="info.is_loaded && !isReserve" class="flex">
             <GuiContainer inline-flex v-if="printable">
-                <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
+                <GuiButton :disabled="!info.data['is_printable'] || is_returning || is_replacement" @clicked="printOrder">Распечатать</GuiButton>
             </GuiContainer>
             <GuiContainer inline-flex grow justify-end v-if="returnable">
-                <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
+                <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress || is_replacement" @clicked="makeReturn" :color="'red'">Оформить
+                    возврат
                 </GuiButton>
                 <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>
             </GuiContainer>
@@ -308,7 +310,7 @@ export default {
         },
 
         printOrder() {
-            axios.post('/api/registries/order/print', {id: this.orderId })
+            axios.post('/api/registries/order/print', {id: this.orderId})
                 .then(response => {
                     let order = atob(response.data.data['order']);
                     let byteNumbers = new Array(order.length);
@@ -329,9 +331,10 @@ export default {
             this.is_replacement = !this.is_replacement;
             if (clear) {
                 this.to_replace = [];
-                this.dates = [];
+                this.dates = null;
                 this.replacement_trips = null;
                 this.replacement_date = null;
+                this.excursion_id = null;
             }
         },
 
@@ -377,8 +380,8 @@ export default {
                 });
         },
 
-        selectReplacementTrip(tripId) {
-            this.$dialog.show('Перенести билеты на другой рейс рейса?', 'question', 'orange', [
+        selectReplacementTrip(trip) {
+            this.$dialog.show('Перенести билеты на рейс ' + trip['start_date'] + ' ' + trip['start_time'] + '?', 'question', 'orange', [
                 this.$dialog.button('yes', 'Продолжить', 'orange'),
                 this.$dialog.button('no', 'Отмена', 'blue'),
             ]).then(result => {
@@ -386,7 +389,7 @@ export default {
                     this.returning_progress = true;
                     axios.post('/api/order/replacement/make', {
                         order_id: this.orderId,
-                        trip_id: tripId,
+                        trip_id: trip['id'],
                         tickets: this.to_replace,
                     })
                         .then((response) => {

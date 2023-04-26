@@ -56,7 +56,7 @@
                 <ListTableCell><b>Итого: {{ info.data['tickets_count'] }}</b></ListTableCell>
                 <ListTableCell><b>{{ info.data['total'] }} руб.</b></ListTableCell>
                 <ListTableCell/>
-                <ListTableCell v-if="isReserve || is_returning"/>
+                <ListTableCell v-if="isReserve || is_returning || is_replacement"/>
             </ListTableRow>
         </ListTable>
 
@@ -75,7 +75,7 @@
             <template v-else>
                 <GuiHeading mb-20>Выберите дату рейса</GuiHeading>
                 <InputDate v-model="replacement_date" :dates="dates" placeholder="Выберите дату" @change="replacementDateSelected"/>
-                <GuiMessage v-if="replacement_trips && replacement_trips.length === null" border>На выбранную дату нет рейсов с достаточным количеством свободных мест</GuiMessage>
+                <GuiMessage v-if="replacement_trips && replacement_trips.length === 0" border>На выбранную дату нет рейсов с достаточным количеством свободных мест</GuiMessage>
             </template>
         </GuiContainer>
 
@@ -104,7 +104,7 @@
                         <div>{{ trip['sale_status'] }}</div>
                     </ListTableCell>
                     <ListTableCell class="va-middle">
-                        <GuiButton @clicked="selectReplacementTrip(trip['id'])">Выбрать</GuiButton>
+                        <GuiButton @clicked="selectReplacementTrip(trip)">Выбрать</GuiButton>
                     </ListTableCell>
                 </ListTableRow>
             </ListTable>
@@ -447,8 +447,8 @@ export default {
                 });
         },
 
-        selectReplacementTrip(tripId) {
-            this.$dialog.show('Перенести билеты на другой рейс рейса?', 'question', 'orange', [
+        selectReplacementTrip(trip) {
+            this.$dialog.show('Перенести билеты на рейс ' + trip['start_date'] + ' ' + trip['start_time'] + '?', 'question', 'orange', [
                 this.$dialog.button('yes', 'Продолжить', 'orange'),
                 this.$dialog.button('no', 'Отмена', 'blue'),
             ]).then(result => {
@@ -456,7 +456,7 @@ export default {
                     this.returning_progress = true;
                     axios.post('/api/order/replacement/make', {
                         order_id: this.orderId,
-                        trip_id: tripId,
+                        trip_id: trip['id'],
                         tickets: this.to_replace,
                     })
                         .then((response) => {
