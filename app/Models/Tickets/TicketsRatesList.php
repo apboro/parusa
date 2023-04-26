@@ -53,16 +53,18 @@ class TicketsRatesList extends Model
         return $this->belongsTo(Excursion::class);
     }
 
-    public function getShowcasePrice(?int $partnerId)
+    public function getShowcasePrice(?int $partnerId): int
     {
-        /** @var Collection<TicketRate> $prices */
-       /* $prices = $this->rates->whereIn('grade_id', TicketGrade::showcaseDisplayPrice)->get();
-        $adultPrice = $prices->first(function (TicketRate $rate) {
+        $prices = $this->rates()->whereIn('grade_id', TicketGrade::showcaseDisplayPrice)->get();
+        $adultPrice = $prices->first(function (TicketRate $rate) use ($partnerId){
             return $partnerId === null ? $rate->site_price : $rate->base_price;
         });
         if($adultPrice){
-
-        }*/
-        // todo empty adult price fixing
+            return $adultPrice;
+        } else {
+            return $this->rates->max(function(TicketRate $rate){
+                return $rate->base_price;
+            });
+        }
     }
 }

@@ -22,6 +22,7 @@ class TicketGrade extends AbstractDictionary
     public const neva_child = 54;
     public const neva_infant = 56;
     public const neva_attendant = 58;
+    public const showcaseDisplayPrice = [50, 2];
     public const neva_grades_array = [
         self::neva_full,
         self::neva_privileged,
