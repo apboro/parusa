@@ -64,7 +64,7 @@ class TicketsRatesList extends Model
         } else {
             return $this->rates->max(function(TicketRate $rate){
                 return $rate->base_price;
-            });
+            })->base_price;
         }
     }
 }
