@@ -57,11 +57,13 @@ class TicketsRatesList extends Model
     {
         /**@var TicketRate $adultPrice*/
         $adultPrice = $this->rates()->whereIn('grade_id', TicketGrade::showcaseDisplayPrice)->first();
-        if(!$adultPrice) {
-            $adultPrice = $this->rates->max(function (TicketRate $rate) {
+        if(!$adultPrice || $adultPrice->base_price == 0) {
+            return $this->rates->max(function (TicketRate $rate) {
                 return $rate->base_price;
             });
+        } else {
+
+            return $partnerId === null ? $adultPrice->site_price ?? $adultPrice->base_price : $adultPrice->base_price;
         }
-        return $partnerId === null ? $adultPrice->site_price : $adultPrice->base_price;
     }
 }

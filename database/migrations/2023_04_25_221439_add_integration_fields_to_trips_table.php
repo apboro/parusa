@@ -15,6 +15,7 @@ class AddIntegrationFieldsToTripsTable extends Migration
     {
         Schema::table('trips', function (Blueprint $table) {
             $table->string('external_id', 50)->nullable();
+            $table->string('program_price_id', 50)->nullable();
             $table->string('source', 50)->nullable();
         });
     }
@@ -29,6 +30,7 @@ class AddIntegrationFieldsToTripsTable extends Migration
         Schema::table('trips', function (Blueprint $table) {
             $table->dropColumn('external_id');
             $table->dropColumn('source');
+            $table->dropColumn('program_price_id');
         });
     }
 }

@@ -40,12 +40,13 @@ class ImportTrips
                             'start_pier_id' => $piers->firstWhere('external_id', $nevaTrip['pier_id'])->id,
                             'end_pier_id' => $piers->firstWhere('external_id', $nevaTrip['default_arrival']['pier_id'])->id,
                             'ship_id' => $ship->id,
-                            'cancellation_time' => 5,
+                            'cancellation_time' => 60,
                             'status_id' => 1,
                             'sale_status_id' => 1,
                             'tickets_total' => round($ship->capacity * 0.8),
                             'external_id' => $nevaTrip['id'],
-                            'source' => 'NevaTravelApi'
+                            'source' => 'NevaTravelApi',
+                            'program_price_id' => $nevaTrip['default_arrival']['prices_table'][0]['program_price_id'],
                         ]);
                 }
             }

@@ -17,6 +17,7 @@ use App\Models\QrCode;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
+use App\NevaTravel\NevaTravelRepository;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -61,7 +62,7 @@ class ShowcaseOrderController extends ApiEditController
             ->whereHas('excursion.ratesLists', function (Builder $query) use ($isPartnerSite) {
                 $query
                     ->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
-                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
+                        ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
                     ->whereHas('rates', function (Builder $query) use ($isPartnerSite) {
                         $query->where('grade_id', '!=', TicketGrade::guide);
                         if ($isPartnerSite) {
@@ -135,7 +136,9 @@ class ShowcaseOrderController extends ApiEditController
                 }
             }
         }
-
+        if ((new NevaTravelRepository())->checkCanOrderTickets($trip->external_id) === 'none'){
+            
+        };
         $partnerId = $partner->id ?? null;
         $existingCookieHash = $request->cookie('qrCodeHash');
         if ($existingCookieHash) {
