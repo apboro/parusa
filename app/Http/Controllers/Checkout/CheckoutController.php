@@ -217,34 +217,36 @@ class CheckoutController extends ApiController
         }
 
         // set order status
-        $order->setStatus(OrderStatus::showcase_confirmed);
-        Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
+        if ($order->id === OrderStatus::showcase_wait_for_pay) {
+            $order->setStatus(OrderStatus::showcase_confirmed);
+            Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
-        // add payment
-        $payment = new Payment();
-        $payment->gate = 'sber';
-        $payment->order_id = $order->id;
-        $payment->status_id = PaymentStatus::sale;
-        $payment->fiscal = '';
-        $payment->total = $response['amount'] / 100 ?? null;
-        $payment->by_card = $response['amount'] / 100 ?? null;
-        $payment->by_cash = 0;
-        $payment->save();
+            // add payment
+            $payment = new Payment();
+            $payment->gate = 'sber';
+            $payment->order_id = $order->id;
+            $payment->status_id = PaymentStatus::sale;
+            $payment->fiscal = '';
+            $payment->total = $response['amount'] / 100 ?? null;
+            $payment->by_card = $response['amount'] / 100 ?? null;
+            $payment->by_cash = 0;
+            $payment->save();
 
-        // Make job to do in background:
-        // make fiscal
-        // send tickets
-        // pay commission
-        // update order status
-        ProcessShowcaseConfirmedOrder::dispatch($order->id);
+            // Make job to do in background:
+            // make fiscal
+            // send tickets
+            // pay commission
+            // update order status
+            ProcessShowcaseConfirmedOrder::dispatch($order->id);
 
-        try {
-            $existingCookieHash = $request->cookie('qrCodeHash');
-            if ($existingCookieHash) {
-                StatisticQrCodes::addPayment($existingCookieHash);
+            try {
+                $existingCookieHash = $request->cookie('qrCodeHash');
+                if ($existingCookieHash) {
+                    StatisticQrCodes::addPayment($existingCookieHash);
+                }
+            } catch (Exception $e) {
+                Log::channel('sber_payments')->error('Error with qrstatistics: ' . $e->getMessage());
             }
-        } catch (Exception $e) {
-            Log::channel('sber_payments')->error('Error with qrstatistics: '. $e->getMessage());
         }
 
 
