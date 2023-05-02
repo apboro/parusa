@@ -219,7 +219,7 @@ class Currents
      */
     public function isStaffTerminal(): bool
     {
-        return $this->position() && $this->position()->is_staff && $this->hasRole(Role::terminal);
+        return $this->position() && $this->position()->is_staff && $this->hasRole(Role::terminal) && $this->terminal !== null;
     }
 
     /**
