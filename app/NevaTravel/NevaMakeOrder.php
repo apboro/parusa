@@ -2,11 +2,13 @@
 
 namespace App\NevaTravel;
 
+use App\Models\Order\Order;
+
 class NevaMakeOrder
 {
-    public function run(array $params): array
+    public function run(Order $order): array
     {
         $nevaApiData = new NevaTravelRepository();
-        return $nevaApiData->makeOrder($params);
+        return $nevaApiData->makeOrder($order);
     }
 }

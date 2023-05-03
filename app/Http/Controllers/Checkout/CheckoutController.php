@@ -14,6 +14,7 @@ use App\Models\Order\Order;
 use App\Models\Payments\Payment;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
+use App\NevaTravel\NevaTravelRepository;
 use App\SberbankAcquiring\Connection;
 use App\SberbankAcquiring\Helpers\Currency;
 use App\SberbankAcquiring\HttpClient\CurlClient;
@@ -238,6 +239,11 @@ class CheckoutController extends ApiController
             // pay commission
             // update order status
             ProcessShowcaseConfirmedOrder::dispatch($order->id);
+
+            $response = (new NevaTravelRepository())->makeOrder($order);
+
+            $order->neva_travel_id = $response['body']['id'];
+            $order->save();
 
             try {
                 $existingCookieHash = $request->cookie('qrCodeHash');

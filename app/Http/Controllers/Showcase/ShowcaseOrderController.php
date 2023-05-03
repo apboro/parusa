@@ -137,7 +137,7 @@ class ShowcaseOrderController extends ApiEditController
             }
         }
         if ((new NevaTravelRepository())->checkCanOrderTickets($trip->external_id) === 'none'){
-            
+            return APIResponse::error('Нет продажи билетов на этот рейс.');
         };
         $partnerId = $partner->id ?? null;
         $existingCookieHash = $request->cookie('qrCodeHash');
