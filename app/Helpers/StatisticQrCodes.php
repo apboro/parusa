@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Models\QrCode;
 use App\Models\QrCodesStatistic;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class StatisticQrCodes
 {
@@ -20,6 +21,7 @@ class StatisticQrCodes
     public static function addPayment(string $qrCodeHash)
     {
         $qrCode = QrCode::where('hash', $qrCodeHash)->first();
+        Log::info('addPayment in statistic, $qrCode', [$qrCode]);
         QrCodesStatistic::create([
             'qr_code_id' => $qrCode->id,
             'is_payment' => true,
