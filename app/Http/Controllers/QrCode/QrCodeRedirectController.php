@@ -6,6 +6,7 @@ use App\Helpers\StatisticQrCodes;
 use App\Http\Controllers\Controller;
 use App\Models\QrCode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class QrCodeRedirectController extends Controller
 {
@@ -23,7 +24,9 @@ class QrCodeRedirectController extends Controller
         $link = $qrCode->link;
 
         StatisticQrCodes::addVisit($qrCode);
-
-        return redirect($link)->withCookie(cookie('qrCodeHash', $hash, env('QR_LIFETIME', 30240)));
+        $cookie = cookie('qrCodeHash', $hash, env('QR_LIFETIME', 30240),
+            null, '', true, true, false,'None');
+        Log::debug($cookie);
+        return redirect($link)->withCookie($cookie);
     }
 }

@@ -238,9 +238,10 @@ class CheckoutController extends ApiController
             // pay commission
             // update order status
             ProcessShowcaseConfirmedOrder::dispatch($order->id);
-
+            Log::debug('Request in checkout controller', [$request]);
             try {
                 $existingCookieHash = $request->cookie('qrCodeHash');
+                Log::debug('existingCookieHash', $existingCookieHash);
                 if ($existingCookieHash) {
                     StatisticQrCodes::addPayment($existingCookieHash);
                 }
