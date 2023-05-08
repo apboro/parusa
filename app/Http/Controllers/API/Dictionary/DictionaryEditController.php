@@ -5,6 +5,11 @@ namespace App\Http\Controllers\API\Dictionary;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\AbstractDictionary;
+use App\Models\Dictionaries\TicketStatus;
+use App\Models\Sails\Trip;
+use App\Models\Ships\Ship;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -121,6 +126,10 @@ class DictionaryEditController extends ApiEditController
             $item->setAttribute($key, $value);
         }
 
+        if ($class == Ship::class) {
+            $this->updateCapacityTrips($request['id'], $data['capacity']);
+        }
+
         if (!$item->exists) {
             $order = (int)$class::query()->max('order') + 1;
             $item->order = $order;
@@ -133,5 +142,32 @@ class DictionaryEditController extends ApiEditController
             $item->wasRecentlyCreated ? "Запись в словаре \"$title\" добавлена" : "Запись в словаре \"$title\" обновлена",
             $item->toArray()
         );
+    }
+
+    /**
+     * @param int $capacity
+     * @return void
+     */
+    private function updateCapacityTrips(int $shipId, int $capacity): void
+    {
+        $now = Carbon::now();
+
+        $trips = Trip::query()
+            ->whereDate('start_at', '>=', $now)
+            ->whereHas('ship', function ($query) use ($shipId) {
+                $query->where('id', $shipId);
+            })
+            ->withCount(['tickets' => function(Builder $query) {
+                $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
+            }])
+            ->get()
+            ->filter(function (Trip $trip) use ($capacity) {
+                return $trip->getAttribute('tickets_count') <= $capacity;
+            });
+
+        $trips->map(function (Trip $trip) use ($capacity) {
+            $trip->tickets_total = $capacity;
+            $trip->update();
+        });
     }
 }
