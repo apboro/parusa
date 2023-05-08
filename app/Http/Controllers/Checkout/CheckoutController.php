@@ -232,13 +232,6 @@ class CheckoutController extends ApiController
             $payment->by_cash = 0;
             $payment->save();
 
-            // Make job to do in background:
-            // make fiscal
-            // send tickets
-            // pay commission
-            // update order status
-            ProcessShowcaseConfirmedOrder::dispatch($order->id);
-            Log::debug('Request in checkout controller', [$request]);
             try {
                 $existingCookieHash = $request->cookie('qrCodeHash');
                 Log::debug('existingCookieHash', $existingCookieHash);
@@ -248,6 +241,14 @@ class CheckoutController extends ApiController
             } catch (Exception $e) {
                 Log::channel('sber_payments')->error('Error with qrstatistics: ' . $e->getMessage());
             }
+
+            // Make job to do in background:
+            // make fiscal
+            // send tickets
+            // pay commission
+            // update order status
+            ProcessShowcaseConfirmedOrder::dispatch($order->id);
+
         }
 
 
