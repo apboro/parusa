@@ -139,7 +139,7 @@ class ShowcaseOrderController extends ApiEditController
 
         $partnerId = $partner->id ?? null;
         $existingCookieHash = $request->cookie('qrCodeHash');
-        Log::debug('showcaseOrderController existingCookieHash, $qrCode', [$existingCookieHash]);
+//        Log::debug('showcaseOrderController existingCookieHash, $qrCode', [$existingCookieHash]);
         if ($existingCookieHash) {
             /** @var QrCode|null $qrCode */
             $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();

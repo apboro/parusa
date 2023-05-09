@@ -26,7 +26,7 @@ class QrCodeRedirectController extends Controller
         StatisticQrCodes::addVisit($qrCode);
         $cookie = cookie('qrCodeHash', $hash, env('QR_LIFETIME', 30240),
             null, '', true, true, false,'None');
-        Log::debug($cookie);
+//        Log::debug($cookie);
         return redirect($link)->withCookie($cookie);
     }
 }
