@@ -98,4 +98,22 @@ class Ship extends Model implements Statusable, Typeable, AsDictionary
     {
         $this->checkAndSetType(ShipType::class, $type, WrongShipTypeException::class, $save);
     }
+
+    /**
+     * Save the model to the database.
+     *
+     * @param  array  $options
+     * @return bool
+     */
+    public function save(array $options = [])
+    {
+        $saved = parent::save($options);
+
+        if($saved) {
+            // TODO update trips tickets total
+        }
+
+        return $saved;
+    }
+
 }
