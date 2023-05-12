@@ -234,7 +234,7 @@ class CheckoutController extends ApiController
 
             try {
                 $existingCookieHash = $request->cookie('qrCodeHash');
-//                Log::debug('existingCookieHash', $existingCookieHash);
+                Log::debug('existingCookieHash', $existingCookieHash);
                 if ($existingCookieHash) {
                     StatisticQrCodes::addPayment($existingCookieHash);
                 }
