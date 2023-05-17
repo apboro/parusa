@@ -2,6 +2,7 @@
     <div>
         <GuiContainer w-50 mt-30 inline>
             <GuiValue :title="'Название'">{{ data['name'] }}</GuiValue>
+            <GuiValue :title="'Название для чека'">{{ data['name_receipt'] }}</GuiValue>
             <GuiValue :title="'Тип программы'">{{ data['programs'] ? data['programs'].join(', ') : '' }}</GuiValue>
             <GuiValue :title="'Продолжительность'"><span v-if="data['duration']">{{ data['duration'] }} минут</span></GuiValue>
             <GuiValue :title="'Статус'">

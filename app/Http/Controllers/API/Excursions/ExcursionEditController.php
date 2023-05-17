@@ -13,6 +13,7 @@ class ExcursionEditController extends ApiEditController
 {
     protected array $rules = [
         'name' => 'required',
+        'name_receipt' => 'required|max:40',
         'status_id' => 'required',
         'images' => 'required',
         'duration' => 'required|integer|min:0',
@@ -21,6 +22,7 @@ class ExcursionEditController extends ApiEditController
 
     protected array $titles = [
         'name' => 'Название',
+        'name_receipt' => 'Название для чека',
         'status_id' => 'Статус',
         'only_site' => 'Эксклюзивная экскурсия - билеты продаются только через сайт Алые Паруса',
         'images' => 'Фотография экскурсии',
@@ -52,6 +54,7 @@ class ExcursionEditController extends ApiEditController
         return APIResponse::form(
             [
                 'name' => $excursion->name,
+                'name_receipt' => $excursion->name_receipt,
                 'status_id' => $excursion->status_id,
                 'only_site' => $excursion->only_site,
                 'images' => $excursion->images->map(function (Image $image) {
@@ -96,6 +99,7 @@ class ExcursionEditController extends ApiEditController
         }
 
         $excursion->setAttribute('name', $data['name']);
+        $excursion->setAttribute('name_receipt', $data['name_receipt']);
         $excursion->setAttribute('only_site', $data['only_site'] ?? false);
         $excursion->setStatus($data['status_id'], false);
         $excursion->save();
