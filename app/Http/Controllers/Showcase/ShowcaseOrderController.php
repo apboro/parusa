@@ -50,6 +50,7 @@ class ShowcaseOrderController extends ApiEditController
 
         /** @var ?Partner $partner */
         $partner = $originalKey['partner_id'] ? Partner::query()->where('id', $originalKey['partner_id'])->first() : null;
+        $partnerId = $partner->id ?? null;
         $isPartnerSite = $originalKey['is_partner'];
         $media = $originalKey['media'] ?? null;
 
@@ -137,15 +138,7 @@ class ShowcaseOrderController extends ApiEditController
             }
         }
 
-        $partnerId = $partner->id ?? null;
-        $existingCookieHash = $request->cookie('qrCodeHash');
-        Log::info('showcaseController existingCookieHash, $qrCode', [$existingCookieHash]);
-        if ($existingCookieHash) {
-            /** @var QrCode|null $qrCode */
-            $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
-            $partnerId = $qrCode->partner_id ?? $partnerId;
-            $orderType = OrderType::qr_code;
-        } else if ($media === 'qr') {
+        if ($media === 'qr') {
             $orderType = OrderType::qr_code;
         } else if ($isPartnerSite) {
             $orderType = OrderType::partner_site;

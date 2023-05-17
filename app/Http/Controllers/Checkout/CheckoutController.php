@@ -5,13 +5,16 @@ namespace App\Http\Controllers\Checkout;
 use App\Helpers\StatisticQrCodes;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Http\Middleware\ExternalProtect;
 use App\Jobs\ProcessShowcaseConfirmedOrder;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Order\Order;
+use App\Models\Partner\Partner;
 use App\Models\Payments\Payment;
+use App\Models\QrCode;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\SberbankAcquiring\Connection;
@@ -232,6 +235,22 @@ class CheckoutController extends ApiController
             $payment->by_cash = 0;
             $payment->save();
 
+            try {
+            $existingCookieHash = $request->cookie('qrCodeHash');
+
+            Log::info('CheckoutController existingCookieHash, $qrCode', [$existingCookieHash]);
+
+            if ($existingCookieHash) {
+                $qrCode = QrCode::where('hash', $existingCookieHash)->first();
+                $order->partner_id = $qrCode->partner_id;
+                $order->type = OrderType::qr_code;
+                $order->save();
+                StatisticQrCodes::addPayment($existingCookieHash);
+            }
+            } catch (Exception $e) {
+                Log::channel('sber_payments')->error('Error with qrstatistics: ' . $e->getMessage());
+            }
+
             // Make job to do in background:
             // make fiscal
             // send tickets
@@ -239,15 +258,7 @@ class CheckoutController extends ApiController
             // update order status
             ProcessShowcaseConfirmedOrder::dispatch($order->id);
             Log::info('Request in checkout controller', [$request]);
-            try {
-                $existingCookieHash = $request->cookie('qrCodeHash');
-                Log::info('existingCookieHash', $existingCookieHash);
-                if ($existingCookieHash) {
-                    StatisticQrCodes::addPayment($existingCookieHash);
-                }
-            } catch (Exception $e) {
-                Log::channel('sber_payments')->error('Error with qrstatistics: ' . $e->getMessage());
-            }
+
         }
 
 
