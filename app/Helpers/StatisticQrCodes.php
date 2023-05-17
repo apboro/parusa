@@ -31,6 +31,6 @@ class StatisticQrCodes
         } catch (\Exception $e){
             Log::channel('single')->error($e);
         }
-        }
+    }
 
 }
