@@ -5,11 +5,6 @@ namespace App\Http\Controllers\API\Dictionary;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\AbstractDictionary;
-use App\Models\Dictionaries\TicketStatus;
-use App\Models\Sails\Trip;
-use App\Models\Ships\Ship;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
