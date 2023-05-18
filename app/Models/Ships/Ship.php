@@ -113,7 +113,7 @@ class Ship extends Model implements Statusable, Typeable, AsDictionary
 
         if ($saved) {
             Trip::query()
-                ->whereDate('start_at', '>=', Carbon::now())
+                ->where('start_at', '>=', Carbon::now())
                 ->where('ship_id', $this->id)
                 ->update(['tickets_total' => $this->capacity]);
         }
