@@ -24,6 +24,7 @@
                 :date="innerValue"
                 :from="fromProxy"
                 :to="toProxy"
+                :dates="dates"
                 @selected="picked"
             />
         </div>
@@ -48,6 +49,7 @@ export default {
         small: {type: Boolean, default: false},
         clearable: {type: Boolean, default: false},
         pickOnClear: {type: Boolean, default: true},
+        dates: {type: Array, default: null},
     },
 
     emits: ['update:modelValue', 'focus', 'blur'],

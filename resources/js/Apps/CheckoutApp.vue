@@ -9,7 +9,7 @@
                            :debug="debug"
                 />
                 <OrderContacts :order="order"/>
-                <OrderActions :order="order" @cancel="cancel" @checkout="checkout"/>
+                <OrderActions :order="order" :is_checking="is_checking" @cancel="cancel" @checkout="checkout"/>
             </template>
 
             <template v-if="has_error">
@@ -52,6 +52,7 @@ export default {
         crm_url_override: null,
         processing: true,
         is_cancelling: false,
+        is_checking: false,
 
         order: {},
         payment: {},
@@ -173,6 +174,8 @@ export default {
                     this.error_message = error.response.data['message'];
                     this.back_link = error.response.data.payload['back_link'];
                     this.has_error = true;
+                })
+                .finally(() => {
                     this.is_checking = false;
                 });
         },

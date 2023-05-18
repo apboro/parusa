@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use JsonException;
 
 class ShowcaseOrderController extends ApiEditController
@@ -50,6 +51,7 @@ class ShowcaseOrderController extends ApiEditController
 
         /** @var ?Partner $partner */
         $partner = $originalKey['partner_id'] ? Partner::query()->where('id', $originalKey['partner_id'])->first() : null;
+        $partnerId = $partner->id ?? null;
         $isPartnerSite = $originalKey['is_partner'];
         $media = $originalKey['media'] ?? null;
 

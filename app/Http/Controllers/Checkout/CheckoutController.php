@@ -12,9 +12,9 @@ use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Order\Order;
 use App\Models\Payments\Payment;
+use App\Models\QrCode;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
-use App\NevaTravel\NevaTravelRepository;
 use App\SberbankAcquiring\Connection;
 use App\SberbankAcquiring\Helpers\Currency;
 use App\SberbankAcquiring\HttpClient\CurlClient;
@@ -218,7 +218,7 @@ class CheckoutController extends ApiController
         }
 
         // set order status
-        if ($order->id === OrderStatus::showcase_wait_for_pay) {
+        if ($order->status_id === OrderStatus::showcase_wait_for_pay) {
             $order->setStatus(OrderStatus::showcase_confirmed);
             Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
@@ -233,28 +233,36 @@ class CheckoutController extends ApiController
             $payment->by_cash = 0;
             $payment->save();
 
+            $existingCookieHash = $request->cookie('qrCodeHash');
+
+            Log::info('CheckoutController existingCookieHash, $qrCode', [$existingCookieHash]);
+
+            try {
+
+                if ($existingCookieHash) {
+                    /** @var QrCode|null $qrCode */
+                    $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
+                    Log::info('CheckoutController $qrCode', [$qrCode]);
+                    if ($qrCode) {
+                        $order->partner_id = $qrCode->partner_id;
+                        $order->type_id = OrderType::qr_code;
+                        $order->save();
+                        StatisticQrCodes::addPayment($existingCookieHash);
+                    }
+                }
+            } catch (Exception $e) {
+                Log::channel('sber_payments')->error('Error with qrstatistics: ' . $e->getMessage());
+            }
+
             // Make job to do in background:
             // make fiscal
             // send tickets
             // pay commission
             // update order status
             ProcessShowcaseConfirmedOrder::dispatch($order->id);
+            Log::info('Request in checkout controller', [$request]);
 
-            $response = (new NevaTravelRepository())->makeOrder($order);
-
-            $order->neva_travel_id = $response['body']['id'];
-            $order->save();
-
-            try {
-                $existingCookieHash = $request->cookie('qrCodeHash');
-                if ($existingCookieHash) {
-                    StatisticQrCodes::addPayment($existingCookieHash);
-                }
-            } catch (Exception $e) {
-                Log::channel('sber_payments')->error('Error with qrstatistics: ' . $e->getMessage());
-            }
         }
-
 
         // response OK
         $backLink = $container['ref'] ?? env('SHOWCASE_AP_PAGE');
