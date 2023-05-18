@@ -10,8 +10,10 @@ use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\ShipStatus;
 use App\Models\Dictionaries\ShipType;
 use App\Models\Model;
+use App\Models\Sails\Trip;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -98,4 +100,25 @@ class Ship extends Model implements Statusable, Typeable, AsDictionary
     {
         $this->checkAndSetType(ShipType::class, $type, WrongShipTypeException::class, $save);
     }
+
+    /**
+     * Save the model to the database.
+     *
+     * @param  array  $options
+     * @return bool
+     */
+    public function save(array $options = [])
+    {
+        $saved = parent::save($options);
+
+        if ($saved) {
+            Trip::query()
+                ->whereDate('start_at', '>=', Carbon::now())
+                ->where('ship_id', $this->id)
+                ->update(['tickets_total' => $this->capacity]);
+        }
+
+        return $saved;
+    }
+
 }

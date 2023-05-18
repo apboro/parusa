@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * @property int $id
  * @property int $status_id
+ * @property int $type_id
  * @property int $partner_id
  * @property int|null $position_id
  * @property int|null $terminal_id

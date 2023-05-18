@@ -22,7 +22,7 @@ class StatisticQrCodes
     {
         try {
             $qrCode = QrCode::where('hash', $qrCodeHash)->first();
-//            Log::debug('addPayment in statistic, $qrCode', [$qrCode]);
+            Log::debug('addPayment in statistic, $qrCode', [$qrCode]);
             QrCodesStatistic::create([
                 'qr_code_id' => $qrCode->id,
                 'is_payment' => true,
@@ -31,6 +31,6 @@ class StatisticQrCodes
         } catch (\Exception $e){
             Log::channel('single')->error($e);
         }
-        }
+    }
 
 }

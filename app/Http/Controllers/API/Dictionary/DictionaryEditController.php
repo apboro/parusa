@@ -5,6 +5,11 @@ namespace App\Http\Controllers\API\Dictionary;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\AbstractDictionary;
+use App\Models\Dictionaries\TicketStatus;
+use App\Models\Sails\Trip;
+use App\Models\Ships\Ship;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -120,6 +125,7 @@ class DictionaryEditController extends ApiEditController
         foreach ($data as $key => $value) {
             $item->setAttribute($key, $value);
         }
+
 
         if (!$item->exists) {
             $order = (int)$class::query()->max('order') + 1;

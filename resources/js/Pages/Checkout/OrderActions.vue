@@ -8,7 +8,7 @@
             <CheckoutButton color="light" @clicked="$emit('cancel')" :disabled="!order['secret']">Отменить заказ</CheckoutButton>
         </div>
         <div class="ap-showcase__checkout-button ap-showcase__checkout-button-ok">
-            <CheckoutButton @clicked="$emit('checkout')" :disabled="!order['secret']">Оплатить</CheckoutButton>
+            <CheckoutButton @clicked="$emit('checkout')" :disabled="!order['secret'] || is_checking">Оплатить</CheckoutButton>
         </div>
     </div>
 </template>
@@ -23,6 +23,7 @@ export default {
 
     props: {
         order: {type: Object, default: null},
+        is_checking: {type: Boolean}
     },
 }
 </script>
