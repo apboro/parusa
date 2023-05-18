@@ -233,10 +233,11 @@ class CheckoutController extends ApiController
             $payment->by_cash = 0;
             $payment->save();
 
-            try {
-                $existingCookieHash = $request->cookie('qrCodeHash');
+            $existingCookieHash = $request->cookie('qrCodeHash');
 
-                Log::info('CheckoutController existingCookieHash, $qrCode', [$existingCookieHash]);
+            Log::info('CheckoutController existingCookieHash, $qrCode', [$existingCookieHash]);
+
+            try {
 
                 if ($existingCookieHash) {
                     /** @var QrCode|null $qrCode */
