@@ -5,14 +5,12 @@ namespace App\Http\Controllers\Checkout;
 use App\Helpers\StatisticQrCodes;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Http\Middleware\ExternalProtect;
 use App\Jobs\ProcessShowcaseConfirmedOrder;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Order\Order;
-use App\Models\Partner\Partner;
 use App\Models\Payments\Payment;
 use App\Models\QrCode;
 use App\Models\Sails\Trip;
@@ -236,17 +234,20 @@ class CheckoutController extends ApiController
             $payment->save();
 
             try {
-            $existingCookieHash = $request->cookie('qrCodeHash');
+                $existingCookieHash = $request->cookie('qrCodeHash');
 
-            Log::info('CheckoutController existingCookieHash, $qrCode', [$existingCookieHash]);
+                Log::info('CheckoutController existingCookieHash, $qrCode', [$existingCookieHash]);
 
-            if ($existingCookieHash) {
-                $qrCode = QrCode::where('hash', $existingCookieHash)->first();
-                $order->partner_id = $qrCode->partner_id;
-                $order->type = OrderType::qr_code;
-                $order->save();
-                StatisticQrCodes::addPayment($existingCookieHash);
-            }
+                if ($existingCookieHash) {
+                    /** @var QrCode|null $qrCode */
+                    $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
+                    if ($qrCode) {
+                        $order->partner_id = $qrCode->partner_id;
+                        $order->type = OrderType::qr_code;
+                        $order->save();
+                        StatisticQrCodes::addPayment($existingCookieHash);
+                    }
+                }
             } catch (Exception $e) {
                 Log::channel('sber_payments')->error('Error with qrstatistics: ' . $e->getMessage());
             }
@@ -260,7 +261,6 @@ class CheckoutController extends ApiController
             Log::info('Request in checkout controller', [$request]);
 
         }
-
 
         // response OK
         $backLink = $container['ref'] ?? env('SHOWCASE_AP_PAGE');
