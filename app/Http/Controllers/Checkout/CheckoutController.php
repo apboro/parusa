@@ -245,7 +245,7 @@ class CheckoutController extends ApiController
                     Log::info('CheckoutController $qrCode', [$qrCode]);
                     if ($qrCode) {
                         $order->partner_id = $qrCode->partner_id;
-                        $order->type = OrderType::qr_code;
+                        $order->type_id = OrderType::qr_code;
                         $order->save();
                         StatisticQrCodes::addPayment($existingCookieHash);
                     }
