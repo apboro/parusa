@@ -121,6 +121,7 @@ class DictionaryEditController extends ApiEditController
             $item->setAttribute($key, $value);
         }
 
+
         if (!$item->exists) {
             $order = (int)$class::query()->max('order') + 1;
             $item->order = $order;

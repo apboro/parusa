@@ -5,14 +5,12 @@ namespace App\Http\Controllers\Checkout;
 use App\Helpers\StatisticQrCodes;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Http\Middleware\ExternalProtect;
 use App\Jobs\ProcessShowcaseConfirmedOrder;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Order\Order;
-use App\Models\Partner\Partner;
 use App\Models\Payments\Payment;
 use App\Models\QrCode;
 use App\Models\Sails\Trip;
@@ -220,7 +218,7 @@ class CheckoutController extends ApiController
         }
 
         // set order status
-        if ($order->id === OrderStatus::showcase_wait_for_pay) {
+        if ($order->status_id === OrderStatus::showcase_wait_for_pay) {
             $order->setStatus(OrderStatus::showcase_confirmed);
             Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
@@ -235,18 +233,23 @@ class CheckoutController extends ApiController
             $payment->by_cash = 0;
             $payment->save();
 
-            try {
             $existingCookieHash = $request->cookie('qrCodeHash');
 
             Log::info('CheckoutController existingCookieHash, $qrCode', [$existingCookieHash]);
 
-            if ($existingCookieHash) {
-                $qrCode = QrCode::where('hash', $existingCookieHash)->first();
-                $order->partner_id = $qrCode->partner_id;
-                $order->type = OrderType::qr_code;
-                $order->save();
-                StatisticQrCodes::addPayment($existingCookieHash);
-            }
+            try {
+
+                if ($existingCookieHash) {
+                    /** @var QrCode|null $qrCode */
+                    $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
+                    Log::info('CheckoutController $qrCode', [$qrCode]);
+                    if ($qrCode) {
+                        $order->partner_id = $qrCode->partner_id;
+                        $order->type_id = OrderType::qr_code;
+                        $order->save();
+                        StatisticQrCodes::addPayment($existingCookieHash);
+                    }
+                }
             } catch (Exception $e) {
                 Log::channel('sber_payments')->error('Error with qrstatistics: ' . $e->getMessage());
             }
@@ -260,7 +263,6 @@ class CheckoutController extends ApiController
             Log::info('Request in checkout controller', [$request]);
 
         }
-
 
         // response OK
         $backLink = $container['ref'] ?? env('SHOWCASE_AP_PAGE');

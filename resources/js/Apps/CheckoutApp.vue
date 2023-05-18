@@ -174,6 +174,8 @@ export default {
                     this.error_message = error.response.data['message'];
                     this.back_link = error.response.data.payload['back_link'];
                     this.has_error = true;
+                })
+                .finally(() => {
                     this.is_checking = false;
                 });
         },
