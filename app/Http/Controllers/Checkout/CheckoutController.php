@@ -218,7 +218,7 @@ class CheckoutController extends ApiController
         }
 
         // set order status
-        if ($order->id === OrderStatus::showcase_wait_for_pay) {
+        if ($order->status_id === OrderStatus::showcase_wait_for_pay) {
             $order->setStatus(OrderStatus::showcase_confirmed);
             Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
