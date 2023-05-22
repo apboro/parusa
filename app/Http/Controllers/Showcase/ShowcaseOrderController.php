@@ -17,6 +17,7 @@ use App\Models\QrCode;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
+use App\NevaTravel\NevaOrder;
 use App\NevaTravel\NevaTravelRepository;
 use Carbon\Carbon;
 use Exception;
@@ -80,6 +81,7 @@ class ShowcaseOrderController extends ApiEditController
             return APIResponse::error('Нет продажи билетов на этот рейс.');
         }
 
+
         $flat = $request->input('data');
         $data = Arr::undot($flat);
         $count = count($data['rate'] ?? []);
@@ -138,17 +140,9 @@ class ShowcaseOrderController extends ApiEditController
                 }
             }
         }
-        if ((new NevaTravelRepository())->checkCanOrderTickets($trip->external_id) === 'none'){
-            return APIResponse::error('Нет продажи билетов на этот рейс.');
-        };
-        $partnerId = $partner->id ?? null;
-        $existingCookieHash = $request->cookie('qrCodeHash');
-        if ($existingCookieHash) {
-            /** @var QrCode|null $qrCode */
-            $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
-            $partnerId = $qrCode->partner_id ?? $partnerId;
-            $orderType = OrderType::qr_code;
-        } else if ($media === 'qr') {
+
+
+        if ($media === 'qr') {
             $orderType = OrderType::qr_code;
         } else if ($isPartnerSite) {
             $orderType = OrderType::partner_site;
@@ -173,6 +167,16 @@ class ShowcaseOrderController extends ApiEditController
             );
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
+        }
+
+        //Neva Travel Make Order
+        if ($trip->external_id != null) {
+            if ($trip->source === "NevaTravelApi") {
+                $result = (new NevaOrder())->make($order);
+                if (!$result) {
+                    return APIResponse::error('Нет продажи билетов на этот рейс.');
+                }
+            }
         }
 
         $orderSecret = json_encode([

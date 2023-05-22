@@ -52,6 +52,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property TripDiscountStatus $discountStatus
  * @property Collection $chains
  * @property string|null $external_id
+ * @property string|null $source
  */
 class Trip extends Model implements Statusable
 {

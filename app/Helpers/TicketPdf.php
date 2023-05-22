@@ -18,7 +18,11 @@ class TicketPdf
     {
         $size = [0, 0, 595.28, 841.89]; // A4
 
-        $view = env('PDF_TICKET_A4', 'pdf/ticket_a4');
+        if ($ticket->neva_travel_order_number) {
+            $view = 'pdf/ticket_a4_neva';
+        } else {
+            $view = env('PDF_TICKET_A4', 'pdf/ticket_a4');
+        }
 
         return self::generate($ticket, $size, 'portrait', $view);
     }

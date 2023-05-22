@@ -45,13 +45,16 @@ class NevaTravelRepository
         return $this->apiClient->post('request_ticket_order', $query);
     }
 
-    public function checkCanOrderTickets($trip_external_id)
+    public function approveOrder(string $query = '')
     {
-        $trip = $this->getCruisesInfo(['point_id' => $trip_external_id]);
-
-        //many (есть, много), less_than_10 (есть, менее 10), less_than_3 (есть, менее 3), none (нет мест)
-        return $trip['body'][0]['default_arrival']['prices_table'][0]['available_seats'];
+        return $this->apiClient->post('approve_order?order_id='.$query);
     }
+
+    public function getOrderInfo(string $query = '')
+    {
+        return $this->apiClient->post('get_order_info?order_id='. $query);
+    }
+
 
     public function makeNevaOrderFromParusaOrder(Order $order)
     {
@@ -64,7 +67,7 @@ class NevaTravelRepository
                     'purchase_price' => $ticket->base_price,
                     'qty' => 1
                 ];
-
+        }
             $params = [
                 'ticket_list' => $ticket_list,
                 'hide_ticket_price' => true,
@@ -73,9 +76,33 @@ class NevaTravelRepository
                 'client_email' => $order->email,
                 'comment' => ''
             ];
-        }
 
         return $params;
-
     }
+
+    public function checkCanOrderTickets(string $trip_external_id)
+    {
+        $trip = $this->getCruisesInfo(['point_id' => $trip_external_id]);
+
+        //many (50), less_than_10 (есть, менее 10), less_than_3 (есть, менее 3), none (нет мест)
+        $result = $trip['body'][0]['default_arrival']['prices_table'][0]['available_seats'];
+        return $this->convertSeatsToInt($result);
+    }
+    function convertSeatsToInt($result) {
+        switch ($result) {
+            case 'many':
+                return 100;
+            case 'less_than_10':
+                return 9;
+            case 'less_than_3':
+                return 2;
+            case 'none':
+                return 0;
+            default:
+                return -1; // or whatever value you want to return for invalid input
+        }
+    }
+
+
 }
+
