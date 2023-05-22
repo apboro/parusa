@@ -15,7 +15,7 @@ class AddNameReceiptExcursionOption extends Migration
     {
         Schema::table('excursions', static function (Blueprint $table) {
 
-            $table->string('name_receipt', 40)->after('only_site');
+            $table->string('name_receipt', 40)->after('only_site')->nullable();
         });
     }
 
