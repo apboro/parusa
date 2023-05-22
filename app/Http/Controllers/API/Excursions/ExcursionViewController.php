@@ -27,6 +27,7 @@ class ExcursionViewController extends ApiController
         // fill data
         $values = [
             'name' => $excursion->name,
+            'name_receipt' => $excursion->name_receipt,
             'status' => $excursion->status->name,
             'status_id' => $excursion->status_id,
             'active' => $excursion->hasStatus(ExcursionStatus::active),
