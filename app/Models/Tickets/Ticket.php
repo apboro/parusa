@@ -293,7 +293,7 @@ class Ticket extends Model implements Statusable
             ->size(200)
             ->margin(0)
             ->roundBlockSizeMode(new RoundBlockSizeModeNone())
-            ->data($this->neva_travel_order_number ?? json_encode($payload, JSON_THROW_ON_ERROR))
+            ->data($this->order->neva_travel_order_number ?? json_encode($payload, JSON_THROW_ON_ERROR))
             ->build()
             ->getDataUri();
     }
