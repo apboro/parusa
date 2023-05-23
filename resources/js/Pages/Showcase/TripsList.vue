@@ -35,37 +35,37 @@
                         <thead>
                         <tr>
                             <th class="ap-showcase__trip-time">Время отправления</th>
-                            <th class="ap-showcase__trip-excursion">Причал, теплоход</th>
                             <th class="ap-showcase__trip-info">Программа</th>
+                            <th class="ap-showcase__trip-excursion">Причал</th>
                             <th class="ap-showcase__trip-duration">Время в пути</th>
                             <th class="ap-showcase__trip-price">Стоимость за взрослого</th>
-                            <th class="ap-showcase__trip-status">Статус рейса</th>
                             <th class="ap-showcase__trip-buy"></th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr v-for="trip in trips">
-                            <td>
-                                <div>
+                            <td data-label="Время отправления:">
+                                <div class="mobile-hide">
                                     {{ trip['start_time'] }}
                                 </div>
-                                <div style="color: #747474;">
+                                <div class="mobile-hide" style="color: #747474;">
                                     {{ trip['start_date'] }}
                                 </div>
+                                <div class="mobile-show mobile-inline" style="color: #747474;">
+                                    {{ trip['start_date'] }} {{ trip['start_time'] }}
+                                </div>
                             </td>
-                            <td>
-                                <span class="ap-link" @click="showPierInfo(trip)">Причал "{{ trip['pier'] }}"</span>
-                                <span>{{ trip['ship'] }}</span>
-                            </td>
-                            <td>
+                            <td data-label="Программа:">
                                 <span class="ap-link" @click="showExcursionInfo(trip)">{{ trip['excursion'] }}</span>
                                 <span>
                                         <span v-if="trip['programs'] && trip['programs'].length > 0">{{ trip['programs'].join(', ') }}</span>
                                     </span>
                             </td>
+                            <td data-label="Причал:">
+                                <span class="ap-link" @click="showPierInfo(trip)">Причал "{{ trip['pier'] }}"</span>
+                            </td>
                             <td data-label="Время в пути:"><span class="ap-not-brake">{{ trip['duration'] }} мин.</span></td>
                             <td data-label="Стоимость за взрослого:"><span class="ap-not-brake">{{ trip['price'] }} руб.</span></td>
-                            <td data-label="Статус рейса:"><span class="ap-not-brake">{{ trip['status'] }}</span></td>
                             <td>
                                 <ShowcaseButton @click="select(trip)">Купить билеты</ShowcaseButton>
                             </td>
@@ -302,6 +302,10 @@ export default {
     }
 }
 
+.mobile-show {
+    display: none;
+}
+
 @media screen and (max-width: 1000px) {
 
     .ap-showcase__trips {
@@ -320,11 +324,16 @@ export default {
         }
 
         tr {
-            border-bottom: none !important;
+            padding-bottom: 15px;
+            display: block;
         }
 
         tr:not(:first-child) td:first-child {
-            padding-top: 50px !important;
+            padding-top: 20px !important;
+        }
+
+        tr:last-child {
+            border-bottom: none !important;
         }
 
         td {
@@ -341,6 +350,21 @@ export default {
             content: attr(data-label);
             float: left;
             margin-right: 10px;
+        }
+    }
+
+    .mobile {
+        &-show {
+            display: inline-block;
+        }
+
+        &-hide {
+            display: none;
+        }
+
+        &-inline {
+            display: inline-block;
+            color: #747474;
         }
     }
 }

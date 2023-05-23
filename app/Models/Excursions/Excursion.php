@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * @property int $id
  * @property string $name
+ * @property string $name_receipt
  * @property int $status_id
  * @property bool $only_site
  *
