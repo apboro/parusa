@@ -71,7 +71,6 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             $tickets[] = $ticket;
         });
 
-        Log::debug('sending approve', [$order]);
         $result = (new NevaOrder())->approve($order);
         $order->neva_travel_order_number = $result['body']['number'];
         $order->save();
