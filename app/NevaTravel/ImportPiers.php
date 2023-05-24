@@ -14,7 +14,7 @@ class ImportPiers
         foreach ($nevaPiers['body'] as $nevaPier) {
             $pier = Pier::updateOrCreate(['external_id' => $nevaPier['id']],
                 [
-                    'external_parent_id' => $nevaPier['parent_id'],
+                    'external_parent_id' => $nevaPier['parent_id'] ?? null,
                     'name' => $nevaPier['name'],
                     'status_id' => $nevaPier['is_active'] ? 1 : 2,
                     'source'=>'NevaTravelApi',
@@ -25,6 +25,11 @@ class ImportPiers
                     'label' => $nevaPier['label'],
                     'description' => $nevaPier['description'] ?? null,
                 ]);
+            if ($nevaPier['parent_id']){
+                $parentPier = Pier::where('external_id', $nevaPier['parent_id'])->first();
+                $pier->name=$parentPier->name.' '. $pier->name;
+                $pier->save();
+            }
         }
     }
 

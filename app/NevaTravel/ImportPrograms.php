@@ -16,11 +16,28 @@ class ImportPrograms
         $nevaApiData = new NevaTravelRepository();
         $nevaPrograms = $nevaApiData->getProgramsInfo();
         foreach ($nevaPrograms['body'] as $nevaProgram) {
-
             $excursion = Excursion::firstOrNew(['external_id'=> $nevaProgram['id']]);
             $excursion->setAttribute('name', $nevaProgram['name']);
-            $excursion->status_id = $nevaProgram['is_active'] ? 1 : 2;
             $excursion->source = 'Нева Трэвел';
+
+            if ($excursion->status_id == 1 && !$excursion->neva_status && $nevaProgram['is_active']) {
+                $excursion->status_id = 2;
+                $excursion->neva_status = true;
+            }
+            if ($excursion->status_id == 1 && $excursion->neva_status && !$nevaProgram['is_active']) {
+                $excursion->neva_status = false;
+            }
+            if ($excursion->status_id == 2 && !$excursion->neva_status && !$nevaProgram['is_active']) {
+                $excursion->status_id = 1;
+            }
+            if ($excursion->status_id == 2 && $excursion->neva_status && !$nevaProgram['is_active']) {
+                $excursion->neva_status = false;
+                $excursion->status_id = 1;
+            }
+            if ($excursion->status_id == 2 && !$excursion->neva_status && $nevaProgram['is_active']) {
+                $excursion->neva_status = true;
+            }
+
             $excursion->save();
 
             $info = $excursion->info;
