@@ -71,9 +71,16 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             $tickets[] = $ticket;
         });
 
-        $result = (new NevaOrder())->approve($order);
-        $order->neva_travel_order_number = $result['body']['number'];
-        $order->save();
+
+        try {
+            $result = (new NevaOrder($order))->approve();
+            if ($result['body']['number']) {
+                $order->neva_travel_order_number = $result['body']['number'];
+                $order->save();
+            }
+        } catch (Exception $e) {
+            Log::error('Neva API Error: ' . $e->getMessage());
+        }
 
         if (env('SBER_ACQUIRING_PRODUCTION'))
         {

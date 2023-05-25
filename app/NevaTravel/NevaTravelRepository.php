@@ -2,6 +2,7 @@
 
 namespace App\NevaTravel;
 
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use Facade\FlareClient\Api;
 
@@ -45,20 +46,31 @@ class NevaTravelRepository
         return $this->apiClient->post('request_ticket_order', $query);
     }
 
-    public function approveOrder(string $query = '')
+    public function approveOrder(string $query = ''): array
     {
-        return $this->apiClient->post('approve_order?order_id='.$query);
+        return $this->apiClient->post('approve_order?order_id=' . $query);
     }
 
-    public function getOrderInfo(string $query = '')
+    public function cancelOrder(array $query = []): array
     {
-        return $this->apiClient->post('get_order_info?order_id='. $query);
+        return $this->apiClient->post('cancel_order', $query);
+    }
+
+    public function getOrderInfo(string $query = ''): array
+    {
+        return $this->apiClient->post('get_order_info?order_id=' . $query);
+    }
+
+    public function commentOrder(array $query = []): array
+    {
+        return $this->apiClient->post('comment_order', $query);
     }
 
 
     public function makeNevaOrderFromParusaOrder(Order $order)
     {
-        foreach ($order->tickets as $ticket) {
+        $tickets = $order->tickets()->whereIn('status_id', TicketStatus::ticket_had_paid_statuses)->get();
+        foreach ($tickets as $ticket) {
             $ticket_list[] =
                 [
                     'departure_point_id' => $ticket->trip->external_id,
@@ -68,14 +80,14 @@ class NevaTravelRepository
                     'qty' => 1
                 ];
         }
-            $params = [
-                'ticket_list' => $ticket_list,
-                'hide_ticket_price' => true,
-                'client_name' => $order->name,
-                'client_phone' => $order->phone,
-                'client_email' => $order->email,
-                'comment' => ''
-            ];
+        $params = [
+            'ticket_list' => $ticket_list,
+            'hide_ticket_price' => true,
+            'client_name' => $order->name,
+            'client_phone' => $order->phone,
+            'client_email' => $order->email,
+            'comment' => ''
+        ];
 
         return $params;
     }
@@ -88,7 +100,9 @@ class NevaTravelRepository
         $result = $trip['body'][0]['default_arrival']['prices_table'][0]['available_seats'];
         return $this->convertSeatsToInt($result);
     }
-    function convertSeatsToInt($result) {
+
+    function convertSeatsToInt($result)
+    {
         switch ($result) {
             case 'many':
                 return 100;

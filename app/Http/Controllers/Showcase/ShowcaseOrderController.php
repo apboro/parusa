@@ -170,13 +170,17 @@ class ShowcaseOrderController extends ApiEditController
         }
 
         //Neva Travel Make Order
-        if ($trip->external_id != null) {
-            if ($trip->source === "NevaTravelApi") {
-                $result = (new NevaOrder())->make($order);
-                if (!$result) {
-                    return APIResponse::error('Нет продажи билетов на этот рейс.');
+        try {
+            if ($trip->external_id != null) {
+                if ($trip->source === "NevaTravelApi") {
+                    $result = (new NevaOrder($order))->make();
+                    if (!$result) {
+                        return APIResponse::error('Нет продажи билетов на этот рейс.');
+                    }
                 }
             }
+        } catch (Exception $e) {
+            Log::error('Neva API Error: ' . $e->getMessage());
         }
 
         $orderSecret = json_encode([

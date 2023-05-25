@@ -46,15 +46,14 @@ class NevaImport extends Command
         $this->info('Ships imported');
         (new ImportPiers())->run();
         $this->info('Piers imported');
-
         (new ImportPrograms())->run();
         $this->info('Programs imported');
 
         (new ImportProgramsPrices())->run();
         $this->info('Prices imported');
 
-        (new ImportTrips())->run();
-        $this->info('Trips imported');
+//        (new ImportTrips())->run();
+//        $this->info('Trips imported');
 
         return 0;
     }

@@ -6,34 +6,41 @@ use App\Models\Order\Order;
 
 class NevaOrder
 {
+    private Order $order;
     private NevaTravelRepository $nevaApiData;
 
     /**
      * @param NevaTravelRepository $nevaApiData
      */
-    public function __construct()
+    public function __construct(Order $order)
     {
+        $this->order = $order;
         $this->nevaApiData = new NevaTravelRepository();
     }
 
-    public function make(Order $order): bool
+    public function make(): bool
     {
-        $result = $this->nevaApiData->makeOrder($order);
+        $result = $this->nevaApiData->makeOrder($this->order);
         if ($result['status'] != 200) {
             return false;
         }
-        $order->neva_travel_id = $result['body']['id'];
-        $order->save();
+        $this->order->neva_travel_id = $result['body']['id'];
+        $this->order->save();
         return true;
     }
 
-    public function approve(Order $order)
+    public function approve(): array
     {
-        return $this->nevaApiData->approveOrder($order->neva_travel_id);
+        return $this->nevaApiData->approveOrder($this->order->neva_travel_id);
     }
 
-    public function getOrderInfo(Order $order)
+    public function cancel(): array
     {
-        return $this->nevaApiData->getOrderInfo($order->neva_travel_id);
+        return $this->nevaApiData->cancelOrder(['id' => $this->order->neva_travel_id,  'comment' => 'Клиент потребовал возврат']);
+    }
+
+    public function getOrderInfo()
+    {
+        return $this->nevaApiData->getOrderInfo($this->order->neva_travel_id);
     }
 }

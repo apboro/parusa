@@ -25,9 +25,9 @@ class ImportPiers
                     'label' => $nevaPier['label'],
                     'description' => $nevaPier['description'] ?? null,
                 ]);
-            if ($nevaPier['parent_id']){
-                $parentPier = Pier::where('external_id', $nevaPier['parent_id'])->first();
-                $pier->name=$parentPier->name.' '. $pier->name;
+            if ($nevaPier['parent_id'] != ''){
+                $parentPierName = $nevaApiData->getPiersInfo(['pier_ids'=>$nevaPier['parent_id']])['body'][0]['name'];
+                $pier->name=$parentPierName.' '. $pier->name;
                 $pier->save();
             }
         }
