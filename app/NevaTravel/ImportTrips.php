@@ -14,6 +14,12 @@ use Laravel\Telescope\Telescope;
 
 class ImportTrips
 {
+    private $endDate;
+    public function __construct($endDate)
+    {
+        $this->endDate = $endDate;
+    }
+
     public function run()
     {
         $nevaApiData = new NevaTravelRepository();
@@ -24,7 +30,7 @@ class ImportTrips
             ->where('status_id', 1)->get();
         $excursionsArray = $excursions->pluck('external_id')->toArray();
         $currentDate = Carbon::now();
-        $endDate = Carbon::now()->setDay(1)->month(12);
+        $endDate = $this->endDate;
 
         Trip::query()->whereNotNull('external_id')->update(['status_id' => 4]);
 

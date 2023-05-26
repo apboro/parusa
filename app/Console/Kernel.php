@@ -29,6 +29,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('process:orders')->everyMinute();
         $schedule->command('lifepos:sync')->dailyAt('4:00');
         $schedule->command('sync:showcase_pay_waiting')->everyMinute();
+        $schedule->command('neva:today')->everyFiveMinutes();
     }
 
     /**
