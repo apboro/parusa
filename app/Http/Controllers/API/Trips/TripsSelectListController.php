@@ -69,6 +69,9 @@ class TripsSelectListController extends ApiController
             ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
             ->whereDate('start_at', $date)
+            ->when(env('REMOVE_NEVA_TRIPS'), function (Builder $query){
+                $query->where('source', null);
+            })
             ->where('start_at', '>', $now)
             ->whereHas('excursion.ratesLists', function (Builder $query) use ($date) {
                 $query->whereDate('start_at', '<=', $date)->whereDate('end_at', '>=', $date);
