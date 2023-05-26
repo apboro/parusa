@@ -89,7 +89,7 @@ class ImportProgramsPrices
             ['excursion_id' => $excursion->id],
             [
                 'start_at' => now()->format('Y-m-d'),
-                'end_at' => now()->addDays(30)->format('Y-m-d')
+                'end_at' => now()->addDays(90)->format('Y-m-d')
             ]);
     }
 

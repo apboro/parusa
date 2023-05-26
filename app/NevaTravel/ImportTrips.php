@@ -32,8 +32,6 @@ class ImportTrips
         $currentDate = Carbon::now();
         $endDate = $this->endDate;
 
-        Trip::query()->whereNotNull('external_id')->update(['status_id' => 4]);
-
         while ($currentDate <= $endDate) {
             $nevaTrips = $nevaApiData->getCruisesInfo(['program_ids' => $excursionsArray, 'departure_date' => $currentDate->format('Y-m-d')]);
             if ($nevaTrips) {
