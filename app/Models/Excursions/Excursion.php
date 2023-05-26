@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * @property int $id
  * @property string $name
+ * @property string $name_receipt
  * @property int $status_id
  * @property bool $only_site
  *
@@ -38,6 +39,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Excursion extends Model implements Statusable, AsDictionary
 {
     use HasStatus, HasFactory, ExcursionAsDictionary;
+
+    protected $guarded = [];
 
     protected $casts = [
         'only_site' => 'bool',

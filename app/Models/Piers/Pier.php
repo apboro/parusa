@@ -23,8 +23,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property PierInfo $info
  * @property Collection $images
  * @property Collection $mapImages
- * @property mixed $partner_inner_id
- * @property mixed $partner_inner_parent_id
+ * @property string|null $external_id
+ * @property string|null $external_parent_id
+ * @property string|null $source
  */
 class Pier extends Model implements Statusable, AsDictionary
 {

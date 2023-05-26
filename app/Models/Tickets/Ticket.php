@@ -48,7 +48,7 @@ class Ticket extends Model implements Statusable
     use HasStatus;
 
     /** @var string[] Fillable attributes. */
-    protected $fillable = ['trip_id', 'grade_id', 'status_id', 'base_price'];
+    protected $fillable = ['trip_id', 'grade_id', 'status_id', 'base_price', 'neva_travel_ticket'];
 
     /**
      * User's status.
@@ -293,8 +293,9 @@ class Ticket extends Model implements Statusable
             ->size(200)
             ->margin(0)
             ->roundBlockSizeMode(new RoundBlockSizeModeNone())
-            ->data(json_encode($payload, JSON_THROW_ON_ERROR))
+            ->data($this->order->neva_travel_order_number ?? json_encode($payload, JSON_THROW_ON_ERROR))
             ->build()
             ->getDataUri();
     }
+
 }

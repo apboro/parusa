@@ -6,6 +6,7 @@
     >
         <GuiContainer mt-30>
             <FormString :form="form" :name="'name'"/>
+            <FormString :form="form" :name="'name_receipt'"/>
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'excursion_statuses'"/>
             <FormCheckBox :form="form" :name="'only_site'" :hide-title="true"/>
             <FormImages :form="form" :name="'images'"/>

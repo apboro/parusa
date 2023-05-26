@@ -97,13 +97,7 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
             /** @var TicketsRatesList $rateList */
             $rateList = $trip->excursion->ratesLists->first();
             /** @var TicketRate $adult */
-            $adult = $rateList->rates->where('grade_id', TicketGrade::adult)->first();
-            if (!$adult) {
-                $adult = $rateList->rates->max(function (TicketRate $rate) {
-                    return $rate;
-                });
-            }
-            $adultPrice = $partnerId === null ? $adult->site_price : $adult->base_price;
+            $adultPrice = $rateList->getShowcasePrice($partnerId);
 
             return [
                 'id' => $trip->id,

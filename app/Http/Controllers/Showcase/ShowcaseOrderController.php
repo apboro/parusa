@@ -17,6 +17,8 @@ use App\Models\QrCode;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
+use App\NevaTravel\NevaOrder;
+use App\NevaTravel\NevaTravelRepository;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -63,7 +65,7 @@ class ShowcaseOrderController extends ApiEditController
             ->whereHas('excursion.ratesLists', function (Builder $query) use ($isPartnerSite) {
                 $query
                     ->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
-                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
+                        ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
                     ->whereHas('rates', function (Builder $query) use ($isPartnerSite) {
                         $query->where('grade_id', '!=', TicketGrade::guide);
                         if ($isPartnerSite) {
@@ -78,6 +80,7 @@ class ShowcaseOrderController extends ApiEditController
         if ($trip === null) {
             return APIResponse::error('Нет продажи билетов на этот рейс.');
         }
+
 
         $flat = $request->input('data');
         $data = Arr::undot($flat);
@@ -132,11 +135,13 @@ class ShowcaseOrderController extends ApiEditController
                         'grade_id' => $gradeId,
                         'status_id' => TicketStatus::showcase_creating,
                         'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
+                        'neva_travel_ticket' => $trip->source === 'NevaTravelApi',
                     ]);
                     $tickets[] = $ticket;
                 }
             }
         }
+
 
         if ($media === 'qr') {
             $orderType = OrderType::qr_code;
@@ -164,6 +169,8 @@ class ShowcaseOrderController extends ApiEditController
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
+
+        (new NevaOrder($order))->make();
 
         $orderSecret = json_encode([
             'id' => $order->id,

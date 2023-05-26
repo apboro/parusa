@@ -2,6 +2,7 @@
 
 namespace App\Models\Tickets;
 
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Excursions\Excursion;
 use App\Models\Model;
 use Carbon\Carbon;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class TicketsRatesList extends Model
 {
+    protected $guarded = [];
     /** @var string Referenced table name. */
     protected $table = 'tickets_rates_list';
 
@@ -49,5 +51,19 @@ class TicketsRatesList extends Model
     public function excursion(): BelongsTo
     {
         return $this->belongsTo(Excursion::class);
+    }
+
+    public function getShowcasePrice(?int $partnerId): int
+    {
+        /**@var TicketRate $adultPrice*/
+        $adultPrice = $this->rates()->whereIn('grade_id', TicketGrade::showcaseDisplayPrice)->first();
+        if(!$adultPrice || $adultPrice->base_price == 0) {
+            return $this->rates->max(function (TicketRate $rate) {
+                return $rate->base_price;
+            });
+        } else {
+
+            return $partnerId === null ? $adultPrice->site_price ?? $adultPrice->base_price : $adultPrice->base_price;
+        }
     }
 }

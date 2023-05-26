@@ -14,6 +14,7 @@ use App\Models\Partner\Partner;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
+use App\NevaTravel\NevaOrder;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -115,6 +116,7 @@ class TerminalMakeOrderController extends ApiEditController
                         'grade_id' => $ordering->grade_id,
                         'status_id' => $ticketStatus,
                         'base_price' => $ticketInfo['price'],
+                        'neva_travel_ticket' => $ordering->trip->source === 'NevaTravelApi',
                     ]);
                     $tickets[] = $ticket;
                 }
@@ -143,6 +145,8 @@ class TerminalMakeOrderController extends ApiEditController
 
                 // clear cart
                 PositionOrderingTicket::query()->where(['position_id' => $position->id, 'terminal_id' => $terminal->id])->delete();
+
+                (new NevaOrder($order))->make();
 
                 // send order to POS
                 LifePosSales::send($order, $terminal, $current->position());
