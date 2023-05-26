@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Order;
 use App\Classes\EmailReceiver;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Jobs\ApproveNevaOrder;
 use App\LifePay\CloudPrint;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;
@@ -181,6 +182,7 @@ class OrderReturnController extends ApiController
                     $nevaOrder->cancel();
                     if ($order->status_id == OrderStatus::showcase_partial_returned) {
                         $nevaOrder->make();
+                        ApproveNevaOrder::dispatch($order);
                         try {
                             Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
                         } catch (Exception $exception) {
