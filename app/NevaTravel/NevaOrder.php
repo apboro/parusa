@@ -37,6 +37,7 @@ class NevaOrder
         } catch (Exception $e) {
             Log::error('Neva API make ticket error: ' . $e->getMessage());
         }
+        return true;
     }
 
     public function approve()
