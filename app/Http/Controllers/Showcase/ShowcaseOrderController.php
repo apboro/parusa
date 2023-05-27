@@ -65,7 +65,7 @@ class ShowcaseOrderController extends ApiEditController
             ->whereHas('excursion.ratesLists', function (Builder $query) use ($isPartnerSite) {
                 $query
                     ->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
-                        ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
+                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
                     ->whereHas('rates', function (Builder $query) use ($isPartnerSite) {
                         $query->where('grade_id', '!=', TicketGrade::guide);
                         if ($isPartnerSite) {
@@ -170,7 +170,9 @@ class ShowcaseOrderController extends ApiEditController
             return APIResponse::error($exception->getMessage());
         }
 
-        (new NevaOrder($order))->make();
+        if (!(new NevaOrder($order))->make()) {
+            return APIResponse::error('Невозможно оформить заказ на этот рейс.');
+        }
 
         $orderSecret = json_encode([
             'id' => $order->id,

@@ -28,7 +28,7 @@ class NevaOrder
                 $result = $this->nevaApiData->makeOrder($this->order);
                 if (!$result || $result['status'] != 200) {
                     Log::error('Neva API make ticket error: ', [$result]);
-                    return APIResponse::error('Невозможно оформить заказ на этот рейс.');
+                    return false;
                 }
                 $this->order->neva_travel_id = $result['body']['id'];
                 $this->order->save();
