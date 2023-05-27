@@ -23,20 +23,26 @@ class NevaOrder
 
     public function make()
     {
-        if ($this->checkOrderHasNevaTickets()) {
-            $result = $this->nevaApiData->makeOrder($this->order);
-            if (!$result || $result['status'] != 200) {
-                return APIResponse::error('Невозможно оформить заказ на этот рейс.');
+        try {
+            if ($this->checkOrderHasNevaTickets()) {
+                $result = $this->nevaApiData->makeOrder($this->order);
+                if (!$result || $result['status'] != 200) {
+                    Log::error('Neva API make ticket error: ', [$result]);
+                    return APIResponse::error('Невозможно оформить заказ на этот рейс.');
+                }
+                $this->order->neva_travel_id = $result['body']['id'];
+                $this->order->save();
+                Log::debug('Neva API make ticket success: ', [$result, $this->order->neva_travel_id]);
             }
-            $this->order->neva_travel_id = $result['body']['id'];
-            $this->order->save();
+        } catch (Exception $e) {
+            Log::error('Neva API make ticket error: ' . $e->getMessage());
         }
     }
 
     public function approve()
     {
-        if ($this->checkOrderHasNevaTickets()) {
-            try {
+        try {
+            if ($this->checkOrderHasNevaTickets()) {
                 $result = $this->nevaApiData->approveOrder($this->order->neva_travel_id);
                 if ($result['body']['number']) {
                     $this->order->neva_travel_order_number = $result['body']['number'];
@@ -44,9 +50,9 @@ class NevaOrder
                 } else {
                     Log::error('Neva API Approve Error', [$result]);
                 }
-            } catch (Exception $e) {
-                Log::error('Neva API Error: ' . $e->getMessage());
             }
+        } catch (Exception $e) {
+            Log::error('Neva API Error: ' . $e->getMessage());
         }
     }
 
@@ -55,7 +61,7 @@ class NevaOrder
         $tickets = $this->order->tickets;
         foreach ($tickets as $ticket) {
             if ($ticket->neva_travel_ticket === 1) {
-             return true;
+                return true;
             }
         }
         return false;
