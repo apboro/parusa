@@ -47,7 +47,7 @@ class ImportTrips
                                 'end_pier_id' => $piers->firstWhere('external_id', $nevaTrip['default_arrival']['pier_id'])->id,
                                 'ship_id' => $ship->id,
                                 'cancellation_time' => 60,
-                                'status_id' => 1,
+                                'status_id' => $nevaTrip['default_arrival']['prices_table'][0]['available_seats'] != 'none' ? 1 : 4,
                                 'sale_status_id' => 1,
                                 'tickets_total' => round($ship->capacity * 0.8),
                                 'source' => 'NevaTravelApi',
