@@ -146,7 +146,9 @@ class TerminalMakeOrderController extends ApiEditController
                 // clear cart
                 PositionOrderingTicket::query()->where(['position_id' => $position->id, 'terminal_id' => $terminal->id])->delete();
 
-                (new NevaOrder($order))->make();
+                if (!(new NevaOrder($order))->make()) {
+                    return APIResponse::error('Невозможно оформить заказ на этот рейс.');
+                }
 
                 // send order to POS
                 LifePosSales::send($order, $terminal, $current->position());

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Order;
 use App\Exceptions\Account\AccountException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Jobs\ApproveNevaOrder;
 use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
@@ -146,9 +147,13 @@ class PartnerMakeOrderController extends ApiEditController
                 $data['name'] ?? null,
                 $data['phone'] ?? null
             );
+
             $nevaOrder = new NevaOrder($order);
-            $nevaOrder->make();
-            $nevaOrder->approve();
+            if (!$nevaOrder->make()) {
+                return APIResponse::error('Невозможно оформить заказ на этот рейс.');
+            } else {
+                $nevaOrder->approve();
+            }
 
             // attach order_id to transaction
             if ($status_id === OrderStatus::partner_paid) {
