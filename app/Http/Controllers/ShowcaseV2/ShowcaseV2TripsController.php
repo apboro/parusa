@@ -96,7 +96,6 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
         $trips = $trips->map(function (Trip $trip) use ($partnerId) {
             /** @var TicketsRatesList $rateList */
             $rateList = $trip->excursion->ratesLists->first();
-            /** @var TicketRate $adult */
             $adultPrice = $rateList->getShowcasePrice($partnerId);
 
             return [

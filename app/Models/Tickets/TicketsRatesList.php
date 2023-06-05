@@ -53,17 +53,45 @@ class TicketsRatesList extends Model
         return $this->belongsTo(Excursion::class);
     }
 
-    public function getShowcasePrice(?int $partnerId): int
+    /**
+     * @param int|null $partnerId
+     *
+     * @return int|null
+     */
+    public function getShowcasePrice(?int $partnerId): ?int
     {
-        /**@var TicketRate $adultPrice*/
-        $adultPrice = $this->rates()->whereIn('grade_id', TicketGrade::showcaseDisplayPrice)->first();
-        if(!$adultPrice || $adultPrice->base_price == 0) {
-            return $this->rates->max(function (TicketRate $rate) {
-                return $rate->base_price;
-            });
-        } else {
+        $this->loadMissing(['rates' => function (HasMany $query) {
+            $query
+                ->with('grade')
+                ->where('base_price', '>', 0)
+                ->whereNotIn('grade_id', [TicketGrade::guide]);
+        }]);
 
-            return $partnerId === null ? $adultPrice->site_price ?? $adultPrice->base_price : $adultPrice->base_price;
+        /**@var TicketRate $adultPrice */
+        $adultPrice = $this->rates->whereIn('grade_id', TicketGrade::showcaseDisplayPrice)->first();
+
+        $price = null;
+
+        if ($partnerId === null) {
+            if ($adultPrice !== null) {
+                $price = $adultPrice->site_price;
+            } else {
+                $price = $this->rates->max(function (TicketRate $rate) {
+                    return $rate->site_price;
+                });
+            }
         }
+
+        if ($price === 0 || $price === null) {
+            if ($adultPrice !== null) {
+                $price = $adultPrice->base_price;
+            } else {
+                $price = $this->rates->max(function (TicketRate $rate) {
+                    return $rate->base_price;
+                });
+            }
+        }
+
+        return $price === 0 ? null : $price;
     }
 }
