@@ -36,7 +36,7 @@
                         <tr>
                             <th class="ap-showcase__trip-time">Время отправления</th>
                             <th class="ap-showcase__trip-info">Программа</th>
-                            <th class="ap-showcase__trip-excursion">Причал</th>
+                            <th class="ap-showcase__trip-excursion">Причал, теплоход</th>
                             <th class="ap-showcase__trip-duration">Время в пути</th>
                             <th class="ap-showcase__trip-price">Стоимость за взрослого</th>
                             <th class="ap-showcase__trip-buy"></th>
@@ -63,6 +63,7 @@
                             </td>
                             <td data-label="Причал:">
                                 <span class="ap-link" @click="showPierInfo(trip)">Причал "{{ trip['pier'] }}"</span>
+                                <span>{{ trip['ship'] }}</span>
                             </td>
                             <td data-label="Время в пути:"><span class="ap-not-brake">{{ trip['duration'] }} мин.</span></td>
                             <td data-label="Стоимость за взрослого:"><span class="ap-not-brake">{{ trip['price'] }} руб.</span></td>
