@@ -20,7 +20,7 @@
             </LayoutFiltersItem>
         </LayoutFilters>
 
-        <ListTable :titles="list.titles" v-if="list.list && list.list.length > 0">
+        <ListTable :titles="list.titles" v-if="list.list && list.list.length > 0" :has-action="true">
             <ListTableRow v-for="promoCode in list.list">
                     <ListTableCell>
                         <GuiActivityIndicator :active="promoCode['active']"/>
@@ -40,7 +40,7 @@
                     </ListTableCell>
                     <ListTableCell>
                         <GuiActionsMenu :title="null">
-                            <span class="link" @click="editStatus(promoCode)">Изменить статус</span>
+                            <span class="link" @click="editStatus(promoCode)">{{ promoCode['status'] !== 'Действующий' ? 'Активировать' : 'Выключить' }}</span>
                         </GuiActionsMenu>
                     </ListTableCell>
             </ListTableRow>

@@ -57,7 +57,7 @@ class PromoCodeListController extends ApiController
 
         return APIResponse::list(
             $promoCodes,
-            ['Название', 'Промокод', 'Сумма', 'Покупки', 'Статус', ''],
+            ['Название', 'Промокод', 'Сумма', 'Покупки', 'Статус'],
             $filters,
             $this->defaultFilters,
             []
