@@ -40,7 +40,7 @@
                     </ListTableCell>
                     <ListTableCell>
                         <GuiActionsMenu :title="null">
-                            <span class="link" @click="editStatus(promoCode)">{{ promoCode['status'] !== 'Действующий' ? 'Активировать' : 'Выключить' }}</span>
+                            <span class="link" @click="editStatus(promoCode)">{{ promoCode['status'] !== 'Действующий' ? 'Активировать' : 'Деактивировать' }}</span>
                         </GuiActionsMenu>
                     </ListTableCell>
             </ListTableRow>
@@ -91,9 +91,11 @@ export default {
 
     methods: {
         editStatus(promoCode) {
-            this.$dialog.show(`Изменить статус промокода: "${promoCode['name']}"?`, 'question', 'red', [
+            let title = promoCode['status'] !== 'Действующий' ? "Активировать промокод: ": "Деактивировать промокод: ";
+            let btnText = promoCode['status'] !== 'Действующий' ? "Активировать": "Деактивировать";
+            this.$dialog.show(`${title} "${promoCode['name']}"?`, 'question', 'red', [
                 this.$dialog.button('no', 'Отмена', 'blue'),
-                this.$dialog.button('yes', 'Изменить', 'red'),
+                this.$dialog.button('yes', btnText, 'red'),
             ]).then(result => {
                 if (result === 'yes') {
                     this.access_updating = true;
