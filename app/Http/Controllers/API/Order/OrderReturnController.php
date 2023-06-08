@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Classes\EmailReceiver;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Jobs\ApproveNevaOrder;
 use App\LifePay\CloudPrint;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;
@@ -14,6 +16,8 @@ use App\Models\Payments\Payment;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketReturn;
 use App\Models\User\Helpers\Currents;
+use App\NevaTravel\NevaOrder;
+use App\Notifications\OrderNotification;
 use App\SberbankAcquiring\Connection;
 use App\SberbankAcquiring\Helpers\Currency;
 use App\SberbankAcquiring\HttpClient\CurlClient;
@@ -23,6 +27,8 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use InvalidArgumentException;
 
 class OrderReturnController extends ApiController
@@ -161,13 +167,32 @@ class OrderReturnController extends ApiController
                 $payment->external_id = null;
                 $payment->save();
 
-                CloudPrint::createReceipt($order, $tickets,CloudPrint::refund , $payment);
+                CloudPrint::createReceipt($order, $tickets, CloudPrint::refund, $payment);
 
             } catch (Exception $exception) {
                 return APIResponse::error($exception->getMessage());
             }
 
             $successMessage = 'Возврат оформлен.';
+
+
+            try {
+                if ($order->neva_travel_id) {
+                    $nevaOrder = new NevaOrder($order);
+                    $nevaOrder->cancel();
+                    if ($order->status_id == OrderStatus::showcase_partial_returned) {
+                        $nevaOrder->make();
+                        ApproveNevaOrder::dispatch($order);
+                        try {
+                            Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+                        } catch (Exception $exception) {
+                            Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                Log::error('Neva API Error: ' . $e->getMessage());
+            }
 
         } else if ($current->isStaff() && $current->role() && $current->terminalId() !== null && $current->role()->matches(Role::terminal)) {
             // Terminal return

@@ -51,11 +51,14 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property TripSaleStatus $saleStatus
  * @property TripDiscountStatus $discountStatus
  * @property Collection $chains
+ * @property string|null $external_id
+ * @property string|null $source
  */
 class Trip extends Model implements Statusable
 {
     use HasStatus, HasFactory;
 
+    protected $guarded=[];
     /** @var array Attributes casting. */
     protected $casts = [
         'created_at' => 'datetime',

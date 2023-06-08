@@ -260,7 +260,7 @@ class CheckoutController extends ApiController
             // pay commission
             // update order status
             ProcessShowcaseConfirmedOrder::dispatch($order->id);
-            Log::info('Request in checkout controller', [$request]);
+//            Log::info('Request in checkout controller', [$request]);
 
         }
 

@@ -14,10 +14,10 @@ class ImportPiers
         foreach ($nevaPiers['body'] as $nevaPier) {
             $pier = Pier::updateOrCreate(['external_id' => $nevaPier['id']],
                 [
-                    'external_parent_id' => $nevaPier['parent_id'],
+                    'external_parent_id' => $nevaPier['parent_id'] ?? null,
                     'name' => $nevaPier['name'],
                     'status_id' => $nevaPier['is_active'] ? 1 : 2,
-                    'source'=>'nevaTravelApi',
+                    'source'=>'NevaTravelApi',
                 ]);
             PierInfo::updateOrCreate(['pier_id' => $pier->id],
                 [
@@ -25,6 +25,11 @@ class ImportPiers
                     'label' => $nevaPier['label'],
                     'description' => $nevaPier['description'] ?? null,
                 ]);
+            if ($nevaPier['parent_id'] != ''){
+                $parentPierName = $nevaApiData->getPiersInfo(['pier_ids'=>$nevaPier['parent_id']])['body'][0]['name'];
+                $pier->name=$parentPierName.' '. $pier->name;
+                $pier->save();
+            }
         }
     }
 

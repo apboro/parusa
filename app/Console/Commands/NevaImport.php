@@ -3,7 +3,11 @@
 namespace App\Console\Commands;
 
 use App\NevaTravel\ImportPiers;
+use App\NevaTravel\ImportPrograms;
+use App\NevaTravel\ImportProgramsPrices;
 use App\NevaTravel\ImportShips;
+use App\NevaTravel\ImportTrips;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class NevaImport extends Command
@@ -40,7 +44,18 @@ class NevaImport extends Command
     public function handle()
     {
         (new ImportShips())->run();
+        $this->info('Ships imported');
         (new ImportPiers())->run();
+        $this->info('Piers imported');
+        (new ImportPrograms())->run();
+        $this->info('Programs imported');
+
+        (new ImportProgramsPrices())->run();
+        $this->info('Prices imported');
+
+        $endDate = Carbon::now()->setDay(1)->month(12);
+        (new ImportTrips($endDate))->run();
+        $this->info('Trips imported');
 
         return 0;
     }

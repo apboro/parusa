@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $phone
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property string|null $neva_travel_id
  *
  * @property OrderStatus $status
  * @property OrderType $type
@@ -57,6 +58,7 @@ use Illuminate\Support\Facades\DB;
  * @property Position|null $cashier
  * @property Collection $tickets
  * @property Collection $payments
+ * @property string|null $neva_travel_order_number
  */
 class Order extends Model implements Statusable, Typeable
 {

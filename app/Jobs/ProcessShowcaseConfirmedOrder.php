@@ -8,6 +8,7 @@ use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
+use App\NevaTravel\NevaOrder;
 use App\Notifications\OrderNotification;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -70,7 +71,12 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             $tickets[] = $ticket;
         });
 
-        CloudPrint::createReceipt($order, $tickets,CloudPrint::payment , $order->payments->first());
+        (new NevaOrder($order))->approve();
+
+        if (env('SBER_ACQUIRING_PRODUCTION'))
+        {
+            CloudPrint::createReceipt($order, $tickets,CloudPrint::payment , $order->payments->first());
+        }
 
         // send tickets
         try {
