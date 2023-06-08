@@ -3,11 +3,13 @@
 namespace App\Models\PromoCode;
 
 use App\Exceptions\Excursions\WrongExcursionStatusException;
+use App\Helpers\PriceConverter;
 use App\Interfaces\Statusable;
 use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\PromoCodeStatus;
-use App\Models\Dictionaries\Role;
+use App\Models\Dictionaries\PromoCodeType;
+use App\Models\Excursions\Excursion;
 use App\Models\Excursions\ExcursionAsDictionary;
 use App\Models\Model;
 use App\Traits\HasStatus;
@@ -20,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $id
  * @property string $name
  * @property string $code
- * @property string $amount
+ * @property float $amount
  * @property int $status_id
  * @property string $type
  *
@@ -31,8 +33,12 @@ class PromoCode extends Model implements Statusable, AsDictionary
 {
     use HasStatus, HasFactory, ExcursionAsDictionary;
 
-    public const type_fixed = 'fixed';
-    public const type_percents = 'percents';
+    /** @var array Default attributes. */
+    protected $attributes = [
+        'status_id' => PromoCodeStatus::default,
+        'type_id' => PromoCodeType::default,
+    ];
+
 
     /**
      * Excursions.
@@ -41,7 +47,7 @@ class PromoCode extends Model implements Statusable, AsDictionary
      */
     public function excursions(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'promo_code_has_excursions', 'promo_code_id', 'excursion_id');
+        return $this->belongsToMany(Excursion::class, 'promo_code_has_excursions', 'promo_code_id', 'excursion_id');
     }
 
     /**
@@ -52,6 +58,16 @@ class PromoCode extends Model implements Statusable, AsDictionary
     public function status(): HasOne
     {
         return $this->hasOne(PromoCodeStatus::class, 'id', 'status_id');
+    }
+
+    /**
+     * Promo code type.
+     *
+     * @return  HasOne
+     */
+    public function type(): HasOne
+    {
+        return $this->hasOne(PromoCodeType::class, 'id', 'type_id');
     }
 
     /**
@@ -67,5 +83,29 @@ class PromoCode extends Model implements Statusable, AsDictionary
     public function setStatus($status, bool $save = true): void
     {
         $this->checkAndSetStatus(PromoCodeStatus::class, $status, WrongExcursionStatusException::class, $save);
+    }
+
+    /**
+     * Convert amount from store value to real price.
+     *
+     * @param int|null $value
+     *
+     * @return  float
+     */
+    public function getAmountAttribute(?int $value): ?float
+    {
+        return $value !== null ? PriceConverter::storeToPrice($value) : null;
+    }
+
+    /**
+     * Convert amount to store value.
+     *
+     * @param float|null $value
+     *
+     * @return  void
+     */
+    public function setAmountAttribute(?float $value): void
+    {
+        $this->attributes['amount'] = $value !== null ? PriceConverter::priceToStore($value) : null;
     }
 }

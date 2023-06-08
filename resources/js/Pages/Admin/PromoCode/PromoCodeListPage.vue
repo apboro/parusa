@@ -7,7 +7,7 @@
         </template>
 
         <LayoutFilters>
-            <LayoutFiltersItem :title="'Статус экскурсии'">
+            <LayoutFiltersItem :title="'Статус промокода'">
                 <DictionaryDropDown
                     :dictionary="'promo_code_statuses'"
                     v-model="list.filters['status_id']"
