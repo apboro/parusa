@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Showcase;
 
+use App\Helpers\StatisticQrCodes;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Jobs\ProcessShowcaseConfirmedOrder;
@@ -112,6 +113,17 @@ class ShowcaseOrderInfoController extends ApiEditController
                     // pay commission
                     // update order status
                     ProcessShowcaseConfirmedOrder::dispatch($order->id);
+
+                    try {
+                        $existingCookieHash = $request->cookie('qrCodeHash');
+                        Log::debug('existingCookieHash in showcaseorderinfo', [$existingCookieHash]);
+                        if ($existingCookieHash) {
+                            StatisticQrCodes::addPayment($existingCookieHash);
+                        }
+                    } catch (Exception $e) {
+                        Log::channel('sber_payments')->error('Error with qrstatistics: ' . $e->getMessage());
+                    }
+
                 } else {
                     if (!$response->isSuccess()) {
                         Log::channel('sber_payments')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->errorMessage()));

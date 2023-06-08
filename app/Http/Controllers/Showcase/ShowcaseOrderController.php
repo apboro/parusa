@@ -17,6 +17,8 @@ use App\Models\QrCode;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
+use App\NevaTravel\NevaOrder;
+use App\NevaTravel\NevaTravelRepository;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -79,6 +81,7 @@ class ShowcaseOrderController extends ApiEditController
             return APIResponse::error('Нет продажи билетов на этот рейс.');
         }
 
+
         $flat = $request->input('data');
         $data = Arr::undot($flat);
         $count = count($data['rate'] ?? []);
@@ -132,11 +135,13 @@ class ShowcaseOrderController extends ApiEditController
                         'grade_id' => $gradeId,
                         'status_id' => TicketStatus::showcase_creating,
                         'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
+                        'neva_travel_ticket' => $trip->source === 'NevaTravelApi',
                     ]);
                     $tickets[] = $ticket;
                 }
             }
         }
+
 
         if ($media === 'qr') {
             $orderType = OrderType::qr_code;
@@ -163,6 +168,10 @@ class ShowcaseOrderController extends ApiEditController
             );
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
+        }
+
+        if (!(new NevaOrder($order))->make()) {
+            return APIResponse::error('Невозможно оформить заказ на этот рейс.');
         }
 
         $orderSecret = json_encode([

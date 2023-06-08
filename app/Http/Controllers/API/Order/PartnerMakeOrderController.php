@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Order;
 use App\Exceptions\Account\AccountException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Jobs\ApproveNevaOrder;
 use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
@@ -15,6 +16,7 @@ use App\Models\Order\Order;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
+use App\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -105,6 +107,7 @@ class PartnerMakeOrderController extends ApiEditController
                         'trip_id' => $ordering->trip_id,
                         'grade_id' => $ordering->grade_id,
                         'status_id' => $ticketStatus,
+                        'neva_travel_ticket' => $ordering->trip->source === 'NevaTravelApi'
                     ]);
                     $totalAmount += $ordering->getPrice();
                     $tickets[] = $ticket;
@@ -144,6 +147,13 @@ class PartnerMakeOrderController extends ApiEditController
                 $data['name'] ?? null,
                 $data['phone'] ?? null
             );
+
+            $nevaOrder = new NevaOrder($order);
+            if (!$nevaOrder->make()) {
+                return APIResponse::error('Невозможно оформить заказ на этот рейс.');
+            } else {
+                $nevaOrder->approve();
+            }
 
             // attach order_id to transaction
             if ($status_id === OrderStatus::partner_paid) {

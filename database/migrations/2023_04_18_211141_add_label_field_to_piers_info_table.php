@@ -14,7 +14,7 @@ class AddLabelFieldToPiersInfoTable extends Migration
     public function up()
     {
         Schema::table('pier_info', function (Blueprint $table) {
-            $table->string('label')->nullable();
+            $table->string('label', 20)->nullable();
         });
     }
 
