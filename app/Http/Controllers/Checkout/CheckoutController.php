@@ -235,14 +235,14 @@ class CheckoutController extends ApiController
 
             $existingCookieHash = $request->cookie('qrCodeHash');
 
-            Log::info('CheckoutController existingCookieHash, $qrCode', [$existingCookieHash]);
+            Log::channel('qr-codes')->info('CheckoutController existingCookieHash, $qrCode', [$existingCookieHash]);
 
             try {
 
                 if ($existingCookieHash) {
                     /** @var QrCode|null $qrCode */
                     $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
-                    Log::info('CheckoutController $qrCode', [$qrCode]);
+                    Log::channel('qr-code')->info('CheckoutController $qrCode', [$qrCode]);
                     if ($qrCode) {
                         $order->partner_id = $qrCode->partner_id;
                         $order->type_id = OrderType::qr_code;
