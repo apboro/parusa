@@ -33,7 +33,10 @@ class ImportTrips
         $endDate = $this->endDate;
 
         while ($currentDate <= $endDate) {
-            $nevaTrips = $nevaApiData->getCruisesInfo(['program_ids' => $excursionsArray, 'departure_date' => $currentDate->format('Y-m-d')]);
+            $nevaTrips = $nevaApiData->getCruisesInfo([
+                'program_ids' => $excursionsArray,
+                'departure_date' => $currentDate->format('Y-m-d'),
+                'passengers'=>1]);
             if ($nevaTrips) {
                 foreach ($nevaTrips['body'] as $nevaTrip) {
                     $ship = $ships->firstWhere('external_id', $nevaTrip['ship_id']);
