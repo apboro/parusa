@@ -22,3 +22,4 @@ identifier.sqlite
 composer.phar
 /public_html
 /cp-update.sh
+/app/Http/Controllers/TestController.php

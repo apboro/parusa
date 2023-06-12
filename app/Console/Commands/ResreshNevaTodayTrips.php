@@ -39,7 +39,7 @@ class ResreshNevaTodayTrips extends Command
      */
     public function handle()
     {
-        $endDate = Carbon::now()->addHours(24);
+        $endDate = Carbon::now()->addHours(25);
         (new ImportTrips($endDate))->run();
         $this->info('Trips imported for '.$endDate->format('Y-m-d'));
         return 0;

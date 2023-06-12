@@ -108,24 +108,19 @@ class NevaTravelRepository
         $trip = $this->getCruisesInfo(['point_id' => $trip_external_id]);
 
         //many (50), less_than_10 (есть, менее 10), less_than_3 (есть, менее 3), none (нет мест)
-        $result = $trip['body'][0]['default_arrival']['prices_table'][0]['available_seats'];
-        return $this->convertSeatsToInt($result);
+        $seatsQuantityString = $trip['body'][0]['default_arrival']['prices_table'][0]['available_seats'];
+        return $this->convertSeatsToInt($seatsQuantityString);
     }
 
-    function convertSeatsToInt($result)
+    public static function convertSeatsToInt($seatsQuantityString, $capacity = null): int
     {
-        switch ($result) {
-            case 'many':
-                return 100;
-            case 'less_than_10':
-                return 9;
-            case 'less_than_3':
-                return 2;
-            case 'none':
-                return 0;
-            default:
-                return -1; // or whatever value you want to return for invalid input
-        }
+        return match ($seatsQuantityString) {
+            'many' => $capacity,
+            'less_than_10' => 9,
+            'less_than_3' => 2,
+            'none' => 0,
+            default => -1,
+        };
     }
 
 
