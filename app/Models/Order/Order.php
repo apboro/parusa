@@ -20,6 +20,7 @@ use App\Models\Partner\Partner;
 use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
+use App\Models\PromoCode\PromoCode;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
 
@@ -29,6 +30,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
@@ -58,6 +60,7 @@ use Illuminate\Support\Facades\DB;
  * @property Position|null $cashier
  * @property Collection $tickets
  * @property Collection $payments
+ * @property Collection $promocode
  * @property string|null $neva_travel_order_number
  */
 class Order extends Model implements Statusable, Typeable
@@ -342,5 +345,15 @@ class Order extends Model implements Statusable, Typeable
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'order_id', 'id');
+    }
+
+    /**
+     * The promocode owning this order.
+     *
+     * @return  BelongsToMany
+     */
+    public function promocode(): BelongsToMany
+    {
+        return $this->belongsToMany(PromoCode::class, 'promo_code_has_orders', 'order_id', 'promo_code_id');
     }
 }

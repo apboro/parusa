@@ -12,6 +12,7 @@ use App\Models\Dictionaries\PromoCodeType;
 use App\Models\Excursions\Excursion;
 use App\Models\Excursions\ExcursionAsDictionary;
 use App\Models\Model;
+use App\Models\Order\Order;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $type
  *
  * @property Collection $excursions
+ * @property Collection $orders
  * @property PromoCodeStatus $status
  */
 class PromoCode extends Model implements Statusable, AsDictionary
@@ -107,5 +109,15 @@ class PromoCode extends Model implements Statusable, AsDictionary
     public function setAmountAttribute(?float $value): void
     {
         $this->attributes['amount'] = $value !== null ? PriceConverter::priceToStore($value) : null;
+    }
+
+    /**
+     * The orders.
+     *
+     * @return  BelongsToMany
+     */
+    public function orders(): BelongsToMany
+    {
+        return $this->belongsToMany(Order::class, 'promo_code_has_orders', 'promo_code_id', 'order_id');
     }
 }

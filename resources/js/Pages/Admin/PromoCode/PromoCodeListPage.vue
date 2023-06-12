@@ -33,7 +33,7 @@
                         {{ promoCode['amount'] }}
                     </ListTableCell>
                     <ListTableCell>
-
+                        {{ promoCode['purchases'] }}
                     </ListTableCell>
                     <ListTableCell>
                         {{ promoCode['status'] }}

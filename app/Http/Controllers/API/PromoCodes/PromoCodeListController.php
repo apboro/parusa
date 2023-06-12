@@ -50,6 +50,7 @@ class PromoCodeListController extends ApiController
                 'id' => $promoCode->id,
                 'name' => $promoCode->name,
                 'code' => $promoCode->code,
+                'purchases' => $promoCode->orders->count(),
                 'status' => $promoCode->status->name,
                 'amount' => $promoCode->amount,
             ];

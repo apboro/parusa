@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\PromoCodes\PromoCodeShowcaseController;
 use App\Http\Controllers\Showcase\ShowcaseInfoController;
 use App\Http\Controllers\Showcase\ShowcaseInitController;
 use App\Http\Controllers\Showcase\ShowcaseOrderController;
@@ -23,6 +24,8 @@ Route::prefix('/showcase')->middleware(['showcase'])->group(function () {
     Route::post('/order', [ShowcaseOrderController::class, 'order'])->middleware(['external.protect']);
     Route::post('/order/cancel', [ShowcaseOrderController::class, 'cancel'])->middleware(['external.protect']);
     Route::post('/order/info', [ShowcaseOrderInfoController::class, 'info'])->middleware(['external.protect']);
+
+    Route::post('/promo-code/use', [PromoCodeShowcaseController::class, 'use'])->middleware(['external.protect']);
 });
 
 Route::prefix('/showcase_v2')->middleware(['showcase'])->group(function () {

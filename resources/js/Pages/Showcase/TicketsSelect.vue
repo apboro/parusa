@@ -103,6 +103,19 @@
                 </div>
             </div>
 
+            <div class="ap-showcase__contacts">
+                <div class="ap-showcase__contacts-item">
+                    <ShowcaseFormString :form="form" :name="'promocode'" :hide-title="true" placeholder="Промокод"/>
+                </div>
+                <div class="ap-showcase__contacts-item-promocode">
+                    <ShowcaseButton @clicked="promoCode" :disabled="!form.values['promocode']">Применить</ShowcaseButton>
+                </div>
+                <div class="ap-showcase__contacts-item">
+                </div>
+                <div class="ap-showcase__contacts-item">
+                </div>
+            </div>
+
             <div class="ap-showcase__agreement">
                 <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_valid"
                                       :errors="['Необходимо принять условия оферты на оказание услуг и дать своё согласие на обработку персональных данных']">
@@ -116,6 +129,17 @@
             <template v-if="has_error">
                 <ShowcaseMessage>Ошибка: {{ error_message }}</ShowcaseMessage>
             </template>
+
+            <div v-if="count > 0 " class="ap-showcase__total-calc" >
+                <div class="ap-showcase__checkout-total">
+                    Сумма заказа:
+                    <span class="ap-showcase__checkout-total-value">{{ this.general }}</span>
+                </div>
+                <div class="ap-showcase__checkout-total">
+                    Сумма по промокоду:
+                    <span class="ap-showcase__checkout-total-value">{{ this.discount }}</span>
+                </div>
+            </div>
 
             <div class="ap-showcase__checkout">
                 <div class="ap-showcase__checkout-total">
@@ -189,6 +213,8 @@ export default {
             this.trip['rates'].map(rate => {
                 total += this.multiply(rate['base_price'], this.form.values['rate.' + rate['grade_id'] + '.quantity']);
             });
+            this.general = total;
+            total = total - this.discount;
             return this.multiply(total, 1) + ' руб.';
         },
         count() {
@@ -227,6 +253,8 @@ export default {
         agreement_valid: true,
         has_error: false,
         error_message: null,
+        discount: 0,
+        general: 0,
     }),
 
     created() {
@@ -300,6 +328,20 @@ export default {
                 })
                 .finally(() => {
                     this.is_ordering = false;
+                })
+        },
+
+        promoCode() {
+            console.log(this.form)
+            axios.post('/showcase/promo-code/use', {
+                promocode: this.form.values['promocode']
+            }, {headers: {'X-Ap-External-Session': this.session}})
+                .then(response => {
+                    this.discount = response.data['discount'];
+                })
+                .catch(error => {
+                    this.has_error = true;
+                    this.error_message = error.response.data['message'];
                 })
         }
     }
@@ -428,6 +470,14 @@ export default {
             font-family: $showcase_font;
             padding-bottom: 5px;
             font-size: 14px;
+        }
+
+        &-promocode {
+            flex-grow: 0.5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0;
         }
     }
 
