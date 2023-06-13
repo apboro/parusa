@@ -61,7 +61,7 @@
                                     <span v-if="trip['programs'] && trip['programs'].length > 0">{{ trip['programs'].join(', ') }}</span>
                                 </span>
                                 <span style="color: #747474;">
-                                    Осталось билетов - {{ trip['tickets_left'] }}
+                                    Осталось билетов {{ trip['tickets_left'] }}
                                 </span>
                             </td>
                             <td data-label="Причал:">
