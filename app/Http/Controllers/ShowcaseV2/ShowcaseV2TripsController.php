@@ -8,7 +8,6 @@ use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Sails\Trip;
-use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
 use Carbon\Carbon;
 use Exception;

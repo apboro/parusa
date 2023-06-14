@@ -332,7 +332,6 @@ export default {
         },
 
         promoCode() {
-            console.log(this.form)
             axios.post('/showcase/promo-code/use', {
                 promocode: this.form.values['promocode']
             }, {headers: {'X-Ap-External-Session': this.session}})
