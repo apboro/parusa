@@ -39,11 +39,11 @@ class ShowcasePromoCodeController extends ApiEditController
 
         /** @var int|null $partnerID */
 //        $partner = $originalKey['partner_id'] ? Partner::query()->where('id', $originalKey['partner_id'])->first() : null;
-        $isPartnerSite = $originalKey['is_partner'];
+        $partnerID = $originalKey['partner_id'];
         $promocode = $request->input('promocode');
         $tickets = $request->input('tickets');
 
-        $calc = \App\Helpers\Promocode::calc($promocode, $tickets, $isPartnerSite);
+        $calc = \App\Helpers\Promocode::calc($promocode, $tickets, $partnerID);
 
         return APIResponse::response([
             'full_price' => $calc['full_price'],

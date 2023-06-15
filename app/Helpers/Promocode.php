@@ -10,7 +10,7 @@ use App\Models\Tickets\TicketRate;
 
 class Promocode
 {
-    public static function calc(?string $promocode, array $tickets, bool $isPartnerSite): array
+    public static function calc(?string $promocode, array $tickets, int $partnerID): array
     {
         $tripID = $tickets[0]['trip_id'];
 
@@ -63,7 +63,7 @@ class Promocode
                         'trip_id' => $trip->id,
                         'grade_id' => $grade['grade_id'],
                         'status_id' => TicketStatus::showcase_creating,
-                        'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
+                        'base_price' => !empty($partnerID) ? $rate->base_price : $rate->site_price,
                         'neva_travel_ticket' => $trip->source === 'NevaTravelApi',
                     ]);
                     $arrTickets[] = $ticket;
