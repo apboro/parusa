@@ -324,10 +324,14 @@ export default {
         },
 
         promoCode() {
+            let tickets = [];
+
+            // todo Собрать объект
+            // {trip_id: this.tripId, grade_id: *int*, quantity: *int*}
+
             axios.post('/showcase_v2/promo-code/use', {
-                promocode: this.form.values['promocode'] ?? '',
-                trip: this.form.options['trip'],
-                data: this.form.values
+                promocode: this.form.values['promocode'], // null, если не задано
+                tickets: tickets
             }, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     this.discount_price = response.data['discount_price'];

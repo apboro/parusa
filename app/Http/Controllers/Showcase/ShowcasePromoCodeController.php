@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Showcase;
 
+use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Http\Middleware\ExternalProtect;
 use App\Models\Dictionaries\PromoCodeStatus;
@@ -36,8 +37,20 @@ class ShowcasePromoCodeController extends ApiEditController
             return response()->json(['message' => 'Ошибка сессии.'], 400);
         }
 
-        /** @var ?Partner $partner */
-        $isPartnerSite = $originalKey['is_partner'];
+        /** @var int|null $partnerID */
+        $partnerID = $originalKey['partner_id'];
+        $promocode = $request->input('promocode');
+        $tickets = $request->input('tickets');
+
+        $calc = PromrcodeCalc($promocode, $tickets, $partnerID);
+
+        return APIResponse::response([
+            'full_price' => $calc['full_price'],
+            'discount_price' => $calc['discount_price'],
+            'discounted' => $calc['discounted'],
+            'status' => $calc['status'],
+            'message' => $calc['message'],
+        ]);
 
         $tripID = $request->get('trip');
         $flat = $request->input('data');
