@@ -131,8 +131,8 @@ class StatusesSeeder extends GenericSeeder
             PaymentStatus::return => ['name' => 'Возврат'],
         ],
         PromoCodeStatus::class => [
-            PromoCodeStatus::active => ['name' => 'Действующий'],
-            PromoCodeStatus::blocked => ['name' => 'Недействующий'],
+            PromoCodeStatus::active => ['name' => 'Активный'],
+            PromoCodeStatus::blocked => ['name' => 'Неактивный'],
         ],
     ];
 }

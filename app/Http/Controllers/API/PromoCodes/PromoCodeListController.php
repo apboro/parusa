@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PromoCodeStatus;
 use App\Models\PromoCode\PromoCode;
 use Illuminate\Http\JsonResponse;
@@ -50,15 +51,16 @@ class PromoCodeListController extends ApiController
                 'id' => $promoCode->id,
                 'name' => $promoCode->name,
                 'code' => $promoCode->code,
-                'purchases' => $promoCode->orders->count(),
+                'purchases' => $promoCode->orders()->whereIn('status_id', OrderStatus::partner_commission_pay_statuses)->count(),
                 'status' => $promoCode->status->name,
                 'amount' => $promoCode->amount,
+                'excursions' => $promoCode->excursions->pluck('name')->toArray(),
             ];
         });
 
         return APIResponse::list(
             $promoCodes,
-            ['Название', 'Промокод', 'Сумма', 'Покупки', 'Статус'],
+            ['Название', 'Промокод', 'Сумма',  'Экскурсии', 'Покупки', 'Статус'],
             $filters,
             $this->defaultFilters,
             []

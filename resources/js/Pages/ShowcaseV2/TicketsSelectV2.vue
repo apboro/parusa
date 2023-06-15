@@ -69,7 +69,7 @@
                         <td data-label="Стоимость:" class="ap-showcase__tickets-table-col-2">{{ rate['base_price'] }} руб.</td>
                         <td class="ap-showcase__tickets-table-col-3">
                             <ShowcaseFormNumber class="ap-showcase__tickets-quantity" :form="form" :name="'rate.' + rate['grade_id'] + '.quantity'" :hide-title="true"
-                                                :quantity="true" :min="0" :border="false"/>
+                                                :quantity="true" :min="0" :border="false" @change="promoCode"/>
                         </td>
                         <td data-label="Сумма:" class="ap-showcase__tickets-table-col-4"
                             :class="{'ap-showcase__tickets-filled': form.values['rate.' + rate['grade_id'] + '.quantity'] > 0}">
@@ -78,7 +78,7 @@
                     </tr>
                     <tr>
                         <td colspan="3" class="ap-showcase__tickets-table-col-total-title">Итого:</td>
-                        <td class="ap-showcase__tickets-table-col-total" :class="{'ap-showcase__tickets-filled': count > 0}">{{ total }}</td>
+                        <td class="ap-showcase__tickets-table-col-total" :class="{'ap-showcase__tickets-filled': count > 0}">{{ this.full_price }} руб.</td>
                     </tr>
                     </tbody>
                 </table>
@@ -115,6 +115,7 @@
                 <div class="ap-showcase__contacts-item">
                 </div>
             </div>
+            <span v-if="!this.status" class="ap-showcase__contacts-item-description">{{ this.message }}</span>
 
             <div class="ap-showcase__agreement">
                 <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_valid"
@@ -133,18 +134,18 @@
             <div v-if="count > 0 " class="ap-showcase__total-calc" >
                 <div class="ap-showcase__checkout-total">
                     Сумма заказа:
-                    <span class="ap-showcase__checkout-total-value">{{ this.general }}</span>
+                    <span class="ap-showcase__checkout-total-value">{{ this.full_price }}</span>
                 </div>
                 <div class="ap-showcase__checkout-total">
                     Сумма по промокоду:
-                    <span class="ap-showcase__checkout-total-value">{{ this.discount }}</span>
+                    <span class="ap-showcase__checkout-total-value">{{ this.discounted }}</span>
                 </div>
             </div>
 
             <div class="ap-showcase__checkout">
                 <div class="ap-showcase__checkout-total">
                     Итого к оплате:
-                    <span v-if="count > 0" class="ap-showcase__checkout-total-value">{{ total }}</span>
+                    <span v-if="count > 0" class="ap-showcase__checkout-total-value">{{ this.discount_price }} руб.</span>
                     <span v-else class="ap-showcase__checkout-total-value">В заказе отсутствуют билеты</span>
                 </div>
                 <div class="ap-showcase__checkout-button">
@@ -205,18 +206,6 @@ export default {
     emits: ['select', 'order'],
 
     computed: {
-        total() {
-            if (this.trip === null) {
-                return '—';
-            }
-            let total = 0;
-            this.trip['rates'].map(rate => {
-                total += this.multiply(rate['base_price'], this.form.values['rate.' + rate['grade_id'] + '.quantity']);
-            });
-            this.general = total;
-            total = total - this.discount;
-            return this.multiply(total, 1) + ' руб.';
-        },
         count() {
             if (this.trip === null) {
                 return 0;
@@ -253,8 +242,11 @@ export default {
         agreement_valid: true,
         has_error: false,
         error_message: null,
-        discount: 0,
-        general: 0,
+        discount_price: 0,
+        discounted: 0,
+        full_price: 0,
+        message: "",
+        status: true,
     }),
 
     created() {
@@ -333,10 +325,16 @@ export default {
 
         promoCode() {
             axios.post('/showcase_v2/promo-code/use', {
-                promocode: this.form.values['promocode']
+                promocode: this.form.values['promocode'] ?? '',
+                trip: this.form.options['trip'],
+                data: this.form.values
             }, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
-                    this.discount = response.data['discount'];
+                    this.discount_price = response.data['discount_price'];
+                    this.discounted = response.data['discounted'];
+                    this.full_price = response.data['full_price'];
+                    this.message = response.data['message'];
+                    this.status = response.data['status'];
                 })
                 .catch(error => {
                     this.has_error = true;

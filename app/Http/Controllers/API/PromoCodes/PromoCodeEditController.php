@@ -82,8 +82,13 @@ class PromoCodeEditController extends ApiEditController
             return APIResponse::notFound('Промокод не найден');
         }
 
+        $code = mb_strtoupper($data['code']);
+        if ($error = $this->uniqueCode($data, $code)) {
+            return APIResponse::notFound($error);
+        }
+
         $promoCode->setAttribute('name', $data['name']);
-        $promoCode->setAttribute('code', $data['code']);
+        $promoCode->setAttribute('code', mb_strtoupper($data['code']));
         $promoCode->setAttribute('amount', $data['amount']);
         $promoCode->setStatus($data['status_id'], false);
         $promoCode->save();
@@ -114,6 +119,14 @@ class PromoCodeEditController extends ApiEditController
             return APIResponse::error('Ошибка! Статус не изменен.');
         }
 
+        $data = [
+            'status_id' => $promoCode->status_id == PromoCodeStatus::active ? PromoCodeStatus::blocked : PromoCodeStatus::active,
+            'name' => $promoCode->name,
+        ];
+        if ($error = $this->uniqueCode($data, $promoCode->code, false)) {
+            return APIResponse::notFound($error);
+        }
+
         $promoCode->status_id = $promoCode->status_id == PromoCodeStatus::active ? PromoCodeStatus::blocked : PromoCodeStatus::active;
         $promoCode->save();
 
@@ -123,5 +136,25 @@ class PromoCodeEditController extends ApiEditController
                 'login' => null,
             ]
         );
+    }
+
+    /**
+     * @param array $data
+     * @param $code
+     * @param bool $created
+     */
+    private function uniqueCode(array $data, $code, bool $created = true): ?string
+    {
+        if ($promoCodes = PromoCode::where('code', $code)) {
+            if ($data['status_id'] === PromoCodeStatus::active && $promoCodes->where('status_id', PromoCodeStatus::active)->count()) {
+                return 'Промокод существует и активный';
+            }
+        }
+
+        if ($created && PromoCode::where('name', $data['name'])->count()) {
+            return 'Промокод с таким названием существует';
+        }
+
+        return null;
     }
 }

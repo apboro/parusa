@@ -33,6 +33,9 @@
                         {{ promoCode['amount'] }}
                     </ListTableCell>
                     <ListTableCell>
+                        <span class="link" @click="showInfo(promoCode)">{{ promoCode['excursions'].length }} (посмотреть)</span>
+                    </ListTableCell>
+                    <ListTableCell>
                         {{ promoCode['purchases'] }}
                     </ListTableCell>
                     <ListTableCell>
@@ -40,7 +43,7 @@
                     </ListTableCell>
                     <ListTableCell>
                         <GuiActionsMenu :title="null">
-                            <span class="link" @click="editStatus(promoCode)">{{ promoCode['status'] !== 'Действующий' ? 'Активировать' : 'Деактивировать' }}</span>
+                            <span class="link" @click="editStatus(promoCode)">{{ promoCode['status'] !== 'Активный' ? 'Активировать' : 'Деактивировать' }}</span>
                         </GuiActionsMenu>
                     </ListTableCell>
             </ListTableRow>
@@ -91,8 +94,8 @@ export default {
 
     methods: {
         editStatus(promoCode) {
-            let title = promoCode['status'] !== 'Действующий' ? "Активировать промокод: ": "Деактивировать промокод: ";
-            let btnText = promoCode['status'] !== 'Действующий' ? "Активировать": "Деактивировать";
+            let title = promoCode['status'] !== 'Активный' ? "Активировать промокод: ": "Деактивировать промокод: ";
+            let btnText = promoCode['status'] !== 'Активный' ? "Активировать": "Деактивировать";
             this.$dialog.show(`${title} "${promoCode['name']}"?`, 'question', 'red', [
                 this.$dialog.button('no', 'Отмена', 'blue'),
                 this.$dialog.button('yes', btnText, 'red'),
@@ -109,6 +112,12 @@ export default {
                         });
                 }
             });
+        },
+        showInfo(promoCode) {
+            let excursions = promoCode['excursions'].join('<br>');
+            this.$dialog.show(`Экскурсии промокода: ${promoCode['name']} <br><br> ${excursions}`, null, 'red', [
+                this.$dialog.button('no', 'Закрыть', 'blue'),
+            ]);
         },
     }
 }

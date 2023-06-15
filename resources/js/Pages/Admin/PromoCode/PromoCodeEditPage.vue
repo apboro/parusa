@@ -9,7 +9,16 @@
             <FormString :form="form" :name="'code'"/>
             <FormNumber :form="form" :name="'amount'"/>
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'excursion_statuses'"/>
-            <FormDictionary :form="form" :name="'excursions'" :dictionary="'excursions'" :fresh="true" :multi="true" :search="true"/>
+
+            <FieldWrapper :required="true" :valid="this.arrExcursions.length > 0" :errors="['Выберите экскурсии']">
+                <GuiContainer mt-15 pl-15>
+                    <InputCheckbox v-for="(item, key) in excursions.data"
+                        v-model="arrExcursions"
+                        :label="item['name']"
+                        :value="item['id']"
+                    />
+                </GuiContainer>
+            </FieldWrapper>
         </GuiContainer>
 
         <GuiContainer mt-30>
@@ -31,10 +40,15 @@ import FormImages from "@/Components/Form/FormImages";
 import FormNumber from "@/Components/Form/FormNumber";
 import FormText from "@/Components/Form/FormText";
 import FormCheckBox from "@/Components/Form/FormCheckBox";
+import data from "@/Core/Data";
+import InputCheckbox from "@/Components/Inputs/InputCheckbox.vue";
+import FieldWrapper from "@/Components/Fields/Helpers/FieldWrapper.vue";
 
 
 export default {
     components: {
+        FieldWrapper,
+        InputCheckbox,
         FormText,
         FormNumber,
         FormImages,
@@ -49,6 +63,8 @@ export default {
 
     data: () => ({
         form: form('/api/promo-code/get', '/api/promo-code/update'),
+        excursions: data('/api/dictionaries'),
+        arrExcursions: [],
     }),
 
     computed: {
@@ -63,10 +79,13 @@ export default {
     created() {
         this.form.toaster = this.$toast;
         this.form.load({id: this.excursionId});
+        this.excursions.load({dictionary: 'excursions'});
     },
 
     methods: {
         save() {
+            this.form.set('excursions', this.arrExcursions);
+
             if (!this.form.validate()) {
                 return;
             }
