@@ -324,17 +324,28 @@ export default {
         },
 
         promoCode() {
+            let tickets = [];
+            let tripID = this.form.options['trip'];
+            this.trip['rates'].map(rate => {
+                let ticket = {
+                    trip_id: tripID,
+                    grade_id: rate['grade_id'],
+                    quantity: this.form.values['rate.' + rate['grade_id'] + '.quantity']
+                }
+                tickets.push(ticket);
+            });
+
             axios.post('/showcase_v2/promo-code/use', {
                 promocode: this.form.values['promocode'] ?? '',
                 trip: this.form.options['trip'],
                 data: this.form.values
             }, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
-                    this.discount_price = response.data['discount_price'];
-                    this.discounted = response.data['discounted'];
-                    this.full_price = response.data['full_price'];
-                    this.message = response.data['message'];
-                    this.status = response.data['status'];
+                    this.discount_price = response.data.data['discount_price'];
+                    this.discounted = response.data.data['discounted'];
+                    this.full_price = response.data.data['full_price'];
+                    this.message = response.data.data['message'];
+                    this.status = response.data.data['status'];
                 })
                 .catch(error => {
                     this.has_error = true;
