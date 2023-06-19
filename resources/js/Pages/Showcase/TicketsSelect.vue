@@ -78,7 +78,7 @@
                     </tr>
                     <tr>
                         <td colspan="3" class="ap-showcase__tickets-table-col-total-title">Итого:</td>
-                        <td class="ap-showcase__tickets-table-col-total" :class="{'ap-showcase__tickets-filled': count > 0}">{{ this.total }}</td>
+                        <td class="ap-showcase__tickets-table-col-total" :class="{'ap-showcase__tickets-filled': count > 0}">{{ total }}</td>
                     </tr>
                     </tbody>
                 </table>

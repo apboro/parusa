@@ -162,16 +162,9 @@ class ShowcaseOrderController extends ApiEditController
                 $data['email'],
                 $data['name'],
                 $data['phone'],
-                $isPartnerSite === true // strict price checking only for partner site
+                $isPartnerSite === true, // strict price checking only for partner site
+                $flat['promocode'] ?? null,
             );
-
-            if (!empty($flat['promocode'])) {
-                $promoCode = PromoCode::query()->where('code', $flat['promocode'])->first();
-
-                if (isset($promoCode)) {
-                    $order->promocode()->sync([$promoCode->id]);
-                }
-            }
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
