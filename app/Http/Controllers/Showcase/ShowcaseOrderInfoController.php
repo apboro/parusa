@@ -116,7 +116,7 @@ class ShowcaseOrderInfoController extends ApiEditController
 
                     try {
                         $existingCookieHash = $request->cookie('qrCodeHash');
-                        Log::debug('existingCookieHash in showcaseorderinfo', [$existingCookieHash]);
+                        Log::channel('qr-codes')->info('existingCookieHash in showcaseorderinfo', [$existingCookieHash]);
                         if ($existingCookieHash) {
                             StatisticQrCodes::addPayment($existingCookieHash);
                         }
