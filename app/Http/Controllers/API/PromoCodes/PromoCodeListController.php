@@ -54,7 +54,7 @@ class PromoCodeListController extends ApiController
                 'purchases' => $promoCode->orders()->whereIn('status_id', OrderStatus::partner_commission_pay_statuses)->count(),
                 'status' => $promoCode->status->name,
                 'amount' => $promoCode->amount,
-                'excursions' => $promoCode->excursions->pluck('name')->toArray(),
+                'excursions' => $promoCode->excursions->sortBy('name')->pluck('name')->toArray(),
             ];
         });
 

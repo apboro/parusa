@@ -72,7 +72,7 @@ export default [
     {path: '/excursions/:id', name: 'excursion-view', component: ExcursionViewPage, meta: {title: 'Просмотр экскурсии', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/excursions/:id/edit', name: 'excursion-edit', component: ExcursionEditPage, meta: {title: 'Редактирование экскурсии', roles: ['admin', 'office_manager', 'accountant']}},
 
-    {path: '/promo-code', name: 'promo-code', component: PromoCodeListPage, meta: {title: 'Промокоды', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/promo-code', name: 'promo-code-list', component: PromoCodeListPage, meta: {title: 'Промокоды', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/promo-code/:id/edit', name: 'promo-code-edit', component: PromoCodeEditPage, meta: {title: 'Добавить промокод', roles: ['admin', 'office_manager', 'accountant']}},
 
     {path: '/trips', name: 'trip-list', component: TripsListPage, meta: {title: 'Список рейсов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},

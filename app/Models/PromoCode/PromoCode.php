@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $status_id
  * @property string $type
  *
- * @property Collection $excursions
+ * @property Collection<Excursion> $excursions
  * @property Collection $orders
  * @property PromoCodeStatus $status
  */

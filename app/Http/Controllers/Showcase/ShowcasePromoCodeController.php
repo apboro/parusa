@@ -38,8 +38,7 @@ class ShowcasePromoCodeController extends ApiEditController
         }
 
         /** @var int|null $partnerID */
-//        $partner = $originalKey['partner_id'] ? Partner::query()->where('id', $originalKey['partner_id'])->first() : null;
-        $partnerID = $originalKey['partner_id'];
+        $partnerID = $originalKey['partner_id'] ?? null;
         $promocode = $request->input('promocode');
         $tickets = $request->input('tickets');
 

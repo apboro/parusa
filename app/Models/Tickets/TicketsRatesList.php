@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $caption
  * @property Carbon $created_at
  * @property Carbon $updated_at
- * @property Collection $rates
+ * @property Collection<TicketRate> $rates
  * @property Excursion $excursion
  */
 class TicketsRatesList extends Model

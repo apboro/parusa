@@ -4,10 +4,13 @@ namespace App\Http\Controllers\API\PromoCodes;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\PromoCodeStatus;
+use App\Models\Excursions\Excursion;
 use App\Models\PromoCode\PromoCode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PromoCodeEditController extends ApiEditController
 {
@@ -37,12 +40,14 @@ class PromoCodeEditController extends ApiEditController
      */
     public function get(Request $request): JsonResponse
     {
-        /** @var PromoCode|null $excursion */
+        /** @var PromoCode|null $promoCode */
         $promoCode = $this->firstOrNew(PromoCode::class, $request, ['status']);
 
         if ($promoCode === null) {
-            return APIResponse::notFound('Промокод не найдена');
+            return APIResponse::notFound('Промокод не найден');
         }
+
+        $excursions = Excursion::query()->where('status_id', ExcursionStatus::active)->get();
 
         // send response
         return APIResponse::form(
@@ -56,6 +61,12 @@ class PromoCodeEditController extends ApiEditController
             $this->titles,
             [
                 'name' => $promoCode->exists ? $promoCode->name : 'Добавление промокода',
+                'excursions' => $excursions->map(function (Excursion $excursion) {
+                    return [
+                        'id' => $excursion->id,
+                        'name' => $excursion->name,
+                    ];
+                }),
             ]
         );
     }
@@ -69,26 +80,31 @@ class PromoCodeEditController extends ApiEditController
      */
     public function update(Request $request): JsonResponse
     {
-        $data = $this->getData($request);
-
-        if ($errors = $this->validate($data, $this->rules, $this->titles)) {
-            return APIResponse::validationError($errors);
-        }
-
-        /** @var PromoCode|null $excursion */
+        /** @var PromoCode $promoCode */
         $promoCode = $this->firstOrNew(PromoCode::class, $request);
 
         if ($promoCode === null) {
             return APIResponse::notFound('Промокод не найден');
         }
 
-        $code = mb_strtoupper($data['code']);
-        if ($error = $this->uniqueCode($data, $code)) {
-            return APIResponse::notFound($error);
+        $data = $this->getData($request);
+        $data['code'] = isset($data['code']) ? mb_strtoupper($data['code']) : null;
+
+        $this->rules['name'] = [
+            'required',
+            Rule::unique('promo_codes')->ignore($promoCode->id),
+        ];
+        $this->rules['code'] = [
+            'required',
+            Rule::unique('promo_codes')->where('status_id', PromoCodeStatus::active)->ignore($promoCode->id),
+        ];
+
+        if ($errors = $this->validate($data, $this->rules, $this->titles)) {
+            return APIResponse::validationError($errors);
         }
 
         $promoCode->setAttribute('name', $data['name']);
-        $promoCode->setAttribute('code', mb_strtoupper($data['code']));
+        $promoCode->setAttribute('code', $data['code']);
         $promoCode->setAttribute('amount', $data['amount']);
         $promoCode->setStatus($data['status_id'], false);
         $promoCode->save();
@@ -96,7 +112,7 @@ class PromoCodeEditController extends ApiEditController
         $promoCode->excursions()->sync($data['excursions']);
 
         return APIResponse::success(
-            $promoCode->wasRecentlyCreated ? 'Экскурсия добавлена' : 'Данные экскурсии обновлены',
+            $promoCode->wasRecentlyCreated ? 'Промокод добавлен' : 'Данные промокода обновлены',
             [
                 'id' => $promoCode->id,
                 'name' => $promoCode->name,
@@ -115,46 +131,25 @@ class PromoCodeEditController extends ApiEditController
     {
         $id = $request->input('id');
 
-        if (empty($id) || empty($promoCode = PromoCode::find($id))) {
+        if (empty($id) || empty($promoCode = PromoCode::query()->where('id', $id)->first())) {
             return APIResponse::error('Ошибка! Статус не изменен.');
         }
+        /** @var PromoCode $promoCode */
 
-        $data = [
-            'status_id' => $promoCode->status_id == PromoCodeStatus::active ? PromoCodeStatus::blocked : PromoCodeStatus::active,
-            'name' => $promoCode->name,
-        ];
-        if ($error = $this->uniqueCode($data, $promoCode->code, false)) {
-            return APIResponse::notFound($error);
+        if (
+            $promoCode->status_id === PromoCodeStatus::blocked
+            && PromoCode::query()
+                ->where('status_id', PromoCodeStatus::active)
+                ->where('code', $promoCode->code)
+                ->where('id', '!=', $promoCode->id)
+                ->count() > 0
+        ) {
+            return APIResponse::error('Есть активный промокод с таким кодом');
         }
 
-        $promoCode->status_id = $promoCode->status_id == PromoCodeStatus::active ? PromoCodeStatus::blocked : PromoCodeStatus::active;
+        $promoCode->status_id = $promoCode->status_id === PromoCodeStatus::active ? PromoCodeStatus::blocked : PromoCodeStatus::active;
         $promoCode->save();
 
-        return APIResponse::success('Статус изменен',
-            [
-                'has_access' => false,
-                'login' => null,
-            ]
-        );
-    }
-
-    /**
-     * @param array $data
-     * @param $code
-     * @param bool $created
-     */
-    private function uniqueCode(array $data, $code, bool $created = true): ?string
-    {
-        if ($promoCodes = PromoCode::where('code', $code)) {
-            if ($data['status_id'] === PromoCodeStatus::active && $promoCodes->where('status_id', PromoCodeStatus::active)->count()) {
-                return 'Промокод существует и активный';
-            }
-        }
-
-        if ($created && PromoCode::where('name', $data['name'])->count()) {
-            return 'Промокод с таким названием существует';
-        }
-
-        return null;
+        return APIResponse::success($promoCode->status_id === PromoCodeStatus::active ? 'Промокод активирован' : 'Промокод деактивирован');
     }
 }

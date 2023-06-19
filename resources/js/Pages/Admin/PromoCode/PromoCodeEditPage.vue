@@ -1,6 +1,6 @@
 <template>
     <LayoutPage :loading="processing" :title="form.payload['name']"
-                :breadcrumbs="[{caption: 'Промокоды', to: {name: 'promo-code'}}]"
+                :breadcrumbs="[{caption: 'Промокоды', to: {name: 'promo-code-list'}}]"
                 :link="{name: 'excursion-list'}"
                 :link-title="'К списку промокодов'"
     >
@@ -10,15 +10,11 @@
             <FormNumber :form="form" :name="'amount'"/>
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'excursion_statuses'"/>
 
-            <FieldWrapper :required="true" :valid="this.arrExcursions.length > 0" :errors="['Выберите экскурсии']">
-                <GuiContainer mt-15 pl-15>
-                    <InputCheckbox v-for="(item, key) in excursions.data"
-                        v-model="arrExcursions"
-                        :label="item['name']"
-                        :value="item['id']"
-                    />
-                </GuiContainer>
-            </FieldWrapper>
+            <GuiValueArea mt-30 :title="'Экскурсии'">
+                <template v-for="excursion in form.payload['excursions']">
+                    <InputCheckbox v-model="arrExcursions" :value="excursion.id" :label="excursion.name"/>
+                </template>
+            </GuiValueArea>
         </GuiContainer>
 
         <GuiContainer mt-30>
@@ -40,13 +36,14 @@ import FormImages from "@/Components/Form/FormImages";
 import FormNumber from "@/Components/Form/FormNumber";
 import FormText from "@/Components/Form/FormText";
 import FormCheckBox from "@/Components/Form/FormCheckBox";
-import data from "@/Core/Data";
 import InputCheckbox from "@/Components/Inputs/InputCheckbox.vue";
 import FieldWrapper from "@/Components/Fields/Helpers/FieldWrapper.vue";
+import GuiValueArea from "../../../Components/GUI/GuiValueArea";
 
 
 export default {
     components: {
+        GuiValueArea,
         FieldWrapper,
         InputCheckbox,
         FormText,
@@ -63,23 +60,21 @@ export default {
 
     data: () => ({
         form: form('/api/promo-code/get', '/api/promo-code/update'),
-        excursions: data('/api/dictionaries'),
         arrExcursions: [],
     }),
 
     computed: {
-        excursionId() {
+        promoCodeId() {
             return Number(this.$route.params.id);
         },
         processing() {
-            return this.form.loading || this.form.saving;
+            return this.form.is_loading || this.form.is_saving;
         },
     },
 
     created() {
         this.form.toaster = this.$toast;
-        this.form.load({id: this.excursionId});
-        this.excursions.load({dictionary: 'excursions'});
+        this.form.load({id: this.promoCodeId});
     },
 
     methods: {
@@ -89,13 +84,13 @@ export default {
             if (!this.form.validate()) {
                 return;
             }
-            this.form.save({id: this.excursionId})
-                .then(response => {
-                    this.$router.push({name: 'promo-code'});
+            this.form.save({id: this.promoCodeId})
+                .then(() => {
+                    this.$router.push({name: 'promo-code-list'});
                 })
         },
         cancel() {
-            this.$router.push({name: 'promo-code'});
+            this.$router.push({name: 'promo-code-list'});
         },
     }
 }
