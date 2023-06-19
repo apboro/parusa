@@ -52,7 +52,7 @@
             <div class="ap-showcase__title">Билеты</div>
 
             <div class="ap-showcase__tickets">
-                <table v-if="trip!== null" class="ap-showcase__tickets-table">
+                <table v-if="trip" class="ap-showcase__tickets-table">
                     <thead>
                     <tr>
                         <th class="ap-showcase__tickets-table-col-1">Тип билета</th>
@@ -69,7 +69,7 @@
                         <td data-label="Стоимость:" class="ap-showcase__tickets-table-col-2">{{ rate['base_price'] }} руб.</td>
                         <td class="ap-showcase__tickets-table-col-3">
                             <ShowcaseFormNumber class="ap-showcase__tickets-quantity" :form="form" :name="'rate.' + rate['grade_id'] + '.quantity'" :hide-title="true"
-                                                :quantity="true" :min="0" :border="false" @change="promoCode"/>
+                                                :quantity="true" :min="0" :border="false" @change="promoCode(false)"/>
                         </td>
                         <td data-label="Сумма:" class="ap-showcase__tickets-table-col-4"
                             :class="{'ap-showcase__tickets-filled': form.values['rate.' + rate['grade_id'] + '.quantity'] > 0}">
@@ -78,7 +78,7 @@
                     </tr>
                     <tr>
                         <td colspan="3" class="ap-showcase__tickets-table-col-total-title">Итого:</td>
-                        <td class="ap-showcase__tickets-table-col-total" :class="{'ap-showcase__tickets-filled': count > 0}">{{ this.full_price }} руб.</td>
+                        <td class="ap-showcase__tickets-table-col-total" :class="{'ap-showcase__tickets-filled': count > 0}">{{ this.total }}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -103,19 +103,21 @@
                 </div>
             </div>
 
-            <div class="ap-showcase__contacts">
-                <div class="ap-showcase__contacts-item">
-                    <ShowcaseFormString :form="form" :name="'promocode'" :hide-title="true" placeholder="Промокод"/>
+            <div class="ap-showcase__promocode">
+                <span class="ap-showcase__title">Промокод</span>
+                <div class="ap-showcase__promocode-input">
+                    <div class="ap-showcase__promocode-item">
+                        <ShowcaseFormString :form="form" :name="'promocode'" :hide-title="true" placeholder="Промокод"/>
+                        <span v-if="message" class="ap-showcase__contacts-item-description">{{ message }}</span>
+                    </div>
+                    <div class="ap-showcase__promocode-button">
+                        <ShowcaseButton @clicked="promoCode(true)" :disabled="!form.values['promocode']">Применить</ShowcaseButton>
+                    </div>
                 </div>
-                <div class="ap-showcase__contacts-item-promocode">
-                    <ShowcaseButton @clicked="promoCode" :disabled="!form.values['promocode']">Применить</ShowcaseButton>
-                </div>
-                <div class="ap-showcase__contacts-item">
-                </div>
-                <div class="ap-showcase__contacts-item">
+                <div class="ap-showcase__promocode-discount" v-if="status && discounted">
+                    Скидка по промокоду: <span class="ap-showcase__promocode-discount-value">{{ discounted }} руб.</span>
                 </div>
             </div>
-            <span v-if="!this.status" class="ap-showcase__contacts-item-description">{{ this.message }}</span>
 
             <div class="ap-showcase__agreement">
                 <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_valid"
@@ -131,21 +133,18 @@
                 <ShowcaseMessage>Ошибка: {{ error_message }}</ShowcaseMessage>
             </template>
 
-            <div v-if="count > 0 " class="ap-showcase__total-calc" >
-                <div class="ap-showcase__checkout-total">
-                    Сумма заказа:
-                    <span class="ap-showcase__checkout-total-value">{{ this.full_price }}</span>
-                </div>
-                <div class="ap-showcase__checkout-total">
-                    Сумма по промокоду:
-                    <span class="ap-showcase__checkout-total-value">{{ this.discounted }}</span>
-                </div>
-            </div>
 
             <div class="ap-showcase__checkout">
                 <div class="ap-showcase__checkout-total">
                     Итого к оплате:
-                    <span v-if="count > 0" class="ap-showcase__checkout-total-value">{{ this.discount_price }} руб.</span>
+                    <span v-if="count > 0" class="ap-showcase__checkout-total-value">
+                        <template v-if="status">
+                            <s>{{ total }}</s> {{ discount_price }} руб.
+                        </template>
+                        <template v-else>
+                            {{ total }}
+                        </template>
+                    </span>
                     <span v-else class="ap-showcase__checkout-total-value">В заказе отсутствуют билеты</span>
                 </div>
                 <div class="ap-showcase__checkout-button">
@@ -206,6 +205,17 @@ export default {
     emits: ['select', 'order'],
 
     computed: {
+        total() {
+            if (this.trip === null) {
+                return '—';
+            }
+            let total = 0;
+            this.trip['rates'].map(rate => {
+                total += this.multiply(rate['base_price'], this.form.values['rate.' + rate['grade_id'] + '.quantity']);
+            });
+            return this.multiply(total, 1) + ' руб.';
+        },
+
         count() {
             if (this.trip === null) {
                 return 0;
@@ -242,11 +252,11 @@ export default {
         agreement_valid: true,
         has_error: false,
         error_message: null,
-        discount_price: 0,
-        discounted: 0,
-        full_price: 0,
-        message: "",
-        status: true,
+        discount_price: null,
+        discounted: null,
+        full_price: null,
+        message: null,
+        status: false,
     }),
 
     created() {
@@ -281,6 +291,7 @@ export default {
             this.form.set('name', null, 'required', 'Имя', true);
             this.form.set('email', null, 'required|email|bail', 'Email', true);
             this.form.set('phone', null, 'required', 'Телефон', true);
+            this.form.set('promocode', null, null, 'Промокод', true);
             this.form.load();
         },
 
@@ -298,7 +309,7 @@ export default {
             axios.post(this.form.save_url, {
                 data: this.form.values,
                 trip: this.form.options['trip'],
-                ref:this.form.options['ref'],
+                ref: this.form.options['ref'],
             }, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     // store order secret
@@ -323,7 +334,9 @@ export default {
                 })
         },
 
-        promoCode() {
+        promoCode(force = false) {
+            if (!force && !this.status) return;
+
             let tickets = [];
             let tripID = this.form.options['trip'];
             this.trip['rates'].map(rate => {
@@ -335,17 +348,15 @@ export default {
                 tickets.push(ticket);
             });
 
-            axios.post('/showcase_v2/promo-code/use', {
-                promocode: this.form.values['promocode'] ?? '',
-                trip: this.form.options['trip'],
-                data: this.form.values
-            }, {headers: {'X-Ap-External-Session': this.session}})
+            axios.post('/showcase/promo-code/use', {promocode: this.form.values['promocode'], tickets: tickets},
+                {headers: {'X-Ap-External-Session': this.session}}
+            )
                 .then(response => {
-                    this.discount_price = response.data.data['discount_price'];
-                    this.discounted = response.data.data['discounted'];
-                    this.full_price = response.data.data['full_price'];
-                    this.message = response.data.data['message'];
                     this.status = response.data.data['status'];
+                    this.discount_price = this.status ? response.data.data['discount_price'] : null;
+                    this.discounted = this.status ? response.data.data['discounted'] : null;
+                    this.full_price = this.status ? response.data.data['full_price'] : null;
+                    this.message = response.data.data['message'];
                 })
                 .catch(error => {
                     this.has_error = true;
@@ -673,6 +684,42 @@ export default {
         font-size: 16px;
         color: $showcase_text_color;
         font-weight: normal;
+    }
+}
+
+.ap-showcase__promocode {
+    background-color: #f1f1f1;
+    padding: 16px 16px 8px 16px;
+    margin-top: 16px;
+
+    &-input {
+        display: flex;
+        margin: 10px 0 8px;
+    }
+
+    &-item {
+        margin-right: 5px;
+        max-width: 100%;
+        width: 350px;
+    }
+
+    &-button {
+        padding: 5px 0;
+    }
+
+    &-discount {
+        font-family: $showcase_font;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        height: $showcase_size_unit;
+        box-sizing: border-box;
+
+        &-value {
+            margin-left: 15px;
+            font-size: 24px;
+            color: $showcase_primary_color;
+        }
     }
 }
 
