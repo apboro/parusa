@@ -357,7 +357,7 @@ export default {
                 tickets.push(ticket);
             });
 
-            axios.post('/showcase_v2/promo-code/use', {promocode: this.form.values['promocode'], tickets: tickets},
+            axios.post(this.crm_url + '/showcase_v2/promo-code/use', {promocode: this.form.values['promocode'], tickets: tickets},
                 {headers: {'X-Ap-External-Session': this.session}}
             )
                 .then(response => {
