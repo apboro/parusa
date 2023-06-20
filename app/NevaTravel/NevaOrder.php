@@ -70,6 +70,8 @@ class NevaOrder
 
     public function cancel(): array
     {
+        $this->order->neva_travel_order_number = null;
+        $this->order->save();
         return $this->nevaApiData->cancelOrder(['id' => $this->order->neva_travel_id, 'comment' => 'Клиент потребовал возврат']);
     }
 

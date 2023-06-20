@@ -6,7 +6,7 @@ use App\NevaTravel\ImportTrips;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
-class ResreshNevaTodayTrips extends Command
+class RefreshNevaTodayTrips extends Command
 {
     /**
      * The name and signature of the console command.
