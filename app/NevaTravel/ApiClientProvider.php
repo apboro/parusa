@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 
 class ApiClientProvider
 {
-    private string $baseUrl;
+    private ?string $baseUrl;
     private array $headers;
 
     public function __construct()

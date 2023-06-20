@@ -307,7 +307,17 @@ class CheckoutController extends ApiController
         /** @var Order $order */
         $order = Order::query()
             ->with(
-                ['status', 'tickets', 'tickets.grade', 'tickets.trip', 'tickets.trip.startPier', 'tickets.trip.startPier.info', 'tickets.trip.excursion', 'tickets.trip.excursion.info']
+                [
+                    'status',
+                    'tickets',
+                    'tickets.grade',
+                    'tickets.trip',
+                    'tickets.trip.startPier',
+                    'tickets.trip.startPier.info',
+                    'tickets.trip.excursion',
+                    'tickets.trip.excursion.info',
+                    'promocode',
+                ]
             )
             ->where('id', $id)
             ->whereIn('status_id', [OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::showcase_paid, OrderStatus::showcase_canceled])

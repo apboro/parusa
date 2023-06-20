@@ -10,6 +10,7 @@ use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\PiersStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
+use App\Models\Dictionaries\PromoCodeStatus;
 use App\Models\Dictionaries\ShipStatus;
 use App\Models\Dictionaries\TerminalStatus;
 use App\Models\Dictionaries\TicketStatus;
@@ -128,6 +129,10 @@ class StatusesSeeder extends GenericSeeder
         PaymentStatus::class => [
             PaymentStatus::sale => ['name' => 'Оплата'],
             PaymentStatus::return => ['name' => 'Возврат'],
+        ],
+        PromoCodeStatus::class => [
+            PromoCodeStatus::active => ['name' => 'Активный'],
+            PromoCodeStatus::blocked => ['name' => 'Неактивный'],
         ],
     ];
 }

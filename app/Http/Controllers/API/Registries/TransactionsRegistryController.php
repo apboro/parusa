@@ -10,6 +10,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Payments\Payment;
+use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -61,8 +62,9 @@ class TransactionsRegistryController extends ApiController
         $filters['date_to'] = $dateTo->format('Y-m-d\TH:i');
 
         $terminalId = $this->getTerminalId($request);
+        $excursionId = $filters['excursion_id'] ?? null;
 
-        $query = $this->getListQuery($request->search(), $filters, $terminalId);
+        $query = $this->getListQuery($request->search(), $filters, $terminalId, $excursionId);
 
         $queryBackup = $query->clone();
         $payments = $query->paginate($request->perPage(10, $this->rememberKey));
@@ -90,18 +92,82 @@ class TransactionsRegistryController extends ApiController
             ];
         });
 
-        $saleQuery = $queryBackup->clone()->where('status_id', PaymentStatus::sale);
-        $returnQuery = $queryBackup->clone()->where('status_id', PaymentStatus::return);
+        if (empty($excursionId)) {
+            $saleQuery = $queryBackup->clone()->where('status_id', PaymentStatus::sale);
+            $returnQuery = $queryBackup->clone()->where('status_id', PaymentStatus::return);
 
-        $saleTotal = PriceConverter::storeToPrice($saleQuery->sum('total'));
-        $saleByCard = PriceConverter::storeToPrice($saleQuery->sum('by_card'));
-        $saleByCash = PriceConverter::storeToPrice($saleQuery->sum('by_cash'));
+            $saleTotal = PriceConverter::storeToPrice($saleQuery->sum('total'));
+            $saleByCard = PriceConverter::storeToPrice($saleQuery->sum('by_card'));
+            $saleByCash = PriceConverter::storeToPrice($saleQuery->sum('by_cash'));
 
-        $returnTotal = PriceConverter::storeToPrice($returnQuery->sum('total'));
-        $returnByCard = PriceConverter::storeToPrice($returnQuery->sum('by_card'));
-        $returnByCash = PriceConverter::storeToPrice($returnQuery->sum('by_cash'));
+            $returnTotal = PriceConverter::storeToPrice($returnQuery->sum('total'));
+            $returnByCard = PriceConverter::storeToPrice($returnQuery->sum('by_card'));
+            $returnByCash = PriceConverter::storeToPrice($returnQuery->sum('by_cash'));
 
-        $overallTotal = $saleTotal - $returnTotal;
+            $overallTotal = $saleTotal - $returnTotal;
+        } else {
+            $ticketsByCash = Ticket::query()
+                ->whereHas('trip', function (Builder $query) use ($excursionId) {
+                    $query->where('excursion_id', $excursionId);
+                })
+                ->whereHas('order.payments', function (Builder $query) use ($excursionId, $filters) {
+                    $query->where('by_cash', '>', 0)
+                        ->where('status_id', PaymentStatus::sale)
+                        ->where('gate', 'lifepos')
+                        ->where('created_at', '>=', $filters['date_from'])
+                        ->where('created_at', '<=', $filters['date_to']);
+                })->sum('base_price');
+            $ticketsByCash = PriceConverter::storeToPrice($ticketsByCash);
+
+            $ticketsByCard = Ticket::query()
+                ->whereHas('trip', function (Builder $query) use ($excursionId) {
+                    $query->where('excursion_id', $excursionId);
+                })
+                ->whereHas('order.payments', function (Builder $query) use ($excursionId, $filters) {
+                    $query->where('by_card', '>', 0)
+                        ->where('status_id', PaymentStatus::sale)
+                        ->where('gate', 'lifepos')
+                        ->where('created_at', '>=', $filters['date_from'])
+                        ->where('created_at', '<=', $filters['date_to']);
+                })->sum('base_price');
+            $ticketsByCard = PriceConverter::storeToPrice($ticketsByCard);
+
+            $returnTicketsByCash = Ticket::query()
+                ->whereHas('trip', function (Builder $query) use ($excursionId) {
+                    $query->where('excursion_id', $excursionId);
+                })
+                ->whereHas('order.payments', function (Builder $query) use ($excursionId, $filters) {
+                    $query->where('by_cash', '>', 0)
+                        ->where('status_id', PaymentStatus::return)
+                        ->where('gate', 'lifepos')
+                        ->where('created_at', '>=', $filters['date_from'])
+                        ->where('created_at', '<=', $filters['date_to']);
+                })->sum('base_price');
+            $returnTicketsByCash = PriceConverter::storeToPrice($returnTicketsByCash);
+
+            $returnTicketsByCard = Ticket::query()
+                ->whereHas('trip', function (Builder $query) use ($excursionId) {
+                    $query->where('excursion_id', $excursionId);
+                })
+                ->whereHas('order.payments', function (Builder $query) use ($excursionId, $filters) {
+                    $query->where('by_card', '>', 0)
+                        ->where('status_id', PaymentStatus::return)
+                        ->where('gate', 'lifepos')
+                        ->where('created_at', '>=', $filters['date_from'])
+                        ->where('created_at', '<=', $filters['date_to']);
+                })->sum('base_price');
+            $returnTicketsByCard = PriceConverter::storeToPrice($returnTicketsByCard);
+
+            $saleTotal = $ticketsByCash + $ticketsByCard;
+            $saleByCard = $ticketsByCard;
+            $saleByCash = $ticketsByCash;
+
+            $returnTotal = $returnTicketsByCard + $returnTicketsByCash;
+            $returnByCard = $returnTicketsByCard;
+            $returnByCash = $returnTicketsByCash;
+
+            $overallTotal = $saleTotal - $returnTotal;
+        }
 
         return APIResponse::list(
             $payments,
@@ -136,8 +202,9 @@ class TransactionsRegistryController extends ApiController
         $filters['date_to'] = $dateTo->format('Y-m-d\TH:i');
 
         $terminalId = $this->getTerminalId($request);
+        $excursionId = $request->input('excursion_id');
 
-        $payments = $this->getListQuery($request->search(), $filters, $terminalId)->get();
+        $payments = $this->getListQuery($request->search(), $filters, $terminalId, $excursionId)->get();
 
         $titles = [
             'Дата и время',
@@ -190,11 +257,11 @@ class TransactionsRegistryController extends ApiController
      *
      * @return Builder
      */
-    protected function getListQuery(array $search, array $filters, ?int $terminalId): Builder
+    protected function getListQuery(array $search, array $filters, ?int $terminalId, ?int $excursionId): Builder
     {
         $query = Payment::query()
             ->where('gate', 'lifepos')
-            ->with(['status', 'order', 'terminal', 'position', 'position.user', 'position.user.profile']);
+            ->with(['status', 'order.tickets.trip', 'terminal', 'position', 'position.user', 'position.user.profile']);
 
         if ($terminalId !== null) {
             $query->where('terminal_id', $terminalId);
@@ -246,6 +313,13 @@ class TransactionsRegistryController extends ApiController
                 $query->where('created_at', '<=', $filters['date_to']);
             }
         }
+
+        $query->when(($excursionId || !empty($filters['excursion_id'])), function (Builder $query) use ($excursionId, $filters) {
+            $query->whereHas('order.tickets.trip', function (Builder $query) use ($excursionId, $filters) {
+                $query->where('excursion_id', $excursionId ?? $filters['excursion_id']);
+            });
+        });
+
         return $query;
     }
 

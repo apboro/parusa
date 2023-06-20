@@ -18,6 +18,7 @@ use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\PiersStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
+use App\Models\Dictionaries\PromoCodeStatus;
 use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\ShipStatus;
 use App\Models\Dictionaries\TerminalStatus;
@@ -55,6 +56,7 @@ class DictionaryController extends ApiController
         'piers' => ['class' => Pier::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,staff_terminal,partner'],
         'position_access_statuses' => ['class' => PositionAccessStatus::class, 'allow' => 'staff_admin'],
         'position_statuses' => ['class' => PositionStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
+        'promo_code_statuses' => ['class' => PromoCodeStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
         'representatives' => ['class' => User::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
         'roles' => ['class' => Role::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
         'ships' => ['class' => Ship::class, 'allow' => 'staff_admin,staff_office_manager'],

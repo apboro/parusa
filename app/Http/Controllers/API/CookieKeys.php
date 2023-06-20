@@ -8,6 +8,7 @@ class CookieKeys
     public const trips_list = 'trips_list';
     public const trips_select_list = 'trips_select_list';
     public const excursions_list = 'excursions_list';
+    public const promo_code_list = 'promo_code_list';
     public const pier_list = 'pier_list';
     public const representatives_list = 'representatives_list';
     public const partners_list = 'partners_list';

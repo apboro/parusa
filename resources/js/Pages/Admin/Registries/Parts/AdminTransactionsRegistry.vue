@@ -46,6 +46,20 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+            <LayoutFiltersItem :title="'Экскурсия'">
+                <DictionaryDropDown
+                    :dictionary="'excursions'"
+                    :fresh="true"
+                    v-model="list.filters['excursion_id']"
+                    :original="list.filters_original['excursion_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :search="true"
+                    :small="true"
+                    :disabled="!!list.search"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
             <template #search>
                 <LayoutFiltersItem :title="'Поиск по номеру заказа, транзакции, сумме'">
                     <InputSearch v-model="list.search" @change="list.load()"/>

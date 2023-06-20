@@ -13,7 +13,7 @@
                        :session="session"
                        @close="closeOrder"
             />
-            <TicketsSelect v-else-if="trip_id"
+            <TicketsSelectV2 v-else-if="trip_id"
                            :trip="trip.data"
                            :trip-id="trip_id"
                            :crm_url="crmUrl"
@@ -50,9 +50,9 @@
 <script>
 import ShowcaseMessage from "@/Pages/Showcase/Components/ShowcaseMessage";
 import ShowcaseLoadingProgress from "@/Pages/Showcase/Components/ShowcaseLoadingProgress";
-import TicketsSelect from "@/Pages/Showcase/TicketsSelect";
 import OrderInfo from "@/Pages/Showcase/OrderInfo";
 import TripsV2List from "@/Pages/ShowcaseV2/TripsV2List.vue";
+import TicketsSelectV2 from "@/Pages/ShowcaseV2/TicketsSelectV2.vue";
 
 export default {
     props: {
@@ -61,9 +61,9 @@ export default {
     },
 
     components: {
+        TicketsSelectV2,
         TripsV2List,
         OrderInfo,
-        TicketsSelect,
         ShowcaseLoadingProgress,
         ShowcaseMessage,
     },
