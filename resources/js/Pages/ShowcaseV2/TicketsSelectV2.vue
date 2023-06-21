@@ -119,21 +119,20 @@
                 </div>
             </div>
 
-            <!--
-            <div v-if="count > 0 " class="ap-showcase__total-calc" >
-                <div class="ap-showcase__checkout-total">
-                    Сумма заказа:
-                    <span class="ap-showcase__checkout-total-value">{{ this.full_price }}</span>
-                </div>
-            </div>
-            -->
-
             <div class="ap-showcase__agreement">
                 <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_valid"
                                       :errors="['Необходимо принять условия оферты на оказание услуг и дать своё согласие на обработку персональных данных']">
                     <ShowcaseInputCheckbox v-model="agree" :small="true">
                         Я принимаю условия <span class="ap-showcase__link">Оферты на оказание услуг</span> и даю своё <span class="ap-showcase__link">согласие на обработку
                         персональных данных</span>
+                    </ShowcaseInputCheckbox>
+                </ShowcaseFieldWrapper>
+            </div>
+            <div class="ap-showcase__agreement" v-if="status">
+                <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_promocode_valid"
+                                      :errors="['Необходимо принять условия использования промокода']">
+                    <ShowcaseInputCheckbox v-model="agree_promocode" :small="true">
+                        Билеты, купленные с применением промокода, возврату не подлежат
                     </ShowcaseInputCheckbox>
                 </ShowcaseFieldWrapper>
             </div>
@@ -247,6 +246,15 @@ export default {
                 this.agreement_valid = true;
             }
         },
+        agree_promocode: {
+            get() {
+                return this.agreement_promocode;
+            },
+            set(value) {
+                this.agreement_promocode = value;
+                this.agreement_promocode_valid = true;
+            }
+        },
     },
 
     watch: {
@@ -259,6 +267,8 @@ export default {
         form: null,
         agreement: true,
         agreement_valid: true,
+        agreement_promocode: true,
+        agreement_promocode_valid: true,
         has_error: false,
         error_message: null,
         discount_price: null,
@@ -310,7 +320,8 @@ export default {
 
         order() {
             this.agreement_valid = this.agreement;
-            if (!this.form.validate() || !this.agreement_valid || this.count < 1) {
+            this.agreement_promocode_valid = !this.status || this.agreement_promocode;
+            if (!this.form.validate() || !this.agreement_valid || !this.agreement_promocode_valid || this.count < 1) {
                 return;
             }
             this.is_ordering = true;

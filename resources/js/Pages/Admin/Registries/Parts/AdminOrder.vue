@@ -51,10 +51,17 @@
                                    @change="replacementTicketSelected(ticket['excursion_id'])"/>
                 </ListTableCell>
             </ListTableRow>
+            <ListTableRow :no-highlight="true" v-if="info.data['promocode']">
+                <ListTableCell colspan="3"/>
+                <ListTableCell><b>Промокод</b></ListTableCell>
+                <ListTableCell><b>{{ info.data['promocode'] }}</b></ListTableCell>
+                <ListTableCell/>
+                <ListTableCell v-if="isReserve || is_returning || is_replacement"/>
+            </ListTableRow>
             <ListTableRow :no-highlight="true">
                 <ListTableCell colspan="3"/>
                 <ListTableCell><b>Итого: {{ info.data['tickets_count'] }}</b></ListTableCell>
-                <ListTableCell><b>{{ info.data['total'] }} руб.</b></ListTableCell>
+                <ListTableCell><b>{{ info.data['promocode'] ? info.data['order_total'] : info.data['total'] }} руб.</b></ListTableCell>
                 <ListTableCell/>
                 <ListTableCell v-if="isReserve || is_returning || is_replacement"/>
             </ListTableRow>

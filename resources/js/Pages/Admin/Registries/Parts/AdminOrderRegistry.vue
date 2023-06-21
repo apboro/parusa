@@ -54,7 +54,12 @@
                         {{ order['tickets_total'] }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{ order['amount'] }} руб.
+                        <template v-if="order['amount'] === order['order_total']">
+                            {{ order['amount'] }} руб.
+                        </template>
+                        <template v-else>
+                            {{ order['order_total'] }} руб. <s>{{ order['amount'] }} руб.</s>
+                        </template>
                     </ListTableCell>
                     <ListTableCell style="padding-top: 5px; padding-bottom: 5px">
                         <GuiExpand @expand="expandTickets(order)"/>

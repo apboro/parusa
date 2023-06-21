@@ -48,6 +48,7 @@ class OrdersRegistryController extends ApiController
                 'type', 'status',
                 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade',
                 'partner', 'position', 'position.user', 'position.user.profile', 'terminal', 'cashier',
+                'promocode',
             ])
             ->withCount(['tickets'])
             ->whereIn('status_id', OrderStatus::order_had_paid_statuses);
@@ -103,7 +104,9 @@ class OrdersRegistryController extends ApiController
         /** @var LengthAwarePaginator $orders */
         $orders->transform(function (Order $order) use ($current) {
 
-            if ($current->isStaffTerminal()) {
+            if ($order->promocode->count() > 0) {
+                $returnable = false;
+            } else if ($current->isStaffTerminal()) {
                 $returnable = $order->hasStatus(OrderStatus::terminal_paid) || $order->hasStatus(OrderStatus::terminal_partial_returned);
             } else if ($current->isRepresentative()) {
                 $returnable = $order->hasStatus(OrderStatus::partner_paid) || $order->hasStatus(OrderStatus::partner_partial_returned);
@@ -117,6 +120,7 @@ class OrdersRegistryController extends ApiController
                     'date' => $order->created_at->format('d.m.Y, H:i'),
                     'tickets_total' => $order->getAttribute('tickets_count'),
                     'amount' => $order->tickets->sum('base_price'),
+                    'order_total' => $order->total(),
                     'returnable' => $returnable,
                     'payment_unconfirmed' => (bool)$order->payment_unconfirmed,
                     'info' => [
