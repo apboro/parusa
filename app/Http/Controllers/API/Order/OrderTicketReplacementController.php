@@ -107,8 +107,11 @@ class OrderTicketReplacementController extends ApiController
             return APIResponse::error('Нехватает мест в рейсе');
         }
 
+        /** @var Order $order */
+        $order = Order::query()->where('id', $orderId)->first();
+
         try {
-            DB::transaction(static function () use ($trip, $tickets) {
+            DB::transaction(static function () use ($trip, $tickets, $order) {
                 foreach ($tickets as $ticket) {
                     /** @var Ticket $ticket */
                     if (!in_array($ticket->status_id, TicketStatus::ticket_paid_statuses)) {
@@ -117,26 +120,24 @@ class OrderTicketReplacementController extends ApiController
                     $ticket->trip_id = $trip->id;
                     $ticket->save();
                 }
-            });
 
-            $order = Order::where('id', $orderId)->first();
-            if ($order->neva_travel_id) {
-                $nevaOrder = new NevaOrder($order);
-                $cancelResult = $nevaOrder->cancel();
-                if ((isset($cancelResult['body']['status'])
-                    && $cancelResult['body']['status'] === "canceled")
-                    || (isset($cancelResult['body']['code'])
-                        && $cancelResult['body']['code'] === "order_already_canceled")) {
-                    if ($nevaOrder->make())
-                    {
-                        $nevaOrder->approve();
+                if ($order->neva_travel_id) {
+                    $nevaOrder = new NevaOrder($order);
+                    $cancelResult = $nevaOrder->cancel();
+                    if (
+                        (isset($cancelResult['body']['status']) && $cancelResult['body']['status'] === "canceled")
+                        || (isset($cancelResult['body']['code']) && $cancelResult['body']['code'] === "order_already_canceled")
+                    ) {
+                        if ($nevaOrder->make()) {
+                            $nevaOrder->approve();
+                        } else {
+                            throw new RuntimeException('Невозможно перенести заказ.');
+                        }
                     } else {
                         throw new RuntimeException('Невозможно перенести заказ.');
                     }
-                } else {
-                    throw new RuntimeException('Невозможно перенести заказ.');
                 }
-            }
+            });
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
