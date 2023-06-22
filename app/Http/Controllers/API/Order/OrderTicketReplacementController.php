@@ -8,9 +8,11 @@ use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
+use App\Models\Order\Order;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
 use App\Models\Tickets\Ticket;
+use App\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -116,6 +118,25 @@ class OrderTicketReplacementController extends ApiController
                     $ticket->save();
                 }
             });
+
+            $order = Order::where('id', $orderId)->first();
+            if ($order->neva_travel_id) {
+                $nevaOrder = new NevaOrder($order);
+                $cancelResult = $nevaOrder->cancel();
+                if ((isset($cancelResult['body']['status'])
+                    && $cancelResult['body']['status'] === "canceled")
+                    || (isset($cancelResult['body']['code'])
+                        && $cancelResult['body']['code'] === "order_already_canceled")) {
+                    if ($nevaOrder->make())
+                    {
+                        $nevaOrder->approve();
+                    } else {
+                        throw new RuntimeException('Невозможно перенести заказ.');
+                    }
+                } else {
+                    throw new RuntimeException('Невозможно перенести заказ.');
+                }
+            }
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
