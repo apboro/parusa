@@ -11,6 +11,7 @@ use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Order\Order;
+use App\Models\Partner\Partner;
 use App\Models\Payments\Payment;
 use App\Models\QrCode;
 use App\Models\Sails\Trip;
@@ -235,14 +236,10 @@ class CheckoutController extends ApiController
 
             $existingCookieHash = $request->cookie('qrCodeHash');
 
-            Log::channel('qr-codes')->info('CheckoutController existingCookieHash, $qrCode', [$existingCookieHash]);
-
             try {
-
                 if ($existingCookieHash) {
                     /** @var QrCode|null $qrCode */
                     $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
-                    Log::channel('qr-code')->info('CheckoutController $qrCode', [$qrCode]);
                     if ($qrCode) {
                         $order->partner_id = $qrCode->partner_id;
                         $order->type_id = OrderType::qr_code;
@@ -251,7 +248,23 @@ class CheckoutController extends ApiController
                     }
                 }
             } catch (Exception $e) {
-                Log::channel('sber_payments')->error('Error with qrstatistics: ' . $e->getMessage());
+                Log::channel('sber_payments')->error('Error with qr statistics: ' . $e->getMessage());
+            }
+
+            $referralCookie = $request->cookie('referralLink');
+
+            try {
+                if ($referralCookie) {
+                    /**@var Partner|null $partner */
+                    $partner = Partner::query()->where('id', $referralCookie)->first();
+                    if ($partner) {
+                        $order->partner_id = $partner->id;
+                        $order->type_id = OrderType::referral_link;
+                        $order->save();
+                    }
+                }
+            } catch (Exception $e) {
+                Log::channel('sber_payments')->error('Error with referral statistics: ' . $e->getMessage());
             }
 
             // Make job to do in background:

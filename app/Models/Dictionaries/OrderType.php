@@ -29,6 +29,9 @@ class OrderType extends AbstractDictionary
     /** @var int QR-код */
     public const qr_code = 11;
 
+    /** @var int Реферальная ссылка */
+    public const referral_link = 12;
+
     /** @var string Referenced table name. */
     protected $table = 'dictionary_order_types';
 }
