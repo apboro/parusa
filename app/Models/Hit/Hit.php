@@ -24,12 +24,7 @@ class Hit extends Model
     public static function register($hitSourceId): void
     {
         $now = Carbon::now();
-        $minutes = $now->minute;
-        $remainder = $minutes % 10;
-        if ($remainder >= 5) {
-            $remainder = 10 - $remainder;
-        }
-        $rounded = $now->subMinutes($remainder)->second(0)->millisecond(0);
+        $rounded = $now->minute(floor($now->minute / 10) * 10)->second(0)->millisecond(0);
 
         $hit = self::where('timestamp', $rounded)
             ->where('source_id', $hitSourceId)
