@@ -47,12 +47,14 @@ class TripsSelectListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
-        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
 
         if ($current->terminal() !== null) {
+            Hit::register(HitSource::terminal);
             $this->defaultFilters['start_pier_id'] = $current->terminal()->pier_id;
             $this->rememberFilters = [];
+        } else {
+            Hit::register(HitSource::partner);
         }
 
         $this->defaultFilters['date'] = Carbon::now()->format('Y-m-d');
@@ -72,7 +74,7 @@ class TripsSelectListController extends ApiController
             ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
             ->whereDate('start_at', $date)
-            ->when(env('REMOVE_NEVA_TRIPS'), function (Builder $query){
+            ->when(env('REMOVE_NEVA_TRIPS'), function (Builder $query) {
                 $query->where('source', null);
             })
             ->where('start_at', '>', $now)

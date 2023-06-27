@@ -30,8 +30,8 @@ class RatesListController extends ApiEditController
      */
     public function list(Request $request): JsonResponse
     {
-        Hit::register(HitSource::admin);
         $current = Currents::get($request);
+        Hit::register($current->isStaff() ? HitSource::admin : HitSource::partner);
         $now = Carbon::now();
 
         $partnerId = $current->isStaff() ? $request->input('partner_id') : $current->partnerId();
@@ -70,7 +70,7 @@ class RatesListController extends ApiEditController
         $list = $query->get();
 
         /** @var Collection $list */
-        $list = $list->map(function (TicketsRatesList $ratesList) use($current) {
+        $list = $list->map(function (TicketsRatesList $ratesList) use ($current) {
             return $this->rateToArray($ratesList, true, $current->isStaff());
         });
 
@@ -80,7 +80,7 @@ class RatesListController extends ApiEditController
                 $query->where('status_id', ExcursionStatus::active);
             })
             ->when($current->isRepresentative(), function (Builder $query) use ($current) {
-                $query->withCount(['partnerShowcaseHide' => function (Builder $query) use($current){
+                $query->withCount(['partnerShowcaseHide' => function (Builder $query) use ($current) {
                     $query->where('partner_id', $current->partnerId());
                 }]);
             })

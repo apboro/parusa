@@ -19,10 +19,7 @@ class CreateHitTable extends Migration
             $table->unsignedTinyInteger('count')->default(0);
             $table->dateTime('timestamp');
 
-            $table->timestamps();
-
-            $table->foreign('source_id')->references('id')->on('dictionary_hit_sources')
-                ->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreign('source_id')->references('id')->on('dictionary_hit_sources')->cascadeOnUpdate()->restrictOnDelete();
         });
     }
 

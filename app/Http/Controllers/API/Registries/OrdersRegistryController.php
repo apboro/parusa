@@ -39,8 +39,15 @@ class OrdersRegistryController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
-        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
+
+        if ($current->isRepresentative()) {
+            Hit::register(HitSource::partner);
+        } else if ($current->isStaffTerminal()) {
+            Hit::register(HitSource::terminal);
+        } else {
+            Hit::register(HitSource::admin);
+        }
 
         $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('Y-m-d');
         $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d');

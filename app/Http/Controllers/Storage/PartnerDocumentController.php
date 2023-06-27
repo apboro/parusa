@@ -22,13 +22,14 @@ class PartnerDocumentController extends Controller
      */
     public function get(string $file, Request $request): BinaryFileResponse
     {
-        Hit::register(HitSource::admin);
         $current = Currents::get($request);
 
         /** @var File $document */
         if ($current->isStaffAdmin() || $current->isStaffOfficeManager() || $current->isStaffAccountant()) {
+            Hit::register(HitSource::admin);
             $document = File::query()->where('filename', $file)->firstOrFail();
         } else if ($current->isRepresentative() && $current->partner() !== null) {
+            Hit::register(HitSource::partner);
             $document = $current->partner()->files()->where('filename', $file)->firstOrFail();
         } else {
             return abort(403);

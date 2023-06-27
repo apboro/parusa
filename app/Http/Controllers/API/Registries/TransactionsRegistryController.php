@@ -55,7 +55,8 @@ class TransactionsRegistryController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
-        Hit::register(HitSource::terminal);
+        $current = Currents::get($request);
+        Hit::register($current->isStaffTerminal() ? HitSource::terminal : HitSource::admin);
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $dateFrom = Carbon::parse($filters['date_from'])->seconds(0)->microseconds(0);
@@ -196,6 +197,9 @@ class TransactionsRegistryController extends ApiController
 
     public function export(ApiListRequest $request): JsonResponse
     {
+        $current = Currents::get($request);
+        Hit::register($current->isStaffTerminal() ? HitSource::terminal : HitSource::admin);
+
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $dateFrom = Carbon::parse($filters['date_from'])->seconds(0)->microseconds(0);

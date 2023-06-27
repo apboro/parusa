@@ -10,6 +10,7 @@ use App\Models\Dictionaries\AccountTransactionTypePrimary;
 use App\Models\Dictionaries\AccountTransactionTypeRefill;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PartnerOrderType;
 use App\Models\Dictionaries\PartnerStatus;
@@ -28,6 +29,7 @@ use App\Models\Dictionaries\TripStatus;
 use App\Models\Dictionaries\UserContactType;
 use App\Models\Dictionaries\UserStatus;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use App\Models\Piers\Pier;
 use App\Models\POS\Terminal;
@@ -82,6 +84,16 @@ class DictionaryController extends ApiController
      */
     public function getDictionary(Request $request): JsonResponse
     {
+        $current = Currents::get($request);
+
+        if ($current->isRepresentative()) {
+            Hit::register(HitSource::partner);
+        } else if ($current->isStaffTerminal()) {
+            Hit::register(HitSource::terminal);
+        } else {
+            Hit::register(HitSource::admin);
+        }
+
         $name = $request->input('dictionary');
 
         if ($name === null || !array_key_exists($name, $this->dictionaries)) {
