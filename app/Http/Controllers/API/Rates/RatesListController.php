@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API\Rates;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use App\Models\Tickets\TicketsRatesList;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
@@ -28,6 +30,7 @@ class RatesListController extends ApiEditController
      */
     public function list(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $current = Currents::get($request);
         $now = Carbon::now();
 

@@ -7,9 +7,11 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Jobs\ProcessShowcaseConfirmedOrder;
 use App\Models\Common\Image;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PaymentStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Payments\Payment;
 use App\Models\QrCode;
@@ -43,6 +45,7 @@ class CheckoutController extends ApiController
      */
     public function handle(Request $request): JsonResponse
     {
+        Hit::register(HitSource::checkout);
         // Handle success response
         if ($request->has('status')) {
             return $this->handleResponse($request);

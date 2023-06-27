@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Checkout;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use Carbon\Carbon;
@@ -29,6 +31,7 @@ class CheckoutOrderController extends ApiEditController
      */
     public function cancel(Request $request): JsonResponse
     {
+        Hit::register(HitSource::checkout);
         $secret = $request->input('secret');
 
         try {

@@ -7,7 +7,9 @@ use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -32,6 +34,7 @@ class ExcursionsListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $query = Excursion::query()
             ->with(['status'])
             ->orderBy('name');

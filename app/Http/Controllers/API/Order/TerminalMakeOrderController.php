@@ -5,10 +5,12 @@ namespace App\Http\Controllers\API\Order;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\LifePos\LifePosSales;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Partner\Partner;
 use App\Models\Positions\PositionOrderingTicket;
@@ -32,6 +34,7 @@ class TerminalMakeOrderController extends ApiEditController
      */
     public function make(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
 
         if (!$current->isStaff() || $current->role() === null || !$current->role()->matches(Role::terminal)) {

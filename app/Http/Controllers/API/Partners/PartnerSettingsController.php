@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API\Partners;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use App\Models\User\Helpers\Currents;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
@@ -25,6 +27,7 @@ class PartnerSettingsController extends ApiController
      */
     public function settings(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         $current = Currents::get($request);
         $showcaseUrl = config('app.showcase_ap_page');
 
@@ -52,6 +55,7 @@ class PartnerSettingsController extends ApiController
      */
     public function widget(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         $current = Currents::get($request);
 
         $excursions = Excursion::query()
@@ -115,6 +119,7 @@ class PartnerSettingsController extends ApiController
      */
     public function qr(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         $url = $request->input('url');
         if (empty($url)) {
             return APIResponse::error('URL не задан');

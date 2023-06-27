@@ -4,6 +4,8 @@ namespace App\Http\Controllers\QrCode;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\QrCode;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
@@ -19,6 +21,7 @@ class QrCodeCreateController extends Controller
 
     public function updateOrCreate(Request $request)
     {
+        Hit::register(HitSource::partner);
         $data = $request->data;
 
         $current = Currents::get($request);

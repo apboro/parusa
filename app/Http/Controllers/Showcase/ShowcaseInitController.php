@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Showcase;
 use App\Http\Controllers\ApiController;
 use App\Http\Middleware\ExternalProtect;
 use App\Models\Dictionaries\ExcursionProgram;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +26,7 @@ class ShowcaseInitController extends ApiController
      */
     public function init(Request $request): JsonResponse
     {
+        Hit::register(HitSource::showcase);
         $originalKey = $request->header(ExternalProtect::HEADER_NAME);
 
         try {

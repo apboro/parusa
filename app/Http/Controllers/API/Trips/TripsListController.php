@@ -6,7 +6,9 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
 use Carbon\Carbon;
@@ -41,6 +43,7 @@ class TripsListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $this->defaultFilters['date'] = Carbon::now()->format('Y-m-d');
         $startPierId = $request->input('start_pier_id');
         $excursionId = $request->input('excursion_id');

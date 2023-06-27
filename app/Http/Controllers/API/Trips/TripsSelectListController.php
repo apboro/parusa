@@ -7,10 +7,12 @@ use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\ExcursionProgram;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
+use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
 use App\Models\User\Helpers\Currents;
@@ -45,6 +47,7 @@ class TripsSelectListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
 
         if ($current->terminal() !== null) {

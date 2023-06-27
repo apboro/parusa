@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API\Partners;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PartnerStatus;
+use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +23,7 @@ class PartnerPropertiesController extends ApiController
      */
     public function properties(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
 
         /** @var Partner $partner */

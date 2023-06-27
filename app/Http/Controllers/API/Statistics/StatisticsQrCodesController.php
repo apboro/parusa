@@ -6,6 +6,8 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\QrCodesStatistic;
 use Carbon\Carbon;
 
@@ -27,6 +29,7 @@ class StatisticsQrCodesController extends Controller
 
     public function list(APIListRequest $request)
     {
+        Hit::register(HitSource::admin);
         $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('Y-m-d');
         $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d');
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);

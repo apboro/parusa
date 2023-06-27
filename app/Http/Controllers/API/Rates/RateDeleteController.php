@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API\Rates;
 
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\Tickets\TicketsRatesList;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +23,7 @@ class RateDeleteController extends ApiController
      */
     public function delete(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
 
         if ($id === null || null === ($ratesList = TicketsRatesList::query()->where('id', $id)->first())) {

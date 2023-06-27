@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API\Terminals;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\TerminalStatus;
+use App\Models\Hit\Hit;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use Illuminate\Http\JsonResponse;
@@ -15,6 +17,7 @@ class TerminalViewController extends ApiController
 {
     public function view(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
 
         if ($id === null ||

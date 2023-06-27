@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API\Rates;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use App\Models\Tickets\TicketPartnerRate;
 use App\Models\Tickets\TicketRate;
@@ -27,6 +29,7 @@ class RateOverrideController extends ApiEditController
      */
     public function override(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         if (null === ($partnerId = $request->input('partner_id')) || null === ($partner = Partner::query()->where('id', $partnerId)->first())) {
             return APIResponse::notFound('Партнёр не найден');
         }

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API\Trips;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
+use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
 use Carbon\Carbon;
@@ -49,6 +51,7 @@ class TripEditController extends ApiEditController
      */
     public function get(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         /** @var Trip|null $trip */
         $trip = $this->firstOrNew(Trip::class, $request, ['chains']);
 
@@ -104,6 +107,7 @@ class TripEditController extends ApiEditController
      */
     public function update(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $data = $this->getData($request);
 
         $mode = $request->input('mode');

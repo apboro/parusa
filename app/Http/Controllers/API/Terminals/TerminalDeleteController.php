@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Terminals;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\POS\Terminal;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -21,6 +23,7 @@ class TerminalDeleteController extends ApiController
      */
     public function delete(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
 
         if ($id === null || null === ($terminal = Terminal::query()->where('id', $id)->first())) {

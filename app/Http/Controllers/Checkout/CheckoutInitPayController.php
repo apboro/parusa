@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Checkout;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\SberbankAcquiring\Connection;
@@ -39,6 +41,7 @@ class CheckoutInitPayController extends ApiController
      */
     public function pay(Request $request): JsonResponse
     {
+        Hit::register(HitSource::checkout);
         $secret = $request->input('secret');
         try {
             $container = Crypt::decrypt($secret);

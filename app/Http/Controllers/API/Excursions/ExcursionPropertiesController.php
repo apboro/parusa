@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API\Excursions;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,6 +23,7 @@ class ExcursionPropertiesController extends ApiController
      */
     public function properties(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
 
         /** @var Excursion $excursion */

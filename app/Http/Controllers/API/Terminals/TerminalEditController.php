@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Terminals;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\POS\Terminal;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,6 +40,7 @@ class TerminalEditController extends ApiEditController
      */
     public function get(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         /** @var Terminal|null $terminal */
         $terminal = $this->firstOrNew(Terminal::class, $request, []);
 
@@ -72,6 +75,7 @@ class TerminalEditController extends ApiEditController
      */
     public function update(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $data = $this->getData($request);
 
         if ($errors = $this->validate($data, $this->rules, $this->titles)) {

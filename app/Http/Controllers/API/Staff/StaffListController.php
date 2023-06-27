@@ -6,8 +6,10 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\Role;
+use App\Models\Hit\Hit;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +36,7 @@ class StaffListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $query = User::query()
             ->with(['profile', 'staffPosition', 'staffPosition.staffInfo', 'staffPosition.roles'])
             ->has('staffPosition')

@@ -7,7 +7,9 @@ use App\Http\Controllers\ApiController;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +18,7 @@ class ExcursionInfoController extends ApiController
 {
     public function info(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         $id = $request->input('id');
 
         /** @var Excursion $excursion */

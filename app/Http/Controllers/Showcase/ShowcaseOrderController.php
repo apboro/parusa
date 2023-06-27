@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Showcase;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Http\Middleware\ExternalProtect;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Partner\Partner;
 use App\Models\QrCode;
@@ -42,6 +44,7 @@ class ShowcaseOrderController extends ApiEditController
      */
     public function order(Request $request): JsonResponse
     {
+        Hit::register(HitSource::showcase);
         $originalKey = $request->header(ExternalProtect::HEADER_NAME);
 
         try {
@@ -207,6 +210,7 @@ class ShowcaseOrderController extends ApiEditController
      */
     public function cancel(Request $request): JsonResponse
     {
+        Hit::register(HitSource::showcase);
         $secret = $request->input('secret');
 
         try {

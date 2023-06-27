@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API\Partners;
 use App\Exceptions\Positions\WrongPositionAccessStatusException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PositionAccessStatus;
+use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use App\Models\Positions\Position;
 use Illuminate\Http\JsonResponse;
@@ -22,6 +24,7 @@ class PartnerRepresentativeStatusController extends ApiController
      */
     public function setStatus(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('position_id');
 
         /** @var Position $position */

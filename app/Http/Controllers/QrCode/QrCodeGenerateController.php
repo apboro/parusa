@@ -4,6 +4,8 @@ namespace App\Http\Controllers\QrCode;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\QrCode;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
@@ -18,6 +20,7 @@ class QrCodeGenerateController extends Controller
 {
     public function generateQr(Request $request): JsonResponse
     {
+        Hit::register(HitSource::crm);
         $link = QrCode::makeLinkForQrCode($request->id);
 
         // generate QR

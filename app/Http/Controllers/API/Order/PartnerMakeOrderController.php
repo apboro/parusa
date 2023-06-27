@@ -9,9 +9,11 @@ use App\Jobs\ApproveNevaOrder;
 use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Tickets\Ticket;
@@ -36,6 +38,7 @@ class PartnerMakeOrderController extends ApiEditController
      */
     public function make(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         $current = Currents::get($request);
 
         if ($current->isStaff()) {

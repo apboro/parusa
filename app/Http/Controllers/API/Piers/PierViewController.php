@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API\Piers;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Common\Image;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PiersStatus;
+use App\Models\Hit\Hit;
 use App\Models\Piers\Pier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,6 +16,7 @@ class PierViewController extends ApiController
 {
     public function view(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
 
         if ($id === null ||

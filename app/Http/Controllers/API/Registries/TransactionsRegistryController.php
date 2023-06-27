@@ -8,7 +8,9 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PaymentStatus;
+use App\Models\Hit\Hit;
 use App\Models\Payments\Payment;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
@@ -53,6 +55,7 @@ class TransactionsRegistryController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $dateFrom = Carbon::parse($filters['date_from'])->seconds(0)->microseconds(0);

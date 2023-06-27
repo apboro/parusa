@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Staff;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,6 +34,7 @@ class StaffAccessController extends ApiEditController
      */
     public function release(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         if (($user = $this->getStaffUser($request)) === null) {
             return APIResponse::notFound('Сотрудник не найден');
         }
@@ -62,6 +65,7 @@ class StaffAccessController extends ApiEditController
      */
     public function set(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         if (($user = $this->getStaffUser($request)) === null) {
             return APIResponse::notFound('Сотрудник не найден');
         }

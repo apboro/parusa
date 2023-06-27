@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Storage;
 
 use App\Http\Controllers\Controller;
 use App\Models\Common\File;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\User\Helpers\Currents;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -20,6 +22,7 @@ class PartnerDocumentController extends Controller
      */
     public function get(string $file, Request $request): BinaryFileResponse
     {
+        Hit::register(HitSource::admin);
         $current = Currents::get($request);
 
         /** @var File $document */

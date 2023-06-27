@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Account;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,6 +29,7 @@ class AccountLimitController extends ApiEditController
      */
     public function setAccountLimit(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $data = $this->getData($request);
         $data['limit'] = (float)$data['limit'];
 

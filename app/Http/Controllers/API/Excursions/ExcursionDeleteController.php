@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API\Excursions;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +23,7 @@ class ExcursionDeleteController extends ApiController
      */
     public function delete(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
 
         if ($id === null || null === ($excursion = Excursion::query()->where('id', $id)->first())) {

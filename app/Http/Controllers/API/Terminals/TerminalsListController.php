@@ -7,10 +7,12 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\TerminalStatus;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
@@ -41,6 +43,7 @@ class TerminalsListController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $periodHour = 4;
         $periodMinutes = 30;
 

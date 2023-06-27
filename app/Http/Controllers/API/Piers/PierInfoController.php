@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API\Piers;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Common\Image;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PiersStatus;
+use App\Models\Hit\Hit;
 use App\Models\Piers\Pier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,6 +17,7 @@ class PierInfoController extends ApiController
 {
     public function info(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         $id = $request->input('id');
 
         /** @var Pier $pier */

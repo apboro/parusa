@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API\Staff;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\Role;
+use App\Models\Hit\Hit;
 use App\Models\POS\Terminal;
 use App\Models\User\Helpers\Currents;
 use App\Models\User\User;
@@ -25,6 +27,7 @@ class StaffPropertiesController extends ApiController
      */
     public function properties(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
 
         /** @var User $user */

@@ -4,10 +4,12 @@ namespace App\Http\Controllers\API\Order;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
+use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
 use App\Models\Tickets\Ticket;
@@ -32,6 +34,7 @@ class OrderTicketReplacementController extends ApiController
      */
     public function getAvailableDates(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $excursionID = $request->input('excursion_id');
 
         $now = Carbon::now();
@@ -66,6 +69,7 @@ class OrderTicketReplacementController extends ApiController
      */
     public function replaceTickets(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $orderId = $request->input('order_id');
         $tripId = $request->input('trip_id');
         $tickets = $request->input('tickets');
@@ -132,6 +136,7 @@ class OrderTicketReplacementController extends ApiController
      */
     public function getTripsForDate(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $excursionID = $request->input('excursion_id');
         $date = $request->input('date');
         $count = $request->input('count');

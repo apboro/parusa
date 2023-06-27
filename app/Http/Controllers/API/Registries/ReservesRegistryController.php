@@ -6,7 +6,9 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
@@ -36,6 +38,7 @@ class ReservesRegistryController extends ApiController
      */
     public function list(ApiListRequest $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
 
         $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('Y-m-d');

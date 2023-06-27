@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\Account;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Account\AccountTransaction;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +23,7 @@ class TransactionDeleteController extends ApiController
      */
     public function delete(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
 
         if ($id === null || null === ($transaction = AccountTransaction::query()->where('id', $id)->first())) {

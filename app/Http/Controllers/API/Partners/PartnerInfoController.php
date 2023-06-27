@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API\Partners;
 use App\Helpers\PriceConverter;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
@@ -19,6 +21,7 @@ class PartnerInfoController extends ApiController
 {
     public function get(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         $current = Currents::get($request);
         $id = $current->partnerId();
 

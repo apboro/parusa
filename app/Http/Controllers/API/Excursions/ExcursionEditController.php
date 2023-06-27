@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API\Excursions;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Common\Image;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -43,6 +45,7 @@ class ExcursionEditController extends ApiEditController
      */
     public function get(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         /** @var Excursion|null $excursion */
         $excursion = $this->firstOrNew(Excursion::class, $request, ['status', 'images', 'tripImages', 'programs', 'info']);
 
@@ -85,6 +88,7 @@ class ExcursionEditController extends ApiEditController
      */
     public function update(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $data = $this->getData($request);
 
         if ($errors = $this->validate($data, $this->rules, $this->titles)) {

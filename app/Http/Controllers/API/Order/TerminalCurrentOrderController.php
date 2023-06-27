@@ -7,9 +7,11 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Jobs\ApproveNevaOrder;
 use App\LifePos\LifePosSales;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Payments\Payment;
 use App\Models\Tickets\Ticket;
@@ -31,6 +33,7 @@ class TerminalCurrentOrderController extends ApiController
      */
     public function send(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
 
         if (!$current->isStaffTerminal()) {
@@ -73,6 +76,7 @@ class TerminalCurrentOrderController extends ApiController
      */
     public function cancel(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         try {
             $order = $this->getOrder($request);
         } catch (Exception $exception) {
@@ -111,6 +115,7 @@ class TerminalCurrentOrderController extends ApiController
      */
     public function saveUnconfirmed(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         try {
             $order = $this->getOrder($request);
         } catch (Exception $exception) {
@@ -146,6 +151,7 @@ class TerminalCurrentOrderController extends ApiController
      */
     public function close(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         try {
             $order = $this->getOrder($request);
         } catch (Exception $exception) {
@@ -185,6 +191,7 @@ class TerminalCurrentOrderController extends ApiController
      */
     public function delete(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         try {
             $order = $this->getOrder($request);
         } catch (Exception $exception) {
@@ -224,6 +231,7 @@ class TerminalCurrentOrderController extends ApiController
      */
     public function status(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
 
         try {
