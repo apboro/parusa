@@ -1,7 +1,10 @@
 <template>
     <div>
-        <GuiValueArea mt-20 v-if="data['referral_link']" :title="'Реферальная ссылка'">
+        <GuiValueArea mt-20 v-if="data['referral_link']" :title="'Реферальная ссылка на сайт'">
             <a class="link" :href="data['referral_link']" target="_blank">{{ data['referral_link'] }}</a>
+        </GuiValueArea>
+        <GuiValueArea mt-20 v-if="data['link']" :title="'Реферальная ссылка на витрину'">
+            <a class="link" :href="data['link']" target="_blank">{{ data['link'] }}</a>
         </GuiValueArea>
         <GuiValueArea mt-30 :title="'QR-код'">
             <LoadingProgress :loading="qr_generating">
