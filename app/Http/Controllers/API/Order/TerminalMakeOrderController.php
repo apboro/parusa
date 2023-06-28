@@ -79,8 +79,8 @@ class TerminalMakeOrderController extends ApiEditController
             return APIResponse::error('Нельзя оформить заказ без билетов.');
         }
 
-        $rules = ['email' => 'email|nullable'];
-        $titles = ['email' => 'Email'];
+        $rules = ['email' => 'email|nullable', 'phone' => 'required'];
+        $titles = ['email' => 'Email', 'phone' => 'Телефон'];
         for ($i = 0; $i < $count; $i++) {
             $rules["tickets.$i.quantity"] = 'nullable|integer|min:0|bail';
             $rules["tickets.$i.price"] = 'nullable|numeric|bail';

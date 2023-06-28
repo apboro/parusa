@@ -123,7 +123,7 @@
                 <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_valid"
                                       :errors="['Необходимо принять условия оферты на оказание услуг и дать своё согласие на обработку персональных данных']">
                     <ShowcaseInputCheckbox v-model="agree" :small="true">
-                        Я принимаю условия <span class="ap-showcase__link">Оферты на оказание услуг</span> и даю своё <span class="ap-showcase__link">согласие на обработку
+                        Я принимаю условия <span class="ap-showcase__link" @click="showOfferInfo">Оферты на оказание услуг</span> и даю своё <span class="ap-showcase__link" @click="showPersonalDataInfo">согласие на обработку
                         персональных данных</span>
                     </ShowcaseInputCheckbox>
                 </ShowcaseFieldWrapper>
@@ -168,6 +168,17 @@
                     При получении билетов в кассе необходимо предоставить документ, подтверждающий право на льготу: студенческий билет, пенсионное удостоверение и т.д.
                 </div>
             </div>
+
+            <OfferInfo ref="offer"
+                       :crm_url="crm_url"
+                       :debug="debug"
+                       :session="session"
+            />
+            <PersonalDataInfo ref="personal"
+                              :crm_url="crm_url"
+                              :debug="debug"
+                              :session="session"
+            />
         </template>
     </div>
 </template>
@@ -185,9 +196,13 @@ import ShowcaseFormPhone from "@/Pages/Showcase/Components/ShowcaseFormPhone";
 import ShowcaseInputCheckbox from "@/Pages/Showcase/Components/ShowcaseInputCheckbox";
 import ShowcaseIconSign from "@/Pages/Showcase/Icons/ShowcaseIconSign";
 import ShowcaseFieldWrapper from "@/Pages/Showcase/Components/Helpers/ShowcaseFieldWrapper";
+import OfferInfo from "@/Pages/Showcase/Parts/OfferInfo.vue";
+import PersonalDataInfo from "@/Pages/Showcase/Parts/PersonalDataInfo.vue";
 
 export default {
     components: {
+        PersonalDataInfo,
+        OfferInfo,
         ShowcaseFieldWrapper,
         ShowcaseIconSign,
         ShowcaseInputCheckbox,
@@ -300,6 +315,14 @@ export default {
 
         showExcursionInfo() {
             this.$refs.excursion.show(this.trip['excursion_id']);
+        },
+
+        showPersonalDataInfo() {
+            this.$refs.personal.show();
+        },
+
+        showOfferInfo() {
+            this.$refs.offer.show();
         },
 
         initForm() {

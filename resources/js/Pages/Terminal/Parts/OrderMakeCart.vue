@@ -51,14 +51,10 @@
         <GuiHeading mt-20 bold right>Итого к оплате: {{ total }}</GuiHeading>
 
         <GuiContainer mt-20 mb-20 w-50 pr-30 inline>
-            <GuiHeading mb-30 bold>Информация о плательщике
-                <GuiExpand @expand="show_buyer_info = $event"/>
-            </GuiHeading>
-            <template v-if="show_buyer_info">
-                <FormString :form="form" :name="'name'"/>
-                <FormString :form="form" :name="'email'"/>
-                <FormPhone :form="form" :name="'phone'"/>
-            </template>
+            <GuiHeading mb-30 bold>Информация о плательщике</GuiHeading>
+            <FormString :form="form" :name="'name'"/>
+            <FormString :form="form" :name="'email'"/>
+            <FormPhone :form="form" :name="'phone'" required/>
         </GuiContainer>
 
         <GuiContainer mt-20 w-50 inline>
@@ -170,7 +166,7 @@ export default {
             this.form.set('without_partner', false, null, 'Без промоутера', true);
             this.form.set('name', null, null, 'Имя', true);
             this.form.set('email', null, 'email|nullable', 'Email', true);
-            this.form.set('phone', null, null, 'Телефон', true);
+            this.form.set('phone', null, 'required' , 'Телефон', true);
 
             this.form.load();
         },
