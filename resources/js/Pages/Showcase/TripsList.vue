@@ -58,8 +58,11 @@
                             <td data-label="Программа:">
                                 <span class="ap-link" @click="showExcursionInfo(trip)">{{ trip['excursion'] }}</span>
                                 <span>
-                                        <span v-if="trip['programs'] && trip['programs'].length > 0">{{ trip['programs'].join(', ') }}</span>
-                                    </span>
+                                    <span v-if="trip['programs'] && trip['programs'].length > 0">{{ trip['programs'].join(', ') }}</span>
+                                </span>
+                                <span style="color: #747474;">
+                                    Осталось билетов {{ trip['tickets_left'] }}
+                                </span>
                             </td>
                             <td data-label="Причал:">
                                 <span class="ap-link" @click="showPierInfo(trip)">Причал "{{ trip['pier'] }}"</span>

@@ -27,15 +27,15 @@ class NevaOrder
             if ($this->checkOrderHasNevaTickets()) {
                 $result = $this->nevaApiData->makeOrder($this->order);
                 if (!$result || $result['status'] != 200) {
-                    Log::error('Neva API make ticket error: ', [$result]);
+                    Log::channel('neva')->error('Neva API make ticket error: ', [$result]);
                     return false;
                 }
                 $this->order->neva_travel_id = $result['body']['id'];
                 $this->order->save();
-                Log::debug('Neva API make ticket success: ', [$result, $this->order->neva_travel_id]);
+                Log::channel('neva')->info('Neva API make ticket success: ', [$result, $this->order->neva_travel_id]);
             }
         } catch (Exception $e) {
-            Log::error('Neva API make ticket error: ' . $e->getMessage());
+            Log::channel('neva')->error('Neva API make ticket error: ' . $e->getMessage());
         }
         return true;
     }
@@ -70,6 +70,8 @@ class NevaOrder
 
     public function cancel(): array
     {
+        $this->order->neva_travel_order_number = null;
+        $this->order->save();
         return $this->nevaApiData->cancelOrder(['id' => $this->order->neva_travel_id, 'comment' => 'Клиент потребовал возврат']);
     }
 

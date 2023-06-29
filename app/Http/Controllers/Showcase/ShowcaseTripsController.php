@@ -8,6 +8,7 @@ use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketGrade;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
@@ -112,6 +113,9 @@ class ShowcaseTripsController extends ApiController
             $rateList = $trip->excursion->ratesLists->first();
             $adultPrice = $rateList->getShowcasePrice($partnerId);
 
+            $ticketsCountable = $trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count();
+            $ticketsReserved = $trip->tickets()->whereIn('status_id', TicketStatus::ticket_reserved_statuses)->count();
+
             return [
                 'id' => $trip->id,
                 'start_time' => $trip->start_at->format('H:i'),
@@ -124,6 +128,7 @@ class ShowcaseTripsController extends ApiController
                 'programs' => $trip->excursion->programs->map(function (ExcursionProgram $program) {
                     return $program->name;
                 }),
+                'tickets_left' => $trip->tickets_total - $ticketsCountable - $ticketsReserved,
                 'duration' => $trip->excursion->info->duration,
                 'price' => $adultPrice ?? null,
                 'status' => $trip->status->name,
@@ -188,6 +193,9 @@ class ShowcaseTripsController extends ApiController
                 });
         }
 
+        $ticketsCountable = $trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count();
+        $ticketsReserved = $trip->tickets()->whereIn('status_id', TicketStatus::ticket_reserved_statuses)->count();
+
         return response()->json([
             'trip' => [
                 'id' => $trip->id,
@@ -201,6 +209,7 @@ class ShowcaseTripsController extends ApiController
                 'images' => $trip->excursion->images->map(function (Image $image) {
                     return $image->url;
                 }),
+                'tickets_left' => $trip->tickets_total - $ticketsCountable - $ticketsReserved,
                 'rates' => array_values($rates->toArray()),
             ],
         ]);

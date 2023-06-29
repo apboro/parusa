@@ -15,12 +15,11 @@ use App\Models\Dictionaries\TripStatus;
 use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Partner\Partner;
-use App\Models\QrCode;
+use App\Models\PromoCode\PromoCode;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
 use App\NevaTravel\NevaOrder;
-use App\NevaTravel\NevaTravelRepository;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,7 +28,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use JsonException;
 
 class ShowcaseOrderController extends ApiEditController
@@ -167,7 +165,8 @@ class ShowcaseOrderController extends ApiEditController
                 $data['email'],
                 $data['name'],
                 $data['phone'],
-                $isPartnerSite === true // strict price checking only for partner site
+                $isPartnerSite === true, // strict price checking only for partner site
+                $flat['promocode'] ?? null,
             );
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());

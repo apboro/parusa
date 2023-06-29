@@ -31,6 +31,8 @@ import NotFound from '@/Pages/NotFound';
 import StatisticsSalesPage from "@/Pages/Admin/Statistics/StatisticsSalesPage.vue";
 import StatisticsSalesTodayPage from "@/Pages/Admin/Statistics/StatisticsSalesTodayPage.vue";
 import StatisticsQrCodesPage from "@/Pages/Admin/Statistics/StatisticsQrCodesPage.vue";
+import PromoCodeListPage from "@/Pages/Admin/PromoCode/PromoCodeListPage.vue";
+import PromoCodeEditPage from "@/Pages/Admin/PromoCode/PromoCodeEditPage.vue";
 
 export default [
     {path: '/', name: 'home', component: TripsListPage, meta: {title: 'Список рейсов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
@@ -69,6 +71,9 @@ export default [
     {path: '/excursions', name: 'excursion-list', component: ExcursionsListPage, meta: {title: 'Каталог экскурсий', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/excursions/:id', name: 'excursion-view', component: ExcursionViewPage, meta: {title: 'Просмотр экскурсии', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/excursions/:id/edit', name: 'excursion-edit', component: ExcursionEditPage, meta: {title: 'Редактирование экскурсии', roles: ['admin', 'office_manager', 'accountant']}},
+
+    {path: '/promo-code', name: 'promo-code-list', component: PromoCodeListPage, meta: {title: 'Промокоды', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/promo-code/:id/edit', name: 'promo-code-edit', component: PromoCodeEditPage, meta: {title: 'Добавить промокод', roles: ['admin', 'office_manager', 'accountant']}},
 
     {path: '/trips', name: 'trip-list', component: TripsListPage, meta: {title: 'Список рейсов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/trips/:id', name: 'trip-view', component: TripViewPage, meta: {title: 'Просмотр рейса', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},

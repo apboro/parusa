@@ -20,6 +20,7 @@ use App\Models\Partner\Partner;
 use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
+use App\Models\PromoCode\PromoCode;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
 
@@ -29,6 +30,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
@@ -58,6 +60,7 @@ use Illuminate\Support\Facades\DB;
  * @property Position|null $cashier
  * @property Collection $tickets
  * @property Collection $payments
+ * @property Collection<PromoCode> $promocode
  * @property string|null $neva_travel_order_number
  */
 class Order extends Model implements Statusable, Typeable
@@ -201,14 +204,35 @@ class Order extends Model implements Statusable, Typeable
      */
     public function total(): ?float
     {
-        $this->loadMissing('tickets');
+        $this->loadMissing(['tickets', 'promocode']);
 
-        $total = 0;
+        $total = null;
 
-        $this->tickets->map(function (Ticket $ticket) use (&$total) {
-            // todo check ticket status
-            $total += $ticket->base_price;
-        });
+        if ($this->promocode->count() > 0) {
+            /** @var PromoCode|null $promocode */
+            $promocode = $this->promocode->first();
+            if ($promocode) {
+                $tickets = $this->tickets->map(function (Ticket $ticket) {
+                    return [
+                        'trip_id' => $ticket->trip_id,
+                        'grade_id' => $ticket->grade_id,
+                        'quantity' => 1,
+                    ];
+                })->toArray();
+                $calc = \App\Helpers\Promocode::calc($promocode->code, $tickets, $this->partner_id);
+                if ($calc['status']) {
+                    $total = $calc['discount_price'] ?? $calc['full_price'];
+                }
+            }
+        }
+
+        if ($total === null) {
+            $total = 0;
+            $this->tickets->map(function (Ticket $ticket) use (&$total) {
+                // todo check ticket status
+                $total += $ticket->base_price;
+            });
+        }
 
         return $total;
     }
@@ -217,7 +241,7 @@ class Order extends Model implements Statusable, Typeable
      * Order factory.
      *
      * @param int $typeId Order initiator
-     * @param Ticket[] $tickets Array of tickets to order
+     * @param Ticket $tickets Array of tickets to order
      * @param int $statusId Order initial status
      * @param int|null $partnerId Partner ID
      * @param int|null $positionId Position of partner made this order (or null)
@@ -227,6 +251,7 @@ class Order extends Model implements Statusable, Typeable
      * @param string|null $name Buyer details
      * @param string|null $phone Buyer details
      * @param bool $strictPrice
+     * @param string|null $promocode
      *
      * @return  Order
      * @see OrderType
@@ -235,7 +260,10 @@ class Order extends Model implements Statusable, Typeable
      * @see Partner
      * @see Position
      */
-    public static function make(int $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?int $terminalPositionId, ?string $email, ?string $name, ?string $phone, bool $strictPrice = true): Order
+    public static function make(
+        int $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?int $terminalPositionId, ?string $email, ?string $name, ?string $phone,
+        bool $strictPrice = true, ?string $promocode = null
+    ): Order
     {
         if (empty($tickets)) {
             throw new WrongOrderException('Невозможно создать заказ без билетов.');
@@ -256,7 +284,7 @@ class Order extends Model implements Statusable, Typeable
                 throw new WrongOrderException('Невозможно оформить заказ с выбранными билетами. Их можно приобрести только на сайте.');
             }
 
-             $rateList = $trip ? $trip->getRate() : null;
+            $rateList = $trip ? $trip->getRate() : null;
             /** @var TicketRate $rate */
             $rate = $rateList ? $rateList->rates()->where('grade_id', $ticket->grade_id)->first() : null;
 
@@ -288,7 +316,7 @@ class Order extends Model implements Statusable, Typeable
         }
 
         // prepare order
-        $order = new static;
+        $order = new static();
         $order->setStatus($statusId, false);
         $order->setType($typeId, false);
         $order->partner_id = $partnerId;
@@ -299,13 +327,23 @@ class Order extends Model implements Statusable, Typeable
         $order->name = $name;
         $order->phone = $phone;
 
+        $promocodeId = null;
 
+        if ($promocode) {
+            $calc = \App\Helpers\Promocode::calc($promocode, $tickets, $partnerId);
+            if ($calc['status'] ?? false) {
+                $promocodeId = PromoCode::query()->where('code', mb_strtolower($promocode))->value('id');
+            }
+        }
         try {
-            DB::transaction(static function () use (&$order, $tickets) {
+            DB::transaction(static function () use (&$order, $tickets, $promocodeId) {
                 $order->save();
                 foreach ($tickets as $ticket) {
                     $ticket->order_id = $order->id;
                     $ticket->save();
+                }
+                if ($promocodeId) {
+                    $order->promocode()->sync([$promocodeId]);
                 }
             });
         } catch (Exception $exception) {
@@ -342,5 +380,15 @@ class Order extends Model implements Statusable, Typeable
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'order_id', 'id');
+    }
+
+    /**
+     * The promocode owning this order.
+     *
+     * @return  BelongsToMany
+     */
+    public function promocode(): BelongsToMany
+    {
+        return $this->belongsToMany(PromoCode::class, 'promo_code_has_orders', 'order_id', 'promo_code_id');
     }
 }

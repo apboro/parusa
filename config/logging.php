@@ -66,6 +66,18 @@ return [
             'level' => 'info',
         ],
 
+        'neva' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/neva.log'),
+            'level' => 'info',
+        ],
+
+        'qr-codes' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/qr-codes.log'),
+            'level' => 'info',
+        ],
+
         'lifepos_payments' => [
             'driver' => 'single',
             'path' => storage_path('logs/lifepos_payments.log'),

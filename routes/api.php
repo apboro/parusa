@@ -10,6 +10,7 @@ Route::prefix('api')->middleware(['api', 'auth:sanctum'])->group(function () {
     require base_path('routes/api/trips.php'); // todo check
     require base_path('routes/api/piers.php');
     require base_path('routes/api/excursions.php');
+    require base_path('routes/api/promo_code.php');
     require base_path('routes/api/rates.php'); // todo check
 
     require base_path('routes/api/registries.php');

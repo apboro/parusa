@@ -51,10 +51,17 @@
                                    @change="replacementTicketSelected(ticket['excursion_id'])"/>
                 </ListTableCell>
             </ListTableRow>
+            <ListTableRow :no-highlight="true" v-if="info.data['promocode']">
+                <ListTableCell colspan="3"/>
+                <ListTableCell><b>Промокод</b></ListTableCell>
+                <ListTableCell><b>{{ info.data['promocode'] }}</b></ListTableCell>
+                <ListTableCell/>
+                <ListTableCell v-if="isReserve || is_returning || is_replacement"/>
+            </ListTableRow>
             <ListTableRow :no-highlight="true">
                 <ListTableCell colspan="3"/>
                 <ListTableCell><b>Итого: {{ info.data['tickets_count'] }}</b></ListTableCell>
-                <ListTableCell><b>{{ info.data['total'] }} руб.</b></ListTableCell>
+                <ListTableCell><b>{{ info.data['promocode'] ? info.data['order_total'] : info.data['total'] }} руб.</b></ListTableCell>
                 <ListTableCell/>
                 <ListTableCell v-if="isReserve || is_returning || is_replacement"/>
             </ListTableRow>
@@ -66,7 +73,7 @@
             </GuiHeading>
             <GuiValue :title="'Имя'">{{ info.data['name'] }}</GuiValue>
             <GuiValue :title="'Email'">{{ info.data['email'] }}</GuiValue>
-            <GuiValue :title="'Телефон'">{{ info.data['phone'] }}</GuiValue>
+            <GuiValue :title="'Телефон'" required>{{ info.data['phone'] }}</GuiValue>
         </GuiContainer>
 
         <GuiContainer v-if="is_replacement" w-50 mt-30 mb-30 inline pl-30>
@@ -343,7 +350,7 @@ export default {
             this.form.reset();
             this.form.set('name', this.info.data['name'], null, 'Имя', true);
             this.form.set('email', this.info.data['email'], 'nullable|email', 'Email', true);
-            this.form.set('phone', this.info.data['phone'], null, 'Телефон', true);
+            this.form.set('phone', this.info.data['phone'], 'required', 'Телефон', true);
             this.form.load();
             this.$refs.popup.show({id: this.orderId})
                 .then(result => {

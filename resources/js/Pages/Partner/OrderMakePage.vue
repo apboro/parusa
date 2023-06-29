@@ -53,7 +53,7 @@
                 </GuiHint>
                 <FormString :form="form" :name="'name'"/>
                 <FormString :form="form" :name="'email'"/>
-                <FormPhone :form="form" :name="'phone'"/>
+                <FormPhone :form="form" :name="'phone'" required/>
             </GuiContainer>
 
             <GuiContainer w-30 mt-30 inline>

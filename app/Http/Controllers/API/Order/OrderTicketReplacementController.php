@@ -9,10 +9,12 @@ use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
+use App\Models\Order\Order;
 use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
 use App\Models\Tickets\Ticket;
+use App\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -109,8 +111,11 @@ class OrderTicketReplacementController extends ApiController
             return APIResponse::error('Нехватает мест в рейсе');
         }
 
+        /** @var Order $order */
+        $order = Order::query()->where('id', $orderId)->first();
+
         try {
-            DB::transaction(static function () use ($trip, $tickets) {
+            DB::transaction(static function () use ($trip, $tickets, $order) {
                 foreach ($tickets as $ticket) {
                     /** @var Ticket $ticket */
                     if (!in_array($ticket->status_id, TicketStatus::ticket_paid_statuses)) {
@@ -118,6 +123,23 @@ class OrderTicketReplacementController extends ApiController
                     }
                     $ticket->trip_id = $trip->id;
                     $ticket->save();
+                }
+
+                if ($order->neva_travel_id) {
+                    $nevaOrder = new NevaOrder($order);
+                    $cancelResult = $nevaOrder->cancel();
+                    if (
+                        (isset($cancelResult['body']['status']) && $cancelResult['body']['status'] === "canceled")
+                        || (isset($cancelResult['body']['code']) && $cancelResult['body']['code'] === "order_already_canceled")
+                    ) {
+                        if ($nevaOrder->make()) {
+                            $nevaOrder->approve();
+                        } else {
+                            throw new RuntimeException('Невозможно перенести заказ.');
+                        }
+                    } else {
+                        throw new RuntimeException('Невозможно перенести заказ.');
+                    }
                 }
             });
         } catch (Exception $exception) {
