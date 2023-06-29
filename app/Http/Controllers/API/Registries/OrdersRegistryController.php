@@ -76,8 +76,7 @@ class OrdersRegistryController extends ApiController
 
                 foreach ($terms as $term) {
                     $query->orWhere('name', 'LIKE', '%' . $term . '%')
-                        ->orWhere('email', 'LIKE', '%' . $term . '%')
-                        ->orWhere('phone', 'LIKE', '%' . $term . '%');
+                        ->orWhere('email', 'LIKE', '%' . $term . '%');
                 }
 
                 if (!$current->isStaffTerminal() || !$request->input('only_orders')) {
@@ -96,6 +95,9 @@ class OrdersRegistryController extends ApiController
             }
             if (!empty($filters['order_type_id'])) {
                 $query->where('type_id', $filters['order_type_id']);
+            }
+            if (!empty($filters['search_phone'])) {
+                $query->where('phone', 'LIKE', '%' . $filters['search_phone'] . '%');
             }
         }
 
@@ -153,7 +155,7 @@ class OrdersRegistryController extends ApiController
 
         return APIResponse::list(
             $orders,
-            ['№ заказа', 'Дата оплаты заказа', 'Информация о заказе', 'Билетов в заказе', 'Стоимость заказа'],
+            ['№ заказа', 'Дата оплаты заказа', 'Покупатель', 'Информация о заказе', 'Билетов в заказе', 'Стоимость заказа'],
             $filters,
             $this->defaultFilters,
             []

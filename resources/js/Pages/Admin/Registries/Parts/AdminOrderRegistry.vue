@@ -28,8 +28,15 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+            <LayoutFiltersItem :title="'Поиск по номеру телефона'">
+                <InputPhone
+                    v-model="list.filters['search_phone']"
+                    :disabled="!!list.search"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
             <template #search>
-                <LayoutFiltersItem :title="'Поиск заказа/билета по номеру, имени, email, телефону покупателя'">
+                <LayoutFiltersItem :title="'Поиск заказа/билета по номеру, имени, email покупателя'">
                     <InputSearch v-model="list.search" @change="list.load()"/>
                 </LayoutFiltersItem>
             </template>
@@ -47,8 +54,20 @@
                         </span>
                         {{ order['date'] }}
                     </ListTableCell>
+
                     <ListTableCell>
-                        <span class="link" @click="showInfo(order)">Информация</span>
+                        <div v-if="order.info['buyer_name']"><span v-html="highlightPartial(order.info['buyer_name'])"/></div>
+                        <div v-if="order.info['buyer_email']"><span v-html="highlightPartial(order.info['buyer_email'])"/></div>
+                        <div v-if="order.info['buyer_phone']"><span style="white-space: nowrap;" v-html="highlightPhone(order.info['buyer_phone'])"/></div>
+                    </ListTableCell>
+                    <ListTableCell>
+                        <span v-if="order.info['order_type']">Способ продажи: {{ order.info['order_type'] }}<br/></span>
+                        <GuiValue v-if="order.info['partner']" :dots="!!order.info['terminal_name']" :title="order.info['position_name'] === null ? 'Промоутер' : 'Партнёр'">
+                            {{ order.info['partner'] }}<span
+                            v-if="order.info['position_name']">, {{ order.info['position_name'] }}</span></GuiValue>
+                        <GuiValue v-if="order.info['terminal_name']" :dots="false" :title="'Касса'">{{ order.info['terminal_name'] }}<span
+                            v-if="order.info['cashier']">, {{ order.info['cashier'] }}</span>
+                        </GuiValue>
                     </ListTableCell>
                     <ListTableCell>
                         {{ order['tickets_total'] }}
@@ -103,20 +122,6 @@
         <GuiMessage border v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
 
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
-
-        <PopUp :title="'Информация о заказе'" ref="info" :close-on-overlay="true">
-            <template v-if="info">
-                <GuiValue :title="'Имя'">{{ info['buyer_name'] }}</GuiValue>
-                <GuiValue :title="'Email'">{{ info['buyer_email'] }}</GuiValue>
-                <GuiValue :title="'Телефон'">{{ info['buyer_phone'] }}</GuiValue>
-                <GuiValue :title="'Способ продажи'">{{ info['order_type'] }}</GuiValue>
-                <GuiValue v-if="info['partner']" :dots="!!info['terminal_name']" :title="info['position_name'] === null ? 'Промоутер' : 'Партнёр'">{{ info['partner'] }}<span
-                    v-if="info['position_name']">, {{ info['position_name'] }}</span></GuiValue>
-                <GuiValue v-if="info['terminal_name']" :dots="false" :title="'Касса'">{{ info['terminal_name'] }}<span v-if="info['cashier']">, {{ info['cashier'] }}</span>
-                </GuiValue>
-            </template>
-        </PopUp>
-
     </LoadingProgress>
 </template>
 
@@ -137,6 +142,7 @@ import PopUp from "@/Components/PopUp";
 import GuiValue from "@/Components/GUI/GuiValue";
 import InputDate from "@/Components/Inputs/InputDate";
 import IconExclamation from "../../../../Components/Icons/IconExclamation";
+import InputPhone from "@/Components/Inputs/InputPhone.vue";
 
 export default {
     props: {
@@ -145,6 +151,7 @@ export default {
     },
 
     components: {
+        InputPhone,
         IconExclamation,
         InputDate,
         LoadingProgress,
@@ -173,20 +180,20 @@ export default {
     },
 
     methods: {
-        showInfo(order) {
-            this.info = order['info'];
-            this.$refs.info.show()
-                .then(() => {
-                    this.info = null;
-                });
-        },
-
         expandTickets(order) {
             order['show_tickets'] = !order['show_tickets'];
         },
 
         highlight(text) {
             return this.$highlight(String(text), String(this.list.search), true);
+        },
+
+        highlightPartial(text) {
+            return this.$highlight(String(text), String(this.list.search));
+        },
+
+        highlightPhone(text) {
+            return this.$highlight(String(text), String(this.list.filters['search_phone']));
         },
     },
 }
