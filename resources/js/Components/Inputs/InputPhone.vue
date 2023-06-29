@@ -81,7 +81,7 @@ export default {
                 this.innerInitialized = true;
                 return;
             }
-            if (value.length !== 18) {
+            if (value.length !== 18 && this.modelValue !== null) {
                 this.update(null);
             }
         },

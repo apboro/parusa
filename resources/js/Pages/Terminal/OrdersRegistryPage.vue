@@ -42,9 +42,9 @@
                         {{ order['date'] }}
                     </ListTableCell>
                     <ListTableCell>
-                        <div v-if="order.info['buyer_name']">Имя: <span v-html="highlight(order.info['buyer_name'])"/></div>
-                        <div v-if="order.info['buyer_email']">Email: <span v-html="highlight(order.info['buyer_email'])"/></div>
-                        <div v-if="order.info['buyer_phone']">Телефон: <span :class="highlightPhone(order.info['buyer_phone']) ? 'highlight' : ''">{{order.info['buyer_phone']}}</span></div>
+                        <div v-if="order.info['buyer_name']"><span v-html="highlightPartial(order.info['buyer_name'])"/></div>
+                        <div v-if="order.info['buyer_email']"><span v-html="highlightPartial(order.info['buyer_email'])"/></div>
+                        <div v-if="order.info['buyer_phone']"><span style="white-space: nowrap;" v-html="highlightPhone(order.info['buyer_phone'])"/></div>
                     </ListTableCell>
                     <ListTableCell>
                         <span v-if="order.info['order_type']">Способ продажи: {{ order.info['order_type']}}<br/></span>
@@ -169,8 +169,12 @@ export default {
             return this.$highlight(String(text), String(this.list.search), true);
         },
 
+        highlightPartial(text) {
+            return this.$highlight(String(text), String(this.list.search));
+        },
+
         highlightPhone(text) {
-            return String(text) === String(this.list.filters['search_phone']);
+            return this.$highlight(String(text), String(this.list.filters['search_phone']));
         },
     },
 }
