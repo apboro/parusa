@@ -52,7 +52,7 @@
             </GuiHeading>
             <GuiValue :title="'Имя'">{{ info.data['name'] }}</GuiValue>
             <GuiValue :title="'Email'">{{ info.data['email'] }}</GuiValue>
-            <GuiValue :title="'Телефон'">{{ info.data['phone'] }}</GuiValue>
+            <GuiValue :title="'Телефон'" required>{{ info.data['phone'] }}</GuiValue>
         </GuiContainer>
         <GuiContainer w-50 mt-30 mb-30 inline pl-20 v-if="is_returning">
             <GuiHeading mb-20>Причина возврата</GuiHeading>
@@ -320,7 +320,7 @@ export default {
             this.form.reset();
             this.form.set('name', this.info.data['name'], null, 'Имя', true);
             this.form.set('email', this.info.data['email'], 'nullable|email', 'Email', true);
-            this.form.set('phone', this.info.data['phone'], null, 'Телефон', true);
+            this.form.set('phone', this.info.data['phone'], 'required', 'Телефон', true);
             this.form.load();
             this.$refs.popup.show({id: this.orderId})
                 .then(result => {
