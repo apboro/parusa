@@ -26,6 +26,7 @@ class PartnerOrderType extends OrderType implements AsDictionary
             self::site,
             self::partner_site,
             self::partner_sale,
+            self::referral_link,
         ];
         return self::query()->whereIn('id', $ids);
     }
