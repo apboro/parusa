@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API\Terminals;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\Role;
+use App\Models\Hit\Hit;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\User\User;
@@ -24,6 +26,7 @@ class TerminalStaffController extends ApiController
      */
     public function attach(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         /** @var Terminal $terminal */
         if (null === ($terminal = $this->getTerminal($request))) {
             return APIResponse::notFound('Касса не найдена');
@@ -62,6 +65,7 @@ class TerminalStaffController extends ApiController
      */
     public function detach(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         /** @var Terminal $terminal */
         if (null === ($terminal = $this->getTerminal($request))) {
             return APIResponse::notFound('Касса не найдена');

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Database\Seeders\Dictionaries\AccountTransactionTypesSeeder;
 use Database\Seeders\Dictionaries\ContactTypesSeeder;
+use Database\Seeders\Dictionaries\HitSeeder;
 use Database\Seeders\Dictionaries\OrderTypesSeeder;
 use Database\Seeders\Dictionaries\StatusesSeeder;
 use Database\Seeders\Dictionaries\TypesSeeder;
@@ -15,6 +16,7 @@ class DatabaseSeeder extends Seeder
 {
     protected array $seeders = [
         UserRolesSeeder::class,
+        HitSeeder::class,
         StatusesSeeder::class,
         TypesSeeder::class,
         ContactTypesSeeder::class,

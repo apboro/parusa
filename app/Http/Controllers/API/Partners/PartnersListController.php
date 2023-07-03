@@ -6,9 +6,11 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
+use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use App\Models\Positions\Position;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,6 +39,7 @@ class PartnersListController extends ApiController
      */
     public function list(APIListRequest $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $query = Partner::query()->with(['type', 'status'])
             ->with('positions', function (HasMany $query) {
                 $query->where('status_id', PositionStatus::active)

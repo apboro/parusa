@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Settings;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Settings;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -42,6 +44,7 @@ class SettingsController extends ApiEditController
      */
     public function getGeneral(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         return $this->get('general');
     }
 
@@ -54,6 +57,7 @@ class SettingsController extends ApiEditController
      */
     public function setGeneral(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         return $this->set($request, 'general');
     }
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\Dictionary;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\AbstractDictionary;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -23,6 +25,7 @@ class DictionaryDeleteController extends ApiController
      */
     public function delete(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
         $name = $request->input('name');
 

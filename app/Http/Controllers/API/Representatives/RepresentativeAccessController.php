@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Representatives;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\User\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -38,6 +40,7 @@ class RepresentativeAccessController extends ApiEditController
      */
     public function release(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         if (($user = $this->getRepresentativeUser($request)) === null) {
             return APIResponse::notFound('Представитель не найден');
         }
@@ -71,6 +74,7 @@ class RepresentativeAccessController extends ApiEditController
      */
     public function set(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         /** @var User $user */
         if (($user = $this->getRepresentativeUser($request)) === null) {
             return APIResponse::notFound('Представитель не найден');

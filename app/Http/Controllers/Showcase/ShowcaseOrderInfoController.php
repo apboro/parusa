@@ -6,8 +6,10 @@ use App\Helpers\StatisticQrCodes;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Jobs\ProcessShowcaseConfirmedOrder;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Payments\Payment;
 use App\SberbankAcquiring\Connection;
@@ -35,6 +37,7 @@ class ShowcaseOrderInfoController extends ApiEditController
      */
     public function info(Request $request): JsonResponse
     {
+        Hit::register(HitSource::showcase);
         $secret = $request->input('secret');
 
         try {

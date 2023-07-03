@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Staff;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\User\Helpers\Currents;
 use App\Models\User\User;
 use Carbon\Carbon;
@@ -56,6 +58,7 @@ class StaffEditController extends ApiEditController
      */
     public function get(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         /** @var User|null $user */
         $user = $this->firstOrNewUser($request, ['profile', 'staffPosition', 'staffPosition.status', 'staffPosition.staffInfo']);
 
@@ -106,6 +109,7 @@ class StaffEditController extends ApiEditController
      */
     public function update(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $data = $this->getData($request);
 
         if ($errors = $this->validate($data, $this->rules, $this->titles)) {

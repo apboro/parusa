@@ -7,8 +7,10 @@ use App\Http\Controllers\ApiController;
 use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
@@ -29,6 +31,16 @@ class OrderReserveController extends ApiController
      */
     public function cancel(Request $request): JsonResponse
     {
+        $current = Currents::get($request);
+
+        if ($current->isRepresentative()) {
+            Hit::register(HitSource::partner);
+        } else if ($current->isStaffTerminal()) {
+            Hit::register(HitSource::terminal);
+        } else {
+            Hit::register(HitSource::admin);
+        }
+
         /** @var ?Order $order */
         $order = $this->getOrder($request);
 
@@ -56,6 +68,16 @@ class OrderReserveController extends ApiController
      */
     public function remove(Request $request): JsonResponse
     {
+        $current = Currents::get($request);
+
+        if ($current->isRepresentative()) {
+            Hit::register(HitSource::partner);
+        } else if ($current->isStaffTerminal()) {
+            Hit::register(HitSource::terminal);
+        } else {
+            Hit::register(HitSource::admin);
+        }
+
         /** @var Order|null $order */
         $order = $this->getOrder($request);
 
@@ -103,6 +125,7 @@ class OrderReserveController extends ApiController
      */
     public function partnerOrder(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         /** @var ?Order $order */
         $order = $this->getOrder($request);
 
@@ -154,6 +177,8 @@ class OrderReserveController extends ApiController
      */
     public function terminalOrder(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
+
         $current = Currents::get($request);
 
         if (Order::query()->where(['terminal_position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])

@@ -7,6 +7,8 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionType;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
@@ -38,6 +40,7 @@ class AccountRefillController extends ApiEditController
      */
     public function refill(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('partnerId');
         $transactionId = $request->input('transactionId');
 

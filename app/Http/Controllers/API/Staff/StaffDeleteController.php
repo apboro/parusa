@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Staff;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\User\User;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -21,6 +23,7 @@ class StaffDeleteController extends ApiController
      */
     public function delete(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
 
         if ($id === null || null === ($user = User::query()->with('profile')->where('id', $id)->has('staffPosition')->first())) {

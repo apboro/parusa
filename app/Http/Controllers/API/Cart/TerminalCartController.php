@@ -4,9 +4,11 @@ namespace App\Http\Controllers\API\Cart;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Sails\Trip;
@@ -31,6 +33,7 @@ class TerminalCartController extends ApiEditController
      */
     public function get(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
 
         if (!$current->position() || !$current->isStaffTerminal()) {
@@ -129,6 +132,7 @@ class TerminalCartController extends ApiEditController
      */
     public function add(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
 
         if ($current->position() === null || !$current->isStaffTerminal()) {
@@ -223,6 +227,7 @@ class TerminalCartController extends ApiEditController
      */
     public function quantity(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
 
         if ($current->position() === null || !$current->isStaffTerminal()) {
@@ -265,6 +270,7 @@ class TerminalCartController extends ApiEditController
      */
     public function remove(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
 
         if (!$current->isStaffTerminal()) {
@@ -287,6 +293,7 @@ class TerminalCartController extends ApiEditController
      */
     public function clear(Request $request): JsonResponse
     {
+        Hit::register(HitSource::terminal);
         $current = Currents::get($request);
 
         if (!$current->isStaffTerminal()) {

@@ -51,6 +51,9 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/qrlink.php'));
 
             Route::namespace($this->namespace)
+                ->group(base_path('routes/referral_link.php'));
+
+            Route::namespace($this->namespace)
                 ->group(base_path('routes/checkout.php'));
 
             Route::namespace($this->namespace)

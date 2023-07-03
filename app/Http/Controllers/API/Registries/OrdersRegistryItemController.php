@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
+use App\Models\PromoCode\PromoCode;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Illuminate\Http\JsonResponse;
@@ -23,6 +24,7 @@ class OrdersRegistryItemController extends ApiController
             ->with([
                 'status', 'type', 'tickets.grade', 'partner', 'position.user.profile', 'terminal', 'cashier',
                 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier',
+                'promocode'
             ]);
 
         if ($current->isRepresentative()) {
@@ -49,10 +51,14 @@ class OrdersRegistryItemController extends ApiController
             return APIResponse::error('Заказ не найден');
         }
 
-
         $reserveValidUntil = $order->reserveValidUntil();
 
-        if ($current->isStaffTerminal()) {
+        /** @var PromoCode|null $promocode */
+        $promocode = $order->promocode->first();
+
+        if ($promocode !== null) {
+            $returnable = false;
+        } else if ($current->isStaffTerminal()) {
             $returnable = $order->hasStatus(OrderStatus::terminal_paid) || $order->hasStatus(OrderStatus::terminal_partial_returned);
         } else if ($current->isRepresentative()) {
             $returnable = $order->hasStatus(OrderStatus::partner_paid) || $order->hasStatus(OrderStatus::partner_partial_returned);
@@ -70,6 +76,7 @@ class OrdersRegistryItemController extends ApiController
             'time' => $order->created_at->format('H:i'),
             'type' => $order->type->name,
             'terminal' => $order->terminal->name ?? null,
+            'promocode' => $promocode->code ?? null,
             'cashier' => $order->cashier ? $order->cashier->user->profile->fullName : null,
             'partner' => $order->partner->name ?? null,
             'position' => $order->position ? $order->position->user->profile->fullName : null,
@@ -90,6 +97,7 @@ class OrdersRegistryItemController extends ApiController
                 ];
             }),
             'total' => $order->tickets->sum('base_price'),
+            'order_total' => $order->total(),
             'tickets_count' => $order->tickets->count(),
             'name' => $order->name,
             'email' => $order->email,

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\Dictionary;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\AbstractDictionary;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -19,6 +21,7 @@ class DictionaryEditController extends ApiEditController
      */
     public function index(): JsonResponse
     {
+        Hit::register(HitSource::admin);
         return APIResponse::response(array_map(static function ($item) {
             return $item['name'];
         }, $this->dictionaries), []);
@@ -33,6 +36,7 @@ class DictionaryEditController extends ApiEditController
      */
     public function details(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $name = $request->input('name');
 
         if (!array_key_exists($name, $this->dictionaries)) {
@@ -64,6 +68,7 @@ class DictionaryEditController extends ApiEditController
      */
     public function sync(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $name = $request->input('name');
 
         if (!array_key_exists($name, $this->dictionaries)) {
@@ -89,6 +94,7 @@ class DictionaryEditController extends ApiEditController
      */
     public function update(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $name = $request->input('name');
 
         if (!array_key_exists($name, $this->dictionaries)) {

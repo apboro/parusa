@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API\Partners;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use App\Models\User\Helpers\Currents;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
@@ -25,6 +27,7 @@ class PartnerSettingsController extends ApiController
      */
     public function settings(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         $current = Currents::get($request);
         $showcaseUrl = config('app.showcase_ap_page');
 
@@ -38,6 +41,7 @@ class PartnerSettingsController extends ApiController
         return APIResponse::response([
             'partner_id' => $current->partnerId(),
             'link' => $this->appLink($showcaseUrl, $current->partnerId()),
+            'referral_link' => $this->referralLink($current->partnerId()),
             'code' => $code,
             'qr_target_page' => null,
         ]);
@@ -52,6 +56,7 @@ class PartnerSettingsController extends ApiController
      */
     public function widget(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         $current = Currents::get($request);
 
         $excursions = Excursion::query()
@@ -96,7 +101,6 @@ class PartnerSettingsController extends ApiController
         $code2 .= "\n<!-- Вставить в то место, где нужно разместить приложение -->\n";
         $code2 .= "<div id=\"ap-showcase2\"></div>";
 
-
         return APIResponse::response([
             'code' => $code,
             'code2' => $code2,
@@ -115,6 +119,7 @@ class PartnerSettingsController extends ApiController
      */
     public function qr(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         $url = $request->input('url');
         if (empty($url)) {
             return APIResponse::error('URL не задан');
@@ -158,5 +163,17 @@ class PartnerSettingsController extends ApiController
         $url .= 'partner=' . $partnerId;
 
         return $url;
+    }
+
+    /**
+     * Make referral link link.
+     *
+     * @param int $partnerId
+     *
+     * @return  string
+     */
+    protected function referralLink(int $partnerId): string
+    {
+        return route('referral_link', ['id' => $partnerId]);
     }
 }

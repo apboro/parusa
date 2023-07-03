@@ -5,11 +5,13 @@ namespace App\Http\Controllers\API\Statistics;
 use App\Helpers\PriceConverter;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\TerminalStatus;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
@@ -28,6 +30,7 @@ class StatisticsSalesTodayController extends ApiController
      */
     public function list(): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $periodHour = 4;
         $periodMinutes = 30;
 

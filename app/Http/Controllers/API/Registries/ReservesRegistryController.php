@@ -6,7 +6,9 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
@@ -37,6 +39,14 @@ class ReservesRegistryController extends ApiController
     public function list(ApiListRequest $request): JsonResponse
     {
         $current = Currents::get($request);
+
+        if ($current->isRepresentative()) {
+            Hit::register(HitSource::partner);
+        } else if ($current->isStaffTerminal() && empty($current->terminal()->show_all_orders)) {
+            Hit::register(HitSource::terminal);
+        } else {
+            Hit::register(HitSource::admin);
+        }
 
         $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('Y-m-d');
         $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d');

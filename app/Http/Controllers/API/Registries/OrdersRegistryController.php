@@ -6,7 +6,9 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
@@ -39,6 +41,14 @@ class OrdersRegistryController extends ApiController
     {
         $current = Currents::get($request);
 
+        if ($current->isRepresentative()) {
+            Hit::register(HitSource::partner);
+        } else if ($current->isStaffTerminal()) {
+            Hit::register(HitSource::terminal);
+        } else {
+            Hit::register(HitSource::admin);
+        }
+
         $this->defaultFilters['date_from'] = Carbon::now()->day(1)->format('Y-m-d');
         $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d');
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
@@ -48,6 +58,7 @@ class OrdersRegistryController extends ApiController
                 'type', 'status',
                 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade',
                 'partner', 'position', 'position.user', 'position.user.profile', 'terminal', 'cashier',
+                'promocode',
             ])
             ->withCount(['tickets'])
             ->whereIn('status_id', OrderStatus::order_had_paid_statuses);
@@ -75,8 +86,7 @@ class OrdersRegistryController extends ApiController
 
                 foreach ($terms as $term) {
                     $query->orWhere('name', 'LIKE', '%' . $term . '%')
-                        ->orWhere('email', 'LIKE', '%' . $term . '%')
-                        ->orWhere('phone', 'LIKE', '%' . $term . '%');
+                        ->orWhere('email', 'LIKE', '%' . $term . '%');
                 }
 
                 if (!$current->isStaffTerminal() || !$request->input('only_orders')) {
@@ -96,6 +106,9 @@ class OrdersRegistryController extends ApiController
             if (!empty($filters['order_type_id'])) {
                 $query->where('type_id', $filters['order_type_id']);
             }
+            if (!empty($filters['search_phone'])) {
+                $query->where('phone', 'LIKE', '%' . $filters['search_phone'] . '%');
+            }
         }
 
         $orders = $query->paginate($request->perPage());
@@ -103,7 +116,9 @@ class OrdersRegistryController extends ApiController
         /** @var LengthAwarePaginator $orders */
         $orders->transform(function (Order $order) use ($current) {
 
-            if ($current->isStaffTerminal()) {
+            if ($order->promocode->count() > 0) {
+                $returnable = false;
+            } else if ($current->isStaffTerminal()) {
                 $returnable = $order->hasStatus(OrderStatus::terminal_paid) || $order->hasStatus(OrderStatus::terminal_partial_returned);
             } else if ($current->isRepresentative()) {
                 $returnable = $order->hasStatus(OrderStatus::partner_paid) || $order->hasStatus(OrderStatus::partner_partial_returned);
@@ -117,6 +132,7 @@ class OrdersRegistryController extends ApiController
                     'date' => $order->created_at->format('d.m.Y, H:i'),
                     'tickets_total' => $order->getAttribute('tickets_count'),
                     'amount' => $order->tickets->sum('base_price'),
+                    'order_total' => $order->total(),
                     'returnable' => $returnable,
                     'payment_unconfirmed' => (bool)$order->payment_unconfirmed,
                     'info' => [
@@ -149,7 +165,7 @@ class OrdersRegistryController extends ApiController
 
         return APIResponse::list(
             $orders,
-            ['№ заказа', 'Дата оплаты заказа', 'Информация о заказе', 'Билетов в заказе', 'Стоимость заказа'],
+            ['№ заказа', 'Дата оплаты заказа', 'Покупатель', 'Информация о заказе', 'Билетов в заказе', 'Стоимость заказа'],
             $filters,
             $this->defaultFilters,
             []

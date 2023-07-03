@@ -8,6 +8,8 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionType;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
@@ -36,6 +38,7 @@ class TransactionsListController extends ApiController
      */
     public function list(APIListRequest $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $current = Currents::get($request);
 
         $id = $current->isStaff() ? $request->input('id') : $current->partnerId();

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Storage;
 
 use App\Http\Controllers\Controller;
 use App\Models\Common\File;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\User\Helpers\Currents;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -24,8 +26,10 @@ class PartnerDocumentController extends Controller
 
         /** @var File $document */
         if ($current->isStaffAdmin() || $current->isStaffOfficeManager() || $current->isStaffAccountant()) {
+            Hit::register(HitSource::admin);
             $document = File::query()->where('filename', $file)->firstOrFail();
         } else if ($current->isRepresentative() && $current->partner() !== null) {
+            Hit::register(HitSource::partner);
             $document = $current->partner()->files()->where('filename', $file)->firstOrFail();
         } else {
             return abort(403);

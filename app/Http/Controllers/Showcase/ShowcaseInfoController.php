@@ -7,8 +7,10 @@ use App\Http\Controllers\ApiController;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PiersStatus;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use App\Models\Piers\Pier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,6 +27,7 @@ class ShowcaseInfoController extends ApiController
      */
     public function excursion(Request $request): JsonResponse
     {
+        Hit::register(HitSource::showcase);
         $id = $request->input('id');
 
         /** @var Excursion $excursion */
@@ -65,6 +68,7 @@ class ShowcaseInfoController extends ApiController
      */
     public function pier(Request $request): JsonResponse
     {
+        Hit::register(HitSource::showcase);
         $id = $request->input('id');
 
         /** @var Pier $pier */

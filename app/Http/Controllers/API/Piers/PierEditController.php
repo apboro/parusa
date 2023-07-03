@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\Piers;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Common\Image;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\Piers\Pier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -44,6 +46,7 @@ class PierEditController extends ApiEditController
      */
     public function get(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         /** @var Pier|null $pier */
         $pier = $this->firstOrNew(Pier::class, $request, ['info', 'images', 'mapImages']);
 
@@ -88,6 +91,7 @@ class PierEditController extends ApiEditController
      */
     public function update(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $data = $this->getData($request);
 
         if ($errors = $this->validate($data, $this->rules, $this->titles)) {

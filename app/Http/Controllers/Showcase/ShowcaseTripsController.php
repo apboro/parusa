@@ -6,8 +6,10 @@ use App\Http\Controllers\ApiController;
 use App\Http\Middleware\ExternalProtect;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
@@ -30,6 +32,7 @@ class ShowcaseTripsController extends ApiController
      */
     public function trips(Request $request): JsonResponse
     {
+        Hit::register(HitSource::showcase);
         $originalKey = $request->header(ExternalProtect::HEADER_NAME);
 
         try {
@@ -149,6 +152,7 @@ class ShowcaseTripsController extends ApiController
      */
     public function trip(Request $request): JsonResponse
     {
+        Hit::register(HitSource::showcase);
         $originalKey = $request->header(ExternalProtect::HEADER_NAME);
 
         try {

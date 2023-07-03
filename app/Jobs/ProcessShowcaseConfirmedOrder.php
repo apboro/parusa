@@ -71,7 +71,11 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             $tickets[] = $ticket;
         });
 
-        (new NevaOrder($order))->approve();
+        try {
+            (new NevaOrder($order))->approve();
+        } catch (Exception $exception) {
+
+        }
 
         if (env('SBER_ACQUIRING_PRODUCTION'))
         {

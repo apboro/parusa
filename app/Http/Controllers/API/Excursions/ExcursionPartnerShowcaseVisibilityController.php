@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API\Excursions;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use App\Models\Tickets\TicketsRatesList;
 use App\Models\User\Helpers\Currents;
 use Exception;
@@ -23,6 +25,7 @@ class ExcursionPartnerShowcaseVisibilityController extends ApiController
      */
     public function visibility(Request $request): JsonResponse
     {
+        Hit::register(HitSource::partner);
         $id = $request->input('excursion_id');
 
         if ($id === null || null === ($excursion = Excursion::query()->where('id', $id)->first())) {

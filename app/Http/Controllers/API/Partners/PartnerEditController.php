@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\Partners;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Common\File;
+use App\Models\Dictionaries\HitSource;
+use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,6 +40,7 @@ class PartnerEditController extends ApiEditController
      */
     public function get(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         /** @var Partner|null $partner */
         $partner = $this->firstOrNew(Partner::class, $request);
 
@@ -75,6 +78,7 @@ class PartnerEditController extends ApiEditController
      */
     public function update(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         /** @var Partner|null $partner */
         $partner = $this->firstOrNew(Partner::class, $request);
 

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API\Rates;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
+use App\Models\Hit\Hit;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
 use Carbon\Carbon;
@@ -25,6 +27,7 @@ class RateUpdateController extends ApiEditController
      */
     public function update(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         if (
             null === ($excursionId = $request->input('excursion_id')) ||
             null === (Excursion::query()->with('ratesLists')->where('id', $excursionId)->first())

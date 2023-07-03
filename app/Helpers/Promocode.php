@@ -3,8 +3,13 @@
 namespace App\Helpers;
 
 use App\Models\Dictionaries\PromoCodeStatus;
+use App\Models\Dictionaries\TicketGrade;
+use App\Models\Dictionaries\TripSaleStatus;
+use App\Models\Dictionaries\TripStatus;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class Promocode
 {
@@ -37,8 +42,26 @@ class Promocode
 
         $tripIDs = array_unique(array_column($tickets, 'trip_id'));
 
-        $trips = Trip::saleTripQuery($partnerID === null)
+        $trips = Trip::query()
             ->whereIn('id', $tripIDs)
+            ->whereHas('excursion.ratesLists', function (Builder $query) use ($partnerID) {
+                $query
+                    ->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
+                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)')
+                    ->whereHas('rates', function (Builder $query) use ($partnerID) {
+                        $query->where('grade_id', '!=', TicketGrade::guide);
+                        if ($partnerID === null) {
+                            $query->where('site_price', '>', 0);
+                        } else {
+                            $query->where('base_price', '>', 0);
+                        }
+                    });
+            })
+            ->when($partnerID !== null, function (Builder $query) {
+                $query->whereHas('excursion', function (Builder $query) {
+                    $query->where('only_site', false);
+                });
+            })
             ->get();
 
         $promocodeApplicable = false;

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API\Representatives;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PositionAccessStatus;
+use App\Models\Hit\Hit;
 use App\Models\Positions\Position;
 use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
@@ -14,6 +16,7 @@ class RepresentativeViewController extends ApiController
 {
     public function view(Request $request): JsonResponse
     {
+        Hit::register(HitSource::admin);
         $id = $request->input('id');
 
         if ($id === null ||

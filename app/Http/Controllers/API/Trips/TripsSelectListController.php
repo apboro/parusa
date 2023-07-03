@@ -7,10 +7,12 @@ use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\ExcursionProgram;
+use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
+use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
 use App\Models\User\Helpers\Currents;
@@ -48,8 +50,11 @@ class TripsSelectListController extends ApiController
         $current = Currents::get($request);
 
         if ($current->terminal() !== null) {
+            Hit::register(HitSource::terminal);
             $this->defaultFilters['start_pier_id'] = $current->terminal()->pier_id;
             $this->rememberFilters = [];
+        } else {
+            Hit::register(HitSource::partner);
         }
 
         $this->defaultFilters['date'] = Carbon::now()->format('Y-m-d');
@@ -69,7 +74,7 @@ class TripsSelectListController extends ApiController
             ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
             ->whereDate('start_at', $date)
-            ->when(env('REMOVE_NEVA_TRIPS'), function (Builder $query){
+            ->when(env('REMOVE_NEVA_TRIPS'), function (Builder $query) {
                 $query->where('source', null);
             })
             ->where('start_at', '>', $now)
