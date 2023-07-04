@@ -75,6 +75,7 @@ class TicketsRegistryController extends ApiController
                 'date' => $ticket->created_at->format('d.m.Y'),
                 'time' => $ticket->created_at->format('H:i'),
                 'order_id' => $ticket->order_id,
+                'neva_travel_order_number' => $ticket->order->neva_travel_order_number,
                 'id' => $ticket->id,
                 'type' => $ticket->grade->name,
                 'amount' => $ticket->base_price,

@@ -129,6 +129,7 @@ class OrdersRegistryController extends ApiController
             return
                 [
                     'id' => $order->id,
+                    'neva_travel_order_number' => $order->neva_travel_order_number,
                     'date' => $order->created_at->format('d.m.Y, H:i'),
                     'tickets_total' => $order->getAttribute('tickets_count'),
                     'amount' => $order->tickets->sum('base_price'),

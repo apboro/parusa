@@ -45,8 +45,11 @@
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true">
             <template v-for="order in list.list">
                 <ListTableRow :no-odd-even="true">
-                    <ListTableCell class="bold">
-                        <router-link class="link" :to="{name: 'order-info', params: {id: order['id']}}" v-html="highlight(order['id'])"/>
+                    <ListTableCell>
+                        <div class="bold">
+                            <router-link class="link" :to="{name: 'order-info', params: {id: order['id']}}" v-html="highlight(order['id'])"/>
+                        </div>
+                        <div>{{ order['neva_travel_order_number']}} 22334455    </div>
                     </ListTableCell>
                     <ListTableCell>
                         <span v-if="order['payment_unconfirmed']" style="display: inline-block; color: orange; width: 1em" title="Платёж не подтверждён">
