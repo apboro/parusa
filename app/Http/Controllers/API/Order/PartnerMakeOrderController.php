@@ -24,6 +24,8 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class PartnerMakeOrderController extends ApiEditController
 {
@@ -127,45 +129,47 @@ class PartnerMakeOrderController extends ApiEditController
         }
 
         try {
-            // add transaction first
-            if ($status_id === OrderStatus::partner_paid) {
-                $transaction = $partner->account->attachTransaction(new AccountTransaction([
-                    'type_id' => AccountTransactionType::tickets_buy,
-                    'status_id' => AccountTransactionStatus::accepted,
-                    'timestamp' => Carbon::now(),
-                    'amount' => $totalAmount,
-                    'committer_id' => $current->positionId(),
-                ]));
-            }
-            // create order
-            $order = Order::make(
-                OrderType::partner_sale,
-                $tickets,
-                $status_id,
-                $partner->id,
-                $position->id,
-                null,
-                null,
-                $data['email'] ?? null,
-                $data['name'] ?? null,
-                $data['phone'] ?? null
-            );
+            DB::transaction(static function () use ($totalAmount, $status_id, $current, $partner, $tickets, $position, &$order) {
+                // add transaction first
+                if ($status_id === OrderStatus::partner_paid) {
+                    $transaction = $partner->account->attachTransaction(new AccountTransaction([
+                        'type_id' => AccountTransactionType::tickets_buy,
+                        'status_id' => AccountTransactionStatus::accepted,
+                        'timestamp' => Carbon::now(),
+                        'amount' => $totalAmount,
+                        'committer_id' => $current->positionId(),
+                    ]));
+                }
+                // create order
+                $order = Order::make(
+                    OrderType::partner_sale,
+                    $tickets,
+                    $status_id,
+                    $partner->id,
+                    $position->id,
+                    null,
+                    null,
+                    $data['email'] ?? null,
+                    $data['name'] ?? null,
+                    $data['phone'] ?? null
+                );
 
-            $nevaOrder = new NevaOrder($order);
-            if (!$nevaOrder->make()) {
-                return APIResponse::error('Невозможно оформить заказ на этот рейс.');
-            } else {
-                $nevaOrder->approve();
-            }
+                $nevaOrder = new NevaOrder($order);
+                if (!$nevaOrder->make()) {
+                    throw new RuntimeException('Невозможно оформить заказ на этот рейс.');
+                } else {
+                    $nevaOrder->approve();
+                }
 
-            // attach order_id to transaction
-            if ($status_id === OrderStatus::partner_paid) {
-                $partner->account->updateTransaction($transaction, ['order_id' => $order->id]);
-            }
-            // pay commissions
-            $order->payCommissions();
-            // clear cart
-            PositionOrderingTicket::query()->where('position_id', $position->id)->delete();
+                // attach order_id to transaction
+                if ($status_id === OrderStatus::partner_paid) {
+                    $partner->account->updateTransaction($transaction, ['order_id' => $order->id]);
+                }
+                // pay commissions
+                $order->payCommissions();
+                // clear cart
+                PositionOrderingTicket::query()->where('position_id', $position->id)->delete();
+            });
         } catch (Exception $exception) {
             // remove transaction on error
             if (isset($transaction)) {

@@ -191,7 +191,7 @@ class OrderReturnController extends ApiController
                     }
                 }
             } catch (Exception $e) {
-                Log::channel('neva')->error('Neva API Error: ' . $e->getMessage());
+                Log::channel('neva')->error('Neva API Error: ' . $e->getMessage() .' : '. $e->getFile().':'.$e->getLine() );
             }
 
         } else if ($current->isStaff() && $current->role() && $current->terminalId() !== null && $current->role()->matches(Role::terminal)) {
