@@ -54,7 +54,7 @@
                     <div>
                         <router-link class="link" :to="{name: 'order-info', params: {id: ticket['order_id']}}" v-html="highlight(ticket['order_id'])"/>
                     </div>
-                    <div>{{ ticket['neva_travel_order_number'] }}</div>
+                    <div v-html="ticket['neva_travel_order_number'] != null ? highlight(ticket['neva_travel_order_number']) : ''"></div>
                 </ListTableCell>
                 <ListTableCell>
                     <div>{{ ticket['type'] }}</div>

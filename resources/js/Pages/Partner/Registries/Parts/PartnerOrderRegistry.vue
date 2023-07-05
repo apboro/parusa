@@ -49,7 +49,7 @@
                         <div class="bold">
                             <router-link class="link" :to="{name: 'order-info', params: {id: order['id']}}" v-html="highlight(order['id'])"/>
                         </div>
-                        <div>{{ order['neva_travel_order_number'] }}</div>
+                        <div v-html="order['neva_travel_order_number'] != null ? highlight(order['neva_travel_order_number']) : ''"></div>
                     </ListTableCell>
                     <ListTableCell>
                         {{ order['date'] }}

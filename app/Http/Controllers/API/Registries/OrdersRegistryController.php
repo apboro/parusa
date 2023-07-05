@@ -86,7 +86,8 @@ class OrdersRegistryController extends ApiController
 
                 foreach ($terms as $term) {
                     $query->orWhere('name', 'LIKE', '%' . $term . '%')
-                        ->orWhere('email', 'LIKE', '%' . $term . '%');
+                        ->orWhere('email', 'LIKE', '%' . $term . '%')
+                        ->orWhere('neva_travel_order_number', 'LIKE', '%' . $term . '%');
                 }
 
                 if (!$current->isStaffTerminal() || !$request->input('only_orders')) {
