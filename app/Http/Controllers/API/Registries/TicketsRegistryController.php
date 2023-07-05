@@ -126,6 +126,7 @@ class TicketsRegistryController extends ApiController
         $titles = [
             '№ билета',
             '№ заказа',
+            '№ заказа НТ',
             'Дата продажи',
             'Время продажи',
             'Тип билета',
@@ -144,6 +145,7 @@ class TicketsRegistryController extends ApiController
             return [
                 'id' => $ticket->id,
                 'order_id' => $ticket->order_id,
+                'neva_travel_order_number' => $ticket->order->neva_travel_order_number,
                 'date' => $ticket->created_at->format('d.m.Y'),
                 'time' => $ticket->created_at->format('H:i'),
                 'type' => $ticket->grade->name,
@@ -165,7 +167,7 @@ class TicketsRegistryController extends ApiController
 
         $spreadsheet->getActiveSheet()->fromArray($titles, '—', 'A1');
         $spreadsheet->getActiveSheet()->fromArray($tickets->toArray(), '—', 'A2');
-        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'] as $col) {
+        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'] as $col) {
             $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
         }
 
