@@ -133,6 +133,7 @@ class TicketsRegistryController extends ApiController
             'Стоимость',
             'Комиссия, руб.',
             'Рейс',
+            'Дата рейса',
             'Номер рейса',
             'Способ продажи',
             'Продавец',
@@ -150,6 +151,7 @@ class TicketsRegistryController extends ApiController
                 'amount' => $ticket->base_price,
                 'commission_amount' => $ticket->transaction !== null ? $ticket->transaction->amount : null,
                 'excursion' => $ticket->trip->excursion->name,
+                'excursion_date' => $ticket->trip->start_at->format('d.m.Y H:i'),
                 'trip_id' => $ticket->trip_id,
                 'order_type' => $ticket->order->type->name,
                 'partner' => $ticket->order->partner->name ?? null,
@@ -164,7 +166,7 @@ class TicketsRegistryController extends ApiController
 
         $spreadsheet->getActiveSheet()->fromArray($titles, '—', 'A1');
         $spreadsheet->getActiveSheet()->fromArray($tickets->toArray(), '—', 'A2');
-        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'] as $col) {
+        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'] as $col) {
             $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
         }
 
