@@ -129,7 +129,7 @@ class PartnerMakeOrderController extends ApiEditController
         }
 
         try {
-            DB::transaction(static function () use ($totalAmount, $status_id, $current, $partner, $tickets, $position, &$order) {
+            DB::transaction(static function () use ($totalAmount, $status_id, $current, $partner, $tickets, $position, &$order, $data) {
                 // add transaction first
                 if ($status_id === OrderStatus::partner_paid) {
                     $transaction = $partner->account->attachTransaction(new AccountTransaction([

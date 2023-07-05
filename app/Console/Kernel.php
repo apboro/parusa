@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('lifepos:sync')->dailyAt('4:00');
         $schedule->command('sync:showcase_pay_waiting')->everyMinute();
         if (env('APP_ENV') === 'production') {
-            $schedule->command('neva:today')->everyFiveMinutes();
+            $schedule->command('neva:today')->everyThreeMinutes();
             $schedule->command('neva:import')->dailyAt('5:00');
         }
     }
