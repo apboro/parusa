@@ -36,7 +36,7 @@
                         <div class="bold">
                             <router-link class="link" :to="{name: 'order-info', params: {id: order['id']}}" v-html="highlight(order['id'])"/>
                         </div>
-                        <div>{{ order['neva_travel_order_number'] }}</div>
+                        <div v-if="order['neva_travel_order_number']" v-html="highlight(order['neva_travel_order_number'])"></div>
                     </ListTableCell>
                     <ListTableCell>
                         <span v-if="order['payment_unconfirmed']" style="display: inline-block; color: orange; width: 1em" title="Платёж не подтверждён">

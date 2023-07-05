@@ -236,7 +236,8 @@ class TicketsRegistryController extends ApiController
                         foreach ($search as $term) {
                             $query->orWhere('name', 'LIKE', '%' . $term . '%')
                                 ->orWhere('email', 'LIKE', '%' . $term . '%')
-                                ->orWhere('phone', 'LIKE', '%' . $term . '%');
+                                ->orWhere('phone', 'LIKE', '%' . $term . '%')
+                                ->orWhere('neva_travel_order_number', 'LIKE', '%' . $term . '%');
                         }
                     });
             });
