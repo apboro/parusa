@@ -40,7 +40,8 @@ class PartnerSettingsController extends ApiController
 
         return APIResponse::response([
             'partner_id' => $current->partnerId(),
-            'link' => $this->appLink($showcaseUrl, $current->partnerId()),
+            'old_link' => $this->appLink($showcaseUrl, $current->partnerId()),
+            'link' => $this->referralShowcaseLink($current->partnerId()),
             'referral_link' => $this->referralLink($current->partnerId()),
             'code' => $code,
             'qr_target_page' => null,
@@ -175,5 +176,17 @@ class PartnerSettingsController extends ApiController
     protected function referralLink(int $partnerId): string
     {
         return route('referral_link', ['id' => $partnerId]);
+    }
+
+    /**
+     * Make referral link link.
+     *
+     * @param int $partnerId
+     *
+     * @return  string
+     */
+    protected function referralShowcaseLink(int $partnerId): string
+    {
+        return route('referral_link', ['id' => $partnerId, 'showcase']);
     }
 }

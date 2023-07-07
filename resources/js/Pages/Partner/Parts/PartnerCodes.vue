@@ -1,10 +1,10 @@
 <template>
     <div>
         <GuiValueArea mt-20 v-if="data['referral_link']" :title="'Реферальная ссылка на сайт'">
-            <a class="link" :href="data['referral_link']" target="_blank">{{ data['referral_link'] }}</a>
+            <a class="link" :href="data['referral_link']" @click.stop.prevent="copy(data['referral_link'])">{{ data['referral_link'] }}</a>
         </GuiValueArea>
         <GuiValueArea mt-20 v-if="data['link']" :title="'Реферальная ссылка на витрину'">
-            <a class="link" :href="data['link']" target="_blank">{{ data['link'] }}</a>
+            <a class="link" :href="data['link']" @click.stop.prevent="copy(data['link'])">{{ data['link'] }}</a>
         </GuiValueArea>
         <GuiValueArea mt-30 :title="'QR-код'">
             <LoadingProgress :loading="qr_generating">
@@ -84,6 +84,15 @@ export default {
                 .finally(() => {
                     this.qr_generating = false;
                 })
+        },
+        copy(link) {
+            navigator.clipboard.writeText(link)
+                .then(() => {
+                    this.$toast.success('Ссылка скопирована в буфер обмена', 5000);
+                })
+                .catch(() => {
+                    this.$toast.error('Ошибка буфера обмена. Скопируйте ссылку через контекстное меню или выделите и нажмите Ctrl + C.', 5000);
+            });
         },
     }
 }
