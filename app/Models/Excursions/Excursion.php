@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $name_receipt
  * @property int $status_id
  * @property bool $only_site
+ * @property bool $is_single_ticket
+ * @property bool $has_return_trip
  *
  * @property ExcursionStatus $status
  * @property Collection $programs
@@ -44,6 +46,8 @@ class Excursion extends Model implements Statusable, AsDictionary
 
     protected $casts = [
         'only_site' => 'bool',
+        'is_single_ticket' => 'bool',
+        'has_return_trip' => 'bool',
     ];
 
     /** @var array Default attributes. */

@@ -47,6 +47,8 @@ class ExcursionViewController extends ApiController
             'description' => $excursion->info->description,
             'announce' => $excursion->info->announce,
             'only_site' => $excursion->only_site,
+            'is_single_ticket' => $excursion->is_single_ticket,
+            'has_return_trip' => $excursion->has_return_trip,
         ];
 
         // send response

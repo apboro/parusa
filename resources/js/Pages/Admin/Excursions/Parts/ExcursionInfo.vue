@@ -12,6 +12,12 @@
             <GuiValue :title="'Эксклюзивная'">
                 {{ data['only_site'] ? 'Продажа только на сайте Алые Паруса' : 'Нет' }}
             </GuiValue>
+            <GuiValue :title="'Единый билет'">
+                {{ data['is_single_ticket'] ? 'Да' : 'Нет' }}
+            </GuiValue>
+            <GuiValue title='Билет "Туда - обратно"'>
+                {{ data['has_return_trip'] ? 'Да' : 'Нет' }}
+            </GuiValue>
         </GuiContainer>
 
         <GuiContainer w-50 mt-30 inline pl-20 v-if="data['images'] && data['images'][0]">
