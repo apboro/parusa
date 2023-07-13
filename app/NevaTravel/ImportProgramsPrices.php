@@ -85,12 +85,19 @@ class ImportProgramsPrices
 
     public function createOrUpdateRateList($excursion): TicketsRatesList
     {
-        return TicketsRatesList::updateOrCreate(
-            ['excursion_id' => $excursion->id],
-            [
-                'start_at' => now()->format('Y-m-d'),
-                'end_at' => now()->addDays(90)->format('Y-m-d')
-            ]);
+        $ticketsRatesList = TicketsRatesList::where(  'excursion_id', $excursion->id)->first();
+        if ($ticketsRatesList) {
+            $ticketsRatesList->update(['end_at' => now()->addDays(90)->format('Y-m-d')]);
+            $ticketsRatesList->save();
+        } else {
+            $ticketsRatesList = TicketsRatesList::create(
+                [
+                    'excursion_id' => $excursion->id,
+                    'start_at' => now()->format('Y-m-d'),
+                    'end_at' => now()->addDays(90)->format('Y-m-d')
+                ]);
+        }
+        return $ticketsRatesList;
     }
 
 }
