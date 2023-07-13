@@ -14,7 +14,19 @@ class ReferralLinkRedirectController extends Controller
         /**@var Partner|null $partner */
         $partner = Partner::query()->where('id', $id)->first();
 
-        $link = env('REFERRAL_LINK_TARGET', 'https://city-tours-spb.ru/');
+        if ($request->has('showcase')) {
+            $showcaseUrl = config('app.showcase_ap_page');
+            $parts = explode('?', $showcaseUrl);
+            $link = $parts[0];
+            if (isset($parts[1])) {
+                $link .= '?' . $parts[1] . '&';
+            } else {
+                $link .= '?';
+            }
+            $link .= 'partner=' . $id;
+        } else {
+            $link = env('REFERRAL_LINK_TARGET', 'https://city-tours-spb.ru/');
+        }
 
         $cookie = cookie(
             'referralLink',
