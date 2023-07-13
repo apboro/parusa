@@ -184,7 +184,7 @@ class OrderTicketReplacementController extends ApiController
 
         $trips = $trips->filter(function (Trip $trip) use ($count) {
             return $trip->tickets_total >= $trip->getAttribute('tickets_count') + $count;
-        });
+        })->sortBy('start_at')->values();
 
         /** @var LengthAwarePaginator $trips */
         $trips->transform(function (Trip $trip) {
