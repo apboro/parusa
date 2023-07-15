@@ -39,6 +39,7 @@
             <template #search>
                 <GuiActionsMenu :class="'self-align-end'" :title="'Операции'" v-if="editable">
                     <span class="link" @click="editRefill(null)">Пополнение счёта</span>
+                    <span class="link" @click="writeBalance(null)">Списание баланса</span>
                 </GuiActionsMenu>
             </template>
         </LayoutFilters>
@@ -84,7 +85,8 @@
                     </ListTableCell>
                     <ListTableCell v-if="editable">
                         <GuiActionsMenu :title="null" v-if="transaction['editable'] || transaction['deletable']">
-                            <span class="link" v-if="transaction['editable']" @click="editRefill(transaction)">Редактировать</span>
+                            <span class="link" v-if="transaction['editable'] && transaction['type_id'] !== 4" @click="editRefill(transaction)">Редактировать</span>
+                            <span class="link" v-if="transaction['editable'] && transaction['type_id'] === 4" @click="writeBalance(transaction)">Редактировать</span>
                             <span class="link" v-if="transaction['deletable']" @click="remove(transaction)">Удалить</span>
                         </GuiActionsMenu>
                     </ListTableCell>
@@ -137,6 +139,21 @@
                 <FormDate :form="refill_form" :name="'reason_date'" v-if="has_reason_date && refill_form.values['type_id'] !== null"/>
                 <FormNumber :form="refill_form" :name="'amount'" :type="'number'" v-if="refill_form.values['type_id'] !== null"/>
                 <FormText :form="refill_form" :name="'comments'" v-if="refill_form.values['type_id'] !== null"/>
+            </GuiContainer>
+        </FormPopUp>
+
+        <FormPopUp ref="write_balance_refill" v-if="editable"
+                   :title="'Списание баланса'"
+                   :form="write_balance_form"
+                   :options="{partnerId: this.partnerId, transactionId: transaction}"
+        >
+            <GuiContainer w-500px>
+                <FormDictionary :form="write_balance_form" :dictionary="'transaction_refill_types'" :name="'type_id'" :disabled="true"/>
+                <FormDate :form="write_balance_form" :name="'timestamp'"/>
+                <FormString :form="write_balance_form" :name="'reason'"/>
+                <FormDate :form="write_balance_form" :name="'reason_date'"/>
+                <FormNumber :form="write_balance_form" :name="'amount'" :type="'number'"/>
+                <FormText :form="write_balance_form" :name="'comments'"/>
             </GuiContainer>
         </FormPopUp>
     </LoadingProgress>
@@ -207,6 +224,7 @@ export default {
         limit_form: form(null, '/api/account/limit'),
 
         refill_form: form(null, '/api/account/refill'),
+        write_balance_form: form(null, '/api/account/subtract'),
         transaction: 0,
         has_reason: false,
         has_reason_date: false,
@@ -217,6 +235,7 @@ export default {
         this.list.initial();
         this.limit_form.toaster = this.$toast;
         this.refill_form.toaster = this.$toast;
+        this.write_balance_form.toaster = this.$toast;
     },
 
     methods: {
@@ -249,6 +268,27 @@ export default {
                     this.refill_form.load();
 
                     this.$refs.popup_refill.show()
+                        .then(() => {
+                            this.list.load();
+                        });
+                });
+        },
+
+        writeBalance(transaction = null) {
+            this.transaction = transaction ? transaction['id'] : 0;
+            this.$store.dispatch('dictionary/refresh', 'transaction_refill_types')
+                .then(() => {
+                    this.write_balance_form.reset();
+                    this.write_balance_form.set('type_id', 2, 'required', 'Способ пополнения', true);
+                    this.write_balance_form.set('timestamp', transaction ? transaction['date'] : null, 'required', 'Дата операции', true);
+                    this.write_balance_form.set('reason', transaction ? transaction['reason'] : null, 'required', 'Номер счёта', true);
+                    this.write_balance_form.set('reason_date', transaction ? transaction['reason_date'] : null, 'required', 'Дата счёта', true);
+                    this.write_balance_form.set('amount', transaction ? transaction['amount'] : null, 'required|numeric|min:1|bail', 'Сумма', true);
+                    this.write_balance_form.set('comments', transaction ? transaction['comments'] : null, null, 'Комментарии', true);
+
+                    this.write_balance_form.load();
+
+                    this.$refs.write_balance_refill.show()
                         .then(() => {
                             this.list.load();
                         });

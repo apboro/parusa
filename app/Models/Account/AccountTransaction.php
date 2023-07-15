@@ -189,6 +189,8 @@ class AccountTransaction extends Model implements Statusable, Typeable
                 return "Пополнение лицевого счёта банковским переводом по счёту №$this->reason от " . $this->reason_date->format('d.m.Y');
             case AccountTransactionType::account_refill_cash:
                 return 'Пополнение лицевого счёта наличными';
+            case AccountTransactionType::account_write_balance_refill:
+                return 'Списания с лицевого счета';
             case AccountTransactionType::tickets_buy:
                 return 'Оплата заказа №' . $this->order_id;
             case AccountTransactionType::tickets_buy_return:
@@ -220,6 +222,13 @@ class AccountTransaction extends Model implements Statusable, Typeable
             case AccountTransactionType::account_refill_cash:
                 return [
                     'title' => 'Пополнение лицевого счёта наличными',
+                    'caption' => null,
+                    'object' => null,
+                    'object_id' => null,
+                ];
+            case AccountTransactionType::account_write_balance_refill:
+                return [
+                    'title' => 'Списание с лицевого счета',
                     'caption' => null,
                     'object' => null,
                     'object_id' => null,

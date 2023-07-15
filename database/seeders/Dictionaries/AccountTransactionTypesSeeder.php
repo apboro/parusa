@@ -44,6 +44,14 @@ class AccountTransactionTypesSeeder extends GenericSeeder
                 'editable' => true,
                 'deletable' => true,
             ],
+            AccountTransactionType::account_write_balance_refill => [
+                'name' => 'Списание баланса',
+                'sign' => -1,
+                'has_reason' => true,
+                'has_reason_date' => true,
+                'editable' => true,
+                'deletable' => true,
+            ],
             AccountTransactionType::tickets_buy => [
                 'name' => 'Покупка билетов',
                 'sign' => -1,
