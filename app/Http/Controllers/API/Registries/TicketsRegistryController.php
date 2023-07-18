@@ -143,13 +143,12 @@ class TicketsRegistryController extends ApiController
             'Продавец',
             'Промоутер',
             'Статус',
-            'Покупатель',
+            'Имя',
+            'Телефон',
+            'Почта',
         ];
 
         $tickets->transform(function (Ticket $ticket) {
-            $buyer = [$ticket->order->name, $ticket->order->email, $ticket->order->phone];
-            $buyer = array_filter($buyer);
-
             return [
                 'id' => $ticket->id,
                 'order_id' => $ticket->order_id,
@@ -166,7 +165,9 @@ class TicketsRegistryController extends ApiController
                 'partner' => $ticket->order->partner->name ?? null,
                 'sale_by' => $ticket->order->position ? $ticket->order->position->user->profile->compactName : null,
                 'status' => $ticket->status->name,
-                'buyer' => implode(', ', $buyer),
+                'buyer_name' => $ticket->order->name,
+                'buyer_phone' => $ticket->order->phone,
+                'buyer_email' => $ticket->order->email,
             ];
         });
         $spreadsheet = new Spreadsheet();
@@ -175,7 +176,7 @@ class TicketsRegistryController extends ApiController
 
         $spreadsheet->getActiveSheet()->fromArray($titles, '—', 'A1');
         $spreadsheet->getActiveSheet()->fromArray($tickets->toArray(), '—', 'A2');
-        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'] as $col) {
+        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R'] as $col) {
             $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
         }
 
