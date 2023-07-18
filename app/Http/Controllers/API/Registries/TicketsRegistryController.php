@@ -92,13 +92,16 @@ class TicketsRegistryController extends ApiController
                 'sale_by' => $ticket->order->position ? $ticket->order->position->user->profile->compactName : null,
                 'terminal' => $ticket->order->terminal->name ?? null,
                 'cashier' => $ticket->order->cashier ? $ticket->order->cashier->user->profile->compactName : null,
+                'buyer_name' => $ticket->order->name,
+                'buyer_email' => $ticket->order->email,
+                'buyer_phone' => $ticket->order->phone,
                 'return_up_to' => null,
             ];
         });
 
         return APIResponse::list(
             $tickets,
-            ['Дата и время продажи', '№ билета, заказа', 'Тип билета, стоимость', 'Комиссия, руб.', 'Рейс', 'Способ продажи', 'Продавец / Промоутер', 'Статус', 'Возврат'],
+            ['Дата и время продажи', '№ билета, заказа', 'Тип билета, стоимость', 'Комиссия, руб.', 'Рейс', 'Способ продажи', 'Покупатель', 'Статус', 'Возврат'],
             $filters,
             $this->defaultFilters,
             []
@@ -140,9 +143,13 @@ class TicketsRegistryController extends ApiController
             'Продавец',
             'Промоутер',
             'Статус',
+            'Покупатель',
         ];
 
         $tickets->transform(function (Ticket $ticket) {
+            $buyer = [$ticket->order->name, $ticket->order->email, $ticket->order->phone];
+            $buyer = array_filter($buyer);
+
             return [
                 'id' => $ticket->id,
                 'order_id' => $ticket->order_id,
@@ -159,16 +166,16 @@ class TicketsRegistryController extends ApiController
                 'partner' => $ticket->order->partner->name ?? null,
                 'sale_by' => $ticket->order->position ? $ticket->order->position->user->profile->compactName : null,
                 'status' => $ticket->status->name,
+                'buyer' => implode(', ', $buyer),
             ];
         });
-
         $spreadsheet = new Spreadsheet();
 
         $spreadsheet->setActiveSheetIndex(0)->setTitle('Транзакции')->setShowRowColHeaders(true);
 
         $spreadsheet->getActiveSheet()->fromArray($titles, '—', 'A1');
         $spreadsheet->getActiveSheet()->fromArray($tickets->toArray(), '—', 'A2');
-        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'] as $col) {
+        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'] as $col) {
             $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
         }
 

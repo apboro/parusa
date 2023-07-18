@@ -123,10 +123,14 @@
                 <ListTableCell>
                     <div style="white-space: normal;">{{ ticket['order_type'] }}</div>
                     <div v-if="ticket['terminal']">{{ ticket['terminal'] }}</div>
-                </ListTableCell>
-                <ListTableCell>
+                    <br>
                     <div>{{ ticket['partner'] }}</div>
                     <div>{{ ticket['sale_by'] }}</div>
+                </ListTableCell>
+                <ListTableCell>
+                    <div v-if="ticket['buyer_name']"><span v-html="highlight(ticket['buyer_name'])"/></div>
+                    <div v-if="ticket['buyer_email']"><span v-html="highlight(ticket['buyer_email'])"/></div>
+                    <div v-if="ticket['buyer_phone']"><span style="white-space: nowrap;" v-html="highlight(ticket['buyer_phone'])"/></div>
                 </ListTableCell>
                 <ListTableCell>
                     {{ ticket['status'] }}

@@ -103,12 +103,13 @@ class Account extends Model
      * Create transaction for this account
      *
      * @param AccountTransaction $transaction
+     * @param bool $withoutLimitCheck
      *
      * @return  AccountTransaction
      *
      * @throws AccountException
      */
-    public function attachTransaction(AccountTransaction $transaction): AccountTransaction
+    public function attachTransaction(AccountTransaction $transaction, bool $withoutLimitCheck= false): AccountTransaction
     {
         if (!$this->exists && (!$this->partner_id || !$this->save())) {
             throw new AccountException('Лицевой счёт не присоединен к партнёру. Невозможно добавить операцию.');
@@ -123,7 +124,7 @@ class Account extends Model
             throw new AccountException('Не возможно создать операцию с таким типом.');
         }
 
-        if ($type->sign === -1 && ($transaction->amount > ($this->amount - $this->limit))) {
+        if ($type->sign === -1 && ($transaction->amount > ($this->amount - ($withoutLimitCheck ? 0 : $this->limit)))) {
             throw new AccountException('Недостаточно средств на счете для совершения операции.');
         }
 
