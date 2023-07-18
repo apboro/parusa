@@ -1,6 +1,7 @@
 <template>
     <FormPopUp :form="form"
                :title="title"
+               :overflow="true"
                :options="{id: rateId, excursion_id: excursionId}"
                ref="form_popup"
     >
@@ -118,15 +119,16 @@ export default {
             this.$store.getters['dictionary/dictionary']('ticket_grades').map(item => {
                 let grade = null;
                 if (rate === null && item['enabled'] || rate !== null && rate['rates'].some(rate => (rate['grade_id'] === item['id']) && (grade = rate))) {
+                    let isDefault = index > 2;
 
                     this.form.set('rates.' + index + '.grade_id', item['id'], null, '', true);
                     this.form.set('rates.' + index + '.grade_name', item['name'], null, '', true);
-                    this.form.set('rates.' + index + '.base_price', grade === null ? null : grade['base_price'], 'required|number|min:0|bail', 'Базовая цена', true);
-                    this.form.set('rates.' + index + '.site_price', grade === null ? null : grade['site_price'], 'nullable|number|min:0|bail', 'Цена для сайта', true);
-                    this.form.set('rates.' + index + '.min_price', grade === null ? null : grade['min_price'], 'required|number|min:0|bail', 'Минимальная', true);
-                    this.form.set('rates.' + index + '.max_price', grade === null ? null : grade['max_price'], 'required|number|gte:rates.' + index + '.base_price|min:0|bail', 'Максимальная', true);
-                    this.form.set('rates.' + index + '.commission_type', grade === null ? null : grade['commission_type'], 'required', 'Тип', true);
-                    this.form.set('rates.' + index + '.commission_value', grade === null ? null : grade['commission_value'], 'required|number|min:0|bail', 'Комиссия', true);
+                    this.form.set('rates.' + index + '.base_price', grade === null ? (isDefault ? 0 : null) : grade['base_price'], 'required|number|min:0|bail', 'Базовая цена', true);
+                    this.form.set('rates.' + index + '.site_price', grade === null ? (isDefault ? 0 : null) : grade['site_price'], 'nullable|number|min:0|bail', 'Цена для сайта', true);
+                    this.form.set('rates.' + index + '.min_price', grade === null ? (isDefault ? 0 : null) : grade['min_price'], 'required|number|min:0|bail', 'Минимальная', true);
+                    this.form.set('rates.' + index + '.max_price', grade === null ? (isDefault ? 0 : null) : grade['max_price'], 'required|number|gte:rates.' + index + '.base_price|min:0|bail', 'Максимальная', true);
+                    this.form.set('rates.' + index + '.commission_type', grade === null ? (isDefault ? 'fixed' : null) : grade['commission_type'], 'required', 'Тип', true);
+                    this.form.set('rates.' + index + '.commission_value', grade === null ? (isDefault ? 0 : null) : grade['commission_value'], 'required|number|min:0|bail', 'Комиссия', true);
 
                     this.iterator.push(index);
                     index++;

@@ -1,6 +1,6 @@
 <template>
     <div class="dialogs__overlay" v-if="shown" :class="{'dialogs__overlay-hide': hiding, 'dialogs__overlay-shown': showing}" @click="popupClose">
-        <div class="dialogs__dialog">
+        <div class="dialogs__dialog" :class="{'dialogs__dialog-overflow': overflow}">
             <LoadingProgress :loading="processing">
                 <div class="dialogs__dialog-wrapper">
                     <div class="dialogs__dialog-title" v-if="title">{{ title }}</div>
@@ -36,6 +36,7 @@ export default {
         buttons: {type: Array, default: () => ([{result: 'ok', caption: 'OK'}])},
         align: {type: String, default: 'center'},
         manual: {type: Boolean, default: false},
+        overflow: {type: Boolean, default: false},
         resolving: {type: Function, default: null},
         closeOnOverlay: {type: Boolean, default: false},
     },
@@ -235,6 +236,10 @@ $base_light_gray_color: #e5e5e5 !default;
             & > * {
                 min-width: 100px;
             }
+        }
+
+        &-overflow {
+            overflow: auto;
         }
     }
 }
