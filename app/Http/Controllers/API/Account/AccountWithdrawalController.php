@@ -15,7 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class AccountSubtractController extends ApiEditController
+class AccountWithdrawalController extends ApiEditController
 {
     protected array $rules = [
         'amount' => 'required|numeric|min:1',
@@ -38,11 +38,12 @@ class AccountSubtractController extends ApiEditController
      *
      * @return  JsonResponse
      *
-     * @throws AccountException
+     * @noinspection DuplicatedCode
      */
-    public function subtract(Request $request): JsonResponse
+    public function withdrawal(Request $request): JsonResponse
     {
         Hit::register(HitSource::admin);
+
         $id = $request->input('partnerId');
         $transactionId = $request->input('transactionId');
 
@@ -56,7 +57,7 @@ class AccountSubtractController extends ApiEditController
 
         $data = $this->getData($request);
 
-        $typeID = AccountTransactionType::account_write_balance_refill;
+        $typeID = AccountTransactionType::account_withdrawal_invoice;
 
         /** @var AccountTransactionType $type */
         $type = AccountTransactionType::get($typeID);
@@ -79,6 +80,7 @@ class AccountSubtractController extends ApiEditController
         }
 
         $timestamp = Carbon::parse($data['timestamp']);
+
         if ($timestamp->isToday()) {
             $now = Carbon::now();
             $timestamp->hours($now->hour);
@@ -87,16 +89,22 @@ class AccountSubtractController extends ApiEditController
 
         try {
             if (!$transaction) {
-                $partner->account->attachTransaction(new AccountTransaction([
-                    'type_id' => $typeID,
-                    'timestamp' => $timestamp,
-                    'amount' => $data['amount'],
-                    'reason' => $type->has_reason ? $data['reason'] : null,
-                    'reason_date' => $type->has_reason_date ? $data['reason_date'] : null,
-                    'committer_id' => Currents::get($request)->positionId(),
-                    'comments' => $data['comments'],
-                ]));
+                $partner->account->attachTransaction(
+                    new AccountTransaction([
+                        'type_id' => $typeID,
+                        'timestamp' => $timestamp,
+                        'amount' => $data['amount'],
+                        'reason' => $type->has_reason ? $data['reason'] : null,
+                        'reason_date' => $type->has_reason_date ? $data['reason_date'] : null,
+                        'committer_id' => Currents::get($request)->positionId(),
+                        'comments' => $data['comments'],
+                    ]),
+                    true
+                );
             } else {
+                if ($partner->account->amount + $transaction->amount - $data['amount'] < 0) {
+                    return APIResponse::error('Не достаточно средств на лицевом счете для совершения операции');
+                }
                 $partner->account->updateTransaction($transaction, [
                     'type_id' => $typeID,
                     'timestamp' => $timestamp,

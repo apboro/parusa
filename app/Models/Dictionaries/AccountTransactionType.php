@@ -33,8 +33,8 @@ class AccountTransactionType extends AbstractDictionary
     /** @var int The id of partner account refill by cash. Final. */
     public const account_refill_cash = 3;
 
-    /** @var int The id of partner account write balance refill. Final. */
-    public const account_write_balance_refill = 4;
+    /** @var int The id of partner account withdrawal. Final. */
+    public const account_withdrawal_invoice = 4;
 
     /** @var int The id of tickets buys fee. Final. */
     public const tickets_buy = 50;

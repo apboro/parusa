@@ -44,7 +44,7 @@ class AccountTransactionTypesSeeder extends GenericSeeder
                 'editable' => true,
                 'deletable' => true,
             ],
-            AccountTransactionType::account_write_balance_refill => [
+            AccountTransactionType::account_withdrawal_invoice => [
                 'name' => 'Списание баланса',
                 'sign' => -1,
                 'has_reason' => true,
