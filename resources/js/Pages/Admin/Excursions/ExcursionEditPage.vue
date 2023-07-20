@@ -9,6 +9,8 @@
             <FormString :form="form" :name="'name_receipt'"/>
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'excursion_statuses'"/>
             <FormCheckBox :form="form" :name="'only_site'" :hide-title="true"/>
+            <FormCheckBox :form="form" :name="'is_single_ticket'" :hide-title="true"/>
+            <FormCheckBox :form="form" :name="'has_return_trip'" :hide-title="true"/>
             <FormImages :form="form" :name="'images'"/>
             <FormDictionary :form="form" :name="'programs'" :dictionary="'excursion_programs'" :multi="true" :fresh="true"/>
             <FormNumber :form="form" :name="'duration'"/>
