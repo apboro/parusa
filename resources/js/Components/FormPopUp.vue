@@ -4,7 +4,6 @@
            :buttons="popUpButtons"
            :align="align"
            :close-on-overlay="closeOnOverlay"
-           :overflow="overflow"
            :manual="true"
            :resolving="resolved"
            ref="popup"
@@ -28,7 +27,6 @@ export default {
         saveButtonCaption: {type: String, default: 'Применить'},
         align: {type: String, default: 'center'},
         manual: {type: Boolean, default: false},
-        overflow: {type: Boolean, default: false},
         resolving: {type: Function, default: null},
         closeOnOverlay: {type: Boolean, default: false},
         form: {type: Object, default: null},

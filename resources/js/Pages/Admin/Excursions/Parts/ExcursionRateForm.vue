@@ -1,7 +1,6 @@
 <template>
     <FormPopUp :form="form"
                :title="title"
-               :overflow="true"
                :options="{id: rateId, excursion_id: excursionId}"
                ref="form_popup"
     >

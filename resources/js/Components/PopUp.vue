@@ -1,6 +1,6 @@
 <template>
     <div class="dialogs__overlay" v-if="shown" :class="{'dialogs__overlay-hide': hiding, 'dialogs__overlay-shown': showing}" @click="popupClose">
-        <div class="dialogs__dialog" :class="{'dialogs__dialog-overflow': overflow}">
+        <div class="dialogs__dialog">
             <LoadingProgress :loading="processing">
                 <div class="dialogs__dialog-wrapper">
                     <div class="dialogs__dialog-title" v-if="title">{{ title }}</div>
@@ -36,7 +36,6 @@ export default {
         buttons: {type: Array, default: () => ([{result: 'ok', caption: 'OK'}])},
         align: {type: String, default: 'center'},
         manual: {type: Boolean, default: false},
-        overflow: {type: Boolean, default: false},
         resolving: {type: Function, default: null},
         closeOnOverlay: {type: Boolean, default: false},
     },
@@ -55,6 +54,7 @@ export default {
             this.showing = true;
             this.hiding = false;
             this.shown = true;
+            document.body.style.overflow = 'hidden';
             setTimeout(() => {
                 this.showing = true;
                 if (fixed) {
@@ -68,6 +68,7 @@ export default {
 
         hide() {
             this.hiding = true;
+            document.body.style.overflow = 'initial';
             setTimeout(() => {
                 this.shown = false;
                 this.showing = false;
@@ -80,9 +81,9 @@ export default {
             if (this.resolving === null || (this.resolving(value) !== false)) {
                 if (typeof this.resolve_function === "function") {
                     this.resolve_function(value);
-                    if (!this.manual) {
-                        this.hide();
-                    }
+                }
+                if (!this.manual) {
+                    this.hide();
                 }
             }
         },
@@ -132,10 +133,12 @@ $base_light_gray_color: #e5e5e5 !default;
         height: 100%;
         backdrop-filter: blur(1px);
         background-color: rgba(0, 0, 0, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: block;
+        overflow-y: auto;
         opacity: 0;
+        padding: 20px 0;
+        text-align: center;
+        box-sizing: border-box;
         visibility: hidden;
         transition: opacity $animation $animation_time, visibility $animation $animation_time;
 
@@ -156,7 +159,9 @@ $base_light_gray_color: #e5e5e5 !default;
         box-sizing: border-box;
         padding: 15px;
         box-shadow: $shadow_2;
-        max-height: 95%;
+        max-width: calc(100% - 40px);
+        display: inline-block;
+        text-align: left;
 
         &-wrapper {
             box-sizing: border-box;
@@ -236,10 +241,6 @@ $base_light_gray_color: #e5e5e5 !default;
             & > * {
                 min-width: 100px;
             }
-        }
-
-        &-overflow {
-            overflow: auto;
         }
     }
 }
