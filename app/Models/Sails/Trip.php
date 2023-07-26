@@ -42,6 +42,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $cancellation_time
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property int $is_single_ticket
+ * @property int $has_return_trip
  *
  * @property Pier $startPier
  * @property Pier $endPier
@@ -53,6 +55,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection $chains
  * @property string|null $external_id
  * @property string|null $source
+ * @property string|null $getTripStarts
+ * @property Builder $getAllTripsOfExcursionAndPierOnDay
  */
 class Trip extends Model implements Statusable
 {
@@ -281,7 +285,7 @@ class Trip extends Model implements Statusable
     {
         return Trip::query()
             ->where('start_at', '>', Carbon::now())
-            ->whereIn('status_id', [TripStatus::regular])
+            ->whereIn('trips.status_id', [TripStatus::regular])
             ->whereIn('sale_status_id', [TripSaleStatus::selling])
             ->whereHas('excursion.ratesLists', function (Builder $query) use ($forRootSite) {
                 $query
@@ -302,4 +306,27 @@ class Trip extends Model implements Statusable
                 });
             });
     }
+
+    public function getTripStarts(): string
+    {
+       return $this->getAllTripsOfExcursionAndPierOnDay()
+            ->orderBy('start_at')
+            ->pluck('start_at')->map(function ($start_at) {
+                return $start_at->format('H:i');
+            })->implode(', ');
+    }
+
+    public function getAllTripsOfExcursionAndPierOnDay(): Builder
+    {
+        $excursionId = $this->excursion_id;
+        $startPierId = $this->start_pier_id;
+        $tripDate = Carbon::parse($this->start_at)->toDateString();
+
+        return Trip::saleTripQuery()
+            ->whereDate('start_at', $tripDate)
+            ->where('excursion_id',$excursionId)
+            ->where('start_pier_id',$startPierId);
+    }
+
+
 }

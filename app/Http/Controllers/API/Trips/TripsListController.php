@@ -56,7 +56,9 @@ class TripsListController extends ApiController
             ->withCount(['chains', 'tickets' => function(Builder $query) {
                 $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
             }])
-            ->orderBy('start_at');
+            ->join('excursions','excursions.id','=', 'trips.excursion_id')
+            ->groupByRaw("case when `is_single_ticket`=1 THEN excursion_id else trips.id end")
+            ->orderBy('is_single_ticket', 'desc');
 
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
@@ -108,6 +110,8 @@ class TripsListController extends ApiController
                 'chain_trips_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('d.m.Y') : null,
                 '_trip_start_at' => $trip->start_at->format('Y-m-d'),
                 '_chain_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('Y-m-d') : null,
+                'is_single_ticket' => $trip->excursion->is_single_ticket,
+                'has_return_trip' => $trip->excursion->has_return_trip,
             ];
         });
 

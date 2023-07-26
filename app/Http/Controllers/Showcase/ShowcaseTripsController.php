@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 
 class ShowcaseTripsController extends ApiController
 {
@@ -85,6 +86,9 @@ class ShowcaseTripsController extends ApiController
                     });
                 });
             })
+            ->leftjoin('excursions', 'excursions.id', '=', 'trips.excursion_id')
+            ->groupByRaw("case when `is_single_ticket`=1 THEN excursion_id else trips.id end")
+            ->orderBy('is_single_ticket', 'desc')
             ->orderBy('trips.start_at');
 
         $listQueryDup = $listQuery->clone();
@@ -92,7 +96,11 @@ class ShowcaseTripsController extends ApiController
         $trips = $listQuery
             ->where('trips.start_at', '>=', $date)
             ->where('trips.start_at', '<=', $date->clone()->addDay()->setTime(4, 30))
-            ->get();
+            ->get(
+                ['trips.*',
+                    DB::raw("GROUP_CONCAT(DISTINCT trips.start_at ORDER BY trips.start_at ASC SEPARATOR ', ') AS concatenated_start_at")
+                ]
+            );
 
         if ($persons) {
             $trips = $trips->filter(function (Trip $trip) use ($persons) {
@@ -124,6 +132,9 @@ class ShowcaseTripsController extends ApiController
                 'pier_id' => $trip->start_pier_id,
                 'ship' => $trip->ship->name,
                 'excursion' => $trip->excursion->name,
+                'is_single_ticket' => $trip->excursion->is_single_ticket,
+                'has_return_trip' => $trip->excursion->has_return_trip,
+                'concatenated_start_at' => $trip->concatenated_start_at,
                 'excursion_id' => $trip->excursion_id,
                 'programs' => $trip->excursion->programs->map(function (ExcursionProgram $program) {
                     return $program->name;
@@ -165,17 +176,23 @@ class ShowcaseTripsController extends ApiController
 
         $id = $request->input('id');
 
-        /** @var Trip $trip */
-        $trip = Trip::saleTripQuery($partnerId === null)
-            ->where('id', $id)
-            ->with(['startPier', 'excursion', 'excursion.info', 'excursion.programs'])
-            ->first();
+        $trip = Trip::find($id);
 
+        if ($trip->excursion->is_single_ticket) {
+            $trip = $trip->getAllTripsOfExcursionAndPierOnDay()->orderBy('start_at')->first();
+        } else {
+            /** @var Trip $trip */
+            $trip = Trip::saleTripQuery($partnerId === null)
+                ->where('trips.id', $id)
+                ->with(['startPier', 'excursion', 'excursion.info', 'excursion.programs'])
+                ->first();
+        }
         if ($trip === null) {
             return response()->json([
                 'message' => 'Продажа билетов на этот рейс не осуществляется.',
             ], 404);
         }
+
         $rates = $trip->excursion->rateForDate($trip->start_at);
 
         if ($rates !== null) {
@@ -204,6 +221,9 @@ class ShowcaseTripsController extends ApiController
                 'start_date' => $trip->start_at->translatedFormat('j F Y') . ' г.',
                 'start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
+                'is_single_ticket' => $trip->excursion->is_single_ticket,
+                'has_return_trip' => $trip->excursion->has_return_trip,
+                'concatenated_start_at' => $trip->getTripStarts(),
                 'excursion_id' => $trip->excursion_id,
                 'duration' => $trip->excursion->info->duration,
                 'images' => $trip->excursion->images->map(function (Image $image) {
@@ -214,4 +234,5 @@ class ShowcaseTripsController extends ApiController
             ],
         ]);
     }
+
 }

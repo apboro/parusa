@@ -93,6 +93,9 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::showcase_canceled => ['name' => 'Отменён'],
             TicketStatus::used => ['name' => 'Использован'],
             TicketStatus::expired => ['name' => 'Просрочен'],
+            TicketStatus::showcase_paid_single => ['name' => 'ЕдБ оплачен витрина'],
+            TicketStatus::partner_paid_single => ['name' => 'ЕдБ оплачен партнер'],
+            TicketStatus::terminal_paid_single => ['name' => 'ЕдБ оплачен терминал'],
             // использован после просрочки
         ],
 

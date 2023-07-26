@@ -303,7 +303,7 @@ class Order extends Model implements Statusable, Typeable
             if (!isset($available[$trip->id])) {
                 $available[$trip->id] = $trip->tickets_total - $trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count();
             }
-            if ($available[$trip->id]-- <= 0) {
+            if ($available[$trip->id]-- <= 0 && !$trip->excursion->is_single_ticket) {
                 throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Недостаточно свободных мест на рейсе.');
             }
 

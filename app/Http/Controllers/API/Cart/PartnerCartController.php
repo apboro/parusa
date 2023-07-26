@@ -64,6 +64,8 @@ class PartnerCartController extends ApiEditController
                 'trip_start_date' => $trip->start_at->format('d.m.Y'),
                 'trip_start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
+                'is_single_ticket' => $trip->excursion->is_single_ticket,
+                'has_return_trip' => $trip->excursion->has_return_trip,
                 'pier' => $trip->startPier->name,
                 'grade' => $ticket->grade->name,
                 'base_price' => $price = $ticket->getPrice(),

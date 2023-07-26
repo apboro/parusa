@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Sails\Trip;
@@ -43,10 +44,23 @@ class ProcessTrips extends Command
             ->where('start_at', '<=', $now)
             ->update(['sale_status_id' => TripSaleStatus::closed_automatically]);
 
-        Trip::query()
+        $tripsQuery = Trip::query()
             ->where('status_id', TripStatus::processing)
-            ->where('end_at', '<=', $now)
-            ->update(['status_id' => TripStatus::finished]);
+            ->where('end_at', '<=', $now);
+
+        $trips = $tripsQuery->get();
+        foreach ($trips ?? [] as $trip){
+            foreach($trip->tickets ?? [] as $ticket){
+                if(in_array($ticket->status_id, TicketStatus::ticket_single_statuses)){
+                    $nextTrip = $trip->getAllTripsOfExcursionAndPierOnDay()->orderBy('start_at')->first();
+                    if ($nextTrip) {
+                        $ticket->trip_id = $nextTrip->id;
+                        $ticket->save();
+                    }
+                }
+            }
+        }
+        $tripsQuery->update(['status_id' => TripStatus::finished]);
 
         return 0;
     }

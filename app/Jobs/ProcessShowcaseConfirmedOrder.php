@@ -67,14 +67,15 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
         // update order status
         $order->setStatus(OrderStatus::showcase_paid);
         $order->tickets->map(function (Ticket $ticket) use (&$tickets) {
-            $ticket->setStatus(TicketStatus::showcase_paid);
+            $ticketStatus = $ticket->trip->excursion->is_single_ticket ? TicketStatus::showcase_paid_single : TicketStatus::showcase_paid;
+            $ticket->setStatus($ticketStatus);
             $tickets[] = $ticket;
         });
 
         try {
             (new NevaOrder($order))->approve();
         } catch (Exception $exception) {
-
+            Log::error('ProcessShowcaseConfirmedOrder', [$exception]);
         }
 
         if (env('SBER_ACQUIRING_PRODUCTION'))

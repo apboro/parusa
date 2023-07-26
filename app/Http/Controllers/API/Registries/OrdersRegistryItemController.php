@@ -88,6 +88,8 @@ class OrdersRegistryItemController extends ApiController
                     'trip_start_date' => $ticket->trip->start_at->format('d.m.Y'),
                     'trip_start_time' => $ticket->trip->start_at->format('H:i'),
                     'excursion' => $ticket->trip->excursion->name,
+                    'is_single_ticket' => $ticket->trip->excursion->is_single_ticket,
+                    'has_return_trip' => $ticket->trip->excursion->has_return_trip,
                     'excursion_id' => $ticket->trip->excursion->id,
                     'transferable' => in_array($ticket->status_id, TicketStatus::ticket_paid_statuses, true),
                     'pier' => $ticket->trip->startPier->name,

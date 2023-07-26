@@ -71,7 +71,7 @@ class TripsSelectListController extends ApiController
                 $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
             }])
             // filter actual trips
-            ->where('status_id', TripStatus::regular)
+            ->where('trips.status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
             ->whereDate('start_at', $date)
             ->when(env('REMOVE_NEVA_TRIPS'), function (Builder $query) {
@@ -83,7 +83,10 @@ class TripsSelectListController extends ApiController
             })
             ->whereHas('excursion', function ($query) {
                 $query->where('only_site', false);
-            });
+            })
+            ->join('excursions', 'excursions.id', '=', 'trips.excursion_id')
+            ->groupByRaw("case when `is_single_ticket`=1 THEN excursion_id else trips.id end")
+            ->orderBy('is_single_ticket', 'desc');
 
         // apply filters
         if (!empty($filters['program_id'])) {
@@ -140,6 +143,8 @@ class TripsSelectListController extends ApiController
                 'sale_status' => $trip->saleStatus->name,
                 'sale_status_id' => $trip->sale_status_id,
                 'chained' => $trip->getAttribute('chains_count') > 0,
+                'is_single_ticket' => $trip->excursion->is_single_ticket,
+                'has_return_trip' => $trip->excursion->has_return_trip,
             ];
         });
 

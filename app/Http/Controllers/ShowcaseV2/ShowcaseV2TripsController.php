@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 
 class ShowcaseV2TripsController extends ShowcaseTripsController
 {
@@ -73,6 +74,9 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
                     });
                 });
             })
+            ->leftjoin('excursions', 'excursions.id', '=', 'trips.excursion_id')
+            ->groupByRaw("case when `is_single_ticket`=1 THEN excursion_id else trips.id end")
+            ->orderBy('is_single_ticket', 'desc')
             ->orderBy('trips.start_at');
 
         $listQueryDup = $listQuery->clone();
@@ -80,7 +84,11 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
         $trips = $listQuery
             ->where('trips.start_at', '>=', $date)
             ->where('trips.start_at', '<=', $date->clone()->addDay()->setTime(4, 30))
-            ->get();
+            ->get(
+                [   'trips.*',
+                    DB::raw("GROUP_CONCAT(DISTINCT trips.start_at ORDER BY trips.start_at ASC SEPARATOR ', ') AS concatenated_start_at")
+                ]
+            );
 
         if ($persons) {
             $trips = $trips->filter(function (Trip $trip) use ($persons) {
@@ -112,6 +120,9 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
                 'pier_id' => $trip->start_pier_id,
                 'ship' => $trip->ship->name,
                 'excursion' => $trip->excursion->name,
+                'is_single_ticket' => $trip->excursion->is_single_ticket,
+                'has_return_trip' => $trip->excursion->has_return_trip,
+                'concatenated_start_at' => $trip->concatenated_start_at,
                 'excursion_id' => $trip->excursion_id,
                 'programs' => $trip->excursion->programs->map(function (ExcursionProgram $program) {
                     return $program->name;
