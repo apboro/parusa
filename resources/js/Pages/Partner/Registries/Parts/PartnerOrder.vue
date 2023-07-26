@@ -16,8 +16,9 @@
                     <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
                 </ListTableCell>
                 <ListTableCell>
-                    <div>{{ ticket['trip_start_date'] }}</div>
-                    <div>{{ ticket['trip_start_time'] }}</div>
+                    <div v-if="!ticket.is_single_ticket">{{ ticket['trip_start_date'] }}</div>
+                    <div v-if="!ticket.is_single_ticket">{{ ticket['trip_start_time'] }}</div>
+                    <div v-if="ticket.is_single_ticket">ЕДИНЫЙ</div>
                 </ListTableCell>
                 <ListTableCell>
                     <div>{{ ticket['excursion'] }}</div>

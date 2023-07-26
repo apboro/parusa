@@ -25,7 +25,8 @@
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Время отправления:</span>
-                            <span class="ap-showcase__trip-info-line-text">{{ trip['start_time'] }}</span>
+                            <span v-if="!trip.is_single_ticket" class="ap-showcase__trip-info-line-text">{{ trip['start_time'] }}</span>
+                            <span v-if="trip.is_single_ticket" class="ap-showcase__trip-info-line-text">{{ trip['concatenated_start_at'] }}</span>
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Причал:</span>

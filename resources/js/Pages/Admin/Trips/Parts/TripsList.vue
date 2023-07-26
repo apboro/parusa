@@ -61,12 +61,13 @@
         <ListTableResponsive v-if="list.list.length > 0" :titles="list.titles" :has-action="true">
             <ListTableResponsiveRow v-for="trip in list.list">
                 <ListTableResponsiveCell :mobile-title="list.titles[0]">
-                    <div>
+                    <div v-if="!trip.is_single_ticket">
                         <b>
                             <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
                         </b>
                     </div>
-                    <div>{{ trip['start_date'] }}</div>
+                    <div v-if="!trip.is_single_ticket">{{ trip['start_date'] }}</div>
+                    <div v-if="trip.is_single_ticket">ЕДИНЫЙ БИЛЕТ</div>
                 </ListTableResponsiveCell>
                 <ListTableResponsiveCell :mobile-title="list.titles[1]">
                     <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}</router-link>

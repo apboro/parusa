@@ -61,8 +61,9 @@
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true">
             <ListTableRow v-for="(trip, key) in list.list" :key="key">
                 <ListTableCell>
-                    <div><b class="text-lg">{{ trip['start_time'] }}</b></div>
-                    <div><span :style="{fontSize: '13px'}">{{ trip['start_date'] }}</span></div>
+                    <div v-if="!trip.is_single_ticket"><b class="text-lg">{{ trip['start_time'] }}</b></div>
+                    <div v-if="!trip.is_single_ticket"><span :style="{fontSize: '13px'}">{{ trip['start_date'] }}</span></div>
+                    <div v-if="trip.is_single_ticket"><b class="text-lg">ЕДИНЫЙ БИЛЕТ</b></div>
                 </ListTableCell>
                 <ListTableCell>
                     <div><b>{{ trip['excursion'] }}</b></div>

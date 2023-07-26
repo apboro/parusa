@@ -45,14 +45,20 @@
                         <tbody>
                         <tr v-for="trip in trips">
                             <td data-label="Время отправления:">
-                                <div class="mobile-hide">
+                                <div v-if="!trip.is_single_ticket" class="mobile-hide">
                                     {{ trip['start_time'] }}
                                 </div>
-                                <div class="mobile-hide" style="color: #747474;">
+                                <div v-if="!trip.is_single_ticket" class="mobile-hide" style="color: #747474;">
                                     {{ trip['start_date'] }}
                                 </div>
-                                <div class="mobile-show mobile-inline" style="color: #747474;">
+                                <div v-if="!trip.is_single_ticket" class="mobile-show mobile-inline" style="color: #747474;">
                                     {{ trip['start_date'] }} {{ trip['start_time'] }}
+                                </div>
+                                <div v-if="trip.is_single_ticket" class="mobile-hide">
+                                    ЕДИНЫЙ БИЛЕТ
+                                </div>
+                                <div v-if="trip.is_single_ticket" class="mobile-show mobile-inline" style="color: #747474;">
+                                    ЕДИНЫЙ БИЛЕТ
                                 </div>
                             </td>
                             <td data-label="Программа:">
