@@ -70,7 +70,6 @@ use App\Models\Tickets\Ticket;
             </div>
         </div>
     </div>
-    </div>
 @endforeach
 </body>
 </html>
