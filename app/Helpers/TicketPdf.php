@@ -19,9 +19,11 @@ class TicketPdf
         $size = [0, 0, 595.28, 841.89]; // A4
 
         if ($ticket->order->neva_travel_order_number) {
-            $view = 'pdf/ticket_a4_neva';
+            $view = config('tickets.ticket_template_neva');
+        } elseif ($ticket->trip->excursion->is_single_ticket) {
+            $view = config('tickets.ticket_template_single');
         } else {
-            $view = env('PDF_TICKET_A4', 'pdf/ticket_a4');
+            $view = config('tickets.ticket_template');
         }
 
         return self::generate($ticket, $size, 'portrait', $view);
@@ -38,7 +40,7 @@ class TicketPdf
     {
         $size = [0, 0, 226, 340];
 
-        $view = env('PDF_TICKET_PRINT', 'pdf/ticket_print');
+        $view = config('tickets.ticket_print');
 
         return self::generate($ticket, $size, 'landscape', $view);
     }

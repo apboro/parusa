@@ -17,7 +17,11 @@ class OrderPdf
      */
     public static function a4(Order $order): ?string
     {
-        $view = env('PDF_ORDER_A4', 'pdf/order_a4');
+        if ($order->tickets[0]->trip->excursion->is_single_ticket) {
+            $view = config('tickets.order_template_single');
+        } else {
+            $view = config('tickets.order_template');
+        }
 
         return self::generate($order, 'a4', 'portrait', $view);
     }
@@ -32,9 +36,11 @@ class OrderPdf
     public static function print(Order $order): ?string
     {
         $size = [0, 0, 226, 340];
-
-        $view = env('PDF_ORDER_PRINT', 'pdf/order_print');
-
+        if ($order->tickets[0]->trip->excursion->is_single_ticket) {
+            $view = config('tickets.order_print_single');
+        } else {
+            $view = config('tickets.order_print');
+        }
         return self::generate($order, $size, 'portrait', $view);
     }
 
