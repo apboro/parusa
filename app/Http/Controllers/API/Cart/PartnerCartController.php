@@ -52,6 +52,7 @@ class PartnerCartController extends ApiEditController
 
         $tickets = $tickets->map(function (PositionOrderingTicket $ticket) use (&$limits) {
             $trip = $ticket->trip;
+
             if (!isset($limits[$trip->id])) {
                 $limits[$trip->id] = [
                     'count' => $trip->tickets()->count(),
@@ -65,12 +66,13 @@ class PartnerCartController extends ApiEditController
                 'trip_start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
-                'has_return_trip' => $trip->excursion->has_return_trip,
+                'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
                 'pier' => $trip->startPier->name,
                 'grade' => $ticket->grade->name,
                 'base_price' => $price = $ticket->getPrice(),
                 'min_price' => $ticket->getMinPrice(),
                 'max_price' => $ticket->getMaxPrice(),
+                'backward_price' => $ticket->parent_ticket_id !== null ? $ticket->getBackwardPrice() : null,
                 'quantity' => $ticket->quantity,
                 'available' => ($price !== null) && $trip->hasStatus(TripSaleStatus::selling, 'sale_status_id') && ($trip->start_at > Carbon::now()),
             ];
@@ -203,10 +205,19 @@ class PartnerCartController extends ApiEditController
             return APIResponse::error('Билет не найден.');
         }
 
+        $backwardTicket = $ticket->backwardTicket;
         if ($ticket->trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
             throw new RuntimeException('Недостаточно свободных мест на теплоходе.');
         }
 
+        if ($backwardTicket?->trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
+            throw new RuntimeException('Недостаточно свободных мест на теплоходе в обратную сторону.');
+        }
+
+        if ($backwardTicket) {
+            $backwardTicket->quantity = $quantity;
+            $backwardTicket->save();
+        }
         $ticket->quantity = $quantity;
         $ticket->save();
 

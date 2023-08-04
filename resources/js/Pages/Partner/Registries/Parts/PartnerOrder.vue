@@ -14,6 +14,7 @@
             <ListTableRow v-for="ticket in info.data['tickets']">
                 <ListTableCell>
                     <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
+                    <div style="color: red;" v-if="ticket.isBackward">обратный</div>
                 </ListTableCell>
                 <ListTableCell>
                     <div v-if="!ticket.is_single_ticket">{{ ticket['trip_start_date'] }}</div>

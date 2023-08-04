@@ -8,6 +8,7 @@ use App\Exceptions\Tickets\WrongOrderStatusException;
 use App\Exceptions\Tickets\WrongOrderTypeException;
 use App\Interfaces\Statusable;
 use App\Interfaces\Typeable;
+use App\Models\BackwardTicket;
 use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
@@ -33,6 +34,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -261,8 +263,8 @@ class Order extends Model implements Statusable, Typeable
      * @see Position
      */
     public static function make(
-        int $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?int $terminalPositionId, ?string $email, ?string $name, ?string $phone,
-        bool $strictPrice = true, ?string $promocode = null
+        int  $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?int $terminalPositionId, ?string $email, ?string $name, ?string $phone,
+        bool $strictPrice = true, ?string $promocode = null,  array $backwardTickets = [],
     ): Order
     {
         if (empty($tickets)) {
@@ -309,9 +311,9 @@ class Order extends Model implements Statusable, Typeable
 
             // calc base price if not set
             if ($ticket->base_price === null) {
-                $ticket->base_price = $ticket->getCurrentPrice();
+                $ticket->base_price = $ticket->backward_price ?? $ticket->getCurrentPrice();
             } else if ($strictPrice && ($ticket->base_price < $rate->min_price || $ticket->base_price > $rate->max_price)) {
-                throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Неверна указана цена билета.');
+                throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Неверно указана цена билета.');
             }
         }
 
@@ -336,12 +338,46 @@ class Order extends Model implements Statusable, Typeable
             }
         }
         try {
-            DB::transaction(static function () use (&$order, $tickets, $promocodeId) {
+            DB::transaction(static function () use (&$order, $tickets, $promocodeId, $backwardTickets) {
                 $order->save();
+                $cartData = [];
                 foreach ($tickets as $ticket) {
+                    $cart_ticket_id = $ticket->cart_ticket_id;
+                    $cart_parent_ticket_id = $ticket->cart_parent_ticket_id;
+                    $backward_price = $ticket->backward_price;
                     $ticket->order_id = $order->id;
+                    unset($ticket->cart_ticket_id, $ticket->cart_parent_ticket_id, $ticket->backward_price);
                     $ticket->save();
+                    $cartData[$cart_ticket_id] = [
+                        'id' => $ticket->id,
+                        'cart_ticket_id' => $cart_ticket_id,
+                        'cart_parent_ticket_id' => $cart_parent_ticket_id,
+                        'backward_price' => $backward_price,
+                    ];
+
+                    foreach ($backwardTickets as $index => $backwardTicket){
+                        if ($backwardTicket->grade_id === $ticket->grade_id){
+                            $backwardTicket->order_id = $order->id;
+                            $backwardTicket->save();
+                            BackwardTicket::create([
+                                'main_ticket_id' => $ticket->id,
+                                'backward_ticket_id' => $backwardTicket['id'],
+                            ]);
+                            unset($backwardTickets[$index]);
+                            break;
+                        }
+                    }
                 }
+
+                foreach ($cartData ?? [] as $cartTicket){
+                    if ($cartTicket['cart_parent_ticket_id']){
+                        BackwardTicket::create([
+                            'main_ticket_id' => $cartData[$cartTicket['cart_parent_ticket_id']]['id'],
+                            'backward_ticket_id' => $cartTicket['id'],
+                        ]);
+                    }
+                }
+
                 if ($promocodeId) {
                     $order->promocode()->sync([$promocodeId]);
                 }

@@ -85,6 +85,11 @@
                 </table>
             </div>
 
+            <div v-if="trip.reverse_excursion_id !== null">
+            <ShowcaseInputCheckbox :name="choose_back_trip" v-model="checkedBackward" :label="'Выбрать обратный рейс'" class="ap-showcase__title"/>
+            <BackwardTicketSelectShowcase v-if="trip.reverse_excursion_id !== null && checkedBackward"
+                                          @select-backward-trip="handleSelectBackwardTrip" :trip="this.trip"/>
+            </div>
 
             <div class="ap-showcase__title">Контактные данные</div>
 
@@ -199,9 +204,13 @@ import ShowcaseIconSign from "@/Pages/Showcase/Icons/ShowcaseIconSign";
 import ShowcaseFieldWrapper from "@/Pages/Showcase/Components/Helpers/ShowcaseFieldWrapper";
 import OfferInfo from "@/Pages/Showcase/Parts/OfferInfo.vue";
 import PersonalDataInfo from "@/Pages/Showcase/Parts/PersonalDataInfo.vue";
+import BackwardTicketSelectShowcase from "../../Components/BackwardTicketSelectShowcase.vue";
+import InputCheckbox from "../../Components/Inputs/InputCheckbox.vue";
 
 export default {
     components: {
+        InputCheckbox,
+        BackwardTicketSelectShowcase,
         PersonalDataInfo,
         OfferInfo,
         ShowcaseFieldWrapper,
@@ -236,6 +245,9 @@ export default {
             let total = 0;
             this.trip['rates'].map(rate => {
                 total += this.multiply(rate['base_price'], this.form.values['rate.' + rate['grade_id'] + '.quantity']);
+                if (this.activeBackward){
+                    total += this.multiply(rate['backward_price'], this.form.values['rate.' + rate['grade_id'] + '.quantity']);
+                }
             });
             return this.multiply(total, 1) + ' руб.';
         },
@@ -292,6 +304,9 @@ export default {
         full_price: null,
         message: null,
         status: false,
+        activeBackward: false,
+        checkedBackward: false,
+        backwardTripId: null,
     }),
 
     created() {
@@ -305,6 +320,10 @@ export default {
     },
 
     methods: {
+        handleSelectBackwardTrip($event){
+          this.activeBackward = $event.activeBackward;
+          this.backwardTripId = $event.backward_trip_id;
+        },
 
         unselect() {
             this.$emit('select', null);
@@ -354,6 +373,7 @@ export default {
                 data: this.form.values,
                 trip: this.form.options['trip'],
                 ref: this.form.options['ref'],
+                backwardTripId: this.backwardTripId,
             }, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     // store order secret

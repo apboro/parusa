@@ -58,8 +58,7 @@ class ShowcaseOrderController extends ApiEditController
         $media = $originalKey['media'] ?? null;
 
         /** @var Trip $trip */
-        $trip = Trip::query()
-            ->where('id', $request->input('trip'))
+        $tripQuery = Trip::query()
             ->where('start_at', '>', Carbon::now())
             ->whereIn('status_id', [TripStatus::regular])
             ->whereIn('sale_status_id', [TripSaleStatus::selling])
@@ -75,8 +74,15 @@ class ShowcaseOrderController extends ApiEditController
                             $query->where('base_price', '>', 0);
                         }
                     });
-            })
+            });
+
+        $trip = $tripQuery->clone()->where('id', $request->input('trip'))
             ->first();
+
+
+        $backwardTrip = $tripQuery->clone()->where('id', $request->input('backwardTripId'))
+            ->first();
+
 
         if ($trip === null) {
             return APIResponse::error('Нет продажи билетов на этот рейс.');
@@ -121,7 +127,7 @@ class ShowcaseOrderController extends ApiEditController
         }
 
         $tickets = [];
-
+        $backwardTickets = [];
         foreach ($data['rate'] as $gradeId => $grade) {
             if ($grade['quantity'] > 0) {
                 // get rate
@@ -138,7 +144,19 @@ class ShowcaseOrderController extends ApiEditController
                         'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
                         'neva_travel_ticket' => $trip->source === 'NevaTravelApi',
                     ]);
+                    if ($backwardTrip) {
+                        $backwardTicket = new Ticket([
+                            'trip_id' => $backwardTrip->id,
+                            'grade_id' => $gradeId,
+                            'status_id' => TicketStatus::showcase_creating,
+                            'base_price' => $rate->backward_price_type === 'fixed' ? $rate->backward_price_value : $rate->base_price * ($rate->backward_price_value / 100),
+                            'neva_travel_ticket' => $trip->source === 'NevaTravelApi',
+                        ]);
+                        $backwardTickets[] = $backwardTicket ?? null;
+                    }
                     $tickets[] = $ticket;
+
+
                 }
             }
         }
@@ -167,6 +185,7 @@ class ShowcaseOrderController extends ApiEditController
                 $data['phone'],
                 $isPartnerSite === true, // strict price checking only for partner site
                 $flat['promocode'] ?? null,
+                $backwardTickets
             );
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());

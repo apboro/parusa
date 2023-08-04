@@ -34,7 +34,7 @@ class ExcursionEditController extends ApiEditController
         'description' => 'Полное описание',
         'trip_images' => 'Карта маршрута',
         'is_single_ticket' => 'Единый билет',
-        'has_return_trip' => 'Билет "туда" и "обратно"',
+        'reverse_excursion_id' => 'Экскурсия для обратного билета',
     ];
 
     /**
@@ -63,7 +63,7 @@ class ExcursionEditController extends ApiEditController
                 'status_id' => $excursion->status_id,
                 'only_site' => $excursion->only_site,
                 'is_single_ticket' => $excursion->is_single_ticket,
-                'has_return_trip' => $excursion->has_return_trip,
+                'reverse_excursion_id' => $excursion->reverse_excursion_id,
                 'images' => $excursion->images->map(function (Image $image) {
                     return ['id' => $image->id, 'url' => $image->url];
                 }),
@@ -110,7 +110,7 @@ class ExcursionEditController extends ApiEditController
         $excursion->setAttribute('name_receipt', $data['name_receipt']);
         $excursion->setAttribute('only_site', $data['only_site'] ?? false);
         $excursion->setAttribute('is_single_ticket', $data['is_single_ticket'] ?? false);
-        $excursion->setAttribute('has_return_trip', $data['has_return_trip'] ?? false);
+        $excursion->setAttribute('reverse_excursion_id', $data['reverse_excursion_id'] ?? null);
         $excursion->setStatus($data['status_id'], false);
         $excursion->save();
 

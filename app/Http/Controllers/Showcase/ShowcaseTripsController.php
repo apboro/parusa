@@ -133,7 +133,7 @@ class ShowcaseTripsController extends ApiController
                 'ship' => $trip->ship->name,
                 'excursion' => $trip->excursion->name,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
-                'has_return_trip' => $trip->excursion->has_return_trip,
+                'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
                 'concatenated_start_at' => $trip->concatenated_start_at,
                 'excursion_id' => $trip->excursion_id,
                 'programs' => $trip->excursion->programs->map(function (ExcursionProgram $program) {
@@ -205,6 +205,7 @@ class ShowcaseTripsController extends ApiController
                         'grade_id' => $rate->grade_id,
                         'name' => $rate->grade->name,
                         'base_price' => $partnerId === null ? $rate->site_price : $rate->base_price,
+                        'backward_price' => $rate->backward_price_type === 'fixed' ? $rate->backward_price_value : $rate->base_price * ($rate->backward_price_value/100),
                         'preferential' => $rate->grade->preferential,
                     ];
                 });
@@ -222,7 +223,7 @@ class ShowcaseTripsController extends ApiController
                 'start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
-                'has_return_trip' => $trip->excursion->has_return_trip,
+                'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
                 'concatenated_start_at' => $trip->getTripStarts(),
                 'excursion_id' => $trip->excursion_id,
                 'duration' => $trip->excursion->info->duration,

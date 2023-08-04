@@ -111,7 +111,7 @@ class TripsListController extends ApiController
                 '_trip_start_at' => $trip->start_at->format('Y-m-d'),
                 '_chain_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('Y-m-d') : null,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
-                'has_return_trip' => $trip->excursion->has_return_trip,
+                'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
             ];
         });
 

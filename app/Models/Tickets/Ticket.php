@@ -7,6 +7,7 @@ use App\Exceptions\Tickets\WrongTicketStatusException;
 use App\Helpers\PriceConverter;
 use App\Interfaces\Statusable;
 use App\Models\Account\AccountTransaction;
+use App\Models\BackwardTicket;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\TicketGrade;
@@ -42,6 +43,7 @@ use JsonException;
  * @property TicketGrade $grade
  * @property AccountTransaction $transaction
  * @property TicketReturn $return
+ * @property bool $backward
  */
 class Ticket extends Model implements Statusable
 {
@@ -158,7 +160,7 @@ class Ticket extends Model implements Statusable
     {
         $rateList = $this->trip->getRate();
 
-        return $rateList ? $rateList->rates()->where('grade_id', $this->grade_id)->value('base_price') : null;
+        return $rateList?->rates()->where('grade_id', $this->grade_id)->value('base_price');
     }
 
     /**
@@ -296,6 +298,11 @@ class Ticket extends Model implements Statusable
             ->data($this->order->neva_travel_order_number ?? json_encode($payload, JSON_THROW_ON_ERROR))
             ->build()
             ->getDataUri();
+    }
+
+    public function backward(): bool
+    {
+        return $this->hasOne(BackwardTicket::class,'backward_ticket_id', 'id')->exists();
     }
 
 }

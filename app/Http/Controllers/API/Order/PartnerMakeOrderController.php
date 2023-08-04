@@ -7,6 +7,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Jobs\ApproveNevaOrder;
 use App\Models\Account\AccountTransaction;
+use App\Models\BackwardTicket;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\HitSource;
@@ -112,9 +113,14 @@ class PartnerMakeOrderController extends ApiEditController
                         'trip_id' => $ordering->trip_id,
                         'grade_id' => $ordering->grade_id,
                         'status_id' => $ticketStatus,
-                        'neva_travel_ticket' => $ordering->trip->source === 'NevaTravelApi'
+                        'neva_travel_ticket' => $ordering->trip->source === 'NevaTravelApi',
                     ]);
-                    $totalAmount += $ordering->getPrice();
+
+                    $ticket->cart_ticket_id = $ordering->id;
+                    $ticket->cart_parent_ticket_id = $ordering->parent_ticket_id;
+                    $ticket->backward_price = $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : null;
+
+                    $totalAmount += $ordering->parent_ticket_id !== null ? $ordering->getBackwardPrice() : $ordering->getPrice();
                     $tickets[] = $ticket;
                 }
             }

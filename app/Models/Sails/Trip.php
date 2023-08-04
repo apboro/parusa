@@ -43,7 +43,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $is_single_ticket
- * @property int $has_return_trip
+ * @property int $reverse_excursion_id
  *
  * @property Pier $startPier
  * @property Pier $endPier
