@@ -14,6 +14,7 @@ use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
+use App\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -49,12 +50,16 @@ class OrderReserveController extends ApiController
         }
 
         // delete all tickets
-        foreach ($order->tickets as $ticket) {
-            $ticket->setStatus(TicketStatus::partner_reserve_canceled);
-        }
-
-        // delete order
-        $order->setStatus(OrderStatus::partner_reserve_canceled);
+        DB::transaction(static function () use ($order) {
+            if ($order->neva_travel_id) {
+                $nevaOrder = new NevaOrder($order);
+                $nevaOrder->cancel();
+            }
+            foreach ($order->tickets as $ticket) {
+                $ticket->setStatus(TicketStatus::partner_reserve_canceled);
+            }
+            $order->setStatus(OrderStatus::partner_reserve_canceled);
+        });
 
         return APIResponse::success('Бронь аннулирована.');
     }
