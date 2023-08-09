@@ -55,9 +55,16 @@ class PartnerInfoController extends ApiController
             $orderAmount = PriceConverter::storeToPrice($orderAmount ?? 0);
         }
 
+        $account = $partner->account;
+
+        $fromDate = Carbon::now()->startOfYear()->hour(0)->minute(0);
+        $toDate = Carbon::now()->startOfYear()->addYear()->hour(23)->minute(59)->second(59);
+        $total = $account->calcAmount($toDate, $fromDate, null);
+
         return APIResponse::response([
             'amount' => $partner->account->amount,
             'limit' => $partner->account->limit,
+            'total' => $total,
             'reserves' => Order::query()->where(['partner_id' => $partner->id, 'status_id' => OrderStatus::partner_reserve])->count(),
             'order_amount' => $orderAmount,
             'can_reserve' => $current->partner()->profile->can_reserve_tickets,

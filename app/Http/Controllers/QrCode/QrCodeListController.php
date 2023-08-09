@@ -19,9 +19,10 @@ class QrCodeListController extends Controller
 
     public function getQrCodesList(ApiListRequest  $request): JsonResponse
     {
-        Hit::register(HitSource::partner);
         $current = Currents::get($request);
-        $qrcodes = QrCode::query()->where('partner_id', $current->partnerId())
+        Hit::register($current->isStaff() ? HitSource::admin : HitSource::partner);
+        $partnerId = $current->isStaff() ? $request->input('partner_id') : $current->partnerId();
+        $qrcodes = QrCode::query()->where('partner_id', $partnerId)
             ->withCount([
                 'statisticVisit',
                 'statisticPayment',
