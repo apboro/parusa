@@ -70,7 +70,7 @@ class TripsListController extends ApiController
                 $query->whereDate('start_at', $filters['date']);
             }
             if (!empty($filters['status_id'])) {
-                $query->where('status_id', $filters['status_id']);
+                $query->where('trips.status_id', $filters['status_id']);
             }
             if ($startPierId || !empty($filters['start_pier_id'])) {
                 $query->where('start_pier_id', $startPierId ?? $filters['start_pier_id']);
