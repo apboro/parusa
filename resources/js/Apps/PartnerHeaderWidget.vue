@@ -1,5 +1,11 @@
 <template>
     <div class="balance-widget">
+        <router-link :to="{name: 'company-account'}" class="balance-widget__item">
+            <div class="balance-widget__item-wrapper">
+                <span class="balance-widget__item-title">Вы заработали</span>
+                <span class="balance-widget__item-value center">{{ loaded ? total + ' руб.' : '—' }}</span>
+            </div>
+        </router-link>
         <router-link :to="{name: 'reserves-registry'}" class="balance-widget__item" v-if="can_reserve">
             <div class="balance-widget__item-wrapper">
                 <span class="balance-widget__item-title">Брони</span>
@@ -37,6 +43,7 @@ export default {
         ...mapState('partner', {
             loaded: state => state.loaded,
             amount: state => state.amount,
+            total: state => state.total,
             limit: state => state.limit,
             reserves: state => state.reserves,
             can_reserve: state => state.can_reserve,

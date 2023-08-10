@@ -8,6 +8,7 @@ export default {
 
         amount: 0,
         limit: 0,
+        total: 0,
         reserves: 0,
         can_reserve: false,
         order_amount: 0,
@@ -22,6 +23,9 @@ export default {
         },
         setLimit(state, value) {
             state.limit = value;
+        },
+        setTotal(state, value) {
+            state.total = value;
         },
         setReserves(state, value) {
             state.reserves = value;
@@ -46,6 +50,7 @@ export default {
                         commit('setCanReserve', Boolean(response.data.data.can_reserve));
                         commit('setReserves', response.data.data.reserves);
                         commit('setOrderAmount', response.data.data.order_amount);
+                        commit('setTotal', response.data.data.total);
                         resolve();
                     })
                     .catch(error => {

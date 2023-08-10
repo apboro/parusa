@@ -21,16 +21,17 @@ class QrCodeCreateController extends Controller
 
     public function updateOrCreate(Request $request)
     {
-        Hit::register(HitSource::partner);
         $data = $request->data;
 
         $current = Currents::get($request);
+        Hit::register($current->isStaff() ? HitSource::admin : HitSource::partner);
 
         $link = $data['link'] ?? 'https://city-tours-spb.ru/';
+        $partnerId = $current->isStaff() ? $data['partner_id'] : $current->partnerId();
 
         $qrCode = QrCode::firstOrCreate(['id' => $request->id],
             [
-                'partner_id' =>$current->partnerId(),
+                'partner_id' => $partnerId,
             ]);
 
         $qrCode->name = $data['name'];
