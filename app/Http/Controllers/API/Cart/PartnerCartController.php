@@ -72,7 +72,7 @@ class PartnerCartController extends ApiEditController
                 'min_price' => $ticket->getMinPrice(),
                 'max_price' => $ticket->getMaxPrice(),
                 'quantity' => $ticket->quantity,
-                'available' => ($price !== null) && $trip->hasStatus(TripSaleStatus::selling, 'sale_status_id') && ($trip->start_at > Carbon::now()),
+                'available' => ($price !== null) && $trip->hasStatus(TripSaleStatus::selling, 'sale_status_id') && ($trip->start_at > Carbon::now() || $trip->excursion->is_single_ticket = 1),
             ];
         });
 
@@ -109,7 +109,7 @@ class PartnerCartController extends ApiEditController
 
         /** @var Trip $trip */
 
-        if ($trip->start_at < $now || ($rate = $trip->getRate()) === null) {
+        if (($trip->start_at < $now && $trip->excursion->is_single_ticket=0) || ($rate = $trip->getRate()) === null) {
             return APIResponse::error('Продажа билетов на этот рейс не осуществляется');
         }
 

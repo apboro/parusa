@@ -290,7 +290,7 @@ class Order extends Model implements Statusable, Typeable
 
             if (
                 $trip === null
-                || $trip->start_at < $now
+                || ($trip->start_at < $now && $trip->excursion->is_single_ticket = 0)
                 || $rate === null
                 || ($rate->base_price <= 0 && $rate->grade_id !== TicketGrade::guide)
                 || !$trip->hasStatus(TripStatus::regular)
