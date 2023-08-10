@@ -77,7 +77,16 @@ class TripsSelectListController extends ApiController
             ->when(env('REMOVE_NEVA_TRIPS'), function (Builder $query) {
                 $query->where('source', null);
             })
-            ->where('start_at', '>', $now)
+            ->where(function(Builder $trip) use ($now){
+                $trip->where('start_at', '>', $now)
+                    ->orWhere(function (Builder $trip) use ($now) {
+                        $trip->where('end_at', '>', $now)
+                        ->whereHas('excursion', function (Builder $excursion) use ($now) {
+                            $excursion->where('is_single_ticket', 1);
+                        });
+                    });
+                })
+
             ->whereHas('excursion.ratesLists', function (Builder $query) use ($date) {
                 $query->whereDate('start_at', '<=', $date)->whereDate('end_at', '>=', $date);
             })

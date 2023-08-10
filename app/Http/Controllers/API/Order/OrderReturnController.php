@@ -95,14 +95,28 @@ class OrderReturnController extends ApiController
                             $ticket->return()->save(new TicketReturn(['reason' => $reasonOfReturn]));
                         }
                     }
+
+                    if ($order->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() === 0) {
+                        $order->setStatus(OrderStatus::partner_returned);
+                    } else {
+                        $order->setStatus(OrderStatus::partner_partial_returned);
+                    }
+                    if ($order->neva_travel_id) {
+                        $nevaOrder = new NevaOrder($order);
+                        $nevaOrder->cancel();
+                        if ($order->status_id == OrderStatus::partial_returned_statuses) {
+                            $nevaOrder->make();
+                            ApproveNevaOrder::dispatch($order);
+                            try {
+                                Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+                            } catch (Exception $exception) {
+                                Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
+                            }
+                        }
+                    }
                 });
             } catch (Exception $exception) {
                 return APIResponse::error($exception->getMessage());
-            }
-            if ($order->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() === 0) {
-                $order->setStatus(OrderStatus::partner_returned);
-            } else {
-                $order->setStatus(OrderStatus::partner_partial_returned);
             }
             $successMessage = 'Возврат оформлен.';
 
@@ -175,12 +189,11 @@ class OrderReturnController extends ApiController
 
             $successMessage = 'Возврат оформлен.';
 
-
             try {
                 if ($order->neva_travel_id) {
                     $nevaOrder = new NevaOrder($order);
                     $nevaOrder->cancel();
-                    if ($order->status_id == OrderStatus::showcase_partial_returned) {
+                    if ($order->status_id == OrderStatus::partial_returned_statuses) {
                         $nevaOrder->make();
                         ApproveNevaOrder::dispatch($order);
                         try {
@@ -191,7 +204,7 @@ class OrderReturnController extends ApiController
                     }
                 }
             } catch (Exception $e) {
-                Log::channel('neva')->error('Neva API Error: ' . $e->getMessage() .' : '. $e->getFile().':'.$e->getLine() );
+                Log::channel('neva')->error('Neva API Error: ' . $e->getMessage() . ' : ' . $e->getFile() . ':' . $e->getLine());
             }
 
         } else if ($current->isStaff() && $current->role() && $current->terminalId() !== null && $current->role()->matches(Role::terminal)) {

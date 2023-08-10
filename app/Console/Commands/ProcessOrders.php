@@ -2,13 +2,19 @@
 
 namespace App\Console\Commands;
 
+use App\Http\APIResponse;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
+use App\NevaTravel\NevaOrder;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class ProcessOrders extends Command
 {
@@ -87,10 +93,20 @@ class ProcessOrders extends Command
 
         foreach ($orders as $order) {
             /** @var Order $order */
-            $order->setStatus(OrderStatus::partner_reserve_canceled);
-            $order->tickets->map(function (Ticket $ticket) {
-                $ticket->setStatus(TicketStatus::partner_reserve_canceled);
+            try{
+            DB::transaction(static function() use ($order){
+                if ($order->neva_travel_id) {
+                    $nevaOrder = new NevaOrder($order);
+                    $nevaOrder->cancel();
+                }
+                $order->setStatus(OrderStatus::partner_reserve_canceled);
+                $order->tickets->map(function (Ticket $ticket) {
+                    $ticket->setStatus(TicketStatus::partner_reserve_canceled);
+                });
             });
+            } catch (Exception $exception) {
+                Log::channel('neva')->error('destroyPartnerReserves error', [$exception]);
+            }
         }
     }
 

@@ -10,6 +10,7 @@ use App\Models\Account\AccountTransaction;
 use App\Models\BackwardTicket;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
+use App\Models\Dictionaries\TerminalStatus;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Model;
@@ -50,7 +51,7 @@ class Ticket extends Model implements Statusable
     use HasStatus;
 
     /** @var string[] Fillable attributes. */
-    protected $fillable = ['trip_id', 'grade_id', 'status_id', 'base_price', 'neva_travel_ticket'];
+    protected $fillable = ['trip_id', 'grade_id', 'status_id', 'base_price', 'neva_travel_ticket', 'provider_id'];
 
     /**
      * User's status.
@@ -74,7 +75,16 @@ class Ticket extends Model implements Statusable
      */
     public function setStatus($status, bool $save = true): void
     {
-        $this->checkAndSetStatus(TicketStatus::class, $status, WrongTicketStatusException::class, $save);
+        $isSingleTicket = $this->trip->excursion->is_single_ticket;
+        if ($status === TicketStatus::terminal_paid && $isSingleTicket) {
+            $this->checkAndSetStatus(TicketStatus::class, TicketStatus::terminal_paid_single, WrongTicketStatusException::class, $save);
+        } elseif ($status === TicketStatus::partner_paid && $isSingleTicket) {
+            $this->checkAndSetStatus(TicketStatus::class, TicketStatus::partner_paid_single, WrongTicketStatusException::class, $save);
+        } elseif ($status === TicketStatus::showcase_paid && $isSingleTicket){
+            $this->checkAndSetStatus(TicketStatus::class, TicketStatus::showcase_paid_single, WrongTicketStatusException::class, $save);
+        } else {
+            $this->checkAndSetStatus(TicketStatus::class, $status, WrongTicketStatusException::class, $save);
+        }
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\NevaTravel;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use Facade\FlareClient\Api;
+use Illuminate\Support\Facades\Log;
 
 class NevaTravelRepository
 {
@@ -57,7 +58,10 @@ class NevaTravelRepository
 
     public function cancelOrder(array $query = []): array
     {
-        return $this->apiClient->post('cancel_order', $query);
+        Log::channel('neva')->info('cancelOrder Query', [$query]);
+        $result = $this->apiClient->post('cancel_order', $query);
+        Log::channel('neva')->info('Neva cancel order result:', [$result]);
+        return $result;
     }
 
     public function getOrderInfo(string $query = ''): array

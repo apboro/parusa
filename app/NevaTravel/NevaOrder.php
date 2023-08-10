@@ -45,7 +45,7 @@ class NevaOrder
         try {
             if ($this->checkOrderHasNevaTickets()) {
                 $result = $this->nevaApiData->approveOrder($this->order->neva_travel_id);
-                if ($result['body']['number']) {
+                if (isset($result['body']['number'])) {
                     $this->order->neva_travel_order_number = $result['body']['number'];
                     $this->order->save();
                 } else {
