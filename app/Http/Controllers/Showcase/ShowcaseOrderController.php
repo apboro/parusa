@@ -28,7 +28,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use JsonException;
+use RuntimeException;
 
 class ShowcaseOrderController extends ApiEditController
 {
@@ -61,7 +63,7 @@ class ShowcaseOrderController extends ApiEditController
         /** @var Trip $trip */
         $trip = Trip::query()
             ->where('id', $request->input('trip'))
-            ->where(function(Builder $trip) use ($now){
+            ->where(function (Builder $trip) use ($now) {
                 $trip->where('start_at', '>', $now)
                     ->orWhere(function (Builder $trip) use ($now) {
                         $trip->where('end_at', '>', $now)
@@ -162,27 +164,28 @@ class ShowcaseOrderController extends ApiEditController
         }
 
         try {
-            // create order
-            $order = Order::make(
-                $orderType,
-                $tickets,
-                OrderStatus::showcase_creating,
-                $partnerId,
-                null,
-                null,
-                null,
-                $data['email'],
-                $data['name'],
-                $data['phone'],
-                $isPartnerSite === true, // strict price checking only for partner site
-                $flat['promocode'] ?? null,
-            );
+            DB::transaction(static function () use ($data, $orderType, $tickets, $partnerId, $isPartnerSite, $flat, &$order) {
+                // create order
+                $order = Order::make(
+                    $orderType,
+                    $tickets,
+                    OrderStatus::showcase_creating,
+                    $partnerId,
+                    null,
+                    null,
+                    null,
+                    $data['email'],
+                    $data['name'],
+                    $data['phone'],
+                    $isPartnerSite === true, // strict price checking only for partner site
+                    $flat['promocode'] ?? null,
+                );
+                if (!(new NevaOrder($order))->make()) {
+                    throw new RuntimeException ('Невозможно оформить заказ на этот рейс.');
+                }
+            });
         } catch (Exception $exception) {
-            return APIResponse::error($exception->getMessage());
-        }
-
-        if (!(new NevaOrder($order))->make()) {
-            return APIResponse::error('Невозможно оформить заказ на этот рейс.');
+            Log::error('showcaseOrderController error: '.$exception->getMessage());
         }
 
         $orderSecret = json_encode([
