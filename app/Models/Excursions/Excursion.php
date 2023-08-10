@@ -8,8 +8,10 @@ use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
+use App\Models\Dictionaries\Provider;
 use App\Models\Model;
 use App\Models\Partner\Partner;
+use App\Models\ProviderExcursion;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketsRatesList;
 use App\Traits\HasStatus;
@@ -25,6 +27,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $name
  * @property string $name_receipt
  * @property int $status_id
+ * @property int $at_provider_status
+ * @property int $provider_id
  * @property bool $only_site
  * @property bool $is_single_ticket
  * @property bool $has_return_trip
@@ -37,6 +41,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection $ratesLists
  * @property Collection $partnerShowcaseHide
  * @property Collection<Trip> $trips
+ * @property ProviderExcursion $providerExcursion
  */
 class Excursion extends Model implements Statusable, AsDictionary
 {
@@ -188,5 +193,10 @@ class Excursion extends Model implements Statusable, AsDictionary
     public function partnerShowcaseHide(): BelongsToMany
     {
         return $this->belongsToMany(Partner::class, 'partner_excursion_showcase_disabling', 'excursion_id','partner_id');
+    }
+
+    public function providerExcursion(): hasOne
+    {
+        return $this->hasOne(ProviderExcursion::class, 'excursion_id', 'id');
     }
 }

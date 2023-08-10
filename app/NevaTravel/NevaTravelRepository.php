@@ -116,12 +116,12 @@ class NevaTravelRepository
         return $this->convertSeatsToInt($seatsQuantityString);
     }
 
-    public static function convertSeatsToInt($seatsQuantityString, $capacity = null): int
+    public static function convertSeatsToInt($seatsQuantityString, int $shipCapacity): int
     {
         return match ($seatsQuantityString) {
-            'many' => $capacity,
-            'less_than_10' => 9,
-            'less_than_3' => 2,
+            'many' => $shipCapacity,
+            'less_than_10' => 10,
+            'less_than_3' => 3,
             'none' => 0,
             default => -1,
         };

@@ -4,6 +4,7 @@ namespace App\NevaTravel;
 
 use App\Http\APIResponse;
 use App\Models\Order\Order;
+use App\Models\ProviderOrder;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
@@ -30,9 +31,14 @@ class NevaOrder
                     Log::channel('neva')->error('Neva API make ticket error: ', [$result]);
                     return false;
                 }
-                $this->order->neva_travel_id = $result['body']['id'];
+                ProviderOrder::create([
+                    'provider_id' => 10,
+                    'order_id' => $this->order->id,
+                    'provider_order_uuid' => $result['body']['id'],
+                ]);
+
                 $this->order->save();
-                Log::channel('neva')->info('Neva API make ticket success: ', [$result, $this->order->neva_travel_id]);
+                Log::channel('neva')->info('Neva API make ticket success: ', [$result, $this->order]);
             }
         } catch (Exception $e) {
             Log::channel('neva')->error('Neva API make ticket error: ' . $e->getMessage());
@@ -44,10 +50,9 @@ class NevaOrder
     {
         try {
             if ($this->checkOrderHasNevaTickets()) {
-                $result = $this->nevaApiData->approveOrder($this->order->neva_travel_id);
+                $result = $this->nevaApiData->approveOrder($this->order->providerOrder->provider_order_uuid);
                 if (isset($result['body']['number'])) {
-                    $this->order->neva_travel_order_number = $result['body']['number'];
-                    $this->order->save();
+                    $this->order->providerOrder->update(['provider_order_id' => $result['body']['number']]);
                 } else {
                     Log::error('Neva API Approve Error', [$result]);
                 }
@@ -61,7 +66,7 @@ class NevaOrder
     {
         $tickets = $this->order->tickets;
         foreach ($tickets as $ticket) {
-            if ($ticket->neva_travel_ticket === 1) {
+            if ($ticket->provider_id == 10) {
                 return true;
             }
         }
@@ -70,13 +75,11 @@ class NevaOrder
 
     public function cancel(): array
     {
-        $this->order->neva_travel_order_number = null;
-        $this->order->save();
-        return $this->nevaApiData->cancelOrder(['id' => $this->order->neva_travel_id, 'comment' => 'Клиент потребовал возврат']);
+        return $this->nevaApiData->cancelOrder(['id' => $this->order->providerOrder->provider_order_uuid, 'comment' => 'Клиент потребовал возврат']);
     }
 
     public function getOrderInfo()
     {
-        return $this->nevaApiData->getOrderInfo($this->order->neva_travel_id);
+        return $this->nevaApiData->getOrderInfo($this->order->providerOrder->provider_order_uuid);
     }
 }

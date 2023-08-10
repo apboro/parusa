@@ -136,7 +136,7 @@ class ShowcaseOrderController extends ApiEditController
                         'grade_id' => $gradeId,
                         'status_id' => TicketStatus::showcase_creating,
                         'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
-                        'neva_travel_ticket' => $trip->source === 'NevaTravelApi',
+                        'provider_id' => $trip->provider_id,
                     ]);
                     $tickets[] = $ticket;
                 }

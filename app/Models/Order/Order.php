@@ -21,6 +21,7 @@ use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\PromoCode\PromoCode;
+use App\Models\ProviderOrder;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
 
@@ -61,7 +62,7 @@ use Illuminate\Support\Facades\DB;
  * @property Collection $tickets
  * @property Collection $payments
  * @property Collection<PromoCode> $promocode
- * @property string|null $neva_travel_order_number
+ * @property ProviderOrder $providerOrder
  */
 class Order extends Model implements Statusable, Typeable
 {
@@ -303,7 +304,7 @@ class Order extends Model implements Statusable, Typeable
             if (!isset($available[$trip->id])) {
                 $available[$trip->id] = $trip->tickets_total - $trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count();
             }
-            if ($available[$trip->id]-- <= 0 && !$trip->excursion->is_single_ticket) {
+            if ($available[$trip->id]-- <= 0 && $trip->excursion->is_single_ticket != 1) {
                 throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Недостаточно свободных мест на рейсе.');
             }
 
@@ -390,5 +391,10 @@ class Order extends Model implements Statusable, Typeable
     public function promocode(): BelongsToMany
     {
         return $this->belongsToMany(PromoCode::class, 'promo_code_has_orders', 'order_id', 'promo_code_id');
+    }
+
+    public function providerOrder()
+    {
+        return $this->hasOne(ProviderOrder::class, 'order_id', 'id');
     }
 }

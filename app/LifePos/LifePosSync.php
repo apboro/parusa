@@ -2,6 +2,7 @@
 
 namespace App\LifePos;
 
+use App\Events\NevaTravelCancelOrderEvent;
 use App\Helpers\Fiscal;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;
@@ -140,6 +141,10 @@ class LifePosSync
             Ticket::query()->where('order_id', $orderId)->update([
                 'status_id' => $isReturned ? TicketStatus::terminal_returned : TicketStatus::terminal_paid,
             ]);
+
+            if ($isReturned) {
+                NevaTravelCancelOrderEvent::dispatch($order);
+            }
         }
 
         return $updated;

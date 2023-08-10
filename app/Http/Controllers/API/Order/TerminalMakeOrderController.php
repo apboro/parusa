@@ -119,7 +119,7 @@ class TerminalMakeOrderController extends ApiEditController
                         'grade_id' => $ordering->grade_id,
                         'status_id' => $ticketStatus,
                         'base_price' => $ticketInfo['price'],
-                        'neva_travel_ticket' => $ordering->trip->source === 'NevaTravelApi',
+                        'provider_id' => $ordering->trip->provider_id
                     ]);
                     $tickets[] = $ticket;
                 }

@@ -112,7 +112,7 @@ class PartnerMakeOrderController extends ApiEditController
                         'trip_id' => $ordering->trip_id,
                         'grade_id' => $ordering->grade_id,
                         'status_id' => $ticketStatus,
-                        'neva_travel_ticket' => $ordering->trip->source === 'NevaTravelApi'
+                        'provider_id' => $ordering->trip->provider_id
                     ]);
                     $totalAmount += $ordering->getPrice();
                     $tickets[] = $ticket;
