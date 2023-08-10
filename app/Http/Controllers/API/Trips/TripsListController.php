@@ -58,7 +58,8 @@ class TripsListController extends ApiController
             }])
             ->join('excursions','excursions.id','=', 'trips.excursion_id')
             ->groupByRaw("case when `is_single_ticket`=1 THEN excursion_id else trips.id end")
-            ->orderBy('is_single_ticket', 'desc');
+            ->orderBy('is_single_ticket', 'desc')
+            ->orderBy('trips.start_at');
 
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
