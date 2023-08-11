@@ -284,8 +284,17 @@ class Trip extends Model implements Statusable
      */
     public static function saleTripQuery(bool $forRootSite = false): Builder
     {
+        $now = Carbon::now();
         return Trip::query()
-            ->where('start_at', '>', Carbon::now())
+            ->where(function(Builder $trip) use ($now){
+                $trip->where('start_at', '>', $now)
+                    ->orWhere(function (Builder $trip) use ($now) {
+                        $trip->where('end_at', '>', $now)
+                            ->whereHas('excursion', function (Builder $excursion) use ($now) {
+                                $excursion->where('is_single_ticket', 1);
+                            });
+                    });
+            })
             ->whereIn('trips.status_id', [TripStatus::regular])
             ->whereIn('sale_status_id', [TripSaleStatus::selling])
             ->whereHas('excursion.ratesLists', function (Builder $query) use ($forRootSite) {

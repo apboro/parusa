@@ -78,7 +78,7 @@ use App\Models\Common\Image;
                                         </tr>
                                         <tr>
                                             <td style="vertical-align: top; padding-right: 3pt;">Дата поездки</td>
-                                            <td style="vertical-align: top; border-bottom: 1px solid #5e5e5e;">{{ $ticket->trip->start_at->format('d.m.Y,  H:i') }}</td>
+                                            <td style="vertical-align: top; border-bottom: 1px solid #5e5e5e;">{{ $ticket->trip->start_at->translatedFormat('d M Y, D') }}</td>
                                         </tr>
                                         <tr>
                                             <td style="vertical-align: top; padding-right: 3pt;">Тип билета</td>
