@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ProviderOrder extends Model
+class AdditionalDataOrder extends Model
 {
     protected $fillable = [
         'provider_id',
@@ -12,5 +12,8 @@ class ProviderOrder extends Model
         'provider_order_id',
         'provider_order_uuid',
     ];
-    protected $table = 'provider_order';
+
+    protected $table = 'additional_data_orders';
+
+    public $timestamps = false;
 }

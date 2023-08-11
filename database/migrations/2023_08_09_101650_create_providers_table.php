@@ -8,12 +8,14 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('dictionary_providers', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedSmallInteger('id', true);
             $table->string('name', 50);
             $table->string('status', 25)->nullable();
             $table->string('service', 35);
             $table->timestamps();
         });
+
+        Artisan::call('db:seed');
     }
 
     public function down(): void

@@ -79,14 +79,14 @@ class NevaTravelRepository
     {
         $tickets = $order->tickets()
             ->whereIn('status_id', TicketStatus::ticket_countable_statuses)
-            ->where('neva_travel_ticket','=',true)
+            ->where('provider_id',10)
             ->get();
         if ($tickets->isNotEmpty()) {
             foreach ($tickets as $ticket) {
                 $ticket_list[] =
                     [
-                        'departure_point_id' => $ticket->trip->external_id,
-                        'program_price_id' => $ticket->trip->program_price_id,
+                        'departure_point_id' => $ticket->trip->additionalData->provider_trip_id,
+                        'program_price_id' => $ticket->trip->additionalData->provider_price_id,
                         'ticket_category' => $ticket->grade->external_grade_name,
                         'purchase_price' => $ticket->base_price,
                         'qty' => 1

@@ -22,7 +22,7 @@ use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\PromoCode\PromoCode;
-use App\Models\ProviderOrder;
+use App\Models\AdditionalDataOrder;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
 
@@ -64,7 +64,7 @@ use Illuminate\Support\Facades\DB;
  * @property Collection $tickets
  * @property Collection $payments
  * @property Collection<PromoCode> $promocode
- * @property ProviderOrder $providerOrder
+ * @property AdditionalDataOrder $additionalData
  */
 class Order extends Model implements Statusable, Typeable
 {
@@ -265,7 +265,7 @@ class Order extends Model implements Statusable, Typeable
      */
     public static function make(
         int  $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?int $terminalPositionId, ?string $email, ?string $name, ?string $phone,
-        bool $strictPrice = true, ?string $promocode = null,  array $backwardTickets = [],
+        bool $strictPrice = true, ?string $promocode = null, array $backwardTickets = [],
     ): Order
     {
         if (empty($tickets)) {
@@ -342,7 +342,9 @@ class Order extends Model implements Statusable, Typeable
             DB::transaction(static function () use (&$order, $tickets, $promocodeId, $backwardTickets) {
                 $order->save();
                 $cartData = [];
+
                 foreach ($tickets as $ticket) {
+
                     $cart_ticket_id = $ticket->cart_ticket_id;
                     $cart_parent_ticket_id = $ticket->cart_parent_ticket_id;
                     $backward_price = $ticket->backward_price;
@@ -356,8 +358,8 @@ class Order extends Model implements Statusable, Typeable
                         'backward_price' => $backward_price,
                     ];
 
-                    foreach ($backwardTickets as $index => $backwardTicket){
-                        if ($backwardTicket->grade_id === $ticket->grade_id){
+                    foreach ($backwardTickets as $index => $backwardTicket) {
+                        if ($backwardTicket->grade_id === $ticket->grade_id) {
                             $backwardTicket->order_id = $order->id;
                             $backwardTicket->save();
                             BackwardTicket::create([
@@ -370,8 +372,8 @@ class Order extends Model implements Statusable, Typeable
                     }
                 }
 
-                foreach ($cartData ?? [] as $cartTicket){
-                    if ($cartTicket['cart_parent_ticket_id']){
+                foreach ($cartData ?? [] as $cartTicket) {
+                    if ($cartTicket['cart_parent_ticket_id']) {
                         BackwardTicket::create([
                             'main_ticket_id' => $cartData[$cartTicket['cart_parent_ticket_id']]['id'],
                             'backward_ticket_id' => $cartTicket['id'],
@@ -429,8 +431,8 @@ class Order extends Model implements Statusable, Typeable
         return $this->belongsToMany(PromoCode::class, 'promo_code_has_orders', 'order_id', 'promo_code_id');
     }
 
-    public function providerOrder()
+    public function additionalData()
     {
-        return $this->hasOne(ProviderOrder::class, 'order_id', 'id');
+        return $this->hasOne(AdditionalDataOrder::class, 'order_id', 'id');
     }
 }

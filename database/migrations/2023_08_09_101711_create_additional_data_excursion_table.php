@@ -7,18 +7,25 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('provider_excursion', function (Blueprint $table) {
+        Schema::create('additional_data_excursions', function (Blueprint $table) {
             $table->id();
             $table->unsignedSmallInteger('provider_id');
-            $table->unsignedBigInteger('excursion_id');
+            $table->unsignedSmallInteger('excursion_id');
             $table->boolean('provider_excursion_status')->nullable();
             $table->string('provider_excursion_id')->nullable();
-            $table->timestamps();
+
+            $table->foreign('excursion_id')
+                ->on('excursions')
+                ->references('id');
+
+            $table->foreign('provider_id')
+                ->on('dictionary_providers')
+                ->references('id');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('provider_excursion');
+        Schema::dropIfExists('additional_data_excursions');
     }
 };

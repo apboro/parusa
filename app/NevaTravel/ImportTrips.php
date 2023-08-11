@@ -5,7 +5,7 @@ namespace App\NevaTravel;
 
 use App\Models\Excursions\Excursion;
 use App\Models\Piers\Pier;
-use App\Models\ProviderTrip;
+use App\Models\AdditionalDataTrip;
 use App\Models\Sails\Trip;
 use App\Models\Ships\Ship;
 use Carbon\Carbon;
@@ -29,10 +29,12 @@ class ImportTrips
         $piers = Pier::all();
         $ships = Ship::all();
         $excursions = Excursion::query()
+            ->with('additionalData')
             ->where('provider_id', 10)
-            ->where('status_id', 1)
-            ->get();
-        $excursionsArray = $excursions->pluck('external_id')->toArray();
+            ->where('status_id', 1)->get();
+
+        $excursionsArray = $excursions->pluck('additionalData.provider_excursion_id')->toArray();
+
         $currentDate = Carbon::now();
 
         Trip::query()
@@ -50,14 +52,14 @@ class ImportTrips
                 foreach ($nevaTrips['body'] as $nevaTrip) {
                     $ship = $ships->firstWhere('external_id', $nevaTrip['ship_id']);
                     $findExcursion = $excursions->first(function (Excursion $excursion) use ($nevaTrip) {
-                        return $excursion->providerExcursion->provider_excursion_id === $nevaTrip['program_id'];
+                        return $excursion->additionalData->provider_excursion_id === $nevaTrip['program_id'];
                     });
 
                     if ($findExcursion) {
                         $seatsAvailable = $nevaTrip['default_arrival']['prices_table'][0]['available_seats'];
 
                         $trip = Trip::query()
-                            ->whereHas('providerTrip', function(Builder $query) use ($nevaTrip){
+                            ->whereHas('additionalData', function(Builder $query) use ($nevaTrip){
                                 $query->where('provider_trip_id', $nevaTrip['id']);
                             })->firstOrNew();
 
@@ -74,8 +76,10 @@ class ImportTrips
                         $trip->provider_id = 10;
                         $trip->save();
 
-                        $trip->providerTrip?->update(['provider_trip_id' => $nevaTrip['id']]);
-                        $trip->providerTrip?->update(['provider_price_id' => $nevaTrip['default_arrival']['prices_table'][0]['program_price_id']]);
+                        $trip->additionalData?->updateOrCreate(
+                            ['provider_trip_id' => $nevaTrip['id']],
+                            ['provider_price_id' => $nevaTrip['default_arrival']['prices_table'][0]['program_price_id']]
+                        );
                     }
                 }
             }

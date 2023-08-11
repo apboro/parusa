@@ -161,13 +161,11 @@ class ShowcaseOrderController extends ApiEditController
                             'grade_id' => $gradeId,
                             'status_id' => TicketStatus::showcase_creating,
                             'base_price' => $rate->backward_price_type === 'fixed' ? $rate->backward_price_value : $rate->base_price * ($rate->backward_price_value / 100),
-                            'neva_travel_ticket' => $trip->source === 'NevaTravelApi',
+                            'provider_id' => $trip->provider_id,
                         ]);
-                        $backwardTickets[] = $backwardTicket ?? null;
+                        $backwardTickets[] = $backwardTicket;
                     }
                     $tickets[] = $ticket;
-
-
                 }
             }
         }
@@ -182,7 +180,7 @@ class ShowcaseOrderController extends ApiEditController
         }
 
         try {
-            DB::transaction(static function () use ($data, $orderType, $tickets, $partnerId, $isPartnerSite, $flat, &$order) {
+            DB::transaction(static function () use ($data, $orderType, $tickets, $partnerId, $isPartnerSite, $flat, &$order, $backwardTickets) {
                 // create order
                 $order = Order::make(
                     $orderType,
@@ -197,6 +195,7 @@ class ShowcaseOrderController extends ApiEditController
                     $data['phone'],
                     $isPartnerSite === true, // strict price checking only for partner site
                     $flat['promocode'] ?? null,
+                    $backwardTickets,
                 );
                 if (!(new NevaOrder($order))->make()) {
                     throw new RuntimeException ('Невозможно оформить заказ на этот рейс.');

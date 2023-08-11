@@ -7,7 +7,7 @@ use App\Http\APIResponse;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Excursions\Excursion;
 use App\Models\Excursions\ExcursionInfo;
-use App\Models\ProviderExcursion;
+use App\Models\AdditionalDataExcursion;
 
 
 class ImportPrograms
@@ -16,17 +16,17 @@ class ImportPrograms
     {
         $nevaApiData = new NevaTravelRepository();
         $nevaPrograms = $nevaApiData->getProgramsInfo();
-        $excursions = Excursion::with('providerExcursion')->where('provider_id', 10)->get();
+        $excursions = Excursion::with('additionalData')->where('provider_id', 10)->get();
         foreach ($nevaPrograms['body'] as $nevaProgram) {
             $foundExcursion = null;
             foreach ($excursions as $excursion) {
-                if ($excursion->providerExcursion->provider_excursion_id === $nevaProgram['id']) {
+                if ($excursion->additionalData->provider_excursion_id === $nevaProgram['id']) {
                     $foundExcursion = $excursion;
                     break;
                 }
             }
             if ($foundExcursion){
-                $foundExcursion->providerExcursion->update(['provider_excursion_status'=>$nevaProgram['is_active'] ? 1 : 0]);
+                $foundExcursion->additionalData->update(['provider_excursion_status'=>$nevaProgram['is_active'] ? 1 : 0]);
 
                 $info = $foundExcursion->info;
             } else {
@@ -36,12 +36,12 @@ class ImportPrograms
                 $newExcursion->provider_id = 10;
                 $newExcursion->save();
 
-                $providerExcursion = new ProviderExcursion();
-                $providerExcursion->excursion_id = $newExcursion->id;
-                $providerExcursion->provider_excursion_id = $nevaProgram['id'];
-                $providerExcursion->provider_id = 10;
-                $providerExcursion->provider_excursion_status = $nevaProgram['is_active'];
-                $providerExcursion->save();
+                $additionalData = new AdditionalDataExcursion();
+                $additionalData->excursion_id = $newExcursion->id;
+                $additionalData->provider_excursion_id = $nevaProgram['id'];
+                $additionalData->provider_id = 10;
+                $additionalData->provider_excursion_status = $nevaProgram['is_active'];
+                $additionalData->save();
 
                 $info = $newExcursion->info;
             }

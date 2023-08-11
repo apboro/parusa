@@ -7,18 +7,17 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('provider_order', function (Blueprint $table) {
+        Schema::create('additional_data_orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedSmallInteger('provider_id');
             $table->unsignedInteger('order_id');
             $table->string('provider_order_id', 20)->nullable();
             $table->string('provider_order_uuid', 50)->nullable();
-            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('provider_order');
+        Schema::dropIfExists('additional_data_orders');
     }
 };

@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ProviderTicket extends Model
+class AdditionalDataTicket extends Model
 {
     protected $fillable = [
         'provider_id',
         'ticket_id',
     ];
 
-    protected $table = 'provider_ticket';
+    protected $table = 'additional_data_tickets';
+
+    public $timestamps = false;
 }

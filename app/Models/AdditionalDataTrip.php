@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ProviderTrip extends Model
+class AdditionalDataTrip extends Model
 {
     protected $fillable = [
         'provider_id',
@@ -13,5 +13,7 @@ class ProviderTrip extends Model
         'provider_price_id',
     ];
 
-    protected $table = 'provider_trip';
+    protected $table = 'additional_data_trips';
+
+    public $timestamps = false;
 }

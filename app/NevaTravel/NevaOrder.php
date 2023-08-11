@@ -4,7 +4,7 @@ namespace App\NevaTravel;
 
 use App\Http\APIResponse;
 use App\Models\Order\Order;
-use App\Models\ProviderOrder;
+use App\Models\AdditionalDataOrder;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
@@ -31,7 +31,7 @@ class NevaOrder
                     Log::channel('neva')->error('Neva API make ticket error: ', [$result]);
                     return false;
                 }
-                ProviderOrder::create([
+                AdditionalDataOrder::create([
                     'provider_id' => 10,
                     'order_id' => $this->order->id,
                     'provider_order_uuid' => $result['body']['id'],
@@ -50,9 +50,9 @@ class NevaOrder
     {
         try {
             if ($this->checkOrderHasNevaTickets()) {
-                $result = $this->nevaApiData->approveOrder($this->order->providerOrder->provider_order_uuid);
+                $result = $this->nevaApiData->approveOrder($this->order->additionalData->provider_order_uuid);
                 if (isset($result['body']['number'])) {
-                    $this->order->providerOrder->update(['provider_order_id' => $result['body']['number']]);
+                    $this->order->additionalData->update(['provider_order_id' => $result['body']['number']]);
                 } else {
                     Log::error('Neva API Approve Error', [$result]);
                 }
@@ -75,11 +75,11 @@ class NevaOrder
 
     public function cancel(): array
     {
-        return $this->nevaApiData->cancelOrder(['id' => $this->order->providerOrder->provider_order_uuid, 'comment' => 'Клиент потребовал возврат']);
+        return $this->nevaApiData->cancelOrder(['id' => $this->order->additionalData->provider_order_uuid, 'comment' => 'Клиент потребовал возврат']);
     }
 
     public function getOrderInfo()
     {
-        return $this->nevaApiData->getOrderInfo($this->order->providerOrder->provider_order_uuid);
+        return $this->nevaApiData->getOrderInfo($this->order->additionalData->provider_order_uuid);
     }
 }

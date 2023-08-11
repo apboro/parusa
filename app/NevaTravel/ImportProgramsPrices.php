@@ -20,30 +20,40 @@ class ImportProgramsPrices
         $nevaApiData = new NevaTravelRepository();
         $nevaPrograms = $nevaApiData->getProgramsInfo();
         $this->addOrUpdateGradesInDictionary();
+        $excursions = Excursion::with('additionalData')->where('provider_id', 10)->get();
         foreach ($nevaPrograms['body'] as $nevaProgram) {
-            $excursion = Excursion::where('external_id', $nevaProgram)->first();
 
-            $ratesList = $this->createOrUpdateRateList($excursion);
+            $foundExcursion = null;
+            foreach ($excursions as $excursion) {
+                if ($excursion->additionalData->provider_excursion_id === $nevaProgram['id']) {
+                    $foundExcursion = $excursion;
+                    break;
+                }
+            }
 
-            $prices = $nevaProgram['prices_table'][0]['default_price'];
+            if ($foundExcursion) {
+                $ratesList = $this->createOrUpdateRateList($foundExcursion);
 
-            $grades = TicketGrade::whereIn('id', TicketGrade::neva_grades_array)->pluck('external_grade_name', 'id');
+                $prices = $nevaProgram['prices_table'][0]['default_price'];
 
-            foreach ($grades as $grade_id => $grade_name) {
-                TicketRate::updateOrCreate(
-                    [
-                        'rate_id' => $ratesList->id,
-                        'grade_id' => $grade_id,
-                    ],
-                    [
-                        'base_price' => $prices[$grade_name]['price']/100,
-                        'min_price' => $prices[$grade_name]['price']/100,
-                        'max_price' => $prices[$grade_name]['price']/100,
-                        'commission_type' => 'fixed',
-                        'commission_value' => 100,
-                        'site_price' => $prices[$grade_name]['price']/100,
-                    ]
-                );
+                $grades = TicketGrade::whereIn('id', TicketGrade::neva_grades_array)->pluck('external_grade_name', 'id');
+
+                foreach ($grades as $grade_id => $grade_name) {
+                    TicketRate::updateOrCreate(
+                        [
+                            'rate_id' => $ratesList->id,
+                            'grade_id' => $grade_id,
+                        ],
+                        [
+                            'base_price' => $prices[$grade_name]['price'] / 100,
+                            'min_price' => $prices[$grade_name]['price'] / 100,
+                            'max_price' => $prices[$grade_name]['price'] / 100,
+                            'commission_type' => 'fixed',
+                            'commission_value' => 100,
+                            'site_price' => $prices[$grade_name]['price'] / 100,
+                        ]
+                    );
+                }
             }
         }
     }

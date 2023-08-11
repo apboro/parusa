@@ -49,6 +49,9 @@ class PartnerCartController extends ApiEditController
             ->select('position_ordering_tickets.*')
             ->get();
         $limits = [];
+        $hasNevaTicket = $tickets->filter(function ($ticket) {
+            return $ticket->trip->provider_id === 10;
+        })->isNotEmpty();
 
         $tickets = $tickets->map(function (PositionOrderingTicket $ticket) use (&$limits) {
             $trip = $ticket->trip;
@@ -59,9 +62,11 @@ class PartnerCartController extends ApiEditController
                     'total' => $trip->tickets_total,
                 ];
             }
+
             return [
                 'id' => $ticket->id,
                 'trip_id' => $trip->id,
+                'ticket_provider_id' => $ticket->trip->provider_id,
                 'trip_start_date' => $trip->start_at->format('d.m.Y'),
                 'trip_start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
@@ -81,7 +86,7 @@ class PartnerCartController extends ApiEditController
         return APIResponse::response([
             'tickets' => $tickets,
             'limits' => $limits,
-            'can_reserve' => $current->partner() ? $current->partner()->profile->can_reserve_tickets : null,
+            'can_reserve' => $current->partner() ? ($current->partner()->profile->can_reserve_tickets && !$hasNevaTicket) : null,
         ], []);
     }
 

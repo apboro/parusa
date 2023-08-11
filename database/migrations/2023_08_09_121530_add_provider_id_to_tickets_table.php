@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\ProviderTicket;
+use App\Models\AdditionalDataTicket;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,7 +10,7 @@ return new class extends Migration {
     {
         $tickets = DB::table('tickets')->where('neva_travel_ticket','!=', 0)->get();
         foreach ($tickets as $ticket) {
-            ProviderTicket::create([
+            AdditionalDataTicket::create([
                 'provider_id' => 10,
                 'ticket_id' => $ticket->id,
             ]);

@@ -7,6 +7,7 @@ use App\Exceptions\Tickets\WrongTicketStatusException;
 use App\Helpers\PriceConverter;
 use App\Interfaces\Statusable;
 use App\Models\Account\AccountTransaction;
+use App\Models\AdditionalDataTicket;
 use App\Models\BackwardTicket;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
@@ -313,6 +314,11 @@ class Ticket extends Model implements Statusable
     public function backward(): bool
     {
         return $this->hasOne(BackwardTicket::class,'backward_ticket_id', 'id')->exists();
+    }
+
+    public function additionalData()
+    {
+        return $this->hasOne(AdditionalDataTicket::class, 'ticket_id', 'id');
     }
 
 }

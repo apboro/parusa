@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\ProviderTrip;
+use App\Models\AdditionalDataTrip;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        $trips = DB::table('trips')->whereNotNull('source')->get();
+        $trips = DB::table('trips')
+            ->whereNotNull('source')
+            ->get(['id', 'external_id', 'program_price_id']);
+
         foreach ($trips as $trip) {
-            ProviderTrip::create([
+            AdditionalDataTrip::create([
                 'provider_id' => 10,
                 'trip_id' => $trip->id,
                 'provider_trip_id' => $trip->external_id,

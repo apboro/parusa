@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property mixed $provider_excursion_status
  */
-class ProviderExcursion extends Model
+class AdditionalDataExcursion extends Model
 {
     protected $fillable = [
         'provider_id',
@@ -16,5 +16,7 @@ class ProviderExcursion extends Model
         'provider_excursion_status',
     ];
 
-    protected $table = 'provider_excursion';
+    protected $table = 'additional_data_excursions';
+
+    public $timestamps = false;
 }
