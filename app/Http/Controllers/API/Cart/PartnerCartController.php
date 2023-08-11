@@ -50,6 +50,10 @@ class PartnerCartController extends ApiEditController
             ->get();
         $limits = [];
 
+        $hasNevaTicket = $tickets->filter(function ($ticket) {
+            return $ticket->trip->source != null;
+        })->isNotEmpty();
+
         $tickets = $tickets->map(function (PositionOrderingTicket $ticket) use (&$limits) {
             $trip = $ticket->trip;
             if (!isset($limits[$trip->id])) {
@@ -79,7 +83,7 @@ class PartnerCartController extends ApiEditController
         return APIResponse::response([
             'tickets' => $tickets,
             'limits' => $limits,
-            'can_reserve' => $current->partner() ? $current->partner()->profile->can_reserve_tickets : null,
+            'can_reserve' => $current->partner() ? ($current->partner()->profile->can_reserve_tickets && !$hasNevaTicket) : null,
         ], []);
     }
 
