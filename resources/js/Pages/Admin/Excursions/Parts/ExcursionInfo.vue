@@ -15,8 +15,8 @@
             <GuiValue :title="'Единый билет'">
                 {{ data['is_single_ticket'] ? 'Да' : 'Нет' }}
             </GuiValue>
-            <GuiValue title='Билет "Туда - обратно"'>
-                {{ data['has_return_trip'] ? 'Да' : 'Нет' }}
+            <GuiValue title='Экскурсия для билета обратно'>
+                {{ data['reverse_excursion'] ?? 'Нет' }}
             </GuiValue>
         </GuiContainer>
 

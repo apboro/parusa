@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $provider_id
  * @property bool $only_site
  * @property bool $is_single_ticket
- * @property bool $has_return_trip
+ * @property int $reverse_excursion_id
  *
  * @property ExcursionStatus $status
  * @property Collection $programs
@@ -41,6 +41,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection $ratesLists
  * @property Collection $partnerShowcaseHide
  * @property Collection<Trip> $trips
+ * @property hasOne $reverseExcursion
  * @property ProviderExcursion $providerExcursion
  */
 class Excursion extends Model implements Statusable, AsDictionary
@@ -52,7 +53,6 @@ class Excursion extends Model implements Statusable, AsDictionary
     protected $casts = [
         'only_site' => 'bool',
         'is_single_ticket' => 'bool',
-        'has_return_trip' => 'bool',
     ];
 
     /** @var array Default attributes. */
@@ -193,6 +193,11 @@ class Excursion extends Model implements Statusable, AsDictionary
     public function partnerShowcaseHide(): BelongsToMany
     {
         return $this->belongsToMany(Partner::class, 'partner_excursion_showcase_disabling', 'excursion_id','partner_id');
+    }
+
+    public function reverseExcursion()
+    {
+        return $this->hasOne(Excursion::class, 'id', 'reverse_excursion_id');
     }
 
     public function providerExcursion(): hasOne

@@ -24,6 +24,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Carbon $updated_at
  * @property TicketGrade $grade
  * @property Collection $partnerRates
+ * @property string $backward_price_type
+ * @property int $backward_price_value
  */
 class TicketRate extends Model
 {
@@ -40,6 +42,8 @@ class TicketRate extends Model
         'site_price',
         'commission_type',
         'commission_value',
+        'backward_price_type',
+        'backward_price_value'
     ];
 
     /**

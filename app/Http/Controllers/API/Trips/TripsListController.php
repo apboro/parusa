@@ -114,6 +114,7 @@ class TripsListController extends ApiController
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
                 'has_return_trip' => $trip->excursion->has_return_trip,
                 'trip_provider' => $trip->excursion->provider->name
+                'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
             ];
         });
 

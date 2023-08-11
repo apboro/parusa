@@ -61,8 +61,7 @@ class ShowcaseOrderController extends ApiEditController
         $now = Carbon::now();
 
         /** @var Trip $trip */
-        $trip = Trip::query()
-            ->where('id', $request->input('trip'))
+        $tripQuery = Trip::query()
             ->where(function (Builder $trip) use ($now) {
                 $trip->where('start_at', '>', $now)
                     ->orWhere(function (Builder $trip) use ($now) {
@@ -86,8 +85,15 @@ class ShowcaseOrderController extends ApiEditController
                             $query->where('base_price', '>', 0);
                         }
                     });
-            })
+            });
+
+        $trip = $tripQuery->clone()->where('id', $request->input('trip'))
             ->first();
+
+
+        $backwardTrip = $tripQuery->clone()->where('id', $request->input('backwardTripId'))
+            ->first();
+
 
         if ($trip === null) {
             return APIResponse::error('Нет продажи билетов на этот рейс.');
@@ -132,7 +138,7 @@ class ShowcaseOrderController extends ApiEditController
         }
 
         $tickets = [];
-
+        $backwardTickets = [];
         foreach ($data['rate'] as $gradeId => $grade) {
             if ($grade['quantity'] > 0) {
                 // get rate
@@ -149,7 +155,19 @@ class ShowcaseOrderController extends ApiEditController
                         'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
                         'provider_id' => $trip->provider_id,
                     ]);
+                    if ($backwardTrip) {
+                        $backwardTicket = new Ticket([
+                            'trip_id' => $backwardTrip->id,
+                            'grade_id' => $gradeId,
+                            'status_id' => TicketStatus::showcase_creating,
+                            'base_price' => $rate->backward_price_type === 'fixed' ? $rate->backward_price_value : $rate->base_price * ($rate->backward_price_value / 100),
+                            'neva_travel_ticket' => $trip->source === 'NevaTravelApi',
+                        ]);
+                        $backwardTickets[] = $backwardTicket ?? null;
+                    }
                     $tickets[] = $ticket;
+
+
                 }
             }
         }

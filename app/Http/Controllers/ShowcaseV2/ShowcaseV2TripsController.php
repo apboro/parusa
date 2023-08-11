@@ -121,7 +121,7 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
                 'ship' => $trip->ship->name,
                 'excursion' => $trip->excursion->name,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
-                'has_return_trip' => $trip->excursion->has_return_trip,
+                'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
                 'concatenated_start_at' => $trip->concatenated_start_at,
                 'excursion_id' => $trip->excursion_id,
                 'programs' => $trip->excursion->programs->map(function (ExcursionProgram $program) {

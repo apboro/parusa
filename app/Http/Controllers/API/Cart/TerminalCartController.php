@@ -85,6 +85,8 @@ class TerminalCartController extends ApiEditController
                 'trip_start_date' => $trip->start_at->format('d.m.Y'),
                 'trip_start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
+                'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
+                'backward_price' => $ticket->parent_ticket_id !== null ? $ticket->getBackwardPrice() : null,
                 'pier' => $trip->startPier->name,
                 'grade' => $ticket->grade->name,
                 'base_price' => $price = $ticket->getPrice(),
@@ -251,8 +253,18 @@ class TerminalCartController extends ApiEditController
             return APIResponse::error('Билет не найден.');
         }
 
+        $backwardTicket = $ticket->backwardTicket;
         if ($ticket->trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
             throw new RuntimeException('Недостаточно свободных мест на теплоходе.');
+        }
+
+        if ($backwardTicket?->trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
+            throw new RuntimeException('Недостаточно свободных мест на теплоходе в обратную сторону.');
+        }
+
+        if ($backwardTicket) {
+            $backwardTicket->quantity = $quantity;
+            $backwardTicket->save();
         }
 
         $ticket->quantity = $quantity;
