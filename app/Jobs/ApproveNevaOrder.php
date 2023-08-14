@@ -17,6 +17,10 @@ class ApproveNevaOrder implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private Order $order;
+
+    public int $tries = 3;
+
+
     /**
      * Create a new job instance.
      *
@@ -33,7 +37,7 @@ class ApproveNevaOrder implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         Log::channel('neva')->info('Neva approve order job', [$this->order]);
         (new NevaOrder($this->order))->approve();

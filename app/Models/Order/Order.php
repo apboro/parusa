@@ -345,41 +345,55 @@ class Order extends Model implements Statusable, Typeable
 
                 foreach ($tickets as $ticket) {
 
+                    //making backward tickets for partner and terminal
                     $cart_ticket_id = $ticket->cart_ticket_id;
                     $cart_parent_ticket_id = $ticket->cart_parent_ticket_id;
                     $backward_price = $ticket->backward_price;
                     $ticket->order_id = $order->id;
+
                     unset($ticket->cart_ticket_id, $ticket->cart_parent_ticket_id, $ticket->backward_price);
+
                     $ticket->save();
-                    $cartData[$cart_ticket_id] = [
+
+                    $cartData[$ticket->id] = [
                         'id' => $ticket->id,
                         'cart_ticket_id' => $cart_ticket_id,
                         'cart_parent_ticket_id' => $cart_parent_ticket_id,
                         'backward_price' => $backward_price,
                     ];
 
+                    //making backward tickets for showcase
                     foreach ($backwardTickets as $index => $backwardTicket) {
                         if ($backwardTicket->grade_id === $ticket->grade_id) {
+                            $backwardTicket = new BackwardTicket();
                             $backwardTicket->order_id = $order->id;
+                            $backwardTicket->main_ticket_id = $ticket->id;
+                            $backwardTicket->backward_ticket_id = $backwardTicket['id'];
                             $backwardTicket->save();
-                            BackwardTicket::create([
-                                'main_ticket_id' => $ticket->id,
-                                'backward_ticket_id' => $backwardTicket['id'],
-                            ]);
                             unset($backwardTickets[$index]);
                             break;
                         }
                     }
                 }
 
-                foreach ($cartData ?? [] as $cartTicket) {
-                    if ($cartTicket['cart_parent_ticket_id']) {
-                        BackwardTicket::create([
-                            'main_ticket_id' => $cartData[$cartTicket['cart_parent_ticket_id']]['id'],
-                            'backward_ticket_id' => $cartTicket['id'],
-                        ]);
+                $collection = collect($cartData);
+
+                $collection->each(function ($item) use ($collection, $order) {
+                    if (!is_null($item['cart_parent_ticket_id'])) {
+                        $parentItem = $collection->first(function ($parent) use ($item) {
+                            return $parent['cart_ticket_id'] === $item['cart_parent_ticket_id'];
+                        });
+
+                        if ($parentItem) {
+                            $backwardTicket = new BackwardTicket();
+                            $backwardTicket->order_id = $order->id;
+                            $backwardTicket->main_ticket_id = $parentItem['id'];
+                            $backwardTicket->backward_ticket_id = $item['id'];
+                            $backwardTicket->save();
+                        }
+                        $collection->forget($parentItem['id']);
                     }
-                }
+                });
 
                 if ($promocodeId) {
                     $order->promocode()->sync([$promocodeId]);
@@ -434,5 +448,10 @@ class Order extends Model implements Statusable, Typeable
     public function additionalData()
     {
         return $this->hasOne(AdditionalDataOrder::class, 'order_id', 'id');
+    }
+
+    public function backwards(): HasMany
+    {
+        return $this->hasMany(BackwardTicket::class);
     }
 }

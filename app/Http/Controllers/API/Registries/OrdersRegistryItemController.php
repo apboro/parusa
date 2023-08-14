@@ -92,7 +92,7 @@ class OrdersRegistryItemController extends ApiController
                     'reverse_excursion_id' => $ticket->trip->excursion->reverse_excursion_id,
                     'excursion_id' => $ticket->trip->excursion->id,
                     'transferable' => in_array($ticket->status_id, TicketStatus::ticket_paid_statuses, true),
-                    'isBackward' => $ticket->backward(),
+                    'isBackward' => $ticket->isBackward(),
                     'pier' => $ticket->trip->startPier->name,
                     'grade' => $ticket->grade->name,
                     'status' => $ticket->status->name,

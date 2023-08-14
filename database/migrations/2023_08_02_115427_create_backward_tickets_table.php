@@ -12,7 +12,20 @@ return new class extends Migration {
 
             $table->unsignedInteger('main_ticket_id')->nullable();
             $table->unsignedInteger('backward_ticket_id')->nullable();
-            $table->timestamps();
+            $table->unsignedInteger('order_id')->nullable();
+
+            $table->foreign('main_ticket_id')
+                ->on('tickets')
+                ->references('id')
+                ->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('backward_ticket_id')
+                ->on('tickets')
+                ->references('id')
+                ->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('order_id')
+                ->on('orders')
+                ->references('id')
+                ->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

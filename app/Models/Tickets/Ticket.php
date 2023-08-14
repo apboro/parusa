@@ -45,14 +45,15 @@ use JsonException;
  * @property TicketGrade $grade
  * @property AccountTransaction $transaction
  * @property TicketReturn $return
- * @property bool $backward
+ * @property BackwardTicket $backward
+ * @property Boolean $IsBackward
  */
 class Ticket extends Model implements Statusable
 {
     use HasStatus;
 
     /** @var string[] Fillable attributes. */
-    protected $fillable = ['trip_id', 'grade_id', 'status_id', 'base_price', 'neva_travel_ticket', 'provider_id'];
+    protected $fillable = ['trip_id', 'grade_id', 'status_id', 'base_price', 'neva_travel_ticket', 'provider_id', 'parent_ticket_id'];
 
     /**
      * User's status.
@@ -81,7 +82,7 @@ class Ticket extends Model implements Statusable
             $this->checkAndSetStatus(TicketStatus::class, TicketStatus::terminal_paid_single, WrongTicketStatusException::class, $save);
         } elseif ($status === TicketStatus::partner_paid && $isSingleTicket) {
             $this->checkAndSetStatus(TicketStatus::class, TicketStatus::partner_paid_single, WrongTicketStatusException::class, $save);
-        } elseif ($status === TicketStatus::showcase_paid && $isSingleTicket){
+        } elseif ($status === TicketStatus::showcase_paid && $isSingleTicket) {
             $this->checkAndSetStatus(TicketStatus::class, TicketStatus::showcase_paid_single, WrongTicketStatusException::class, $save);
         } else {
             $this->checkAndSetStatus(TicketStatus::class, $status, WrongTicketStatusException::class, $save);
@@ -311,9 +312,19 @@ class Ticket extends Model implements Statusable
             ->getDataUri();
     }
 
-    public function backward(): bool
+    public function isBackward(): bool
     {
-        return $this->hasOne(BackwardTicket::class,'backward_ticket_id', 'id')->exists();
+        return $this->hasOne(BackwardTicket::class, 'backward_ticket_id', 'id')->exists();
+    }
+
+    public function backwardTicket()
+    {
+        return Ticket::find(BackwardTicket::where('main_ticket_id', $this->id)->first()?->backward_ticket_id);
+    }
+
+    public function mainTicket()
+    {
+        return Ticket::find(BackwardTicket::where('backward_ticket_id', $this->id)->first()?->main_ticket_id);
     }
 
     public function additionalData()

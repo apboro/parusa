@@ -16,11 +16,12 @@ return new class extends Migration {
 
             $table->foreign('excursion_id')
                 ->on('excursions')
-                ->references('id');
+                ->references('id')
+                ->cascadeOnDelete()->cascadeOnUpdate();
 
             $table->foreign('provider_id')
                 ->on('dictionary_providers')
-                ->references('id');
+                ->references('id')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

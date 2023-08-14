@@ -13,6 +13,16 @@ return new class extends Migration {
             $table->unsignedInteger('order_id');
             $table->string('provider_order_id', 20)->nullable();
             $table->string('provider_order_uuid', 50)->nullable();
+
+            $table->foreign('provider_id')
+                ->on('dictionary_providers')
+                ->references('id')
+                ->cascadeOnDelete()->cascadeOnUpdate();
+
+            $table->foreign('order_id')
+                ->on('orders')
+                ->references('id')
+                ->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

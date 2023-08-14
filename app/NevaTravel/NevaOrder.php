@@ -26,7 +26,12 @@ class NevaOrder
     {
         try {
             if ($this->checkOrderHasNevaTickets()) {
-                $result = $this->nevaApiData->makeOrder($this->order);
+                if ($this->checkNevaTicketHasBackwardTicket()){
+                    $result = $this->nevaApiData->makeComboOrder($this->order);
+                } else {
+                    $result = $this->nevaApiData->makeOrder($this->order);
+                }
+
                 if (!$result || $result['status'] != 200) {
                     Log::channel('neva')->error('Neva API make ticket error: ', [$result]);
                     return false;
@@ -41,7 +46,7 @@ class NevaOrder
                 Log::channel('neva')->info('Neva API make ticket success: ', [$result, $this->order]);
             }
         } catch (Exception $e) {
-            Log::channel('neva')->error('Neva API make ticket error: ' . $e->getMessage());
+            Log::channel('neva')->error('Neva API make ticket error: ' . $e->getMessage(). ' '. $e->getLine(). ' '. $e->getFile());
         }
         return true;
     }
@@ -58,7 +63,7 @@ class NevaOrder
                 }
             }
         } catch (Exception $e) {
-            Log::error('Neva API Error: ' . $e->getMessage());
+            Log::error('Neva API Error: ' . $e->getMessage(). ' '. $e->getLine(). ' '. $e->getFile());
         }
     }
 
@@ -71,6 +76,13 @@ class NevaOrder
             }
         }
         return false;
+    }
+
+    private function checkNevaTicketHasBackwardTicket()
+    {
+        return $this->order->tickets->filter(function ($ticket) {
+            return $ticket->isBackward();
+        })->isNotEmpty();
     }
 
     public function cancel(): array

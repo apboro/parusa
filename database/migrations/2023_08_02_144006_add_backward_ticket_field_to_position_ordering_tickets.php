@@ -10,7 +10,8 @@ return new class extends Migration {
         Schema::table('position_ordering_tickets', function (Blueprint $table) {
             $table->unsignedInteger('parent_ticket_id')->nullable();
 
-            $table->foreign('parent_ticket_id')->on('position_ordering_tickets')
+            $table->foreign('parent_ticket_id')
+                ->on('position_ordering_tickets')
                 ->references('id')->cascadeOnDelete();
         });
     }

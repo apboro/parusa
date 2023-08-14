@@ -17,4 +17,6 @@ class Provider extends Model
     ];
 
     protected $table = 'dictionary_providers';
+
+    public $timestamps = false;
 }

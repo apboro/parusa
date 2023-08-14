@@ -23,6 +23,10 @@ return new class extends Migration {
 
         Schema::table('tickets', function (Blueprint $table) {
             $table->dropColumn('neva_travel_ticket');
+            $table->foreign('provider_id')
+                ->on('dictionary_providers')
+                ->references('id')
+                ->nullOnDelete()->cascadeOnUpdate();
         });
     }
 

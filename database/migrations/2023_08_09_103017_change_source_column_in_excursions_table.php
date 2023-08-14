@@ -29,8 +29,11 @@ return new class extends Migration {
 
         Schema::table('excursions', function (Blueprint $table) {
             $table->dropColumn(['source', 'neva_status', 'external_id']);
+            $table->foreign('provider_id')
+                ->on('dictionary_providers')
+                ->references('id')
+                ->nullOnDelete()->cascadeOnUpdate();
         });
-
     }
 
     public function down(): void

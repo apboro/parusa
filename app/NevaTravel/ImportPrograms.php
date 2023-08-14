@@ -20,7 +20,7 @@ class ImportPrograms
         foreach ($nevaPrograms['body'] as $nevaProgram) {
             $foundExcursion = null;
             foreach ($excursions as $excursion) {
-                if ($excursion->additionalData->provider_excursion_id === $nevaProgram['id']) {
+                if ($excursion->additionalData?->provider_excursion_id === $nevaProgram['id']) {
                     $foundExcursion = $excursion;
                     break;
                 }

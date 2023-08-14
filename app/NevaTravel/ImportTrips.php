@@ -41,13 +41,18 @@ class ImportTrips
             ->where('provider_id', 10)
             ->where('start_at', '>', $currentDate)
             ->where('end_at', '<', $this->endDate->clone()->subHour())
-            ->update(['tickets_total' => 0]);
+            ->update([
+                'status_id' => 4,
+                'sale_status_id' => 3,
+                'tickets_total' => 0
+            ]);
 
         while ($currentDate <= $this->endDate) {
             $nevaTrips = $nevaApiData->getCruisesInfo([
                 'program_ids' => $excursionsArray,
                 'departure_date' => $currentDate->format('Y-m-d'),
-                'passengers' => 1]);
+                'passengers' => 1
+            ]);
             if ($nevaTrips) {
                 foreach ($nevaTrips['body'] as $nevaTrip) {
                     $ship = $ships->firstWhere('external_id', $nevaTrip['ship_id']);

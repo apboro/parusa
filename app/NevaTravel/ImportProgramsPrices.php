@@ -25,7 +25,7 @@ class ImportProgramsPrices
 
             $foundExcursion = null;
             foreach ($excursions as $excursion) {
-                if ($excursion->additionalData->provider_excursion_id === $nevaProgram['id']) {
+                if ($excursion->additionalData?->provider_excursion_id === $nevaProgram['id']) {
                     $foundExcursion = $excursion;
                     break;
                 }
@@ -71,7 +71,7 @@ class ImportProgramsPrices
             ],
             ['external_name' =>'infant',
             'id'=> TicketGrade::neva_infant,
-            'inner_name' => 'Десткий (до 3 лет)'
+            'inner_name' => 'Детский (до 3 лет)'
             ],
             ['external_name' =>'privileged',
             'id'=> TicketGrade::neva_privileged,
@@ -88,7 +88,8 @@ class ImportProgramsPrices
                     'name' => $grade['inner_name'],
                     'enabled' => 1,
                     'locked' => 1,
-                    'external_grade_name' => $grade['external_name']
+                    'external_grade_name' => $grade['external_name'],
+                    'provider_id' => 10,
                 ]);
         }
     }

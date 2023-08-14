@@ -28,6 +28,10 @@ return new class extends Migration {
 
         Schema::table('trips', function (Blueprint $table) {
             $table->dropColumn(['external_id', 'program_price_id', 'source']);
+            $table->foreign('provider_id')
+                ->on('dictionary_providers')
+                ->references('id')
+                ->nullOnDelete()->cascadeOnUpdate();
         });
     }
 

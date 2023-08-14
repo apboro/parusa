@@ -12,7 +12,6 @@ return new class extends Migration {
             $table->string('name', 50);
             $table->string('status', 25)->nullable();
             $table->string('service', 35);
-            $table->timestamps();
         });
 
         Artisan::call('db:seed');
