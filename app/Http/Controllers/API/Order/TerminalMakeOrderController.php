@@ -16,7 +16,7 @@ use App\Models\Partner\Partner;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
-use App\NevaTravel\NevaOrder;
+use App\Services\NevaTravel\NevaOrder;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -53,7 +53,7 @@ class Ticket extends Model implements Statusable
     use HasStatus;
 
     /** @var string[] Fillable attributes. */
-    protected $fillable = ['trip_id', 'grade_id', 'status_id', 'base_price', 'neva_travel_ticket', 'provider_id', 'parent_ticket_id'];
+    protected $fillable = ['trip_id', 'grade_id', 'status_id', 'base_price', 'neva_travel_ticket', 'provider_id'];
 
     /**
      * User's status.

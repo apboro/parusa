@@ -3,9 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\Order\Order;
-use App\NevaTravel\NevaOrder;
+use App\Services\NevaTravel\NevaOrder;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;

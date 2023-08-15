@@ -345,7 +345,7 @@ class Order extends Model implements Statusable, Typeable
 
                 foreach ($tickets as $ticket) {
 
-                    //making backward tickets for partner and terminal
+                    //collecting backward tickets for partner and terminal
                     $cart_ticket_id = $ticket->cart_ticket_id;
                     $cart_parent_ticket_id = $ticket->cart_parent_ticket_id;
                     $backward_price = $ticket->backward_price;
@@ -365,19 +365,21 @@ class Order extends Model implements Statusable, Typeable
                     //making backward tickets for showcase
                     foreach ($backwardTickets as $index => $backwardTicket) {
                         if ($backwardTicket->grade_id === $ticket->grade_id) {
-                            $backwardTicket = new BackwardTicket();
                             $backwardTicket->order_id = $order->id;
-                            $backwardTicket->main_ticket_id = $ticket->id;
-                            $backwardTicket->backward_ticket_id = $backwardTicket['id'];
                             $backwardTicket->save();
+                            $backwardTicketModel = new BackwardTicket();
+                            $backwardTicketModel->order_id = $order->id;
+                            $backwardTicketModel->main_ticket_id = $ticket->id;
+                            $backwardTicketModel->backward_ticket_id = $backwardTicket->id;
+                            $backwardTicketModel->save();
                             unset($backwardTickets[$index]);
                             break;
                         }
                     }
                 }
 
+                //creating backward tickets for partner and terminal
                 $collection = collect($cartData);
-
                 $collection->each(function ($item) use ($collection, $order) {
                     if (!is_null($item['cart_parent_ticket_id'])) {
                         $parentItem = $collection->first(function ($parent) use ($item) {

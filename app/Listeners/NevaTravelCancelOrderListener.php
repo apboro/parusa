@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\NevaTravelCancelOrderEvent;
-use App\NevaTravel\NevaOrder;
+use App\Services\NevaTravel\NevaOrder;
 
 class NevaTravelCancelOrderListener
 {
