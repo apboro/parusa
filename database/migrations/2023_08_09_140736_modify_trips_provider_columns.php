@@ -8,18 +8,20 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        $trips = DB::table('trips')
+        DB::table('trips')
             ->whereNotNull('source')
-            ->get(['id', 'external_id', 'program_price_id']);
+            ->orderBy('id')
+            ->chunk(1000, function ($trips) {
+                foreach ($trips as $trip) {
+                    AdditionalDataTrip::create([
+                        'provider_id' => 10,
+                        'trip_id' => $trip->id,
+                        'provider_trip_id' => $trip->external_id,
+                        'provider_price_id' => $trip->program_price_id,
+                    ]);
+                }
+            });
 
-        foreach ($trips as $trip) {
-            AdditionalDataTrip::create([
-                'provider_id' => 10,
-                'trip_id' => $trip->id,
-                'provider_trip_id' => $trip->external_id,
-                'provider_price_id' => $trip->program_price_id,
-            ]);
-        }
         Schema::table('trips', function (Blueprint $table) {
             $table->unsignedSmallInteger('provider_id')->nullable();
         });
