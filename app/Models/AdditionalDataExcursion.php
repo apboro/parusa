@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property mixed $provider_excursion_status
+ * @property int|mixed $excursion_id
+ * @property mixed $provider_excursion_id
+ * @property int|mixed $provider_id
  */
 class AdditionalDataExcursion extends Model
 {

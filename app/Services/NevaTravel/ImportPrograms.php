@@ -4,6 +4,7 @@ namespace App\Services\NevaTravel;
 
 
 use App\Models\AdditionalDataExcursion;
+use App\Models\Dictionaries\Provider;
 use App\Models\Excursions\Excursion;
 
 
@@ -30,13 +31,13 @@ class ImportPrograms
                 $newExcursion = new Excursion();
                 $newExcursion->setAttribute('name', $nevaProgram['name']);
                 $newExcursion->status_id = 2;
-                $newExcursion->provider_id = 10;
+                $newExcursion->provider_id = Provider::neva_travel;
                 $newExcursion->save();
 
                 $additionalData = new AdditionalDataExcursion();
                 $additionalData->excursion_id = $newExcursion->id;
                 $additionalData->provider_excursion_id = $nevaProgram['id'];
-                $additionalData->provider_id = 10;
+                $additionalData->provider_id = Provider::neva_travel;
                 $additionalData->provider_excursion_status = $nevaProgram['is_active'];
                 $additionalData->save();
 

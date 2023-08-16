@@ -49,8 +49,9 @@ class PartnerCartController extends ApiEditController
             ->select('position_ordering_tickets.*')
             ->get();
         $limits = [];
-        $hasNevaTicket = $tickets->filter(function ($ticket) {
-            return $ticket->trip->provider_id === 10;
+        $ticketTrip = $tickets->first()?->trip->id;
+        $hasProviderTicket = $tickets->filter(function ($ticket) {
+            return $ticket->trip->provider_id !== null;
         })->isNotEmpty();
 
         $tickets = $tickets->map(function (PositionOrderingTicket $ticket) use (&$limits) {
@@ -84,9 +85,11 @@ class PartnerCartController extends ApiEditController
         });
 
         return APIResponse::response([
+            'ticketTrip' => $ticketTrip,
+            'hasProviderTickets' => $hasProviderTicket,
             'tickets' => $tickets,
             'limits' => $limits,
-            'can_reserve' => $current->partner() ? ($current->partner()->profile->can_reserve_tickets && !$hasNevaTicket) : null,
+            'can_reserve' => $current->partner() ? ($current->partner()->profile->can_reserve_tickets && !$hasProviderTicket) : null,
         ], []);
     }
 
@@ -112,6 +115,20 @@ class PartnerCartController extends ApiEditController
         ) {
             return APIResponse::notFound('Рейс не найден');
         }
+
+        if ($trip->provider_id !== null && $current->position()->ordering()->exists()){
+            return APIResponse::error('Заказы данного поставщика должны оформляться отдельно, очистите корзину.');
+        }
+
+        $existingTickets = $current->position()->ordering()->get();
+        $hasExternalTickets = $existingTickets->filter(function ($ticket){
+           return $ticket->trip->provider_id !== null;
+        })->isNotEmpty();
+
+        if ($hasExternalTickets){
+            return APIResponse::error('В корзине содержатся билеты другого поставщика, очистите корзину.');
+        }
+
         $now = Carbon::now();
 
         /** @var Trip $trip */

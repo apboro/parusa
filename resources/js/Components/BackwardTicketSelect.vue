@@ -18,14 +18,16 @@ export default {
     data: () => ({
         ticketId: null,
         backward_trips: null,
+        tickets: null,
     }),
 
     methods: {
-        getBackwardTrips($tripId, $ticketId) {
+        getBackwardTrips($tripId, $ticketId, tickets) {
             if ($tripId === 0) {
                 this.backward_trips = [];
                 return;
             }
+            this.tickets = tickets;
             this.ticketId = $ticketId;
             this.returning_progress = true;
             axios.post('/api/order/backward/get_backward_trips', {
@@ -48,6 +50,7 @@ export default {
             this.returning_progress = true;
             axios.post('/api/order/backward/add_backward_tickets', {
                 ticketId: this.ticketId,
+                tickets: this.tickets,
                 back_trip_id: $backTripId
             }).then(() => {
                 this.$emit('update')

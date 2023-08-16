@@ -97,17 +97,22 @@ class OrderBackwardTicketsController extends ApiController
             return APIResponse::notFound('Рейс не найден');
         }
 
-        $ticketFromCart = PositionOrderingTicket::where('id', $request->input('ticketId'))->first();
-        $current->position()
-            ->ordering()
-            ->create([
-                'position_id' => $current->positionId() ?? null,
-                'terminal_id' => $current->terminalId() ?? null,
-                'trip_id' => $trip->id,
-                'grade_id' => $ticketFromCart->grade_id,
-                'parent_ticket_id' => $ticketFromCart->id,
-                'quantity' => $ticketFromCart->quantity
-            ]);
+        $requestWithOneTicket = $request->input('ticketId');
+        $ticketIds = collect($request->input('tickets'))->pluck('id')->toArray();
+        $ticketIds[] = $requestWithOneTicket;
+        foreach (array_filter($ticketIds) as $ticketId) {
+            $ticketFromCart = PositionOrderingTicket::where('id', $ticketId)->first();
+            $current->position()
+                ->ordering()
+                ->create([
+                    'position_id' => $current->positionId() ?? null,
+                    'terminal_id' => $current->terminalId() ?? null,
+                    'trip_id' => $trip->id,
+                    'grade_id' => $ticketFromCart->grade_id,
+                    'parent_ticket_id' => $ticketFromCart->id,
+                    'quantity' => $ticketFromCart->quantity
+                ]);
+        }
 
         return APIResponse::success('Билет добавлен в заказ');
     }
