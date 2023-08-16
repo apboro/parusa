@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Log;
 
 class NevaTravelRepository
 {
-    private ApiClientProvider $apiClient;
+    private NevaTravelApiClientProvider $apiClient;
 
     public function __construct()
     {
-        $this->apiClient = new ApiClientProvider();
+        $this->apiClient = new NevaTravelApiClientProvider();
     }
 
     public function getPiersInfo(array $query = []): array

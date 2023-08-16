@@ -71,6 +71,10 @@ class TerminalCartController extends ApiEditController
             ->get();
         $limits = [];
 
+        $ticketTrip = $tickets->first()?->trip->id;
+        $hasProviderTicket = $tickets->filter(function ($ticket) {
+            return $ticket->trip->provider_id !== null;
+        })->isNotEmpty();
         $tickets = $tickets->map(function (PositionOrderingTicket $ticket) use (&$limits) {
             $trip = $ticket->trip;
             if (!isset($limits[$trip->id])) {
@@ -82,6 +86,7 @@ class TerminalCartController extends ApiEditController
             return [
                 'id' => $ticket->id,
                 'trip_id' => $trip->id,
+                'ticket_provider_id' => $ticket->trip->provider_id,
                 'trip_start_date' => $trip->start_at->format('d.m.Y'),
                 'trip_start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
@@ -98,6 +103,8 @@ class TerminalCartController extends ApiEditController
         });
 
         return APIResponse::response([
+            'ticketTrip' => $ticketTrip,
+            'hasProviderTickets' =>$hasProviderTicket,
             'tickets' => $tickets,
             'limits' => $limits,
             'can_reserve' => $current->partner() ? $current->partner()->profile->can_reserve_tickets : null,
@@ -155,6 +162,20 @@ class TerminalCartController extends ApiEditController
         ) {
             return APIResponse::notFound('Рейс не найден');
         }
+
+        if ($trip->provider_id !== null && $current->position()->ordering()->exists()){
+            return APIResponse::error('Заказы данного поставщика должны оформляться отдельно, очистите корзину.');
+        }
+
+        $existingTickets = $current->position()->ordering()->get();
+        $hasExternalTickets = $existingTickets->filter(function ($ticket){
+            return $ticket->trip->provider_id !== null;
+        })->isNotEmpty();
+
+        if ($hasExternalTickets){
+            return APIResponse::error('В корзине содержатся билеты другого поставщика, очистите корзину.');
+        }
+
         $now = Carbon::now();
 
         /** @var Trip $trip */

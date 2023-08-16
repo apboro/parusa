@@ -11,7 +11,7 @@ return new class extends Migration {
         DB::table('orders')
             ->whereNotNull('neva_travel_id')
             ->orderBy('id')
-            ->chunk(1000, function ($orders) {
+            ->chunk(100, function ($orders) {
                 foreach ($orders as $order) {
                     AdditionalDataOrder::create([
                         'provider_id' => 10,

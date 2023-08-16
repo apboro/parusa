@@ -4,7 +4,7 @@ namespace App\Services\NevaTravel;
 
 use Illuminate\Support\Facades\Http;
 
-class ApiClientProvider
+class NevaTravelApiClientProvider
 {
     private ?string $baseUrl;
     private array $headers;

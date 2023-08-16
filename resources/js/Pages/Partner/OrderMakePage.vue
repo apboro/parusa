@@ -48,25 +48,34 @@
                         </td>
                     </template>
                     <td class="va-middle">
-                        <GuiActionsMenu v-if="ticket['reverse_excursion_id'] !== null && ticket['backward_price'] === null"
-                                        :title="null">
+                        <GuiActionsMenu
+                            v-if="ticket['reverse_excursion_id'] !== null && ticket['backward_price'] === null && !ticket['ticket_provider_id']"
+                            :title="null">
                             <span class="link" @click="remove(ticket['id'])">Удалить билет</span>
                             <span v-if="!ticket['backward_price']" class="link"
-                                  @click="callGetBackwardTrips(ticket['trip_id'], ticket['id'])">Оформить обратный билет</span>
+                                  @click="callGetBackwardTrips(ticket['trip_id'], ticket['id'], null)">Оформить обратный билет</span>
                         </GuiActionsMenu>
-                        <GuiIconButton v-if="ticket['reverse_excursion_id'] === null || ticket['backward_price'] !== null"
-                                       :title="'Удалить из заказа'" :border="false" :color="'red'"
-                                       @click="remove(ticket['id'])">
+                        <GuiIconButton
+                            v-if="ticket['reverse_excursion_id'] === null || ticket['backward_price'] !== null || ticket['ticket_provider_id'] !== null"
+                            :title="'Удалить из заказа'" :border="false" :color="'red'"
+                            @click="remove(ticket['id'])">
                             <IconCross/>
                         </GuiIconButton>
                     </td>
                 </tr>
             </table>
 
+
+            <GuiContainer mt-20 mb-10 bold right>
+                <GuiHeading mb-5 >Итого к оплате: {{ total }}</GuiHeading>
+                <GuiButton v-if="tickets.filter(ticket => ticket.ticket_provider_id !== null && ticket.reverse_excursion_id !== null).length > 0"
+                           @click="callGetBackwardTrips(data.data.ticketTrip, null, tickets)">Оформить
+                    обратный рейс
+                </GuiButton>
+            </GuiContainer>
+
             <BackwardTicketSelect mt-20 ref="backwardTicketSelect" :tickets="data.data['tickets']"
                                   @update="backwardTicketsUpdate"/>
-
-            <GuiHeading mt-20 mb-10 bold right>Итого к оплате: {{ total }}</GuiHeading>
 
 
             <GuiContainer mt-20 mb-20 w-50>
@@ -218,8 +227,8 @@ export default {
         },
 
 
-        callGetBackwardTrips($tripId, $ticketId) {
-            this.$refs.backwardTicketSelect.getBackwardTrips($tripId, $ticketId);
+        callGetBackwardTrips($tripId, $ticketId, tickets) {
+            this.$refs.backwardTicketSelect.getBackwardTrips($tripId, $ticketId, tickets);
         },
 
         back() {

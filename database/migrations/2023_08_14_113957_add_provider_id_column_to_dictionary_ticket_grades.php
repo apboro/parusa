@@ -14,6 +14,8 @@ return new class extends Migration {
                 ->on('dictionary_providers')
                 ->references('id');
         });
+
+        DB::table('dictionary_ticket_grades')->whereNotNull('external_grade_name')->update(['provider_id'=>10]);
     }
 
     public function down(): void

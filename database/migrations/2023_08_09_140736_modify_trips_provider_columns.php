@@ -11,7 +11,7 @@ return new class extends Migration {
         DB::table('trips')
             ->whereNotNull('source')
             ->orderBy('id')
-            ->chunk(1000, function ($trips) {
+            ->chunk(100, function ($trips) {
                 foreach ($trips as $trip) {
                     AdditionalDataTrip::create([
                         'provider_id' => 10,
