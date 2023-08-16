@@ -8,7 +8,7 @@ class Provider extends Model
 {
     public const neva_travel = 10;
 
-    public const city_tours_spb = 20;
+    public const city_tour = 20;
 
     protected $fillable = [
         'name',

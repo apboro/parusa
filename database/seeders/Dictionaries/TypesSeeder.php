@@ -14,7 +14,7 @@ class TypesSeeder extends GenericSeeder
         ],
         Provider::class => [
             Provider::neva_travel => ['name' => 'Neva Travel', 'service' => 'ships'],
-            Provider::city_tours_spb => ['name' => 'City Tours Spb', 'service' => 'buses'],
+            Provider::city_tour => ['name' => 'City Tours Spb', 'service' => 'buses'],
         ]
     ];
 }
