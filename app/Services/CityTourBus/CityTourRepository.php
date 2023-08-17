@@ -19,10 +19,14 @@ class CityTourRepository
     {
         return $this->apiClient->get('excursions', $query);
     }
-
-    public function getShipsInfo(array $query = []): array
+    public function getExcursion(int $path, array $query = []): array
     {
-        return $this->apiClient->get('get_ships_info', $query);
+        return $this->apiClient->get('excursions/'.$path, $query);
+    }
+
+    public function getSchedule(int $path, array $query = []): array
+    {
+        return $this->apiClient->get('excursions-schedule/'. $path, $query);
     }
 
     public function getProgramsInfo(array $query = []): array
