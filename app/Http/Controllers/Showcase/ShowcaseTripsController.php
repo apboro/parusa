@@ -57,6 +57,7 @@ class ShowcaseTripsController extends ApiController
 
         $listQuery = Trip::saleTripQuery($partnerId === null)
             ->with(['status', 'startPier', 'ship', 'excursion', 'excursion.info', 'excursion.programs'])
+            ->where('excursions.status_id', 1)
             ->when($partnerId, function (Builder $query) use ($partnerId) {
                 $query->whereHas('excursion', function (Builder $query) use ($partnerId) {
                     $query->whereDoesntHave('partnerShowcaseHide', function (Builder $query) use ($partnerId) {

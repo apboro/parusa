@@ -223,6 +223,13 @@ class PartnerCartController extends ApiEditController
 
         $quantity = $request->input('value');
 
+        if ($ticket->parent_ticket_id){
+            $parentTicket = $current->position()->ordering()->where('id', $ticket->parent_ticket_id)->first();
+            if ($quantity > $parentTicket->quantity){
+                return APIResponse::error('Обратных билетов не может быть больше, чем прямых.');
+            }
+        }
+
         if ($ticket === null) {
             return APIResponse::error('Билет не найден.');
         }

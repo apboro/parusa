@@ -37,7 +37,7 @@
                                     :hide-title="true"/>
                     </td>
                     <td>
-                        <FormNumber :disabled="ticket['backward_price'] !== null" :form="form"
+                        <FormNumber :disabled="(ticket['backward_price'] !== null && ticket['ticket_provider_id'] !== null) " :form="form"
                                     :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true" :min="0"
                                     :hide-title="true" :model-value="ticket['quantity']"
                                     @change="(value) => quantityChange(ticket['id'], value)"
