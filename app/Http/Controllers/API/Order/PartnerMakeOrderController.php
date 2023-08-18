@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Events\CityTourOrderPaidEvent;
+use App\Events\NevaTravelOrderPaidEvent;
+use App\Events\NewCityTourOrderEvent;
+use App\Events\NewNevaTravelOrderEvent;
 use App\Exceptions\Account\AccountException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
@@ -158,12 +162,11 @@ class PartnerMakeOrderController extends ApiEditController
                     $data['phone'] ?? null
                 );
 
-                $nevaOrder = new NevaOrder($order);
-                if (!$nevaOrder->make()) {
-                    throw new RuntimeException('Невозможно оформить заказ на этот рейс.');
-                } else {
-                    $nevaOrder->approve();
-                }
+                NewNevaTravelOrderEvent::dispatch($order);
+                NevaTravelOrderPaidEvent::dispatch($order);
+
+                NewCityTourOrderEvent::dispatch($order);
+                CityTourOrderPaidEvent::dispatch($order);
 
                 // attach order_id to transaction
                 if ($status_id === OrderStatus::partner_paid) {

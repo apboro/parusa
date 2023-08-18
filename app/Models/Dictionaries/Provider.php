@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Provider extends Model
 {
+    public const scarlet_sails = 1;
     public const neva_travel = 10;
 
     public const city_tour = 20;

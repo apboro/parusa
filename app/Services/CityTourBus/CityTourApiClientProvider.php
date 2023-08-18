@@ -41,4 +41,26 @@ class CityTourApiClientProvider
             'body' => $response->json(),
         ];
     }
+    public function put(string $uri, array $data = []): array
+    {
+        $response = Http::withHeaders($this->headers)
+            ->put($this->baseUrl . $uri, $data);
+
+        return [
+            'status' => $response->status(),
+            'headers' => $response->headers(),
+            'body' => $response->json(),
+        ];
+    }
+    public function delete(string $uri, array $data = []): array
+    {
+        $response = Http::withHeaders($this->headers)
+            ->delete($this->baseUrl . $uri, $data);
+
+        return [
+            'status' => $response->status(),
+            'headers' => $response->headers(),
+            'body' => $response->json(),
+        ];
+    }
 }

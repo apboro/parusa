@@ -3,9 +3,11 @@
 namespace App\Services\NevaTravel;
 
 use App\Models\AdditionalDataOrder;
+use App\Models\Dictionaries\Provider;
 use App\Models\Order\Order;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 class NevaOrder
 {
@@ -21,48 +23,41 @@ class NevaOrder
         $this->nevaApiData = new NevaTravelRepository();
     }
 
-    public function make()
+    public function make(): void
     {
-        try {
-            if ($this->checkOrderHasNevaTickets()) {
-                if ($this->checkNevaTicketHasBackwardTicket()){
-                    $result = $this->nevaApiData->makeComboOrder($this->order);
-                } else {
-                    $result = $this->nevaApiData->makeOrder($this->order);
-                }
-
-                if (!$result || $result['status'] != 200) {
-                    Log::channel('neva')->error('Neva API make ticket error: ', [$result]);
-                    return false;
-                }
-                AdditionalDataOrder::create([
-                    'provider_id' => 10,
-                    'order_id' => $this->order->id,
-                    'provider_order_uuid' => $result['body']['id'],
-                ]);
-
-                $this->order->save();
-                Log::channel('neva')->info('Neva API make ticket success: ', [$result, $this->order]);
+        if ($this->checkOrderHasNevaTickets()) {
+            if ($this->checkNevaTicketHasBackwardTicket()) {
+                $result = $this->nevaApiData->makeComboOrder($this->order);
+            } else {
+                $result = $this->nevaApiData->makeOrder($this->order);
             }
-        } catch (Exception $e) {
-            Log::channel('neva')->error('Neva API make ticket error: ' . $e->getMessage(). ' '. $e->getLine(). ' '. $e->getFile());
+
+            if (!$result || $result['status'] != 200) {
+                Log::channel('neva')->error('Neva API make order error: ', [$result]);
+                throw new RuntimeException('Невозможно оформить заказ на этот рейс.');
+            }
+            AdditionalDataOrder::create([
+                'provider_id' => 10,
+                'order_id' => $this->order->id,
+                'provider_order_uuid' => $result['body']['id'],
+            ]);
+
+            $this->order->save();
+            Log::channel('neva')->info('Neva API make order success: ', [$result, $this->order]);
         }
-        return true;
     }
 
     public function approve()
     {
-        try {
-            if ($this->checkOrderHasNevaTickets()) {
-                $result = $this->nevaApiData->approveOrder($this->order->additionalData->provider_order_uuid);
-                if (isset($result['body']['number'])) {
-                    $this->order->additionalData->update(['provider_order_id' => $result['body']['number']]);
-                } else {
-                    Log::error('Neva API Approve Error', [$result]);
-                }
+
+        if ($this->checkOrderHasNevaTickets()) {
+            $result = $this->nevaApiData->approveOrder($this->order->additionalData->provider_order_uuid);
+            if (isset($result['body']['number'])) {
+                $this->order->additionalData->update(['provider_order_id' => $result['body']['number']]);
+            } else {
+                Log::channel('neva')->error('Neva API Approve Error', [$result]);
+                throw new RuntimeException('Невозможно оформить заказ на этот рейс.');
             }
-        } catch (Exception $e) {
-            Log::error('Neva API Error: ' . $e->getMessage(). ' '. $e->getLine(). ' '. $e->getFile());
         }
     }
 
@@ -70,7 +65,7 @@ class NevaOrder
     {
         $tickets = $this->order->tickets;
         foreach ($tickets as $ticket) {
-            if ($ticket->provider_id == 10) {
+            if ($ticket->provider_id == Provider::neva_travel) {
                 return true;
             }
         }
@@ -84,9 +79,15 @@ class NevaOrder
         })->isNotEmpty();
     }
 
-    public function cancel(): array
+    public function cancel(): void
     {
-        return $this->nevaApiData->cancelOrder(['id' => $this->order->additionalData->provider_order_uuid, 'comment' => 'Клиент потребовал возврат']);
+        if ($this->checkOrderHasNevaTickets()) {
+            $result = $this->nevaApiData->cancelOrder(['id' => $this->order->additionalData->provider_order_uuid, 'comment' => 'Клиент потребовал возврат']);
+            if (!$result || $result['status'] != 200) {
+                Log::channel('neva')->error('Neva API Approve Error', [$result]);
+                throw new RuntimeException('Не получилось сделать возврат.');
+            }
+        }
     }
 
     public function getOrderInfo()

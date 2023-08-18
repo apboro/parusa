@@ -203,4 +203,9 @@ class Excursion extends Model implements Statusable, AsDictionary
     {
         return $this->hasOne(AdditionalDataExcursion::class, 'excursion_id', 'id');
     }
+
+    public function provider()
+    {
+        return Provider::where('id', $this->additionalData?->provider_id)->first();
+    }
 }

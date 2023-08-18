@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Showcase;
 
+use App\Events\NewCityTourOrderEvent;
+use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Http\Middleware\ExternalProtect;
@@ -178,31 +180,28 @@ class ShowcaseOrderController extends ApiEditController
             $orderType = OrderType::site;
         }
 
-        try {
-            DB::transaction(static function () use ($data, $orderType, $tickets, $partnerId, $isPartnerSite, $flat, &$order, $backwardTickets) {
-                // create order
-                $order = Order::make(
-                    $orderType,
-                    $tickets,
-                    OrderStatus::showcase_creating,
-                    $partnerId,
-                    null,
-                    null,
-                    null,
-                    $data['email'],
-                    $data['name'],
-                    $data['phone'],
-                    $isPartnerSite === true, // strict price checking only for partner site
-                    $flat['promocode'] ?? null,
-                    $backwardTickets,
-                );
-                if (!(new NevaOrder($order))->make()) {
-                    throw new RuntimeException ('Невозможно оформить заказ на этот рейс.');
-                }
-            });
-        } catch (Exception $exception) {
-            Log::error('showcaseOrderController error: '.$exception->getMessage());
-        }
+        DB::transaction(static function () use ($data, $orderType, $tickets, $partnerId, $isPartnerSite, $flat, &$order, $backwardTickets) {
+            // create order
+            $order = Order::make(
+                $orderType,
+                $tickets,
+                OrderStatus::showcase_creating,
+                $partnerId,
+                null,
+                null,
+                null,
+                $data['email'],
+                $data['name'],
+                $data['phone'],
+                $isPartnerSite === true, // strict price checking only for partner site
+                $flat['promocode'] ?? null,
+                $backwardTickets,
+            );
+
+            NewNevaTravelOrderEvent::dispatch($order);
+            NewCityTourOrderEvent::dispatch($order);
+
+        });
 
         $orderSecret = json_encode([
             'id' => $order->id,

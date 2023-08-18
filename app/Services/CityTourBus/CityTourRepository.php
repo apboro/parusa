@@ -2,17 +2,18 @@
 
 namespace App\Services\CityTourBus;
 
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
-use App\Services\NevaTravel\NevaTravelApiClientProvider;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
+
 
 class CityTourRepository
 {
 
-    public function __construct(private readonly CityTourApiClientProvider $apiClient)
+    private CityTourApiClientProvider $apiClient;
+    public function __construct()
     {
+        $this->apiClient = new CityTourApiClientProvider();
     }
 
     public function getExcursions(array $query = []): array
@@ -29,48 +30,80 @@ class CityTourRepository
         return $this->apiClient->get('excursions-schedule/'. $path, $query);
     }
 
-    public function getProgramsInfo(array $query = []): array
-    {
-        return $this->apiClient->get('get_programs_info', $query);
-    }
-
-    public function getCruisesInfo(array $query = []): array
-    {
-        return $this->apiClient->get('get_cruises_info', $query);
-    }
-
     public function makeOrder(Order $order): ?array
     {
-        $query = $this->makeNevaOrderFromParusaOrder($order);
+        $query = $this->makeCityTourOrderFromParusaOrder($order);
         if ($query) {
-            return $this->apiClient->post('request_ticket_order', $query);
+            return $this->apiClient->post('orders', $query);
         } else {
             return null;
         }
     }
 
-    public function approveOrder(string $query = ''): array
+    public function approveOrder(Order $order): array
     {
-        return $this->apiClient->post('approve_order?order_id=' . $query);
+        $orderId = $order->additionalData->provider_order_id;
+        $query = ['payment_status' => 1];
+
+        return $this->apiClient->put('orders/'.$orderId, $query);
     }
 
-    public function getOrderInfo(string $query = ''): array
+    public function cancelOrder(Order $order)
     {
-        return $this->apiClient->post('get_order_info?order_id=' . $query);
+        $orderId = $order->additionalData->provider_order_id;
+        $query = ['cancellation_request' => 1];
+
+        return $this->apiClient->put('orders/'.$orderId, $query);
     }
 
-    public function commentOrder(array $query = []): array
+    public function deleteOrder(Order $order)
     {
-        return $this->apiClient->post('comment_order', $query);
+        $orderId = $order->additionalData->provider_order_id;
+
+        return $this->apiClient->delete('orders/'.$orderId);
     }
 
-    public function makeComboTemplateOrder(array $query = []): array
+    public function sendTickets(Order $order)
     {
-        return $this->apiClient->post('request_combo_template_order', $query);
+        $orderId = $order->additionalData->provider_order_id;
+        $query = ['send_tickets' => "true"];
+
+        return $this->apiClient->get('orders/'.$orderId, $query);
+
     }
 
+    public function getOrderInfo(Order $order): array
+    {
+        $orderId = $order->additionalData->provider_order_id;
 
+        return $this->apiClient->get('orders/' . $orderId);
+    }
 
+    public function makeCityTourOrderFromParusaOrder(Order $order): ?array
+    {
+        $tickets = $order->tickets()
+            ->whereIn('status_id', TicketStatus::ticket_countable_statuses)
+            ->where('provider_id', Provider::city_tour)
+            ->get();
+        $params = [];
+        $ticketsList = [];
+        if ($tickets->isNotEmpty()) {
+            foreach ($tickets as $ticket) {
+                $ticketsList[$ticket->grade->id] = isset($ticketsList[$ticket->grade->id]) ? $ticketsList[$ticket->grade->id]  + 1 : 1;
+            }
+            $params = [
+                'customer_name'=>$order->name,
+                'customer_phone' => $order->phone,
+                'customer_email' => $order->email,
+                'excursion_id' => $order->tickets[0]->trip->excursion->additionalData->provider_excursion_id,
+                'excursion_datetime' => $order->tickets[0]->trip->start_at->format('Y-m-d H:i:s'),
+                'payment_status' => 0,
+                'tickets' => json_encode($ticketsList),
+            ];
+        }
+
+        return $params;
+    }
 
 }
 

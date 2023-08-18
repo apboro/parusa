@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Events\NewCityTourOrderEvent;
+use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\LifePos\LifePosSales;
@@ -149,9 +151,9 @@ class TerminalMakeOrderController extends ApiEditController
                 // clear cart
                 PositionOrderingTicket::query()->where(['position_id' => $position->id, 'terminal_id' => $terminal->id])->delete();
 
-                if (!(new NevaOrder($order))->make()) {
-                    return APIResponse::error('Невозможно оформить заказ на этот рейс.');
-                }
+                NewNevaTravelOrderEvent::dispatch($order);
+
+                NewCityTourOrderEvent::dispatch($order);
 
                 // send order to POS
                 LifePosSales::send($order, $terminal, $current->position());

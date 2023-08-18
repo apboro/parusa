@@ -2,9 +2,16 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Classes\EmailReceiver;
+use App\Events\CityTourOrderPaidEvent;
+use App\Events\NevaTravelOrderPaidEvent;
+use App\Events\NewCityTourOrderEvent;
+use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
@@ -12,6 +19,8 @@ use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
+use App\Notifications\OrderNotification;
+use App\Services\CityTourBus\CityTourOrder;
 use App\Services\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
@@ -21,6 +30,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use RuntimeException;
 
 class OrderTicketReplacementController extends ApiController
@@ -123,22 +134,20 @@ class OrderTicketReplacementController extends ApiController
                     $ticket->save();
                 }
 
-                if ($order->neva_travel_id) {
-                    $nevaOrder = new NevaOrder($order);
-                    $cancelResult = $nevaOrder->cancel();
-                    if (
-                        (isset($cancelResult['body']['status']) && $cancelResult['body']['status'] === "canceled")
-                        || (isset($cancelResult['body']['code']) && $cancelResult['body']['code'] === "order_already_canceled")
-                    ) {
-                        if ($nevaOrder->make()) {
-                            $nevaOrder->approve();
-                        } else {
-                            throw new RuntimeException('Невозможно перенести заказ.');
-                        }
-                    } else {
-                        throw new RuntimeException('Невозможно перенести заказ.');
-                    }
+                (new NevaOrder($order))->cancel();
+                NewNevaTravelOrderEvent::dispatch($order);
+                NevaTravelOrderPaidEvent::dispatch($order);
+                try {
+                    if ($order->tickets[0]->trip->excursion->provider_id != Provider::city_tour)
+                        Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+                } catch (Exception $exception) {
+                    Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
                 }
+
+                (new CityTourOrder($order))->cancel();
+                NewCityTourOrderEvent::dispatch($order);
+                CityTourOrderPaidEvent::dispatch($order);
+
             });
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
