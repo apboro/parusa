@@ -17,7 +17,7 @@
                 <th>Базовая стоимость билета, руб.</th>
                 <th v-if="minMax">Минимальный и максимальный диапазон стоимости билета, руб.<sup v-if="hints===true">1</sup></th>
                 <th colspan="2">Комиссионное вознаграждение партнёров за продажу билета, руб.<sup v-if="hints===true">2</sup></th>
-                <th colspan="2">Цена обратного билета, руб.</th>
+                <th>Цена обратного билета, руб.</th>
                 <th v-if="overridable" colspan="2">Специальные условия</th>
                 <th v-if="withSitePrice" style="color: #4a0d8d">Цена для сайта, руб.</th>
             </tr>
@@ -36,14 +36,15 @@
                 </td>
                 <td v-else :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['commission_value'] }} руб.</td>
 
-<!--               backward tickets price-->
-                <td v-if="item['backward_price_type'] === 'percents'" :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['backward_price_value'] }}%</td>
-                <td v-else :class="{'line-through': item['partner_commission_type'] !== null}">фикс.</td>
+<!--               backward tickets price сначала сделано как с комиссией, потом оставлен только фикс прайс-->
+<!--                <td v-if="item['backward_price_type'] === 'percents'" :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['backward_price_value'] }}%</td>-->
+<!--                <td v-else :class="{'line-through': item['partner_commission_type'] !== null}">фикс.</td>-->
 
-                <td v-if="item['backward_price_type'] === 'percents'" :class="{'line-through': item['partner_commission_type'] !== null}">
-                    {{ Math.floor(item['backward_price_value'] * item['base_price']) / 100 }} руб.
-                </td>
-                <td v-else :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['backward_price_value'] }} руб.</td>
+<!--                <td v-if="item['backward_price_type'] === 'percents'" :class="{'line-through': item['partner_commission_type'] !== null}">-->
+<!--                    {{ Math.floor(item['backward_price_value'] * item['base_price']) / 100 }} руб.-->
+<!--                </td>-->
+<!--                <td v-else :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['backward_price_value'] }} руб.</td>-->
+                <td :class="{'line-through': item['partner_commission_type'] !== null}">{{ item['backward_price_value'] }} руб.</td>
 <!--                end-->
 
 

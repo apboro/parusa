@@ -72,6 +72,7 @@ class TripsSelectListController extends ApiController
             }])
             // filter actual trips
             ->where('trips.status_id', TripStatus::regular)
+            ->where('excursions.status_id', 1)
             ->where('sale_status_id', TripSaleStatus::selling)
             ->whereDate('start_at', $date)
             ->when(env('REMOVE_NEVA_TRIPS'), function (Builder $query) {

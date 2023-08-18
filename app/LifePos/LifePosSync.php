@@ -142,6 +142,7 @@ class LifePosSync
                 'status_id' => $isReturned ? TicketStatus::terminal_returned : TicketStatus::terminal_paid,
             ]);
 
+            //cancel neva travel order
             if ($isReturned) {
                 NevaTravelCancelOrderEvent::dispatch($order);
             }

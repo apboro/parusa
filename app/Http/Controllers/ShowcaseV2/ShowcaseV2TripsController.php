@@ -51,6 +51,7 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
 
         $listQuery = Trip::saleTripQuery($partnerId === null)
             ->with(['status', 'startPier', 'ship', 'excursion', 'excursion.info', 'excursion.programs'])
+            ->where('excursions.status_id', 1)
             ->with('excursion.ratesLists', function (HasMany $query) use ($date) {
                 $query
                     ->with('rates', function (HasMany $query) {

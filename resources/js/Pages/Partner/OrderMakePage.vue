@@ -30,9 +30,9 @@
                     <template v-if="ticket['available']">
                         <td class="bold no-wrap">{{ ticket['backward_price'] ?? ticket['base_price'] }} руб.</td>
                         <td>
-                            <FormNumber :disabled="ticket['backward_price'] !== null" :form="form"
+                            <FormNumber :disabled="(ticket['backward_price'] !== null && ticket['ticket_provider_id'] !== null)" :form="form"
                                         :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true"
-                                        :min="0" :hide-title="true"
+                                        :min="0" :hide-title="true" :model-value="ticket['quantity']"
                                         @change="(value) => quantityChange(ticket['id'], value)"
                             />
                         </td>

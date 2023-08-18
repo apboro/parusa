@@ -3,9 +3,7 @@
 namespace App\Providers;
 
 use App\Events\NevaTravelCancelOrderEvent;
-use App\Events\ZazaEvent;
 use App\Listeners\NevaTravelCancelOrderListener;
-use App\Listeners\ZazaL;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;

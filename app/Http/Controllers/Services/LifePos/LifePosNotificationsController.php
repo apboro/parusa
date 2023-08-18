@@ -237,7 +237,7 @@ class LifePosNotificationsController extends ApiController
                 $ticket->refundCommission();
                 $ticket->setStatus(TicketStatus::terminal_returned);
             });
-
+        //cancel neva travel order
         NevaTravelCancelOrderEvent::dispatch($order);
 
         } else {

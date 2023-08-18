@@ -19,8 +19,8 @@
                 <th class="w-5 p-10">Базовая стоимость (БС) билетов, руб.</th>
                 <th class="w-20 p-10" colspan="2">Минимальный и максимальный диапазон стоимости билетов, руб.</th>
                 <th class="w-25 p-10" colspan="3">Комиссионное вознаграждение партнёров за продажу билетов, руб.</th>
-                <th class="w-25 p-10" colspan="3">Цена обратного билета, руб.</th>
-                <th class="w-10 p-10">Цена для сайта, руб.</th>
+                <th class="w-15 p-10" colspan="2">Цена обратного билета, руб.</th>
+                <th class="w-20 p-10">Цена для сайта, руб.</th>
             </tr>
             </thead>
             <tbody>
@@ -61,20 +61,20 @@
                 </td>
                 <td class="pl-10 pt-15" v-else>{{ Math.floor(form.values['rates.' + key + '.commission_value'] * form.values['rates.' + key + '.base_price']) / 100 }} руб.</td>
 
-<!-- backward price columns-->
-                <td class="w-40px">
-                    <FormDropdown :form="form" :name="'rates.' + key + '.backward_price_type'"
-                                  :identifier="'id'"
-                                  :show="'name'"
-                                  :hide-title="true"
-                                  :small="true"
-                                  :placeholder="'Тип'"
-                                  :options="[
-                                      {id: 'fixed', name: 'фикс.'},
-                                      {id: 'percents', name: '% от БС'},
-                                  ]"
-                    />
-                </td>
+<!-- backward price columns скрыт выбор типа назначения цены-->
+<!--                <td class="w-40px">-->
+<!--                    <FormDropdown :form="form" :name="'rates.' + key + '.backward_price_type'"-->
+<!--                                  :identifier="'id'"-->
+<!--                                  :show="'name'"-->
+<!--                                  :hide-title="true"-->
+<!--                                  :small="true"-->
+<!--                                  :placeholder="'Тип'"-->
+<!--                                  :options="[-->
+<!--                                      {id: 'fixed', name: 'фикс.'},-->
+<!--                                      {id: 'percents', name: '% от БС'},-->
+<!--                                  ]"-->
+<!--                    />-->
+<!--                </td>-->
                 <td class="w-40px">
                     <FormNumber :form="form" :name="'rates.' + key + '.backward_price_value'" :hide-title="true" :small="true"/>
                 </td>
