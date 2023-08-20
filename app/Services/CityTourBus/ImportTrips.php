@@ -13,8 +13,7 @@ class ImportTrips
 {
     public function run()
     {
-        $api = new CityTourApiClientProvider();
-        $rep = new CityTourRepository($api);
+        $rep = new CityTourRepository();
 
         $pier = Pier::where('source', 'CityTour')->first();
         $bus = Ship::where('owner', 'CityTour')->first();
@@ -63,12 +62,9 @@ class ImportTrips
                     $trip->tickets_total = reset($timeTickets);
                     $trip->provider_id = Provider::city_tour;
                     $trip->save();
-
                 }
             }
         }
-
-
     }
 
 }
