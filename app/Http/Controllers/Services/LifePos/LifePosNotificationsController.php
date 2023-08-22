@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Services\LifePos;
 
-use App\Events\NevaTravelCancelOrderEvent;
 use App\Helpers\Fiscal;
 use App\Http\Controllers\ApiController;
 use App\LifePos\LifePosSales;
@@ -108,12 +107,12 @@ class LifePosNotificationsController extends ApiController
                 }
 
                 // search existing payment to update
-                if(!empty($input['guid'])) {
+                if (!empty($input['guid'])) {
                     /** @var Payment|null $payment */
                     $payment = Payment::query()->where('external_id', $input['guid'])->first();
                 }
                 // if no payment to update create new
-                if(!isset($payment)) {
+                if (!isset($payment)) {
                     $payment = new Payment;
                 }
 
@@ -209,12 +208,12 @@ class LifePosNotificationsController extends ApiController
         }
 
         // search existing payment to update
-        if(!empty($input['guid'])) {
+        if (!empty($input['guid'])) {
             /** @var Payment|null $payment */
             $payment = Payment::query()->where('external_id', $input['guid'])->first();
         }
         // if no payment to update create new
-        if(!isset($payment)) {
+        if (!isset($payment)) {
             $payment = new Payment;
         }
 
@@ -237,8 +236,10 @@ class LifePosNotificationsController extends ApiController
                 $ticket->refundCommission();
                 $ticket->setStatus(TicketStatus::terminal_returned);
             });
-        //cancel neva travel order
-        NevaTravelCancelOrderEvent::dispatch($order);
+
+            //cancel neva travel order
+            $nevaOrder = new NevaOrder($order);
+            $nevaOrder->cancel();
 
         } else {
             Log::channel('lifepos_payments')->error(sprintf('LifePos [SaleRefund:%s] - order not found', $input['guid']));
