@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Showcase;
 
+use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Http\Middleware\ExternalProtect;
 use App\Models\Common\Image;
@@ -9,6 +10,8 @@ use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Dictionaries\TripSaleStatus;
+use App\Models\Dictionaries\TripStatus;
 use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
@@ -19,6 +22,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
@@ -235,6 +239,58 @@ class ShowcaseTripsController extends ApiController
                 'rates' => array_values($rates->toArray()),
             ],
         ]);
+    }
+
+    public function getBackwardTrips(Request $request): JsonResponse
+    {
+        Hit::register(HitSource::showcase);
+
+        $tripID = $request->input('tripId');
+        $trip = Trip::find($tripID);
+
+        $backwardExcursionID = $trip->excursion->reverse_excursion_id;
+
+        $startAt = Carbon::parse($trip->start_at);
+
+        $trips = Trip::query()
+            ->withCount(['tickets' => function (Builder $query) {
+                $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
+            }])
+            ->where('excursion_id', $backwardExcursionID)
+            ->whereDate('start_at', $startAt)
+            ->where('start_at', '>=', $trip->end_at)
+            ->where('status_id', TripStatus::regular)
+            ->where('sale_status_id', TripSaleStatus::selling)
+            ->whereHas('excursion.ratesLists', function (Builder $query) use ($startAt) {
+                $query->whereDate('start_at', '<=', $startAt)->whereDate('end_at', '>=', $startAt);
+            })
+            ->get();
+
+        $trips = $trips->filter(function (Trip $trip) {
+            return $trip->tickets_total >= $trip->getAttribute('tickets_count') + 1;
+        })->sortBy('start_at')->values();
+
+        /** @var LengthAwarePaginator $trips */
+        $trips->transform(function (Trip $trip) {
+            return [
+                'id' => $trip->id,
+                'start_date' => $trip->start_at->format('d.m.Y'),
+                'start_time' => $trip->start_at->format('H:i'),
+                'excursion' => $trip->excursion->name,
+                'pier' => $trip->startPier->name,
+                'ship' => $trip->ship->name,
+                'tickets_count' => $trip->getAttribute('tickets_count'),
+                'tickets_total' => $trip->tickets_total,
+                'status' => $trip->status->name,
+                'status_id' => $trip->status_id,
+                'sale_status' => $trip->saleStatus->name,
+                'has_rate' => $trip->hasRate(),
+                'sale_status_id' => $trip->sale_status_id,
+                '_trip_start_at' => $trip->start_at->format('Y-m-d'),
+            ];
+        });
+
+        return APIResponse::response(['trips' => $trips]);
     }
 
 }

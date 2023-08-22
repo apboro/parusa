@@ -22,6 +22,7 @@ export default {
     },
 
     props: {
+        session: {type: String, required: true},
         trip: {
             type: Object,
             default: null
@@ -47,9 +48,9 @@ export default {
                 return;
             }
             this.returning_progress = true;
-            axios.post('/api/order/backward/get_backward_trips', {
-                tripId: $tripId,
-            })
+            axios.post('/showcase/get_backward_trips', {
+                tripId: $tripId
+            },{headers: {'X-Ap-External-Session': this.session}})
                 .then((response) => {
                     this.backward_trips = response.data.data['trips'];
                 })
