@@ -17,6 +17,7 @@
                 account: 'Лицевой счёт',
                 rates: 'Тарифы',
                 sale_registry: 'Реестр продаж',
+                qr_code: 'QR-Коды',
             }" @change="tab = $event"/>
 
             <PartnerInfo v-if="tab === 'details'" :data="data.data" :partner-id="partnerId" :editable="true" @update="update"/>
@@ -29,6 +30,7 @@
                 <AdminTicketsRegistry v-if="sub_tab === 'tickets'" :partner-id="partnerId"/>
                 <AdminReservesRegistry v-if="sub_tab === 'reserves'" :partner-id="partnerId"/>
             </GuiContainer>
+            <PartnerQrCodes v-if="tab === 'qr_code'" :partner-id="partnerId"/>
         </template>
     </LayoutPage>
 </template>
@@ -48,9 +50,11 @@ import PartnerAccount from "@/Pages/Admin/Partners/Parts/PartnerAccount";
 import AdminTicketsRegistry from "@/Pages/Admin/Registries/Parts/AdminTicketsRegistry";
 import AdminReservesRegistry from "@/Pages/Admin/Registries/Parts/AdminReservesRegistry";
 import PartnerTicketRates from "@/Pages/Admin/Partners/Parts/PartnerTicketRates";
+import PartnerQrCodes from "@/Pages/Admin/Partners/Parts/PartnerQrCodes.vue";
 
 export default {
     components: {
+        PartnerQrCodes,
         PartnerTicketRates,
         AdminReservesRegistry,
         AdminTicketsRegistry,
