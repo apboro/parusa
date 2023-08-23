@@ -12,6 +12,7 @@ use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\StaffPositionInfo;
 use App\Models\Tickets\Ticket;
+use App\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Client;
@@ -144,7 +145,8 @@ class LifePosSync
 
             //cancel neva travel order
             if ($isReturned) {
-                NevaTravelCancelOrderEvent::dispatch($order);
+                $nevaOrder = new NevaOrder($order);
+                $nevaOrder->cancel();
             }
         }
 
