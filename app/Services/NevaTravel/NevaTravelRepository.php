@@ -148,11 +148,11 @@ class NevaTravelRepository
         });
 
         foreach ($tickets as $ticket) {
-            $ticketsList[] = [
-                "ticket_category" => $ticket->grade->external_grade_name,
-                "purchase_price" => $ticket->base_price,
-                "qty" => 1
-            ];
+            if (!$ticket->isBackward())
+                $ticketsList[] = [
+                    "ticket_category" => $ticket->grade->external_grade_name,
+                    "qty" => 1
+                ];
         }
 
         $combosPriceId = $comboExcursion['template_prices_table'][0]['id'];

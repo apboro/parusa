@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Order;
 
 use App\Classes\EmailReceiver;
 use App\Events\CityTourOrderPaidEvent;
+use App\Events\NevaTravelCancelOrderEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
@@ -134,19 +135,14 @@ class OrderTicketReplacementController extends ApiController
                     $ticket->save();
                 }
 
-                (new NevaOrder($order))->cancel();
+                NevaTravelCancelOrderEvent::dispatch($order);
                 NewNevaTravelOrderEvent::dispatch($order);
                 NevaTravelOrderPaidEvent::dispatch($order);
                 try {
-                    if ($order->tickets[0]->trip->excursion->provider_id != Provider::city_tour)
-                        Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+                    Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
                 } catch (Exception $exception) {
                     Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
                 }
-
-                (new CityTourOrder($order))->cancel();
-                NewCityTourOrderEvent::dispatch($order);
-                CityTourOrderPaidEvent::dispatch($order);
 
             });
         } catch (Exception $exception) {
