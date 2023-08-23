@@ -90,7 +90,7 @@ class OrderReturnController extends ApiController
                     foreach ($order->tickets as $ticket) {
                         /** @var Ticket $ticket */
                         if (in_array($ticket->id, $ticketsToReturnIds, true)) {
-                            if (!$ticket->hasStatus(TicketStatus::partner_paid)) {
+                            if (!in_array($ticket->status_id,[TicketStatus::partner_paid, TicketStatus::partner_paid_single])) {
                                 throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
                             }
                             $ticket->refundTicket($current->position());
