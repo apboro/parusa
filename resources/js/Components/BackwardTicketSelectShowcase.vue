@@ -50,7 +50,7 @@ export default {
             this.returning_progress = true;
             axios.post('/showcase/get_backward_trips', {
                 tripId: $tripId
-            },{headers: {'X-Ap-External-Session': this.session}})
+            }, {headers: {'X-Ap-External-Session': this.session}})
                 .then((response) => {
                     this.backward_trips = response.data.data['trips'];
                 })
@@ -74,39 +74,29 @@ export default {
 </script>
 
 <template>
-    <GuiContainer v-if="backward_trips && backward_trips.length" mb-50>
+    <!--    <GuiContainer v-if="backward_trips && backward_trips.length">-->
 
-        <ListTableResponsive
-            :titles="['Отправление', '№ Рейса', 'Экскурсия', '']">
-            <ListTableResponsiveRow v-for="backward_trip in backward_trips">
-                <ListTableResponsiveCell>
-                    <div>
-                        <b>Время:
-                            {{ backward_trip['start_time'] }}
-                        </b>
-                    </div>
-                    <div>Дата: {{ backward_trip['start_date'] }}</div>
-                </ListTableResponsiveCell>
-                <ListTableResponsiveCell>
-                  Рейс:
-                    {{ backward_trip['excursion'] }}
-                </ListTableResponsiveCell>
-                <ListTableResponsiveCell class="va-middle">
-                    <GuiButton :color="'red'" @clicked="addBackwardTickets(backward_trip.id)"
-                               :class="{ 'chosen-button': tripChosen && backward_trip['id'] === this.tripChosenId}">
-                        {{ tripChosen && backward_trip['id'] === this.tripChosenId ? 'Выбрано' : 'Выбрать' }}
-                    </GuiButton>
-                </ListTableResponsiveCell>
-            </ListTableResponsiveRow>
-        </ListTableResponsive>
+    <GuiContainer class="button-container">
+        <GuiButton style="margin: 10px;" v-for="backward_trip in backward_trips"
+                   :color="'blue'"
+                   @clicked="addBackwardTickets(backward_trip.id)"
+                   :class="{ 'chosen-button': tripChosen && backward_trip['id'] === this.tripChosenId}">
+            {{ backward_trip['start_time'] }}
+        </GuiButton>
     </GuiContainer>
-
 
 </template>
 
 <style scoped lang="scss">
 .chosen-button {
-    background-color: orange;
-    color: black;
+    background-color: #E83B4E;
+    color: white;
 }
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
 </style>
