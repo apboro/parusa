@@ -13,7 +13,7 @@ export default {
             type: String,
             default: null,
             validation: (value) => {
-                return value === null || ['red', 'green', 'orange'].indexOf(value) !== -1;
+                return value === null || ['purple', 'red', 'green', 'orange'].indexOf(value) !== -1;
             }
         },
     },
@@ -49,6 +49,8 @@ $base_size_unit: 35px !default;
 $base_white_color: #ffffff !default;
 $base_primary_color: #0D74D7 !default;
 $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
+$base_purple_color: #241B5B !default;
+$base_purple_hover_color: lighten(#241B5B, 20%) !default;
 $base_red_color: #EA1B00 !default;
 $base_red_hover_color: lighten(#EA1B00, 5%) !default;
 $base_green_color: #00AF2E !default;
@@ -130,6 +132,15 @@ $base_disabled_color: #3f3f3f !default;
         &:hover {
             background-color: $base_orange_hover_color;
             border-color: $base_orange_hover_color;
+        }
+    }
+    &__purple {
+        background-color: $base_purple_color;
+        border-color: $base_purple_color;
+
+        &:hover {
+            background-color: $base_purple_hover_color;
+            border-color: $base_purple_hover_color;
         }
     }
 }

@@ -77,8 +77,8 @@ export default {
     <!--    <GuiContainer v-if="backward_trips && backward_trips.length">-->
 
     <GuiContainer class="button-container">
-        <GuiButton style="margin: 10px;" v-for="backward_trip in backward_trips"
-                   :color="'blue'"
+        <GuiButton style="margin: 15px;" v-for="backward_trip in backward_trips"
+                   :color="'purple'"
                    @clicked="addBackwardTickets(backward_trip.id)"
                    :class="{ 'chosen-button': tripChosen && backward_trip['id'] === this.tripChosenId}">
             {{ backward_trip['start_time'] }}
