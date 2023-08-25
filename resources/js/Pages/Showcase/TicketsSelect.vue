@@ -100,11 +100,13 @@
                 <div class="checkbox-container">
                     <ShowcaseInputCheckbox :name="choose_back_trip" v-model="checkedBackward"/>
                     <label @click="checkedBackward = !checkedBackward"
-                           class="ap-showcase__title">Выбрать обратный рейс со скидкой</label>
+                           class="ap-showcase__label">Выбрать обратный рейс со скидкой</label>
                 </div>
+                <div style="text-align: center">
                 <BackwardTicketSelectShowcase v-if="checkedBackward"
                                               @select-backward-trip="handleSelectBackwardTrip"
                                               :trip="this.trip" :session="session"/>
+                </div>
             </div>
 
             <div class="ap-showcase__title">Контактные данные</div>
@@ -567,6 +569,13 @@ export default {
     color: $showcase_link_color;
     font-weight: bold;
 }
+.ap-showcase__label {
+    font-family: $showcase_font;
+    margin: 3px 0;
+    font-size: 24px;
+    color: $showcase_link_color;
+    font-weight: bold;
+}
 
 .ap-showcase__text {
     font-family: $showcase_font;
@@ -914,7 +923,7 @@ export default {
 
 .checkbox-container {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .checkbox-label {

@@ -74,8 +74,6 @@ export default {
 </script>
 
 <template>
-    <!--    <GuiContainer v-if="backward_trips && backward_trips.length">-->
-
     <GuiContainer class="button-container">
         <GuiButton style="margin: 15px;" v-for="backward_trip in backward_trips"
                    :color="'purple'"
