@@ -12,10 +12,5 @@ class TypesSeeder extends GenericSeeder
         PromoCodeType::class => [
             PromoCodeType::fixed => ['name' => 'Фиксированный'],
         ],
-        Provider::class => [
-            Provider::scarlet_sails => ['name' => 'Алые Паруса', 'service' => 'ships'],
-            Provider::neva_travel => ['name' => 'Neva Travel', 'service' => 'ships'],
-            Provider::city_tour => ['name' => 'City Tour', 'service' => 'buses'],
-        ]
     ];
 }

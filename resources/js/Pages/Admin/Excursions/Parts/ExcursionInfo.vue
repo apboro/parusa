@@ -18,6 +18,9 @@
             <GuiValue title='Обратная экскурсия'>
                 {{ data['reverse_excursion'] ?? 'Нет' }}
             </GuiValue>
+            <GuiValue title='Тип экскурсии'>
+                {{ data['excursion_type'] }}
+            </GuiValue>
         </GuiContainer>
 
         <GuiContainer w-50 mt-30 inline pl-20 v-if="data['images'] && data['images'][0]">

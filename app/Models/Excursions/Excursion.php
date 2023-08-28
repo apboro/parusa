@@ -7,6 +7,7 @@ use App\Interfaces\Statusable;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\ExcursionType;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\Provider;
 use App\Models\Model;
@@ -31,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property bool $only_site
  * @property bool $is_single_ticket
  * @property int $reverse_excursion_id
+ * @property ?int $type_id
  *
  * @property ExcursionStatus $status
  * @property Collection $programs
@@ -42,6 +44,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection<Trip> $trips
  * @property hasOne $reverseExcursion
  * @property AdditionalDataExcursion $additionalData
+ * @property ExcursionType $type
  */
 class Excursion extends Model implements Statusable, AsDictionary
 {
@@ -207,5 +210,10 @@ class Excursion extends Model implements Statusable, AsDictionary
     public function provider()
     {
         return Provider::where('id', $this->additionalData?->provider_id)->first();
+    }
+
+    public function type()
+    {
+        return $this->hasOne(ExcursionType::class, 'id', 'type_id');
     }
 }
