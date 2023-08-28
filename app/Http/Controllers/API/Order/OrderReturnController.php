@@ -9,7 +9,6 @@ use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Jobs\ApproveNevaOrder;
 use App\LifePay\CloudPrint;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;

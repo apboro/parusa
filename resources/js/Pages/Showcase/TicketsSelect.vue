@@ -105,7 +105,8 @@
                 <div style="text-align: center">
                 <BackwardTicketSelectShowcase v-if="checkedBackward"
                                               @select-backward-trip="handleSelectBackwardTrip"
-                                              :trip="this.trip" :session="session"/>
+                                              :trip="this.trip" :session="session"
+                                              :crm_url="crm_url"/>
                 </div>
             </div>
 

@@ -22,6 +22,7 @@ export default {
     },
 
     props: {
+        crm_url: {type: String, default: 'https://lk.excurr.ru'},
         session: {type: String, required: true},
         trip: {
             type: Object,
@@ -34,6 +35,7 @@ export default {
         backward_trip_id: null,
         tripChosen: false,
         tripChosenId: null,
+        debug: false,
     }),
 
 
@@ -42,13 +44,17 @@ export default {
     },
 
     methods: {
+        url(path) {
+            return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
+        },
+
         getBackwardTrips($tripId) {
             if ($tripId === 0) {
                 this.backward_trips = [];
                 return;
             }
             this.returning_progress = true;
-            axios.post('/showcase/get_backward_trips', {
+            axios.post(this.url('/showcase/get_backward_trips'), {
                 tripId: $tripId
             }, {headers: {'X-Ap-External-Session': this.session}})
                 .then((response) => {
