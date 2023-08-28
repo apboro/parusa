@@ -43,7 +43,7 @@ class CityTourOrder
             }
             $this->order->save();
             $orderData->save();
-            
+
             Log::channel('city_tour')->info('City Tour API make order request success: ', [$result, $this->order->additionalData]);
         }
 
@@ -104,6 +104,8 @@ class CityTourOrder
 
     public function sendTickets()
     {
-        return $this->cityTourRepository->sendTickets($this->order);
+        if ($this->checkOrderHasCityTourTickets()) {
+            return $this->cityTourRepository->sendTickets($this->order);
+        }
     }
 }

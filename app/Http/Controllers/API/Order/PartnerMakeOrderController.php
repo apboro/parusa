@@ -30,7 +30,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
-class PartnerMakeOrderController extends ApiEditController
+class   PartnerMakeOrderController extends ApiEditController
 {
     /**
      * Make order.
