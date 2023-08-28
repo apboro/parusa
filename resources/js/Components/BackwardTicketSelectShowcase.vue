@@ -10,10 +10,12 @@ import ListTableCell from "@/Components/ListTable/ListTableCell.vue";
 import TripsList from "../Pages/Admin/Trips/Parts/TripsList.vue";
 import ListTableResponsiveCell from "./ListTable/ListTableResponsiveCell.vue";
 import ListTableResponsiveRow from "./ListTable/ListTableResponsiveRow.vue";
+import ShowcaseV2Button from "../Pages/ShowcaseV2/Components/ShowcaseV2Button.vue";
 
 
 export default {
     components: {
+        ShowcaseV2Button,
         ListTableResponsiveRow,
         ListTableResponsiveCell,
         TripsList,
@@ -81,12 +83,11 @@ export default {
 
 <template>
     <GuiContainer class="button-container">
-        <GuiButton style="margin: 15px;" v-for="backward_trip in backward_trips"
-                   :color="'purple'"
+        <ShowcaseV2Button style="margin: 15px;" v-for="backward_trip in backward_trips"
                    @clicked="addBackwardTickets(backward_trip.id)"
                    :class="{ 'chosen-button': tripChosen && backward_trip['id'] === this.tripChosenId}">
             {{ backward_trip['start_time'] }}
-        </GuiButton>
+        </ShowcaseV2Button>
     </GuiContainer>
 
 </template>
