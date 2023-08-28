@@ -26,6 +26,7 @@ class ExcursionEditController extends ApiEditController
         'name' => 'Название',
         'name_receipt' => 'Название для чека',
         'status_id' => 'Статус',
+        'excursion_type_id' => 'Тип экскурсии',
         'only_site' => 'Эксклюзивная экскурсия - билеты продаются только через сайт Алые Паруса',
         'images' => 'Фотография экскурсии',
         'programs' => 'Типы программы',
@@ -34,7 +35,7 @@ class ExcursionEditController extends ApiEditController
         'description' => 'Полное описание',
         'trip_images' => 'Карта маршрута',
         'is_single_ticket' => 'Единый билет',
-        'has_return_trip' => 'Билет "туда" и "обратно"',
+        'reverse_excursion_id' => 'Обратная экскурсия',
     ];
 
     /**
@@ -62,8 +63,9 @@ class ExcursionEditController extends ApiEditController
                 'name_receipt' => $excursion->name_receipt,
                 'status_id' => $excursion->status_id,
                 'only_site' => $excursion->only_site,
+                'excursion_type_id' => $excursion->type_id,
                 'is_single_ticket' => $excursion->is_single_ticket,
-                'has_return_trip' => $excursion->has_return_trip,
+                'reverse_excursion_id' => $excursion->reverse_excursion_id,
                 'images' => $excursion->images->map(function (Image $image) {
                     return ['id' => $image->id, 'url' => $image->url];
                 }),
@@ -108,9 +110,10 @@ class ExcursionEditController extends ApiEditController
 
         $excursion->setAttribute('name', $data['name']);
         $excursion->setAttribute('name_receipt', $data['name_receipt']);
+        $excursion->setAttribute('type_id', $data['excursion_type_id']);
         $excursion->setAttribute('only_site', $data['only_site'] ?? false);
         $excursion->setAttribute('is_single_ticket', $data['is_single_ticket'] ?? false);
-        $excursion->setAttribute('has_return_trip', $data['has_return_trip'] ?? false);
+        $excursion->setAttribute('reverse_excursion_id', $data['reverse_excursion_id'] ?? null);
         $excursion->setStatus($data['status_id'], false);
         $excursion->save();
 

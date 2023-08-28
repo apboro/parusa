@@ -2,12 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Http\APIResponse;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
-use App\NevaTravel\NevaOrder;
+use App\Services\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
@@ -95,7 +94,7 @@ class ProcessOrders extends Command
             /** @var Order $order */
             try{
             DB::transaction(static function() use ($order){
-                if ($order->neva_travel_id) {
+                if ($order->additionalData?->provider_id === 10) {
                     $nevaOrder = new NevaOrder($order);
                     $nevaOrder->cancel();
                 }

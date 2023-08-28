@@ -10,7 +10,11 @@
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'excursion_statuses'"/>
             <FormCheckBox :form="form" :name="'only_site'" :hide-title="true"/>
             <FormCheckBox :form="form" :name="'is_single_ticket'" :hide-title="true"/>
-            <FormCheckBox :form="form" :name="'has_return_trip'" :hide-title="true"/>
+<!--            <FormCheckBox v-model="showReverseExcursion" onchange="showReverseExcursion = !showReverseExcursion" :form="form" :name="'Билет туда и обратно'" :hide-title="true"/>-->
+            <FormDictionary :form="form" :name="'reverse_excursion_id'" :dictionary="'excursions'" :search="true" :fresh="true" :placeholder="'Нет'" :has-null="true"/>
+            <FormDictionary :form="form" :name="'excursion_type_id'" :dictionary="'excursion_types'" :fresh="true" :placeholder="'Нет'" :has-null="true"/>
+
+
             <FormImages :form="form" :name="'images'"/>
             <FormDictionary :form="form" :name="'programs'" :dictionary="'excursion_programs'" :multi="true" :fresh="true"/>
             <FormNumber :form="form" :name="'duration'"/>
@@ -55,6 +59,7 @@ export default {
     },
 
     data: () => ({
+        showReverseExcursion: false,
         form: form('/api/excursions/get', '/api/excursions/update'),
     }),
 

@@ -24,12 +24,14 @@ class TripsListController extends ApiController
         'status_id' => null,
         'excursion_id' => null,
         'start_pier_id' => null,
+        'excursion_type_id' => null
     ];
 
     protected array $rememberFilters = [
         'status_id',
         'excursion_id',
         'start_pier_id',
+        'excursion_type_id',
     ];
 
     protected string $rememberKey = CookieKeys::trips_list;
@@ -47,9 +49,11 @@ class TripsListController extends ApiController
         $this->defaultFilters['date'] = Carbon::now()->format('Y-m-d');
         $startPierId = $request->input('start_pier_id');
         $excursionId = $request->input('excursion_id');
+        $excursionTypeId = $request->input('filters.excursion_type_id');
 
         $query = Trip::query()
             ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus'])
+            ->where('excursions.status_id', 1)
             ->with(['chains' => function (BelongsToMany $query) {
                 $query->withCount('trips');
             }])
@@ -79,6 +83,9 @@ class TripsListController extends ApiController
             if ($excursionId || !empty($filters['excursion_id'])) {
                 $query->where('excursion_id', $excursionId ?? $filters['excursion_id']);
             }
+            if ($excursionTypeId || !empty($filters['excursion_type_id'])) {
+                $query->where('type_id', $excursionTypeId ?? $filters['excursion_id']);
+            }
         }
 
         // current page automatically resolved from request via `page` parameter
@@ -88,14 +95,15 @@ class TripsListController extends ApiController
         $trips->transform(function (Trip $trip) {
             /** @var TripChain $chain */
             $chain = $trip->chains->first();
-            $chainStart = $chain ? $chain->trips()->min('start_at') : null;
-            $chainEnd = $chain ? $chain->trips()->max('start_at') : null;
+            $chainStart = $chain?->trips()->min('start_at');
+            $chainEnd = $chain?->trips()->max('start_at');
 
             return [
                 'id' => $trip->id,
                 'start_date' => $trip->start_at->format('d.m.Y'),
                 'start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
+                'excursion_type_id' =>$trip->excursion->type_id,
                 'pier' => $trip->startPier->name,
                 'ship' => $trip->ship->name,
                 'tickets_count' => $trip->getAttribute('tickets_count'),
@@ -106,13 +114,15 @@ class TripsListController extends ApiController
                 'has_rate' => $trip->hasRate(),
                 'sale_status_id' => $trip->sale_status_id,
                 'chained' => $trip->getAttribute('chains_count') > 0,
-                'chain_trips_count' => $chain ? $chain->getAttribute('trips_count') : null,
+                'chain_trips_count' => $chain?->getAttribute('trips_count'),
                 'chain_trips_start_at' => $chainStart ? Carbon::parse($chainStart)->format('d.m.Y') : null,
                 'chain_trips_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('d.m.Y') : null,
                 '_trip_start_at' => $trip->start_at->format('Y-m-d'),
                 '_chain_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('Y-m-d') : null,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
                 'has_return_trip' => $trip->excursion->has_return_trip,
+                'trip_provider' => $trip->excursion->additionalData?->provider_id,
+                'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
             ];
         });
 

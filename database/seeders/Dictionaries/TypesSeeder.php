@@ -3,6 +3,7 @@
 namespace Database\Seeders\Dictionaries;
 
 use App\Models\Dictionaries\PromoCodeType;
+use App\Models\Dictionaries\Provider;
 use Database\Seeders\GenericSeeder;
 
 class TypesSeeder extends GenericSeeder

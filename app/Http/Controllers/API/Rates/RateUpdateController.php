@@ -65,6 +65,8 @@ class RateUpdateController extends ApiEditController
             $titles["rates.$i.max_price"] = 'Максимальная';
             $titles["rates.$i.commission_type"] = 'Тип';
             $titles["rates.$i.commission_value"] = 'Комиссия';
+            $titles["rates.$i.backward_price_type"] = 'Тип';
+            $titles["rates.$i.backward_price_value"] = 'Цена';
         }
 
         if ($errors = $this->validate($data, $rules, $titles)) {
@@ -122,6 +124,8 @@ class RateUpdateController extends ApiEditController
                 $existing->max_price = $rate['max_price'];
                 $existing->commission_type = $rate['commission_type'];
                 $existing->commission_value = $rate['commission_value'];
+                $existing->backward_price_type = $rate['backward_price_type'];
+                $existing->backward_price_value = $rate['backward_price_value'];
                 if ($existing->isDirty()) {
                     $existing->save();
                     $changed[] = $existing->id;
@@ -139,6 +143,8 @@ class RateUpdateController extends ApiEditController
                     'site_price' => $rate['site_price'] ?? null,
                     'commission_type' => $rate['commission_type'],
                     'commission_value' => $rate['commission_value'],
+                    'backward_price_type' => $rate['backward_price_type'],
+                    'backward_price_value' => $rate['backward_price_value'],
                 ]);
                 $created[] = $new->id;
             }

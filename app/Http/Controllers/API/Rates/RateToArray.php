@@ -52,6 +52,8 @@ trait RateToArray
                 'commission_value' => $rate->commission_value,
                 'partner_commission_type' => $partnerRate->commission_type ?? null,
                 'partner_commission_value' => $partnerRate->commission_value ?? null,
+                'backward_price_type' => $rate->backward_price_type,
+                'backward_price_value' => $rate->backward_price_value
             ];
             if ($sitePrice) {
                 $r['site_price'] = $rate->site_price;

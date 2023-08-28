@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\NevaTravel\ImportTrips;
+use App\Services\NevaTravel\ImportTrips;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 

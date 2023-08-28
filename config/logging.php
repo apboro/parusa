@@ -71,6 +71,11 @@ return [
             'path' => storage_path('logs/neva.log'),
             'level' => 'info',
         ],
+        'city_tour' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/city_tour.log'),
+            'level' => 'info',
+        ],
 
         'qr-codes' => [
             'driver' => 'single',

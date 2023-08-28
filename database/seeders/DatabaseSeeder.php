@@ -4,8 +4,10 @@ namespace Database\Seeders;
 
 use Database\Seeders\Dictionaries\AccountTransactionTypesSeeder;
 use Database\Seeders\Dictionaries\ContactTypesSeeder;
+use Database\Seeders\Dictionaries\ExcursionTypesSeeder;
 use Database\Seeders\Dictionaries\HitSeeder;
 use Database\Seeders\Dictionaries\OrderTypesSeeder;
+use Database\Seeders\Dictionaries\ProviderTypesSeeder;
 use Database\Seeders\Dictionaries\StatusesSeeder;
 use Database\Seeders\Dictionaries\TypesSeeder;
 use Database\Seeders\Dictionaries\UserRolesSeeder;
@@ -19,6 +21,8 @@ class DatabaseSeeder extends Seeder
         HitSeeder::class,
         StatusesSeeder::class,
         TypesSeeder::class,
+        ProviderTypesSeeder::class,
+        ExcursionTypesSeeder::class,
         ContactTypesSeeder::class,
         AccountTransactionTypesSeeder::class,
         OrderTypesSeeder::class

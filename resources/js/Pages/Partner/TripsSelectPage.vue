@@ -56,21 +56,35 @@
                         @change="list.load()"
                 />
             </LayoutFiltersItem>
+
+            <LayoutFiltersItem :class="'w-25'" :title="'Тип'">
+                <DictionaryDropDown
+                    :dictionary="'excursion_types'"
+                    :fresh="true"
+                    v-model="list.filters['excursion_type_id']"
+                    :original="list.filters_original['excursion_type_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :right="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
         </LayoutFilters>
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true">
-            <ListTableRow v-for="(trip, key) in list.list" :key="key">
+            <ListTableRow v-for="(trip, key) in list.list" :key="key" :bus_tours="trip.excursion_type_id === 20">
                 <ListTableCell>
                     <div v-if="!trip.is_single_ticket"><b class="text-lg">{{ trip['start_time'] }}</b></div>
                     <div v-if="trip.is_single_ticket"><b class="text-lg">ЕДИНЫЙ БИЛЕТ</b></div>
                     <div><span :style="{fontSize: '13px'}">{{ trip['start_date'] }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
-                    <div class="link" @click="excursionInfo(trip['excursion_id'])"><b>{{ trip['excursion'] }}</b></div>
+                    <div :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" @click="excursionInfo(trip['excursion_id'])"><b>{{ trip['excursion'] }}</b></div>
                     <div><span :style="{fontSize: '13px'}">{{ trip['programs'] && trip['programs'].length ? trip['programs'].join(', ') : '' }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
-                    <span class="link" @click="pierInfo(trip['pier_id'])">{{ trip['pier'] }}</span>
+                    <span :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" @click="pierInfo(trip['pier_id'])">{{ trip['pier'] }}</span>
                 </ListTableCell>
                 <ListTableCell>
                     {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})

@@ -17,7 +17,8 @@
                     <div class="ap-showcase__trip-info">
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Экскурсия:</span>
-                            <span class="ap-showcase__trip-info-line-link" @click="showExcursionInfo">{{ trip['excursion'] }}</span>
+                            <span class="ap-showcase__trip-info-line-link"
+                                  @click="showExcursionInfo">{{ trip['excursion'] }}</span>
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Дата отправления:</span>
@@ -25,12 +26,16 @@
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Время отправления:</span>
-                            <span v-if="!trip.is_single_ticket" class="ap-showcase__trip-info-line-text">{{ trip['start_time'] }}</span>
-                            <span v-if="trip.is_single_ticket" class="ap-showcase__trip-info-line-text">{{ trip['concatenated_start_at'] }}</span>
+                            <span v-if="!trip.is_single_ticket"
+                                  class="ap-showcase__trip-info-line-text">{{ trip['start_time'] }}</span>
+                            <span v-if="trip.is_single_ticket"
+                                  class="ap-showcase__trip-info-line-text">{{ trip['concatenated_start_at'] }}</span>
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Причал:</span>
-                            <span class="ap-showcase__trip-info-line-link" @click="showPierInfo">{{ trip['pier'] }}</span>
+                            <span class="ap-showcase__trip-info-line-link" @click="showPierInfo">{{
+                                    trip['pier']
+                                }}</span>
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Продолжительность:</span>
@@ -67,28 +72,48 @@
                         <td data-label="Тип билета:" class="ap-showcase__tickets-table-col-1">{{ rate['name'] }}
                             <span class="ap-showcase__sup-sign" v-if="rate['preferential']"><ShowcaseIconSign/></span>
                         </td>
-                        <td data-label="Стоимость:" class="ap-showcase__tickets-table-col-2">{{ rate['base_price'] }} руб.</td>
+                        <td data-label="Стоимость:" class="ap-showcase__tickets-table-col-2">{{ rate['base_price'] }}
+                            руб.
+                        </td>
                         <td class="ap-showcase__tickets-table-col-3">
-                            <ShowcaseFormNumber class="ap-showcase__tickets-quantity" :form="form" :name="'rate.' + rate['grade_id'] + '.quantity'" :hide-title="true"
+                            <ShowcaseFormNumber class="ap-showcase__tickets-quantity" :form="form"
+                                                :name="'rate.' + rate['grade_id'] + '.quantity'" :hide-title="true"
                                                 :quantity="true" :min="0" :border="false" @change="promoCode(false)"/>
                         </td>
                         <td data-label="Сумма:" class="ap-showcase__tickets-table-col-4"
                             :class="{'ap-showcase__tickets-filled': form.values['rate.' + rate['grade_id'] + '.quantity'] > 0}">
-                            {{ multiply(form.values['rate.' + rate['grade_id'] + '.quantity'], rate['base_price']) }} руб.
+                            {{ multiply(form.values['rate.' + rate['grade_id'] + '.quantity'], rate['base_price']) }}
+                            руб.
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3" class="ap-showcase__tickets-table-col-total-title">Итого:</td>
-                        <td class="ap-showcase__tickets-table-col-total" :class="{'ap-showcase__tickets-filled': count > 0}">{{ total }}</td>
+                        <td class="ap-showcase__tickets-table-col-total"
+                            :class="{'ap-showcase__tickets-filled': count > 0}">{{ total }}
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
 
+            <div v-if="trip.reverse_excursion_id !== null">
+                <div class="checkbox-container">
+                    <ShowcaseInputCheckbox :name="choose_back_trip" v-model="checkedBackward"/>
+                    <label @click="checkedBackward = !checkedBackward"
+                           class="ap-showcase__label">Выбрать обратный рейс со скидкой</label>
+                </div>
+                <div style="text-align: center">
+                <BackwardTicketSelectShowcase v-if="checkedBackward"
+                                              @select-backward-trip="handleSelectBackwardTrip"
+                                              :trip="this.trip" :session="session"/>
+                </div>
+            </div>
 
             <div class="ap-showcase__title">Контактные данные</div>
 
-            <div class="ap-showcase__text">Контактные данные необходимы на случай отмены рейса, а также для отправки билетов. Данные не передаются третьим лицам.</div>
+            <div class="ap-showcase__text">Контактные данные необходимы на случай отмены рейса, а также для отправки
+                билетов. Данные не передаются третьим лицам.
+            </div>
 
             <div class="ap-showcase__contacts">
                 <div class="ap-showcase__contacts-item">
@@ -100,7 +125,8 @@
                 </div>
                 <div class="ap-showcase__contacts-item">
                     <ShowcaseFormString :form="form" :name="'email'" :autocomplete="'email'"/>
-                    <span class="ap-showcase__contacts-item-description">На этот адрес будет выслан электронный билет.</span>
+                    <span
+                        class="ap-showcase__contacts-item-description">На этот адрес будет выслан электронный билет.</span>
                 </div>
             </div>
 
@@ -112,11 +138,14 @@
                         <span v-if="message" class="ap-showcase__contacts-item-description">{{ message }}</span>
                     </div>
                     <div class="ap-showcase__promocode-button">
-                        <ShowcaseButton @clicked="promoCode(true)" :disabled="!form.values['promocode']">Применить</ShowcaseButton>
+                        <ShowcaseButton @clicked="promoCode(true)" :disabled="!form.values['promocode']">Применить
+                        </ShowcaseButton>
                     </div>
                 </div>
                 <div class="ap-showcase__promocode-discount" v-if="status && discounted">
-                    Скидка по промокоду: <span class="ap-showcase__promocode-discount-value">{{ discounted }} руб.</span>
+                    Скидка по промокоду: <span class="ap-showcase__promocode-discount-value">{{
+                        discounted
+                    }} руб.</span>
                 </div>
             </div>
 
@@ -124,7 +153,8 @@
                 <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_valid"
                                       :errors="['Необходимо принять условия оферты на оказание услуг и дать своё согласие на обработку персональных данных']">
                     <ShowcaseInputCheckbox v-model="agree" :small="true">
-                        Я принимаю условия <span class="ap-showcase__link" @click="showOfferInfo">Оферты на оказание услуг</span> и даю своё <span class="ap-showcase__link" @click="showPersonalDataInfo">согласие на обработку
+                        Я принимаю условия <span class="ap-showcase__link" @click="showOfferInfo">Оферты на оказание услуг</span>
+                        и даю своё <span class="ap-showcase__link" @click="showPersonalDataInfo">согласие на обработку
                         персональных данных</span>
                     </ShowcaseInputCheckbox>
                 </ShowcaseFieldWrapper>
@@ -166,7 +196,8 @@
                     <ShowcaseIconSign class="ap-showcase__notice-sign-icon"/>
                 </div>
                 <div class="ap-showcase__notice-text">
-                    При получении билетов в кассе необходимо предоставить документ, подтверждающий право на льготу: студенческий билет, пенсионное удостоверение и т.д.
+                    При получении билетов в кассе необходимо предоставить документ, подтверждающий право на льготу:
+                    студенческий билет, пенсионное удостоверение и т.д.
                 </div>
             </div>
 
@@ -199,9 +230,13 @@ import ShowcaseIconSign from "@/Pages/Showcase/Icons/ShowcaseIconSign";
 import ShowcaseFieldWrapper from "@/Pages/Showcase/Components/Helpers/ShowcaseFieldWrapper";
 import OfferInfo from "@/Pages/Showcase/Parts/OfferInfo.vue";
 import PersonalDataInfo from "@/Pages/Showcase/Parts/PersonalDataInfo.vue";
+import BackwardTicketSelectShowcase from "../../Components/BackwardTicketSelectShowcase.vue";
+import InputCheckbox from "../../Components/Inputs/InputCheckbox.vue";
 
 export default {
     components: {
+        InputCheckbox,
+        BackwardTicketSelectShowcase,
         PersonalDataInfo,
         OfferInfo,
         ShowcaseFieldWrapper,
@@ -236,6 +271,9 @@ export default {
             let total = 0;
             this.trip['rates'].map(rate => {
                 total += this.multiply(rate['base_price'], this.form.values['rate.' + rate['grade_id'] + '.quantity']);
+                if (this.activeBackward) {
+                    total += this.multiply(rate['backward_price'], this.form.values['rate.' + rate['grade_id'] + '.quantity']);
+                }
             });
             return this.multiply(total, 1) + ' руб.';
         },
@@ -276,6 +314,12 @@ export default {
     watch: {
         trip() {
             this.initForm();
+        },
+        checkedBackward(value) {
+            if (value === false) {
+                this.activeBackward = false;
+                this.backwardTripId = null;
+            }
         }
     },
 
@@ -292,6 +336,9 @@ export default {
         full_price: null,
         message: null,
         status: false,
+        activeBackward: false,
+        checkedBackward: true,
+        backwardTripId: null,
     }),
 
     created() {
@@ -305,6 +352,15 @@ export default {
     },
 
     methods: {
+        handleSelectBackwardTrip($event) {
+            if (!this.checkedBackward) {
+                this.activeBackward = false;
+                this.backwardTripId = null;
+            } else {
+                this.activeBackward = $event.activeBackward;
+                this.backwardTripId = $event.backward_trip_id;
+            }
+        },
 
         unselect() {
             this.$emit('select', null);
@@ -354,6 +410,7 @@ export default {
                 data: this.form.values,
                 trip: this.form.options['trip'],
                 ref: this.form.options['ref'],
+                backwardTripId: this.backwardTripId,
             }, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     // store order secret
@@ -392,7 +449,10 @@ export default {
                 tickets.push(ticket);
             });
 
-            axios.post(this.crm_url + '/showcase/promo-code/use', {promocode: this.form.values['promocode'], tickets: tickets},
+            axios.post(this.crm_url + '/showcase/promo-code/use', {
+                    promocode: this.form.values['promocode'],
+                    tickets: tickets
+                },
                 {headers: {'X-Ap-External-Session': this.session}}
             )
                 .then(response => {
@@ -505,6 +565,13 @@ export default {
 .ap-showcase__title {
     font-family: $showcase_font;
     margin: 10px 0;
+    font-size: 24px;
+    color: $showcase_link_color;
+    font-weight: bold;
+}
+.ap-showcase__label {
+    font-family: $showcase_font;
+    margin: 3px 0;
     font-size: 24px;
     color: $showcase_link_color;
     font-weight: bold;
@@ -852,5 +919,14 @@ export default {
             flex-direction: column;
         }
     }
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.checkbox-label {
+    margin-right: 10px;
 }
 </style>

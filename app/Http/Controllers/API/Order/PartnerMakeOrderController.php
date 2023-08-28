@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Events\CityTourOrderPaidEvent;
+use App\Events\NevaTravelOrderPaidEvent;
+use App\Events\NewCityTourOrderEvent;
+use App\Events\NewNevaTravelOrderEvent;
 use App\Exceptions\Account\AccountException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
-use App\Jobs\ApproveNevaOrder;
 use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
@@ -18,7 +21,7 @@ use App\Models\Order\Order;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
-use App\NevaTravel\NevaOrder;
+use App\Services\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -27,7 +30,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
-class PartnerMakeOrderController extends ApiEditController
+class   PartnerMakeOrderController extends ApiEditController
 {
     /**
      * Make order.
@@ -112,9 +115,14 @@ class PartnerMakeOrderController extends ApiEditController
                         'trip_id' => $ordering->trip_id,
                         'grade_id' => $ordering->grade_id,
                         'status_id' => $ticketStatus,
-                        'neva_travel_ticket' => $ordering->trip->source === 'NevaTravelApi'
+                        'provider_id' => $ordering->trip->provider_id
                     ]);
-                    $totalAmount += $ordering->getPrice();
+
+                    $ticket->cart_ticket_id = $ordering->id;
+                    $ticket->cart_parent_ticket_id = $ordering->parent_ticket_id;
+                    $ticket->backward_price = $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : null;
+
+                    $totalAmount += $ordering->parent_ticket_id !== null ? $ordering->getBackwardPrice() : $ordering->getPrice();
                     $tickets[] = $ticket;
                 }
             }
@@ -154,12 +162,11 @@ class PartnerMakeOrderController extends ApiEditController
                     $data['phone'] ?? null
                 );
 
-                $nevaOrder = new NevaOrder($order);
-                if (!$nevaOrder->make()) {
-                    throw new RuntimeException('Невозможно оформить заказ на этот рейс.');
-                } else {
-                    $nevaOrder->approve();
-                }
+                NewNevaTravelOrderEvent::dispatch($order);
+                NevaTravelOrderPaidEvent::dispatch($order);
+
+                NewCityTourOrderEvent::dispatch($order);
+                CityTourOrderPaidEvent::dispatch($order);
 
                 // attach order_id to transaction
                 if ($status_id === OrderStatus::partner_paid) {

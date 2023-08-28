@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Showcase;
 
+use App\Events\NewCityTourOrderEvent;
+use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Http\Middleware\ExternalProtect;
@@ -15,11 +17,10 @@ use App\Models\Dictionaries\TripStatus;
 use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Partner\Partner;
-use App\Models\PromoCode\PromoCode;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
-use App\NevaTravel\NevaOrder;
+use App\Services\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -61,8 +62,7 @@ class ShowcaseOrderController extends ApiEditController
         $now = Carbon::now();
 
         /** @var Trip $trip */
-        $trip = Trip::query()
-            ->where('id', $request->input('trip'))
+        $tripQuery = Trip::query()
             ->where(function (Builder $trip) use ($now) {
                 $trip->where('start_at', '>', $now)
                     ->orWhere(function (Builder $trip) use ($now) {
@@ -86,8 +86,15 @@ class ShowcaseOrderController extends ApiEditController
                             $query->where('base_price', '>', 0);
                         }
                     });
-            })
+            });
+
+        $trip = $tripQuery->clone()->where('id', $request->input('trip'))
             ->first();
+
+
+        $backwardTrip = $tripQuery->clone()->where('id', $request->input('backwardTripId'))
+            ->first();
+
 
         if ($trip === null) {
             return APIResponse::error('Нет продажи билетов на этот рейс.');
@@ -132,7 +139,7 @@ class ShowcaseOrderController extends ApiEditController
         }
 
         $tickets = [];
-
+        $backwardTickets = [];
         foreach ($data['rate'] as $gradeId => $grade) {
             if ($grade['quantity'] > 0) {
                 // get rate
@@ -147,8 +154,18 @@ class ShowcaseOrderController extends ApiEditController
                         'grade_id' => $gradeId,
                         'status_id' => TicketStatus::showcase_creating,
                         'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
-                        'neva_travel_ticket' => $trip->source === 'NevaTravelApi',
+                        'provider_id' => $trip->provider_id,
                     ]);
+                    if ($backwardTrip) {
+                        $backwardTicket = new Ticket([
+                            'trip_id' => $backwardTrip->id,
+                            'grade_id' => $gradeId,
+                            'status_id' => TicketStatus::showcase_creating,
+                            'base_price' => $rate->backward_price_type === 'fixed' ? $rate->backward_price_value : $rate->base_price * ($rate->backward_price_value / 100),
+                            'provider_id' => $trip->provider_id,
+                        ]);
+                        $backwardTickets[] = $backwardTicket;
+                    }
                     $tickets[] = $ticket;
                 }
             }
@@ -163,30 +180,28 @@ class ShowcaseOrderController extends ApiEditController
             $orderType = OrderType::site;
         }
 
-        try {
-            DB::transaction(static function () use ($data, $orderType, $tickets, $partnerId, $isPartnerSite, $flat, &$order) {
-                // create order
-                $order = Order::make(
-                    $orderType,
-                    $tickets,
-                    OrderStatus::showcase_creating,
-                    $partnerId,
-                    null,
-                    null,
-                    null,
-                    $data['email'],
-                    $data['name'],
-                    $data['phone'],
-                    $isPartnerSite === true, // strict price checking only for partner site
-                    $flat['promocode'] ?? null,
-                );
-                if (!(new NevaOrder($order))->make()) {
-                    throw new RuntimeException ('Невозможно оформить заказ на этот рейс.');
-                }
-            });
-        } catch (Exception $exception) {
-            Log::error('showcaseOrderController error: '.$exception->getMessage());
-        }
+        DB::transaction(static function () use ($data, $orderType, $tickets, $partnerId, $isPartnerSite, $flat, &$order, $backwardTickets) {
+            // create order
+            $order = Order::make(
+                $orderType,
+                $tickets,
+                OrderStatus::showcase_creating,
+                $partnerId,
+                null,
+                null,
+                null,
+                $data['email'],
+                $data['name'],
+                $data['phone'],
+                $isPartnerSite === true, // strict price checking only for partner site
+                $flat['promocode'] ?? null,
+                $backwardTickets,
+            );
+
+            NewNevaTravelOrderEvent::dispatch($order);
+            NewCityTourOrderEvent::dispatch($order);
+
+        });
 
         $orderSecret = json_encode([
             'id' => $order->id,

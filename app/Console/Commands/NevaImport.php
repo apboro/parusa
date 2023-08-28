@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\NevaTravel\ImportPiers;
-use App\NevaTravel\ImportPrograms;
-use App\NevaTravel\ImportProgramsPrices;
-use App\NevaTravel\ImportShips;
-use App\NevaTravel\ImportTrips;
+use App\Services\NevaTravel\ImportPiers;
+use App\Services\NevaTravel\ImportPrograms;
+use App\Services\NevaTravel\ImportProgramsPrices;
+use App\Services\NevaTravel\ImportShips;
+use App\Services\NevaTravel\ImportTrips;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 

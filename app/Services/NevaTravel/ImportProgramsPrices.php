@@ -1,14 +1,10 @@
 <?php
 
-namespace App\NevaTravel;
+namespace App\Services\NevaTravel;
 
 
-use App\Http\APIResponse;
-use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Excursions\Excursion;
-use App\Models\Excursions\ExcursionInfo;
-use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
 
@@ -20,30 +16,40 @@ class ImportProgramsPrices
         $nevaApiData = new NevaTravelRepository();
         $nevaPrograms = $nevaApiData->getProgramsInfo();
         $this->addOrUpdateGradesInDictionary();
+        $excursions = Excursion::with('additionalData')->where('provider_id', 10)->get();
         foreach ($nevaPrograms['body'] as $nevaProgram) {
-            $excursion = Excursion::where('external_id', $nevaProgram)->first();
 
-            $ratesList = $this->createOrUpdateRateList($excursion);
+            $foundExcursion = null;
+            foreach ($excursions as $excursion) {
+                if ($excursion->additionalData?->provider_excursion_id === $nevaProgram['id']) {
+                    $foundExcursion = $excursion;
+                    break;
+                }
+            }
 
-            $prices = $nevaProgram['prices_table'][0]['default_price'];
+            if ($foundExcursion) {
+                $ratesList = $this->createOrUpdateRateList($foundExcursion);
 
-            $grades = TicketGrade::whereIn('id', TicketGrade::neva_grades_array)->pluck('external_grade_name', 'id');
+                $prices = $nevaProgram['prices_table'][0]['default_price'];
 
-            foreach ($grades as $grade_id => $grade_name) {
-                TicketRate::updateOrCreate(
-                    [
-                        'rate_id' => $ratesList->id,
-                        'grade_id' => $grade_id,
-                    ],
-                    [
-                        'base_price' => $prices[$grade_name]['price']/100,
-                        'min_price' => $prices[$grade_name]['price']/100,
-                        'max_price' => $prices[$grade_name]['price']/100,
-                        'commission_type' => 'fixed',
-                        'commission_value' => 100,
-                        'site_price' => $prices[$grade_name]['price']/100,
-                    ]
-                );
+                $grades = TicketGrade::whereIn('id', TicketGrade::neva_grades_array)->pluck('external_grade_name', 'id');
+
+                foreach ($grades as $grade_id => $grade_name) {
+                    TicketRate::updateOrCreate(
+                        [
+                            'rate_id' => $ratesList->id,
+                            'grade_id' => $grade_id,
+                        ],
+                        [
+                            'base_price' => $prices[$grade_name]['price'] / 100,
+                            'min_price' => $prices[$grade_name]['price'] / 100,
+                            'max_price' => $prices[$grade_name]['price'] / 100,
+                            'commission_type' => 'fixed',
+                            'commission_value' => 100,
+                            'site_price' => $prices[$grade_name]['price'] / 100,
+                        ]
+                    );
+                }
             }
         }
     }
@@ -61,7 +67,7 @@ class ImportProgramsPrices
             ],
             ['external_name' =>'infant',
             'id'=> TicketGrade::neva_infant,
-            'inner_name' => 'Десткий (до 3 лет)'
+            'inner_name' => 'Детский (до 3 лет)'
             ],
             ['external_name' =>'privileged',
             'id'=> TicketGrade::neva_privileged,
@@ -78,7 +84,8 @@ class ImportProgramsPrices
                     'name' => $grade['inner_name'],
                     'enabled' => 1,
                     'locked' => 1,
-                    'external_grade_name' => $grade['external_name']
+                    'external_grade_name' => $grade['external_name'],
+                    'provider_id' => 10,
                 ]);
         }
     }

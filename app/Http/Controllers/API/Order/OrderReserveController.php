@@ -14,7 +14,7 @@ use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
-use App\NevaTravel\NevaOrder;
+use App\Services\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;

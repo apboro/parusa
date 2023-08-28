@@ -1,6 +1,6 @@
 <?php
 
-namespace App\NevaTravel;
+namespace App\Services\NevaTravel;
 
 use App\Models\Piers\Pier;
 use App\Models\Piers\PierInfo;

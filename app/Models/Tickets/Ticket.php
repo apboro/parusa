@@ -7,6 +7,8 @@ use App\Exceptions\Tickets\WrongTicketStatusException;
 use App\Helpers\PriceConverter;
 use App\Interfaces\Statusable;
 use App\Models\Account\AccountTransaction;
+use App\Models\AdditionalDataTicket;
+use App\Models\BackwardTicket;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\TerminalStatus;
@@ -43,6 +45,8 @@ use JsonException;
  * @property TicketGrade $grade
  * @property AccountTransaction $transaction
  * @property TicketReturn $return
+ * @property BackwardTicket $backward
+ * @property Boolean $IsBackward
  */
 class Ticket extends Model implements Statusable
 {
@@ -78,7 +82,7 @@ class Ticket extends Model implements Statusable
             $this->checkAndSetStatus(TicketStatus::class, TicketStatus::terminal_paid_single, WrongTicketStatusException::class, $save);
         } elseif ($status === TicketStatus::partner_paid && $isSingleTicket) {
             $this->checkAndSetStatus(TicketStatus::class, TicketStatus::partner_paid_single, WrongTicketStatusException::class, $save);
-        } elseif ($status === TicketStatus::showcase_paid && $isSingleTicket){
+        } elseif ($status === TicketStatus::showcase_paid && $isSingleTicket) {
             $this->checkAndSetStatus(TicketStatus::class, TicketStatus::showcase_paid_single, WrongTicketStatusException::class, $save);
         } else {
             $this->checkAndSetStatus(TicketStatus::class, $status, WrongTicketStatusException::class, $save);
@@ -168,7 +172,7 @@ class Ticket extends Model implements Statusable
     {
         $rateList = $this->trip->getRate();
 
-        return $rateList ? $rateList->rates()->where('grade_id', $this->grade_id)->value('base_price') : null;
+        return $rateList?->rates()->where('grade_id', $this->grade_id)->value('base_price');
     }
 
     /**
@@ -306,6 +310,26 @@ class Ticket extends Model implements Statusable
             ->data($this->order->neva_travel_order_number ?? json_encode($payload, JSON_THROW_ON_ERROR))
             ->build()
             ->getDataUri();
+    }
+
+    public function isBackward(): bool
+    {
+        return $this->hasOne(BackwardTicket::class, 'backward_ticket_id', 'id')->exists();
+    }
+
+    public function backwardTicket()
+    {
+        return Ticket::find(BackwardTicket::where('main_ticket_id', $this->id)->first()?->backward_ticket_id);
+    }
+
+    public function mainTicket()
+    {
+        return Ticket::find(BackwardTicket::where('backward_ticket_id', $this->id)->first()?->main_ticket_id);
+    }
+
+    public function additionalData()
+    {
+        return $this->hasOne(AdditionalDataTicket::class, 'ticket_id', 'id');
     }
 
 }

@@ -16,10 +16,11 @@
             <thead>
             <tr>
                 <th class="w-15"></th>
-                <th class="w-15 p-10">Базовая стоимость (БС) билетов, руб.</th>
+                <th class="w-5 p-10">Базовая стоимость (БС) билетов, руб.</th>
                 <th class="w-20 p-10" colspan="2">Минимальный и максимальный диапазон стоимости билетов, руб.</th>
-                <th class="w-35 p-10" colspan="3">Комиссионное вознаграждение партнёров за продажу билетов, руб.</th>
-                <th class="w-15 p-10">Цена для сайта, руб.</th>
+                <th class="w-25 p-10" colspan="3">Комиссионное вознаграждение партнёров за продажу билетов, руб.</th>
+                <th class="w-15 p-10" colspan="2">Цена обратного билета, руб.</th>
+                <th class="w-20 p-10">Цена для сайта, руб.</th>
             </tr>
             </thead>
             <tbody>
@@ -39,7 +40,7 @@
                 <td>
                     <FormNumber :form="form" :name="'rates.' + key + '.max_price'" :hide-title="true" :small="true"/>
                 </td>
-                <td class="w-50px">
+                <td class="w-40px">
                     <FormDropdown :form="form" :name="'rates.' + key + '.commission_type'"
                                   :identifier="'id'"
                                   :show="'name'"
@@ -52,13 +53,36 @@
                                   ]"
                     />
                 </td>
-                <td class="w-50px">
+                <td class="w-40px">
                     <FormNumber :form="form" :name="'rates.' + key + '.commission_value'" :hide-title="true" :small="true"/>
                 </td>
-                <td class="w-50px pl-10 pt-15" v-if="form.values['rates.' + key + '.commission_type'] === 'fixed'">
+                <td class="w-40px pl-10 pt-15" v-if="form.values['rates.' + key + '.commission_type'] === 'fixed'">
                     {{ Math.floor(Number(form.values['rates.' + key + '.commission_value']) * 100) / 100 }} руб.
                 </td>
                 <td class="pl-10 pt-15" v-else>{{ Math.floor(form.values['rates.' + key + '.commission_value'] * form.values['rates.' + key + '.base_price']) / 100 }} руб.</td>
+
+<!-- backward price columns скрыт выбор типа назначения цены-->
+<!--                <td class="w-40px">-->
+<!--                    <FormDropdown :form="form" :name="'rates.' + key + '.backward_price_type'"-->
+<!--                                  :identifier="'id'"-->
+<!--                                  :show="'name'"-->
+<!--                                  :hide-title="true"-->
+<!--                                  :small="true"-->
+<!--                                  :placeholder="'Тип'"-->
+<!--                                  :options="[-->
+<!--                                      {id: 'fixed', name: 'фикс.'},-->
+<!--                                      {id: 'percents', name: '% от БС'},-->
+<!--                                  ]"-->
+<!--                    />-->
+<!--                </td>-->
+                <td class="w-40px">
+                    <FormNumber :form="form" :name="'rates.' + key + '.backward_price_value'" :hide-title="true" :small="true"/>
+                </td>
+                <td class="w-40px pl-10 pt-15" v-if="form.values['rates.' + key + '.backward_price_type'] === 'fixed'">
+                    {{ Math.floor(Number(form.values['rates.' + key + '.backward_price_value']) * 100) / 100 }} руб.
+                </td>
+                <td class="pl-10 pt-15" v-else>{{ Math.floor(form.values['rates.' + key + '.backward_price_value'] * form.values['rates.' + key + '.base_price']) / 100 }} руб.</td>
+<!--end-->
                 <td>
                     <FormNumber :form="form" :name="'rates.' + key + '.site_price'" :hide-title="true" :small="true"/>
                 </td>
@@ -128,6 +152,8 @@ export default {
                     this.form.set('rates.' + index + '.max_price', grade === null ? (isDefault ? 0 : null) : grade['max_price'], 'required|number|gte:rates.' + index + '.base_price|min:0|bail', 'Максимальная', true);
                     this.form.set('rates.' + index + '.commission_type', grade === null ? (isDefault ? 'fixed' : null) : grade['commission_type'], 'required', 'Тип', true);
                     this.form.set('rates.' + index + '.commission_value', grade === null ? (isDefault ? 0 : null) : grade['commission_value'], 'required|number|min:0|bail', 'Комиссия', true);
+                    this.form.set('rates.' + index + '.backward_price_type', grade === null ? (isDefault ? 'fixed' : null) : grade['backward_price_type'], 'required', 'Тип', true);
+                    this.form.set('rates.' + index + '.backward_price_value', grade === null ? (isDefault ? 0 : null) : grade['backward_price_value'], 'required|number|min:0|bail', 'Цена', true);
 
                     this.iterator.push(index);
                     index++;

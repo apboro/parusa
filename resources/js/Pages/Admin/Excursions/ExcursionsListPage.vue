@@ -27,6 +27,8 @@
                         <router-link class="link" :to="{ name: 'excursion-view', params: { id: excursion['id'] }}">{{ excursion['name'] }}</router-link>
                     </ListTableCell>
                     <ListTableCell>
+                        {{ excursion['provider'] }}
+                    </ListTableCell>                    <ListTableCell>
                         {{ excursion['status'] }}
                     </ListTableCell>
             </ListTableRow>

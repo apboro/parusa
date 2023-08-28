@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Registries;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\PromoCode\PromoCode;
@@ -89,9 +90,10 @@ class OrdersRegistryItemController extends ApiController
                     'trip_start_time' => $ticket->trip->start_at->format('H:i'),
                     'excursion' => $ticket->trip->excursion->name,
                     'is_single_ticket' => $ticket->trip->excursion->is_single_ticket,
-                    'has_return_trip' => $ticket->trip->excursion->has_return_trip,
+                    'reverse_excursion_id' => $ticket->trip->excursion->reverse_excursion_id,
                     'excursion_id' => $ticket->trip->excursion->id,
-                    'transferable' => in_array($ticket->status_id, TicketStatus::ticket_paid_statuses, true),
+                    'transferable' => in_array($ticket->status_id, TicketStatus::ticket_paid_statuses, true) && $ticket->provider_id !== Provider::city_tour,
+                    'isBackward' => $ticket->isBackward(),
                     'pier' => $ticket->trip->startPier->name,
                     'grade' => $ticket->grade->name,
                     'status' => $ticket->status->name,

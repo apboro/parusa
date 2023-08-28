@@ -7,6 +7,7 @@ use App\Models\Model;
 use App\Models\Sails\Trip;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
@@ -15,11 +16,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $trip_id
  * @property int $grade_id
  * @property int $quantity
+ * @property int|null $parent_ticket_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  *
  * @property Trip $trip
  * @property TicketGrade $grade
+ * @property hasOne $backwardTicket
+ * @property hasOne $parentTicket
  */
 class PositionOrderingTicket extends Model
 {
@@ -29,7 +33,7 @@ class PositionOrderingTicket extends Model
     ];
 
     /** @var string[] Fillable attributes. */
-    protected $fillable = ['trip_id', 'grade_id', 'terminal_id'];
+    protected $fillable = ['trip_id', 'grade_id', 'terminal_id', 'parent_ticket_id', 'quantity'];
 
     /**
      * Trip relation.
@@ -60,7 +64,17 @@ class PositionOrderingTicket extends Model
     {
         $rateList = $this->trip->getRate();
 
-        return $rateList ? $rateList->rates()->where('grade_id', $this->grade_id)->value('base_price') : null;
+        return $rateList?->rates()->where('grade_id', $this->grade_id)->value('base_price');
+    }
+    public function getBackwardPrice(): ?float
+    {
+        $trip = $this->parentTicket->trip;
+
+        $rateList = $trip->getRate();
+
+        $rate = $rateList?->rates()->where('grade_id', $this->grade_id)->first();
+
+        return $rate->backward_price_type === 'fixed' ? $rate->backward_price_value : $rate->base_price * ($rate->backward_price_value/100);
     }
 
     /**
@@ -85,5 +99,14 @@ class PositionOrderingTicket extends Model
         $rateList = $this->trip->getRate();
 
         return $rateList ? $rateList->rates()->where('grade_id', $this->grade_id)->value('max_price') : null;
+    }
+
+    public function parentTicket()
+    {
+        return $this->hasOne(PositionOrderingTicket::class, 'id', 'parent_ticket_id');
+    }
+    public function backwardTicket()
+    {
+        return $this->hasOne(PositionOrderingTicket::class, 'parent_ticket_id', 'id');
     }
 }

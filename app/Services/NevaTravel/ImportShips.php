@@ -1,10 +1,9 @@
 <?php
 
-namespace App\NevaTravel;
+namespace App\Services\NevaTravel;
 
 
 use App\Models\Ships\Ship;
-use Illuminate\Support\Str;
 
 class ImportShips
 {

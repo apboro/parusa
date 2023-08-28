@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\API\Order;
 
 use App\Classes\EmailReceiver;
+use App\Events\CityTourOrderPaidEvent;
+use App\Events\NevaTravelOrderPaidEvent;
+use App\Events\NewCityTourOrderEvent;
+use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Jobs\ApproveNevaOrder;
@@ -16,13 +20,14 @@ use App\Models\Payments\Payment;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketReturn;
 use App\Models\User\Helpers\Currents;
-use App\NevaTravel\NevaOrder;
 use App\Notifications\OrderNotification;
 use App\SberbankAcquiring\Connection;
 use App\SberbankAcquiring\Helpers\Currency;
 use App\SberbankAcquiring\HttpClient\CurlClient;
 use App\SberbankAcquiring\Options;
 use App\SberbankAcquiring\Sber;
+use App\Services\CityTourBus\CityTourOrder;
+use App\Services\NevaTravel\NevaOrder;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -101,19 +106,24 @@ class OrderReturnController extends ApiController
                     } else {
                         $order->setStatus(OrderStatus::partner_partial_returned);
                     }
-                    if ($order->neva_travel_id) {
-                        $nevaOrder = new NevaOrder($order);
-                        $nevaOrder->cancel();
-                        if ($order->status_id == OrderStatus::partial_returned_statuses) {
-                            $nevaOrder->make();
-                            ApproveNevaOrder::dispatch($order);
-                            try {
-                                Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
-                            } catch (Exception $exception) {
-                                Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
-                            }
+
+                    (new NevaOrder($order))->cancel();
+                    if ($order->status_id == OrderStatus::partial_returned_statuses) {
+                        NewNevaTravelOrderEvent::dispatch($order);
+                        NevaTravelOrderPaidEvent::dispatch($order);
+                        try {
+                            Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+                        } catch (Exception $exception) {
+                            Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
                         }
                     }
+
+                    (new CityTourOrder($order))->cancel();
+                    if ($order->status_id == OrderStatus::partial_returned_statuses) {
+                        NewCityTourOrderEvent::dispatch($order);
+                        CityTourOrderPaidEvent::dispatch($order);
+                    }
+
                 });
             } catch (Exception $exception) {
                 return APIResponse::error($exception->getMessage());
@@ -189,22 +199,22 @@ class OrderReturnController extends ApiController
 
             $successMessage = 'Возврат оформлен.';
 
-            try {
-                if ($order->neva_travel_id) {
-                    $nevaOrder = new NevaOrder($order);
-                    $nevaOrder->cancel();
-                    if ($order->status_id == OrderStatus::partial_returned_statuses) {
-                        $nevaOrder->make();
-                        ApproveNevaOrder::dispatch($order);
-                        try {
-                            Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
-                        } catch (Exception $exception) {
-                            Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
-                        }
-                    }
+            (new NevaOrder($order))->cancel();
+            if ($order->status_id == OrderStatus::partial_returned_statuses) {
+                NewNevaTravelOrderEvent::dispatch($order);
+                NevaTravelOrderPaidEvent::dispatch($order);
+                try {
+
+                    Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+                } catch (Exception $exception) {
+                    Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
                 }
-            } catch (Exception $e) {
-                Log::channel('neva')->error('Neva API Error: ' . $e->getMessage() . ' : ' . $e->getFile() . ':' . $e->getLine());
+            }
+
+            (new CityTourOrder($order))->cancel();
+            if ($order->status_id == OrderStatus::partial_returned_statuses) {
+                NewCityTourOrderEvent::dispatch($order);
+                CityTourOrderPaidEvent::dispatch($order);
             }
 
         } else if ($current->isStaff() && $current->role() && $current->terminalId() !== null && $current->role()->matches(Role::terminal)) {

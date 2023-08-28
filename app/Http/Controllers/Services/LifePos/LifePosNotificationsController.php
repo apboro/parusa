@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Services\LifePos;
 
+use App\Events\NevaTravelCancelOrderEvent;
 use App\Helpers\Fiscal;
 use App\Http\Controllers\ApiController;
 use App\LifePos\LifePosSales;
@@ -13,7 +14,8 @@ use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\StaffPositionInfo;
 use App\Models\Tickets\Ticket;
-use App\NevaTravel\NevaOrder;
+//refactored to services
+use App\Services\NevaTravel\NevaOrder;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -236,6 +238,8 @@ class LifePosNotificationsController extends ApiController
                 $ticket->refundCommission();
                 $ticket->setStatus(TicketStatus::terminal_returned);
             });
+        //cancel neva travel order
+        NevaTravelCancelOrderEvent::dispatch($order);
 
             //cancel neva travel order
             $nevaOrder = new NevaOrder($order);

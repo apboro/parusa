@@ -12,6 +12,7 @@ import Rates from "@/Pages/Partner/Rates";
 import OrderMakePage from "@/Pages/Partner/OrderMakePage";
 import NotFound from '@/Pages/NotFound';
 import QrCodesPage from "@/Pages/Partner/QrCodesPage.vue";
+import TripViewPage from "@/Pages/Admin/Trips/TripViewPage.vue";
 
 export default [
     {path: '/', name: 'home', component: TripsSelectPage, meta: {title: 'Подбор билетов'}},
@@ -28,5 +29,7 @@ export default [
     {path: '/company/account', name: 'company-account', component: AccountPage, meta: {title: 'Лицевой счёт'}},
     {path: '/company/rates', name: 'company-rates', component: Rates, meta: {title: 'Тарифы и комиссионное вознаграждение'}},
     {path: '/order', name: 'order', component: OrderMakePage, meta: {title: 'Оформление заказа'}},
+    {path: '/order', name: 'order', component: OrderMakePage, meta: {title: 'Оформление заказа'}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
+    {path: '/trips/:id', name: 'trip-view', component: TripViewPage, meta: {title: 'Просмотр рейса', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
 ];

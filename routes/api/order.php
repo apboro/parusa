@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Order\OrderBackwardTicketsController;
 use App\Http\Controllers\API\Order\OrderReserveController;
 use App\Http\Controllers\API\Order\OrderReturnController;
 use App\Http\Controllers\API\Order\OrderTicketReplacementController;
@@ -30,3 +31,8 @@ Route::post('/order/reserve/accept', [OrderReserveController::class, 'terminalOr
 Route::post('/order/replacement/get_available_dates', [OrderTicketReplacementController::class, 'getAvailableDates'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_terminal']);
 Route::post('/order/replacement/get_trips_for_date', [OrderTicketReplacementController::class, 'getTripsForDate'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_terminal']);
 Route::post('/order/replacement/make', [OrderTicketReplacementController::class, 'replaceTickets'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_terminal']);
+
+Route::post('/order/backward/get_backward_trips', [OrderBackwardTicketsController::class, 'getBackwardTrips'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_terminal,partner']);
+Route::post('/order/backward/add_backward_tickets', [OrderBackwardTicketsController::class, 'addBackwardTickets'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_terminal,partner']);
+Route::post('/order/backward/add_backward_tickets_showcase', [OrderBackwardTicketsController::class, 'addBackwardTicketsShowcase'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_terminal,partner']);
+

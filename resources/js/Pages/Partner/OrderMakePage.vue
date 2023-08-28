@@ -16,39 +16,72 @@
                     <th></th>
                 </tr>
                 </thead>
-                <tr v-for="ticket in tickets" :class="{'order-table__first' : ticket['first_in_date'], 'order-table__highlight' : ticket['trip_flag']}">
+                <tr v-for="ticket in tickets"
+                    :class="{'order-table__first' : ticket['first_in_date'], 'order-table__highlight' : ticket['trip_flag']}">
                     <td>{{ ticket['trip_start_date'] }}</td>
                     <td>{{ ticket['trip_start_time'] }}</td>
                     <td>
-                        <div>{{ ticket['excursion'] }}</div>
+                        <div>{{ ticket['excursion'] }}
+                            <div style="color: red;" v-if="ticket['backward_price']">обратный</div>
+                        </div>
                     </td>
                     <td>{{ ticket['pier'] }}</td>
                     <td>{{ ticket['grade'] }}</td>
                     <template v-if="ticket['available']">
-                        <td class="bold no-wrap">{{ ticket['base_price'] }} руб.</td>
+                        <td class="bold no-wrap">{{ ticket['backward_price'] ?? ticket['base_price'] }} руб.</td>
                         <td>
-                            <FormNumber :form="form" :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true" :min="0" :hide-title="true"
+                            <FormNumber :disabled="(ticket['backward_price'] !== null && ticket['ticket_provider_id'] !== null)" :form="form"
+                                        :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true"
+                                        :min="0" :hide-title="true" :model-value="ticket['quantity']"
                                         @change="(value) => quantityChange(ticket['id'], value)"
                             />
                         </td>
                         <td class="bold no-wrap">
-                            {{ multiply(ticket['base_price'], form.values['tickets.' + ticket['id'] + '.quantity']) }} руб.
+                            {{
+                                multiply(ticket['backward_price'] ?? ticket['base_price'], form.values['tickets.' + ticket['id'] + '.quantity'])
+                            }}
+                            руб.
                         </td>
                     </template>
                     <template v-else>
-                        <td colspan="3" class="text-red text-sm mt-5">Продажа билетов на этот рейс не осуществляется</td>
+                        <td colspan="3" class="text-red text-sm mt-5">Продажа билетов на этот рейс не осуществляется
+                        </td>
                     </template>
                     <td class="va-middle">
-                        <GuiIconButton :title="'Удалить из заказа'" :border="false" :color="'red'" @click="remove(ticket['id'])">
+                        <GuiActionsMenu
+                            v-if="ticket['reverse_excursion_id'] !== null && ticket['backward_price'] === null && !ticket['ticket_provider_id']"
+                            :title="null">
+                            <span class="link" @click="remove(ticket['id'])">Удалить билет</span>
+                            <span v-if="!ticket['backward_price']" class="link"
+                                  @click="callGetBackwardTrips(ticket['trip_id'], ticket['id'], null)">Оформить обратный билет</span>
+                        </GuiActionsMenu>
+                        <GuiIconButton
+                            v-if="ticket['reverse_excursion_id'] === null || ticket['backward_price'] !== null || ticket['ticket_provider_id'] !== null"
+                            :title="'Удалить из заказа'" :border="false" :color="'red'"
+                            @click="remove(ticket['id'])">
                             <IconCross/>
                         </GuiIconButton>
                     </td>
                 </tr>
             </table>
-            <GuiHeading mt-20 bold right>Итого к оплате: {{ total }}</GuiHeading>
+
+
+            <GuiContainer mt-20 mb-10 bold right>
+                <GuiHeading mb-5 >Итого к оплате: {{ total }}</GuiHeading>
+                <GuiButton v-if="tickets.filter(ticket => ticket.ticket_provider_id !== null && ticket.reverse_excursion_id !== null).length > 0"
+                           @click="callGetBackwardTrips(data.data.ticketTrip, null, tickets)">Оформить
+                    обратный рейс
+                </GuiButton>
+            </GuiContainer>
+
+            <BackwardTicketSelect mt-20 ref="backwardTicketSelect" :tickets="data.data['tickets']"
+                                  @update="backwardTicketsUpdate"/>
+
+
             <GuiContainer mt-20 mb-20 w-50>
                 <GuiHeading mb-30 bold>Информация о плательщике</GuiHeading>
-                <GuiHint mb-30>Информация предоставляется на случай, если покупателя нужно будет уведомить об отмене рейса или иных непредвиденных обстоятельствах. Не является
+                <GuiHint mb-30>Информация предоставляется на случай, если покупателя нужно будет уведомить об отмене
+                    рейса или иных непредвиденных обстоятельствах. Не является
                     обязательной.
                 </GuiHint>
                 <FormString :form="form" :name="'name'"/>
@@ -62,7 +95,9 @@
 
             <GuiContainer w-70 mt-30 inline text-right>
                 <GuiButton @click="clear" :color="'red'" :disabled="!canOrder">Очистить</GuiButton>
-                <GuiButton @click="reserve" :color="'green'" :disabled="!canOrder" v-if="data.data['can_reserve']">Оформить бронь</GuiButton>
+                <GuiButton @click="reserve" :color="'green'" :disabled="!canOrder" v-if="data.data['can_reserve']">
+                    Оформить бронь
+                </GuiButton>
                 <GuiButton @click="order" :color="'green'" :disabled="!canOrder">Оплатить с лицевого счёта</GuiButton>
             </GuiContainer>
         </template>
@@ -90,9 +125,13 @@ import deleteEntry from "@/Mixins/DeleteEntry";
 import FormString from "@/Components/Form/FormString";
 import FormPhone from "@/Components/Form/FormPhone";
 import FormNumber from "@/Components/Form/FormNumber";
+import BackwardTicketSelect from "@/Components/BackwardTicketSelect";
+import GuiActionsMenu from "../../Components/GUI/GuiActionsMenu.vue";
 
 export default {
     components: {
+        GuiActionsMenu,
+        BackwardTicketSelect,
         FormNumber,
         FormPhone,
         FormString,
@@ -124,7 +163,7 @@ export default {
             let total = 0;
             this.data.data['tickets'].map(ticket => {
                 if (ticket['available'] && !isNaN(ticket['base_price'])) {
-                    total += this.multiply(ticket['base_price'], this.form.values['tickets.' + ticket['id'] + '.quantity']);
+                    total += this.multiply(ticket['backward_price'] ?? ticket['base_price'], this.form.values['tickets.' + ticket['id'] + '.quantity']);
                 }
             });
             return this.multiply(total, 1) + ' руб.';
@@ -172,19 +211,24 @@ export default {
     },
 
     methods: {
-        load() {
+        load(name = null, email = null, phone = null) {
             this.data.load()
                 .then(data => {
                     this.form.reset();
                     data.data['tickets'].map(ticket => {
                         this.form.set('tickets.' + ticket['id'] + '.quantity', ticket['quantity'], 'integer|min:0', 'Количество', true);
                     });
-                    this.form.set('name', null, null, 'Имя', true);
-                    this.form.set('email', null, 'email|nullable', 'Email', true);
-                    this.form.set('phone', null, null, 'Телефон', true);
+                    this.form.set('name', name, null, 'Имя', true);
+                    this.form.set('email', email, 'email|nullable', 'Email', true);
+                    this.form.set('phone', phone, null, 'Телефон', true);
 
                     this.form.load();
                 });
+        },
+
+
+        callGetBackwardTrips($tripId, $ticketId, tickets) {
+            this.$refs.backwardTicketSelect.getBackwardTrips($tripId, $ticketId, tickets);
         },
 
         back() {
@@ -197,19 +241,22 @@ export default {
             }
             axios.post('/api/cart/partner/quantity', {id: id, value: value})
                 .then(() => {
-                    this.$store.dispatch('partner/refresh');
+                    this.load(this.form.values['name'], this.form.values['email'], this.form.values['phone']);
                 })
                 .catch(error => {
                     this.$toast.error(error.response.data['message']);
                 })
         },
 
+        backwardTicketsUpdate() {
+            this.load(this.form.values['name'], this.form.values['email'], this.form.values['phone']);
+            this.data.data['tickets'] = [];
+        },
+
         remove(ticket_id) {
             this.deleteEntry('Удалить билеты из заказа?', '/api/cart/partner/remove', {ticket_id: ticket_id})
                 .then(() => {
-                    this.data.data['tickets'] = this.data.data['tickets'].filter(ticket => ticket['id'] !== ticket_id);
-                    this.form.unset('tickets.' + ticket_id + '.quantity');
-                    this.$store.dispatch('partner/refresh');
+                    this.load(this.form.values['name'], this.form.values['email'], this.form.values['phone']);
                 });
         },
 

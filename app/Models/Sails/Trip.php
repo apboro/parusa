@@ -13,6 +13,7 @@ use App\Models\Dictionaries\TripStatus;
 use App\Models\Excursions\Excursion;
 use App\Models\Model;
 use App\Models\Piers\Pier;
+use App\Models\AdditionalDataTrip;
 use App\Models\Ships\Ship;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketsRatesList;
@@ -43,7 +44,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $is_single_ticket
- * @property int $has_return_trip
+ * @property int $reverse_excursion_id
  *
  * @property Pier $startPier
  * @property Pier $endPier
@@ -54,9 +55,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property TripDiscountStatus $discountStatus
  * @property Collection $chains
  * @property string|null $external_id
- * @property string|null $source
+ * @property int|null $provider_id
  * @property string|null $getTripStarts
  * @property Builder $getAllTripsOfExcursionAndPierOnDay
+ * @property AdditionalDataTrip $additionalData
  */
 class Trip extends Model implements Statusable
 {
@@ -335,6 +337,11 @@ class Trip extends Model implements Statusable
             ->whereDate('start_at', $tripDate)
             ->where('excursion_id',$excursionId)
             ->where('start_pier_id',$startPierId);
+    }
+
+    public function additionalData()
+    {
+        return $this->hasOne(AdditionalDataTrip::class, 'trip_id', 'id');
     }
 
 

@@ -8,3 +8,7 @@ https://apidoc.life-pay.ru/cloud-print/
 Ограничение длины названий для билетов (LifePos) 
 
 https://securepayments.sberbank.ru/wiki/doku.php/test_cards
+
+Нужно разделить тарифы по поставщикам
+
+

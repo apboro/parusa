@@ -15,7 +15,9 @@ class AddFieldsToExcursionsTable extends Migration
     {
         Schema::table('excursions', function (Blueprint $table) {
             $table->boolean('is_single_ticket')->default(false);
-            $table->boolean('has_return_trip')->default(false);
+            $table->unsignedSmallInteger('reverse_excursion_id')->nullable();
+
+            $table->foreign('reverse_excursion_id')->on('excursions')->references('id');
         });
     }
 
@@ -28,7 +30,7 @@ class AddFieldsToExcursionsTable extends Migration
     {
         Schema::table('excursions', function (Blueprint $table) {
             $table->dropColumn('is_single_ticket');
-            $table->dropColumn('has_return_trip');
+            $table->dropConstrainedForeignId('reverse_excursion_id');
         });
     }
 }

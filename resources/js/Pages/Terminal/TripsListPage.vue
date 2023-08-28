@@ -56,10 +56,24 @@
                         @change="list.load()"
                 />
             </LayoutFiltersItem>
+
+            <LayoutFiltersItem :class="'w-25'" :title="'Тип'">
+                <DictionaryDropDown
+                    :dictionary="'excursion_types'"
+                    :fresh="true"
+                    v-model="list.filters['excursion_type_id']"
+                    :original="list.filters_original['excursion_type_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :right="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
         </LayoutFilters>
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true">
-            <ListTableRow v-for="(trip, key) in list.list" :key="key">
+            <ListTableRow v-for="(trip, key) in list.list" :key="key" :bus_tours="trip.excursion_type_id === 20">
                 <ListTableCell>
                     <div v-if="!trip.is_single_ticket"><b class="text-lg">{{ trip['start_time'] }}</b></div>
                     <div v-if="!trip.is_single_ticket"><span :style="{fontSize: '13px'}">{{ trip['start_date'] }}</span></div>

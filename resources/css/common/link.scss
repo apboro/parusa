@@ -15,4 +15,17 @@
     &:hover {
         color: $link_hover_color;
     }
+
+    &__bus_tours {
+        text-decoration: none;
+        cursor: pointer;
+        transition: color $animation $animation_time;
+        font-family: $project_font;
+        color: $link_bus_color
+    }
+    &__bus_tours:hover {
+        color: $link_bus_hover_color
+    }
+
+
 }

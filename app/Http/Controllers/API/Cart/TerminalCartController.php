@@ -71,6 +71,10 @@ class TerminalCartController extends ApiEditController
             ->get();
         $limits = [];
 
+        $ticketTrip = $tickets->first()?->trip->id;
+        $hasProviderTicket = $tickets->filter(function ($ticket) {
+            return $ticket->trip->provider_id !== null;
+        })->isNotEmpty();
         $tickets = $tickets->map(function (PositionOrderingTicket $ticket) use (&$limits) {
             $trip = $ticket->trip;
             if (!isset($limits[$trip->id])) {
@@ -82,9 +86,12 @@ class TerminalCartController extends ApiEditController
             return [
                 'id' => $ticket->id,
                 'trip_id' => $trip->id,
+                'ticket_provider_id' => $ticket->trip->provider_id,
                 'trip_start_date' => $trip->start_at->format('d.m.Y'),
                 'trip_start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
+                'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
+                'backward_price' => $ticket->parent_ticket_id !== null ? $ticket->getBackwardPrice() : null,
                 'pier' => $trip->startPier->name,
                 'grade' => $ticket->grade->name,
                 'base_price' => $price = $ticket->getPrice(),
@@ -96,6 +103,8 @@ class TerminalCartController extends ApiEditController
         });
 
         return APIResponse::response([
+            'ticketTrip' => $ticketTrip,
+            'hasProviderTickets' =>$hasProviderTicket,
             'tickets' => $tickets,
             'limits' => $limits,
             'can_reserve' => $current->partner() ? $current->partner()->profile->can_reserve_tickets : null,
@@ -153,6 +162,20 @@ class TerminalCartController extends ApiEditController
         ) {
             return APIResponse::notFound('Рейс не найден');
         }
+
+        if ($trip->provider_id !== null && $current->position()->ordering()->exists()){
+            return APIResponse::error('Заказы данного поставщика должны оформляться отдельно, очистите корзину.');
+        }
+
+        $existingTickets = $current->position()->ordering()->get();
+        $hasExternalTickets = $existingTickets->filter(function ($ticket){
+            return $ticket->trip->provider_id !== null;
+        })->isNotEmpty();
+
+        if ($hasExternalTickets){
+            return APIResponse::error('В корзине содержатся билеты другого поставщика, очистите корзину.');
+        }
+
         $now = Carbon::now();
 
         /** @var Trip $trip */
@@ -247,12 +270,29 @@ class TerminalCartController extends ApiEditController
 
         $quantity = $request->input('value');
 
+        if ($ticket->parent_ticket_id){
+            $parentTicket = $current->position()->ordering()->where('id', $ticket->parent_ticket_id)->first();
+            if ($quantity > $parentTicket->quantity){
+                return APIResponse::error('Обратных билетов не может быть больше, чем прямых.');
+            }
+        }
+
         if ($ticket === null) {
             return APIResponse::error('Билет не найден.');
         }
 
+        $backwardTicket = $ticket->backwardTicket;
         if ($ticket->trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
             throw new RuntimeException('Недостаточно свободных мест на теплоходе.');
+        }
+
+        if ($backwardTicket?->trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
+            throw new RuntimeException('Недостаточно свободных мест на теплоходе в обратную сторону.');
+        }
+
+        if ($backwardTicket) {
+            $backwardTicket->quantity = $quantity;
+            $backwardTicket->save();
         }
 
         $ticket->quantity = $quantity;

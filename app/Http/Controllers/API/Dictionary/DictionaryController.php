@@ -10,6 +10,7 @@ use App\Models\Dictionaries\AccountTransactionTypePrimary;
 use App\Models\Dictionaries\AccountTransactionTypeRefill;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\ExcursionType;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PartnerOrderType;
@@ -20,6 +21,7 @@ use App\Models\Dictionaries\PiersStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\PromoCodeStatus;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\ShipStatus;
 use App\Models\Dictionaries\TerminalStatus;
@@ -75,6 +77,7 @@ class DictionaryController extends ApiController
         'trip_statuses' => ['class' => TripStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant'],
         'user_contact_types' => ['class' => UserContactType::class, 'allow' => 'staff_admin'],
         'user_statuses' => ['class' => UserStatus::class, 'allow' => 'staff_admin'],
+        'excursion_types' => ['class' => ExcursionType::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal']
     ];
 
     /**

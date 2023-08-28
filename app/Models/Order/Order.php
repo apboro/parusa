@@ -8,6 +8,7 @@ use App\Exceptions\Tickets\WrongOrderStatusException;
 use App\Exceptions\Tickets\WrongOrderTypeException;
 use App\Interfaces\Statusable;
 use App\Interfaces\Typeable;
+use App\Models\BackwardTicket;
 use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
@@ -21,6 +22,7 @@ use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\PromoCode\PromoCode;
+use App\Models\AdditionalDataOrder;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
 
@@ -33,6 +35,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -61,7 +64,7 @@ use Illuminate\Support\Facades\DB;
  * @property Collection $tickets
  * @property Collection $payments
  * @property Collection<PromoCode> $promocode
- * @property string|null $neva_travel_order_number
+ * @property AdditionalDataOrder $additionalData
  */
 class Order extends Model implements Statusable, Typeable
 {
@@ -261,8 +264,8 @@ class Order extends Model implements Statusable, Typeable
      * @see Position
      */
     public static function make(
-        int $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?int $terminalPositionId, ?string $email, ?string $name, ?string $phone,
-        bool $strictPrice = true, ?string $promocode = null
+        int  $typeId, array $tickets, int $statusId, ?int $partnerId, ?int $positionId, ?int $terminalId, ?int $terminalPositionId, ?string $email, ?string $name, ?string $phone,
+        bool $strictPrice = true, ?string $promocode = null, array $backwardTickets = [],
     ): Order
     {
         if (empty($tickets)) {
@@ -309,9 +312,9 @@ class Order extends Model implements Statusable, Typeable
 
             // calc base price if not set
             if ($ticket->base_price === null) {
-                $ticket->base_price = $ticket->getCurrentPrice();
+                $ticket->base_price = $ticket->backward_price ?? $ticket->getCurrentPrice();
             } else if ($strictPrice && ($ticket->base_price < $rate->min_price || $ticket->base_price > $rate->max_price)) {
-                throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Неверна указана цена билета.');
+                throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Неверно указана цена билета.');
             }
         }
 
@@ -336,12 +339,64 @@ class Order extends Model implements Statusable, Typeable
             }
         }
         try {
-            DB::transaction(static function () use (&$order, $tickets, $promocodeId) {
+            DB::transaction(static function () use (&$order, $tickets, $promocodeId, $backwardTickets) {
                 $order->save();
+                $cartData = [];
+
                 foreach ($tickets as $ticket) {
+
+                    //collecting backward tickets for partner and terminal
+                    $cart_ticket_id = $ticket->cart_ticket_id;
+                    $cart_parent_ticket_id = $ticket->cart_parent_ticket_id;
+                    $backward_price = $ticket->backward_price;
                     $ticket->order_id = $order->id;
+
+                    unset($ticket->cart_ticket_id, $ticket->cart_parent_ticket_id, $ticket->backward_price);
+
                     $ticket->save();
+
+                    $cartData[$ticket->id] = [
+                        'id' => $ticket->id,
+                        'cart_ticket_id' => $cart_ticket_id,
+                        'cart_parent_ticket_id' => $cart_parent_ticket_id,
+                        'backward_price' => $backward_price,
+                    ];
+
+                    //making backward tickets for showcase
+                    foreach ($backwardTickets as $index => $backwardTicket) {
+                        if ($backwardTicket->grade_id === $ticket->grade_id) {
+                            $backwardTicket->order_id = $order->id;
+                            $backwardTicket->save();
+                            $backwardTicketModel = new BackwardTicket();
+                            $backwardTicketModel->order_id = $order->id;
+                            $backwardTicketModel->main_ticket_id = $ticket->id;
+                            $backwardTicketModel->backward_ticket_id = $backwardTicket->id;
+                            $backwardTicketModel->save();
+                            unset($backwardTickets[$index]);
+                            break;
+                        }
+                    }
                 }
+
+                //creating backward tickets for partner and terminal
+                $collection = collect($cartData);
+                $collection->each(function ($item) use ($collection, $order) {
+                    if (!is_null($item['cart_parent_ticket_id'])) {
+                        $parentItem = $collection->first(function ($parent) use ($item) {
+                            return $parent['cart_ticket_id'] === $item['cart_parent_ticket_id'];
+                        });
+
+                        if ($parentItem) {
+                            $backwardTicket = new BackwardTicket();
+                            $backwardTicket->order_id = $order->id;
+                            $backwardTicket->main_ticket_id = $parentItem['id'];
+                            $backwardTicket->backward_ticket_id = $item['id'];
+                            $backwardTicket->save();
+                        }
+                        $collection->forget($parentItem['id']);
+                    }
+                });
+
                 if ($promocodeId) {
                     $order->promocode()->sync([$promocodeId]);
                 }
@@ -390,5 +445,15 @@ class Order extends Model implements Statusable, Typeable
     public function promocode(): BelongsToMany
     {
         return $this->belongsToMany(PromoCode::class, 'promo_code_has_orders', 'order_id', 'promo_code_id');
+    }
+
+    public function additionalData()
+    {
+        return $this->hasOne(AdditionalDataOrder::class, 'order_id', 'id');
+    }
+
+    public function backwards(): HasMany
+    {
+        return $this->hasMany(BackwardTicket::class);
     }
 }

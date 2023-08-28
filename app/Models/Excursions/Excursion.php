@@ -7,9 +7,12 @@ use App\Interfaces\Statusable;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\ExcursionType;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
+use App\Models\Dictionaries\Provider;
 use App\Models\Model;
 use App\Models\Partner\Partner;
+use App\Models\AdditionalDataExcursion;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketsRatesList;
 use App\Traits\HasStatus;
@@ -25,9 +28,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $name
  * @property string $name_receipt
  * @property int $status_id
+ * @property int $provider_id
  * @property bool $only_site
  * @property bool $is_single_ticket
- * @property bool $has_return_trip
+ * @property int $reverse_excursion_id
+ * @property ?int $type_id
  *
  * @property ExcursionStatus $status
  * @property Collection $programs
@@ -37,6 +42,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection $ratesLists
  * @property Collection $partnerShowcaseHide
  * @property Collection<Trip> $trips
+ * @property hasOne $reverseExcursion
+ * @property AdditionalDataExcursion $additionalData
+ * @property ExcursionType $type
  */
 class Excursion extends Model implements Statusable, AsDictionary
 {
@@ -47,7 +55,6 @@ class Excursion extends Model implements Statusable, AsDictionary
     protected $casts = [
         'only_site' => 'bool',
         'is_single_ticket' => 'bool',
-        'has_return_trip' => 'bool',
     ];
 
     /** @var array Default attributes. */
@@ -188,5 +195,25 @@ class Excursion extends Model implements Statusable, AsDictionary
     public function partnerShowcaseHide(): BelongsToMany
     {
         return $this->belongsToMany(Partner::class, 'partner_excursion_showcase_disabling', 'excursion_id','partner_id');
+    }
+
+    public function reverseExcursion()
+    {
+        return $this->hasOne(Excursion::class, 'id', 'reverse_excursion_id');
+    }
+
+    public function additionalData(): hasOne
+    {
+        return $this->hasOne(AdditionalDataExcursion::class, 'excursion_id', 'id');
+    }
+
+    public function provider()
+    {
+        return Provider::where('id', $this->additionalData?->provider_id)->first();
+    }
+
+    public function type()
+    {
+        return $this->hasOne(ExcursionType::class, 'id', 'type_id');
     }
 }

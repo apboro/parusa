@@ -129,7 +129,7 @@
                     <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress || is_replacement" @clicked="makeReturn" :color="'red'">Оформить возврат
                     </GuiButton>
                     <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>
-                    <GuiButton v-if="!is_replacement" @clicked="replaceTickets" :color="'red'">Оформить перенос рейса</GuiButton>
+                    <GuiButton v-if="!is_replacement && info.data.tickets.filter(ticket=>ticket.transferable === true).length > 0" @clicked="replaceTickets" :color="'red'">Оформить перенос рейса</GuiButton>
                     <GuiButton v-if="is_replacement" @clicked="replaceTickets(true)">Отменить</GuiButton>
                 </GuiContainer>
             </template>

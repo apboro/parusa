@@ -1,5 +1,6 @@
 <template>
-    <tr class="list-table-responsive__row" :class="{'list-table-responsive__row-no-highlight': noHighlight, 'list-table-responsive__row-no-even-odd': noOddEven}">
+    <tr class="list-table-responsive__row" :class="{'list-table-responsive__row-no-highlight': noHighlight,
+     'list-table-responsive__row-no-even-odd': noOddEven, 'list-table__row-bus-tours': bus_tours}">
         <slot/>
     </tr>
 </template>
@@ -9,6 +10,7 @@ export default {
     props: {
         noHighlight: {type: Boolean, default: false},
         noOddEven: {type: Boolean, default: false},
+        bus_tours: {type: Boolean, default: false},
     }
 }
 </script>
@@ -20,6 +22,7 @@ $list_table_border_color: #e3e3e3 !default;
 $list_table_hover_background_color: #eaf5ff !default;
 $list_table_odd_background_color: #ffffff !default;
 $list_table_even_background_color: #f9f8f8 !default;
+$list_table_hover_background_color_bus: #e4f7e6 !default;
 
 .list-table-responsive__row {
     border-bottom: 1px solid $list_table_border_color;
@@ -32,8 +35,12 @@ $list_table_even_background_color: #f9f8f8 !default;
         background-color: $list_table_even_background_color;
     }
 
-    &:not(&-no-highlight):hover {
+    &:not(&-no-highlight):not(&-bus-tours):hover {
         background-color: $list_table_hover_background_color;
+    }
+
+    &-bus-tours:hover {
+        background-color: $list_table_hover_background_color_bus !important;
     }
 }
 
