@@ -24,12 +24,14 @@ class TripsListController extends ApiController
         'status_id' => null,
         'excursion_id' => null,
         'start_pier_id' => null,
+        'excursion_type_id' => null
     ];
 
     protected array $rememberFilters = [
         'status_id',
         'excursion_id',
         'start_pier_id',
+        'excursion_type_id',
     ];
 
     protected string $rememberKey = CookieKeys::trips_list;
@@ -47,6 +49,7 @@ class TripsListController extends ApiController
         $this->defaultFilters['date'] = Carbon::now()->format('Y-m-d');
         $startPierId = $request->input('start_pier_id');
         $excursionId = $request->input('excursion_id');
+        $excursionTypeId = $request->input('filters.excursion_type_id');
 
         $query = Trip::query()
             ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus'])
@@ -80,6 +83,9 @@ class TripsListController extends ApiController
             if ($excursionId || !empty($filters['excursion_id'])) {
                 $query->where('excursion_id', $excursionId ?? $filters['excursion_id']);
             }
+            if ($excursionTypeId || !empty($filters['excursion_type_id'])) {
+                $query->where('type_id', $excursionTypeId ?? $filters['excursion_id']);
+            }
         }
 
         // current page automatically resolved from request via `page` parameter
@@ -97,6 +103,7 @@ class TripsListController extends ApiController
                 'start_date' => $trip->start_at->format('d.m.Y'),
                 'start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
+                'excursion_type_id' =>$trip->excursion->type_id,
                 'pier' => $trip->startPier->name,
                 'ship' => $trip->ship->name,
                 'tickets_count' => $trip->getAttribute('tickets_count'),

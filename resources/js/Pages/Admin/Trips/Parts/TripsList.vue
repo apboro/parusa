@@ -56,21 +56,36 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+
+        <LayoutFiltersItem :class="'w-25'" :title="'Тип'">
+            <DictionaryDropDown
+                :dictionary="'excursion_types'"
+                :fresh="true"
+                v-model="list.filters['excursion_type_id']"
+                :original="list.filters_original['excursion_type_id']"
+                :placeholder="'Все'"
+                :has-null="true"
+                :right="true"
+                :small="true"
+                @change="list.load()"
+            />
+        </LayoutFiltersItem>
         </LayoutFilters>
 
+
         <ListTableResponsive v-if="list.list.length > 0" :titles="list.titles" :has-action="true">
-            <ListTableResponsiveRow v-for="trip in list.list">
+            <ListTableResponsiveRow v-for="trip in list.list" :bus_tours="trip.excursion_type_id === 20">
                 <ListTableResponsiveCell :mobile-title="list.titles[0]">
                     <div v-if="!trip.is_single_ticket">
                         <b>
-                            <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
+                            <router-link :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
                         </b>
                     </div>
                     <div v-if="!trip.is_single_ticket">{{ trip['start_date'] }}</div>
                     <div v-if="trip.is_single_ticket">ЕДИНЫЙ БИЛЕТ</div>
                 </ListTableResponsiveCell>
                 <ListTableResponsiveCell :mobile-title="list.titles[1]">
-                    <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}</router-link>
+                    <router-link :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}</router-link>
                 </ListTableResponsiveCell>
                 <ListTableResponsiveCell :mobile-title="list.titles[2]">
                     {{ trip['excursion'] }}

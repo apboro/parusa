@@ -28,12 +28,14 @@ class TripsSelectListController extends ApiController
         'program_id' => null,
         'excursion_id' => null,
         'start_pier_id' => null,
+        'excursion_type_id' => null,
     ];
 
     protected array $rememberFilters = [
         'program_id',
         'excursion_id',
         'start_pier_id',
+        'excursion_type_id',
     ];
 
     protected string $rememberKey = CookieKeys::trips_select_list;
@@ -112,6 +114,9 @@ class TripsSelectListController extends ApiController
         if (!empty($filters['start_pier_id'])) {
             $query->where('start_pier_id', $filters['start_pier_id']);
         }
+        if (!empty($filters['excursion_type_id'])) {
+            $query->where('type_id', $filters['excursion_type_id']);
+        }
 
         // current page automatically resolved from request via `page` parameter
         $trips = $query->orderBy('start_at')->paginate($request->perPage(10, $this->rememberKey));
@@ -138,6 +143,7 @@ class TripsSelectListController extends ApiController
                 'start_date' => $trip->start_at->format('d.m.Y'),
                 'start_time' => $trip->start_at->format('H:i'),
                 'excursion_id' => $excursion->id,
+                'excursion_type_id' => $excursion->type_id,
                 'excursion' => $excursion->name,
                 'programs' => $excursion->programs->map(function (ExcursionProgram $program) {
                     return $program->name;
