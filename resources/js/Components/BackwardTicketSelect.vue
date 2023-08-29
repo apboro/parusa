@@ -55,6 +55,7 @@ export default {
             }).then(() => {
                 this.$emit('update')
             })
+            this.returning_progress = false;
         }
     }
 }
