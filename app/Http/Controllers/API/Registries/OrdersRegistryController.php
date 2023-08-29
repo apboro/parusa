@@ -55,8 +55,9 @@ class OrdersRegistryController extends ApiController
 
         $query = Order::query()->orderBy('updated_at', 'desc')
             ->with([
-                'type', 'status',
-                'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion', 'tickets.trip.startPier', 'tickets.grade',
+                'type', 'status','additionalData',
+                'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion',
+                'tickets.trip.startPier', 'tickets.grade',
                 'partner', 'position', 'position.user', 'position.user.profile', 'terminal', 'cashier',
                 'promocode',
             ])
@@ -87,7 +88,9 @@ class OrdersRegistryController extends ApiController
                 foreach ($terms as $term) {
                     $query->orWhere('name', 'LIKE', '%' . $term . '%')
                         ->orWhere('email', 'LIKE', '%' . $term . '%')
-                        ->orWhere('neva_travel_order_number', 'LIKE', '%' . $term . '%');
+                        ->orWhereHas('additionalData', function($query) use ($term){
+                            $query->where('provider_order_id', 'LIKE', '%' . $term . '%');
+                        });
                 }
 
                 if (!$current->isStaffTerminal() || !$request->input('only_orders')) {
