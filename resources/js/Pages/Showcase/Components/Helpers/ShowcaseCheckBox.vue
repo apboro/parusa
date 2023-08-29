@@ -9,7 +9,7 @@
             <IconCheck class="ap-checkbox__check-checked"/>
         </span>
         <span class="ap-checkbox__label" v-if="!label" :class="{'ap-checkbox__label-small': small}"><slot/></span>
-        <span class="ap-checkbox__label" v-else :class="{'ap-checkbox__label-small': small}">{{ label }}</span>
+        <span class="ap-checkbox__label" v-else :class="{'ap-checkbox__label-small': small, 'ap-checkbox__label-big': big}">{{ label }}</span>
     </label>
 </template>
 
@@ -25,6 +25,7 @@ export default {
         valid: {type: Boolean, default: true},
         disabled: {type: Boolean, default: false},
         small: {type: Boolean, default: false},
+        big: {type: Boolean, default: false},
     },
 
     emits: ['update:modelValue'],
@@ -114,6 +115,13 @@ export default {
 
         &-small {
             font-size: 14px;
+        }
+        &-big {
+            font-family: $showcase_font;
+            margin: 0 7px 0 7px;
+            font-size: 24px;
+            color: $showcase_link_color;
+            font-weight: bold;
         }
     }
 

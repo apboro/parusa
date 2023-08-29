@@ -1,6 +1,6 @@
 <template>
     <div class="input-checkbox">
-        <ShowcaseCheckBox class="input-checkbox__input" :value="value" v-model="proxyValue" :valid="valid" :label="label" :disabled="disabled" :small="small">
+        <ShowcaseCheckBox class="input-checkbox__input" :value="value" v-model="proxyValue" :valid="valid" :label="label" :disabled="disabled" :small="small" :big="big">
             <slot/>
         </ShowcaseCheckBox>
     </div>
@@ -21,6 +21,7 @@ export default {
         disabled: {type: Boolean, default: false},
         label: {type: String, default: null},
         small: {type: Boolean, default: false},
+        big: {type: Boolean, default: false},
     },
 
     emits: ['update:modelValue', 'change'],
