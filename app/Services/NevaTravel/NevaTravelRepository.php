@@ -2,6 +2,7 @@
 
 namespace App\Services\NevaTravel;
 
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use Illuminate\Support\Arr;
@@ -129,7 +130,7 @@ class NevaTravelRepository
         $tickets = $order->tickets()
             ->with(['trip'])
             ->whereIn('status_id', TicketStatus::ticket_countable_statuses)
-            ->where('provider_id', 10)
+            ->where('provider_id', Provider::neva_travel)
             ->get();
 
         $combos = collect($this->getCombosInfo()['body']);
