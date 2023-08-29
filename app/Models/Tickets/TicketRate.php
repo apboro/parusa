@@ -137,6 +137,10 @@ class TicketRate extends Model
     {
         $this->attributes['max_price'] = PriceConverter::priceToStore($value);
     }
+    public function setBackwardPriceValueAttribute(float $value): void
+    {
+        $this->attributes['backward_price_value'] = PriceConverter::priceToStore($value);
+    }
 
     /**
      * Convert site_price from store value to real price.
@@ -170,6 +174,10 @@ class TicketRate extends Model
      * @return  float
      */
     public function getCommissionValueAttribute(int $value): float
+    {
+        return PriceConverter::storeToPrice($value);
+    }
+    public function getBackwardPriceValueAttribute(int $value): float
     {
         return PriceConverter::storeToPrice($value);
     }
