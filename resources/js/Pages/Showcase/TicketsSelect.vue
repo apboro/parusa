@@ -97,14 +97,13 @@
             </div>
 
             <div v-if="trip.reverse_excursion_id !== null">
-                <div class="ap-checkbox-container">
-                    <ShowcaseInputCheckbox :name="choose_back_trip" v-model="checkedBackward" :label="'Выбрать обратный рейс со скидкой'" :big="true"/>
-                </div>
+                <ShowcaseInputCheckbox :name="choose_back_trip" v-model="checkedBackward"
+                                       :label="'Выбрать обратный рейс со скидкой'" :big="true"/>
                 <div style="text-align: center">
-                <BackwardTicketSelectShowcase v-if="checkedBackward"
-                                              @select-backward-trip="handleSelectBackwardTrip"
-                                              :trip="this.trip" :session="session"
-                                              :crm_url="crm_url"/>
+                    <BackwardTicketSelectShowcase v-if="checkedBackward"
+                                                  @select-backward-trip="handleSelectBackwardTrip"
+                                                  :trip="this.trip" :session="session"
+                                                  :crm_url="crm_url"/>
                 </div>
             </div>
 
@@ -568,13 +567,6 @@ export default {
     color: $showcase_link_color;
     font-weight: bold;
 }
-.ap-showcase__label {
-    font-family: $showcase_font;
-    margin: 3px 0;
-    font-size: 24px;
-    color: $showcase_link_color;
-    font-weight: bold;
-}
 
 .ap-showcase__text {
     font-family: $showcase_font;
@@ -918,11 +910,6 @@ export default {
             flex-direction: column;
         }
     }
-}
-
-.ap-checkbox-container {
-    display: flex;
-    align-items: flex-start;
 }
 
 </style>

@@ -97,9 +97,8 @@
             </div>
 
             <div v-if="trip.reverse_excursion_id !== null">
-                <div class="ap-checkbox-container">
-                    <ShowcaseInputCheckbox :name="choose_back_trip" v-model="checkedBackward" :label="'Выбрать обратный рейс со скидкой'" :big="true"/>
-                </div>
+                <ShowcaseInputCheckbox :name="choose_back_trip" v-model="checkedBackward"
+                                       :label="'Выбрать обратный рейс со скидкой'" :big="true"/>
                 <div style="text-align: center">
                     <BackwardTicketSelectShowcase v-if="checkedBackward"
                                                   @select-backward-trip="handleSelectBackwardTrip"
@@ -911,9 +910,5 @@ export default {
         }
     }
 
-    .ap-checkbox-container {
-        display: flex;
-        align-items: flex-start;
-    }
 }
 </style>

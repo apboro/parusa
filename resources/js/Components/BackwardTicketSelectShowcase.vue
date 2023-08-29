@@ -82,11 +82,11 @@ export default {
 </script>
 
 <template>
-    <GuiContainer class="button-container">
+    <GuiContainer class="ap-button-container">
         <ShowcaseV2Button style="margin: 15px;" v-for="backward_trip in backward_trips"
                           :color="'purple'"
                           @clicked="addBackwardTickets(backward_trip.id)"
-                          :class="{ 'chosen-button': tripChosen && backward_trip['id'] === this.tripChosenId}">
+                          :class="{ 'ap-chosen-button': tripChosen && backward_trip['id'] === this.tripChosenId}">
             {{ backward_trip['start_time'] }}
         </ShowcaseV2Button>
     </GuiContainer>
@@ -94,16 +94,16 @@ export default {
 </template>
 
 <style scoped lang="scss">
-.chosen-button {
+.ap-chosen-button {
     background-color: #E83B4E;
     color: white;
 }
-.chosen-button:hover {
+.ap-chosen-button:hover {
     background-color: #E83B4E;
     color: white;
 }
 
-.button-container {
+.ap-button-container {
     display: flex;
     flex-wrap: wrap;
     gap: 2px;
