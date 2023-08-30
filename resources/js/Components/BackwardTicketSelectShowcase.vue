@@ -1,26 +1,12 @@
 <script>
-import GuiMessage from "@/Components/GUI/GuiMessage.vue";
-import GuiContainer from "@/Components/GUI/GuiContainer.vue";
-import GuiHeading from "@/Components/GUI/GuiHeading.vue";
-import InputDate from "@/Components/Inputs/InputDate.vue";
-import GuiButton from "@/Components/GUI/GuiButton.vue";
-import ListTableRow from "@/Components/ListTable/ListTableRow.vue";
-import ListTable from "@/Components/ListTable/ListTable.vue";
-import ListTableCell from "@/Components/ListTable/ListTableCell.vue";
-import TripsList from "../Pages/Admin/Trips/Parts/TripsList.vue";
-import ListTableResponsiveCell from "./ListTable/ListTableResponsiveCell.vue";
-import ListTableResponsiveRow from "./ListTable/ListTableResponsiveRow.vue";
-import ShowcaseV2Button from "../Pages/ShowcaseV2/Components/ShowcaseV2Button.vue";
 
+import GuiContainer from "@/Components/GUI/GuiContainer.vue";
+import ShowcaseV2Button from "../Pages/ShowcaseV2/Components/ShowcaseV2Button.vue";
 
 export default {
     components: {
         ShowcaseV2Button,
-        ListTableResponsiveRow,
-        ListTableResponsiveCell,
-        TripsList,
-        ListTableCell, ListTable, ListTableRow, GuiButton,
-        InputDate, GuiHeading, GuiContainer, GuiMessage,
+        GuiContainer,
     },
 
     props: {

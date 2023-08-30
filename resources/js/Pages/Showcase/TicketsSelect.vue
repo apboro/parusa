@@ -233,7 +233,6 @@ import InputCheckbox from "../../Components/Inputs/InputCheckbox.vue";
 
 export default {
     components: {
-        InputCheckbox,
         BackwardTicketSelectShowcase,
         PersonalDataInfo,
         OfferInfo,
