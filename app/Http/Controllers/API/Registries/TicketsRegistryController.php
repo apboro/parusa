@@ -75,7 +75,7 @@ class TicketsRegistryController extends ApiController
                 'date' => $ticket->created_at->format('d.m.Y'),
                 'time' => $ticket->created_at->format('H:i'),
                 'order_id' => $ticket->order_id,
-                'neva_travel_order_number' => $ticket->order->neva_travel_order_number,
+                'neva_travel_order_number' => $ticket->order->additionalData?->provider_order_id,
                 'id' => $ticket->id,
                 'type' => $ticket->grade->name,
                 'amount' => $ticket->base_price,
@@ -152,7 +152,7 @@ class TicketsRegistryController extends ApiController
             return [
                 'id' => $ticket->id,
                 'order_id' => $ticket->order_id,
-                'neva_travel_order_number' => $ticket->order->neva_travel_order_number,
+                'neva_travel_order_number' => $ticket->order->additionalData?->provider_order_id,
                 'date' => $ticket->created_at->format('d.m.Y'),
                 'time' => $ticket->created_at->format('H:i'),
                 'type' => $ticket->grade->name,
@@ -246,8 +246,7 @@ class TicketsRegistryController extends ApiController
                         foreach ($search as $term) {
                             $query->orWhere('name', 'LIKE', '%' . $term . '%')
                                 ->orWhere('email', 'LIKE', '%' . $term . '%')
-                                ->orWhere('phone', 'LIKE', '%' . $term . '%')
-                                ->orWhere('neva_travel_order_number', 'LIKE', '%' . $term . '%');
+                                ->orWhere('phone', 'LIKE', '%' . $term . '%');
                         }
                     });
             });

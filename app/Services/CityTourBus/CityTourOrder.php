@@ -88,12 +88,14 @@ class CityTourOrder
 
     public function delete()
     {
-        $result = $this->cityTourRepository->deleteOrder($this->order);
-        if (!$result || $result['status'] != 200) {
-            Log::channel('city_tour')->error('City Tour API delete Error', [$result]);
-            throw new RuntimeException('Невозможно удалить заказ');
-        } else {
-            Log::channel('city_tour')->info('City Tour API delete order request success: ', [$result, $this->order->additionalData]);
+        if ($this->checkOrderHasCityTourTickets()) {
+            $result = $this->cityTourRepository->deleteOrder($this->order);
+            if (!$result || $result['status'] != 200) {
+                Log::channel('city_tour')->error('City Tour API delete Error', [$result]);
+                throw new RuntimeException('Невозможно удалить заказ');
+            } else {
+                Log::channel('city_tour')->info('City Tour API delete order request success: ', [$result, $this->order->additionalData]);
+            }
         }
     }
 

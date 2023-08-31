@@ -33,6 +33,10 @@ export default {
 @use "sass:math";
 @import "../variables";
 
+$base_purple_color: #241B5B !default;
+$base_purple_hover_color: lighten(#241B5B, 20%) !default;
+$base_white_color: #ffffff !default;
+
 .ap-button {
     display: inline-block;
     text-decoration: none;
@@ -81,6 +85,17 @@ export default {
             background-color: $showcase_primary_hover_color;
             border-color: $showcase_primary_hover_color;
             color: $showcase_white_color;
+        }
+    }
+
+    &__purple {
+        background-color: $base_purple_color;
+        border-color: $base_purple_color;
+        color: $base_white_color;
+
+        &:hover {
+            background-color: $base_purple_hover_color;
+            border-color: $base_purple_hover_color;
         }
     }
 }

@@ -14,7 +14,6 @@ use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\StaffPositionInfo;
 use App\Models\Tickets\Ticket;
-//refactored to services
 use App\Services\NevaTravel\NevaOrder;
 use Exception;
 use Illuminate\Http\Request;
@@ -109,12 +108,12 @@ class LifePosNotificationsController extends ApiController
                 }
 
                 // search existing payment to update
-                if(!empty($input['guid'])) {
+                if (!empty($input['guid'])) {
                     /** @var Payment|null $payment */
                     $payment = Payment::query()->where('external_id', $input['guid'])->first();
                 }
                 // if no payment to update create new
-                if(!isset($payment)) {
+                if (!isset($payment)) {
                     $payment = new Payment;
                 }
 
@@ -210,12 +209,12 @@ class LifePosNotificationsController extends ApiController
         }
 
         // search existing payment to update
-        if(!empty($input['guid'])) {
+        if (!empty($input['guid'])) {
             /** @var Payment|null $payment */
             $payment = Payment::query()->where('external_id', $input['guid'])->first();
         }
         // if no payment to update create new
-        if(!isset($payment)) {
+        if (!isset($payment)) {
             $payment = new Payment;
         }
 
@@ -238,8 +237,8 @@ class LifePosNotificationsController extends ApiController
                 $ticket->refundCommission();
                 $ticket->setStatus(TicketStatus::terminal_returned);
             });
-        //cancel neva travel order
-        NevaTravelCancelOrderEvent::dispatch($order);
+
+            NevaTravelCancelOrderEvent::dispatch($order);
 
         } else {
             Log::channel('lifepos_payments')->error(sprintf('LifePos [SaleRefund:%s] - order not found', $input['guid']));

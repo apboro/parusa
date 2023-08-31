@@ -19,8 +19,8 @@
                 <th class="w-5 p-10">Базовая стоимость (БС) билетов, руб.</th>
                 <th class="w-20 p-10" colspan="2">Минимальный и максимальный диапазон стоимости билетов, руб.</th>
                 <th class="w-25 p-10" colspan="3">Комиссионное вознаграждение партнёров за продажу билетов, руб.</th>
-                <th class="w-15 p-10" colspan="2">Цена обратного билета, руб.</th>
-                <th class="w-20 p-10">Цена для сайта, руб.</th>
+                <th class="w-25 p-10" colspan="3">Цена обратного билета, руб.</th>
+                <th class="w-10 p-10">Цена для сайта, руб.</th>
             </tr>
             </thead>
             <tbody>
@@ -61,20 +61,20 @@
                 </td>
                 <td class="pl-10 pt-15" v-else>{{ Math.floor(form.values['rates.' + key + '.commission_value'] * form.values['rates.' + key + '.base_price']) / 100 }} руб.</td>
 
-<!-- backward price columns скрыт выбор типа назначения цены-->
-<!--                <td class="w-40px">-->
-<!--                    <FormDropdown :form="form" :name="'rates.' + key + '.backward_price_type'"-->
-<!--                                  :identifier="'id'"-->
-<!--                                  :show="'name'"-->
-<!--                                  :hide-title="true"-->
-<!--                                  :small="true"-->
-<!--                                  :placeholder="'Тип'"-->
-<!--                                  :options="[-->
-<!--                                      {id: 'fixed', name: 'фикс.'},-->
-<!--                                      {id: 'percents', name: '% от БС'},-->
-<!--                                  ]"-->
-<!--                    />-->
-<!--                </td>-->
+                <!-- backward price columns-->
+                <td class="w-40px">
+                    <FormDropdown :form="form" :name="'rates.' + key + '.backward_price_type'"
+                                  :identifier="'id'"
+                                  :show="'name'"
+                                  :hide-title="true"
+                                  :small="true"
+                                  :placeholder="'Тип'"
+                                  :options="[
+                                      {id: 'fixed', name: 'фикс.'},
+                                      {id: 'percents', name: '% от БС'},
+                                  ]"
+                    />
+                </td>
                 <td class="w-40px">
                     <FormNumber :form="form" :name="'rates.' + key + '.backward_price_value'" :hide-title="true" :small="true"/>
                 </td>
@@ -82,7 +82,7 @@
                     {{ Math.floor(Number(form.values['rates.' + key + '.backward_price_value']) * 100) / 100 }} руб.
                 </td>
                 <td class="pl-10 pt-15" v-else>{{ Math.floor(form.values['rates.' + key + '.backward_price_value'] * form.values['rates.' + key + '.base_price']) / 100 }} руб.</td>
-<!--end-->
+                <!--end-->
                 <td>
                     <FormNumber :form="form" :name="'rates.' + key + '.site_price'" :hide-title="true" :small="true"/>
                 </td>
@@ -139,7 +139,7 @@ export default {
 
             let index = 0;
 
-            this.$store.getters['dictionary/dictionary']('ticket_grades').map(item => {
+            this.$store.getters['dictionary/dictionary']('ticket_grades').filter(grade => grade.provider_id === null).map(item => {
                 let grade = null;
                 if (rate === null && item['enabled'] || rate !== null && rate['rates'].some(rate => (rate['grade_id'] === item['id']) && (grade = rate))) {
                     let isDefault = index > 2;

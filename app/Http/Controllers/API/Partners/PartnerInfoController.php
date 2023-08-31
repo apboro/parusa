@@ -35,7 +35,7 @@ class PartnerInfoController extends ApiController
         if ($current->position() === null) {
             $orderAmount = 0;
         } else {
-            $orderAmount = $current->position()->ordering()
+            $tickets = $current->position()->ordering()
                 ->where('terminal_id', null)
                 ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
                 ->where('trips.start_at', '>', Carbon::now())
@@ -49,10 +49,17 @@ class PartnerInfoController extends ApiController
                 ->leftJoin('ticket_rates', function (JoinClause $join) {
                     $join->on('ticket_rates.rate_id', '=', 'tickets_rates_list.id')
                         ->on('ticket_rates.grade_id', '=', 'position_ordering_tickets.grade_id');
-                })
-                ->select(DB::raw('sum(position_ordering_tickets.quantity * ticket_rates.base_price) as total'))
-                ->value('total');
-            $orderAmount = PriceConverter::storeToPrice($orderAmount ?? 0);
+                })->get(['position_ordering_tickets.id as pot_id', 'parent_ticket_id', 'backward_price_value', 'quantity', 'base_price']);
+
+            $orderAmount = 0;
+            $tickets->map(function ($ticket) use ($tickets, &$orderAmount){
+                if ($ticket->parent_ticket_id){
+                    $parent_ticket = $tickets->where('pot_id',$ticket->parent_ticket_id)->first();
+                    $orderAmount += $parent_ticket->backward_price_value * $ticket->quantity;
+                } else {
+                    $orderAmount += $ticket->quantity * $ticket->base_price;
+                }
+            });
         }
 
         $account = $partner->account;
@@ -66,7 +73,7 @@ class PartnerInfoController extends ApiController
             'limit' => $partner->account->limit,
             'total' => $total,
             'reserves' => Order::query()->where(['partner_id' => $partner->id, 'status_id' => OrderStatus::partner_reserve])->count(),
-            'order_amount' => $orderAmount,
+            'order_amount' => PriceConverter::storeToPrice($orderAmount ?? 0),
             'can_reserve' => $current->partner()->profile->can_reserve_tickets,
         ]);
     }

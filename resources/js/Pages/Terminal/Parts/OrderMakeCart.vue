@@ -78,7 +78,7 @@
             </GuiButton>
         </GuiContainer>
 
-        <BackwardTicketSelect mt-20 ref="backwardTicketSelect" @update="backwardTicketsUpdate"/>
+        <BackwardTicketSelect mt-20 ref="backwardTicketSelect" @update="backwardTicketsUpdate" :tickets="data.tickets"/>
 
         <GuiContainer mt-20 mb-20 w-50 pr-30 inline>
             <GuiHeading mb-30 bold>Информация о плательщике</GuiHeading>
@@ -214,9 +214,9 @@ export default {
         },
 
         backwardTicketsUpdate() {
-            this.form.load();
-            this.$refs.backwardTicketSelect.getBackwardTrips(0, 0);
             this.$emit('update');
+            this.$refs.backwardTicketSelect.getBackwardTrips(0, 0);
+            location.reload();
         },
 
         remove(ticket_id) {

@@ -1,27 +1,16 @@
 <script>
-import GuiMessage from "@/Components/GUI/GuiMessage.vue";
-import GuiContainer from "@/Components/GUI/GuiContainer.vue";
-import GuiHeading from "@/Components/GUI/GuiHeading.vue";
-import InputDate from "@/Components/Inputs/InputDate.vue";
-import GuiButton from "@/Components/GUI/GuiButton.vue";
-import ListTableRow from "@/Components/ListTable/ListTableRow.vue";
-import ListTable from "@/Components/ListTable/ListTable.vue";
-import ListTableCell from "@/Components/ListTable/ListTableCell.vue";
-import TripsList from "../Pages/Admin/Trips/Parts/TripsList.vue";
-import ListTableResponsiveCell from "./ListTable/ListTableResponsiveCell.vue";
-import ListTableResponsiveRow from "./ListTable/ListTableResponsiveRow.vue";
 
+import GuiContainer from "@/Components/GUI/GuiContainer.vue";
+import ShowcaseV2Button from "../Pages/ShowcaseV2/Components/ShowcaseV2Button.vue";
 
 export default {
     components: {
-        ListTableResponsiveRow,
-        ListTableResponsiveCell,
-        TripsList,
-        ListTableCell, ListTable, ListTableRow, GuiButton,
-        InputDate, GuiHeading, GuiContainer, GuiMessage,
+        ShowcaseV2Button,
+        GuiContainer,
     },
 
     props: {
+        crm_url: {type: String, default: 'https://lk.excurr.ru'},
         session: {type: String, required: true},
         trip: {
             type: Object,
@@ -34,6 +23,7 @@ export default {
         backward_trip_id: null,
         tripChosen: false,
         tripChosenId: null,
+        debug: false,
     }),
 
 
@@ -42,13 +32,17 @@ export default {
     },
 
     methods: {
+        url(path) {
+            return this.crm_url + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
+        },
+
         getBackwardTrips($tripId) {
             if ($tripId === 0) {
                 this.backward_trips = [];
                 return;
             }
             this.returning_progress = true;
-            axios.post('/showcase/get_backward_trips', {
+            axios.post(this.url('/showcase/get_backward_trips'), {
                 tripId: $tripId
             }, {headers: {'X-Ap-External-Session': this.session}})
                 .then((response) => {
@@ -74,24 +68,28 @@ export default {
 </script>
 
 <template>
-    <GuiContainer class="button-container">
-        <GuiButton style="margin: 15px;" v-for="backward_trip in backward_trips"
-                   :color="'purple'"
-                   @clicked="addBackwardTickets(backward_trip.id)"
-                   :class="{ 'chosen-button': tripChosen && backward_trip['id'] === this.tripChosenId}">
+    <GuiContainer class="ap-button-container">
+        <ShowcaseV2Button style="margin: 15px;" v-for="backward_trip in backward_trips"
+                          :color="'purple'"
+                          @clicked="addBackwardTickets(backward_trip.id)"
+                          :class="{ 'ap-chosen-button': tripChosen && backward_trip['id'] === this.tripChosenId}">
             {{ backward_trip['start_time'] }}
-        </GuiButton>
+        </ShowcaseV2Button>
     </GuiContainer>
 
 </template>
 
 <style scoped lang="scss">
-.chosen-button {
+.ap-chosen-button {
+    background-color: #E83B4E;
+    color: white;
+}
+.ap-chosen-button:hover {
     background-color: #E83B4E;
     color: white;
 }
 
-.button-container {
+.ap-button-container {
     display: flex;
     flex-wrap: wrap;
     gap: 2px;

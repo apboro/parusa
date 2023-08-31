@@ -242,6 +242,7 @@ export default {
             axios.post('/api/cart/partner/quantity', {id: id, value: value})
                 .then(() => {
                     this.load(this.form.values['name'], this.form.values['email'], this.form.values['phone']);
+                    this.$store.dispatch('partner/refresh');
                 })
                 .catch(error => {
                     this.$toast.error(error.response.data['message']);
@@ -251,12 +252,15 @@ export default {
         backwardTicketsUpdate() {
             this.load(this.form.values['name'], this.form.values['email'], this.form.values['phone']);
             this.data.data['tickets'] = [];
+            this.$emit('update');
+            this.$store.dispatch('partner/refresh');
         },
 
         remove(ticket_id) {
             this.deleteEntry('Удалить билеты из заказа?', '/api/cart/partner/remove', {ticket_id: ticket_id})
                 .then(() => {
                     this.load(this.form.values['name'], this.form.values['email'], this.form.values['phone']);
+                    this.$store.dispatch('partner/refresh');
                 });
         },
 

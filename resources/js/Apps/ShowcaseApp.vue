@@ -50,7 +50,6 @@ import ShowcaseLoadingProgress from "@/Pages/Showcase/Components/ShowcaseLoading
 import TripsList from "@/Pages/Showcase/TripsList";
 import TicketsSelect from "@/Pages/Showcase/TicketsSelect";
 import OrderInfo from "@/Pages/Showcase/OrderInfo";
-import BackwardTicketSelectShowcase from "../Components/BackwardTicketSelectShowcase.vue";
 
 export default {
     props: {

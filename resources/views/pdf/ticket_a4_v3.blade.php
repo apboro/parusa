@@ -65,7 +65,7 @@ $image = $ticket->trip->startPier->mapImages[0] ?? null;
                                 <img src="{{ $ticket->qr() }}" alt="qr-link" style="width: 75pt; height: 75pt;">
                             </td>
                             <td style="width: 80pt; vertical-align: top; padding-left: 5pt;padding-top: 10pt;">
-                                <div style="margin: 0 0 5pt;font-family: 'Proxima Nova',serif;font-size: 8pt;line-height: 7pt;">№ заказа {{ $ticket->order->neva_travel_order_number ?? $ticket->order_id }}</div>
+                                <div style="margin: 0 0 5pt;font-family: 'Proxima Nova',serif;font-size: 8pt;line-height: 7pt;">№ заказа {{ $ticket->order->additionalData?->provider_order_id ?? $ticket->order_id }}</div>
                                 <div style="margin: 0;font-family: 'Proxima Nova',serif;font-size: 8pt;line-height: 7pt;">№ билета {{ $ticket->id }}</div>
                             </td>
                             <td style="vertical-align: top; padding-top: 5pt;">

@@ -120,9 +120,14 @@ class TerminalMakeOrderController extends ApiEditController
                         'trip_id' => $ordering->trip_id,
                         'grade_id' => $ordering->grade_id,
                         'status_id' => $ticketStatus,
-                        'base_price' => $ticketInfo['price'],
+                        'base_price' => $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : $ticketInfo['price'],
                         'provider_id' => $ordering->trip->provider_id
                     ]);
+
+                    $ticket->cart_ticket_id = $ordering->id;
+                    $ticket->cart_parent_ticket_id = $ordering->parent_ticket_id;
+                    $ticket->backward_price = $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : null;
+
                     $tickets[] = $ticket;
                 }
             }

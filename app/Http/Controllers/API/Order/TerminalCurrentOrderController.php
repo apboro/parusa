@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Events\NevaTravelOrderPaidEvent;
 use App\Helpers\Fiscal;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Jobs\ApproveNevaOrder;
 use App\LifePos\LifePosSales;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
@@ -134,7 +134,7 @@ class TerminalCurrentOrderController extends ApiController
                     $ticket->setStatus(TicketStatus::terminal_finishing);
                 });
             });
-            ApproveNevaOrder::dispatch($order);
+
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
         }
@@ -286,7 +286,9 @@ class TerminalCurrentOrderController extends ApiController
                         $order->tickets->map(function (Ticket $ticket) {
                             $ticket->setStatus(TicketStatus::terminal_finishing);
                         });
-                        ApproveNevaOrder::dispatch($order);
+
+                        NevaTravelOrderPaidEvent::dispatch($order);
+
                     }
                 }
             }
