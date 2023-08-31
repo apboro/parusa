@@ -64,7 +64,7 @@ export default [
     {path: '/terminals/:id', name: 'terminals-view', component: TerminalsViewPage, meta: {title: 'Просмотр мобильной кассы', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/terminals/:id/edit', name: 'terminals-edit', component: TerminalsEditPage, meta: {title: 'Редактирование мобильной кассы', roles: ['admin', 'office_manager', 'accountant']}},
 
-    {path: '/piers', name: 'pier-list', component: PiersListPage, meta: {title: 'Причалы', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/piers', name: 'pier-list', component: PiersListPage, meta: {title: 'Причалы/Остановки', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/piers/:id', name: 'pier-view', component: PierViewPage, meta: {title: 'Просмотр причала', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/piers/:id/edit', name: 'pier-edit', component: PierEditPage, meta: {title: 'Редактирование причала', roles: ['admin', 'office_manager']}},
 

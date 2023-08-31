@@ -4,7 +4,7 @@ export default [
         'roles': ['admin', 'office_manager', 'piers_manager', 'accountant'],
         'items': [
             {'title': 'Рейсы', 'route': 'trip-list', 'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
-            {'title': 'Причалы', 'route': 'pier-list', 'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
+            {'title': 'Причалы/Остановки', 'route': 'pier-list', 'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
         ]
     },
     {

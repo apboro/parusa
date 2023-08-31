@@ -7,10 +7,12 @@ use App\Interfaces\Statusable;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\PiersStatus;
+use App\Models\Dictionaries\Provider;
 use App\Models\Model;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -26,11 +28,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $external_id
  * @property string|null $external_parent_id
  * @property string|null $source
+ * @property BelongsTo $provider
  */
 class Pier extends Model implements Statusable, AsDictionary
 {
     use HasStatus, HasFactory, PierAsDictionary;
-    protected $guarded =[];
+
+    protected $guarded = [];
     /** @var array Default attributes. */
     protected $attributes = [
         'status_id' => PiersStatus::default,
@@ -89,5 +93,10 @@ class Pier extends Model implements Statusable, AsDictionary
     public function mapImages(): BelongsToMany
     {
         return $this->belongsToMany(Image::class, 'pier_has_map_image', 'pier_id', 'image_id');
+    }
+
+    public function provider()
+    {
+        return $this->belongsTo(Provider::class);
     }
 }

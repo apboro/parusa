@@ -1,4 +1,5 @@
 <template>
+
     <LayoutPage :title="$route.meta['title']" :loading="list.is_loading">
         <template v-if="accepted" v-slot:actions>
             <GuiActionsMenu>
@@ -16,19 +17,32 @@
                                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+          <LayoutFiltersItem :title="'Владелец'">
+                <DictionaryDropDown :dictionary="'providers'"
+                                    :placeholder="'Все'"
+                                    :has-null="true"
+                                    :original="list.filters_original['provider_id']"
+                                    v-model="list.filters['provider_id']"
+                                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
         </LayoutFilters>
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
             <ListTableRow v-for="pier in list.list">
-                <ListTableCell>
+                <ListTableCell :class="'w-60'">
                     <GuiActivityIndicator :active="pier['active']"/>
                     <router-link class="link" :to="{ name: 'pier-view', params: { id: pier['id'] }}">{{ pier['name'] }}</router-link>
                 </ListTableCell>
-                <ListTableCell>
+                <ListTableCell :class="'w-20'">
                     {{ pier['status'] }}
+                </ListTableCell>
+                <ListTableCell :class="'w-20'">
+                    {{ pier['provider_name'] }}
                 </ListTableCell>
             </ListTableRow>
         </ListTable>
+
 
         <GuiMessage v-else-if="list.is_loaded" border>Ничего не найдено</GuiMessage>
 
@@ -71,11 +85,10 @@ export default {
     created() {
         this.list.initial();
     },
-
     computed: {
         accepted() {
             return this.hasRole(['admin', 'office_manager']);
-        }
+        },
     },
 }
 </script>

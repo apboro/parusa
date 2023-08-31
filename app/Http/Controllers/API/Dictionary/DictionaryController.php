@@ -77,7 +77,8 @@ class DictionaryController extends ApiController
         'trip_statuses' => ['class' => TripStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant'],
         'user_contact_types' => ['class' => UserContactType::class, 'allow' => 'staff_admin'],
         'user_statuses' => ['class' => UserStatus::class, 'allow' => 'staff_admin'],
-        'excursion_types' => ['class' => ExcursionType::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal']
+        'excursion_types' => ['class' => ExcursionType::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
+        'providers' => ['class' => Provider::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
     ];
 
     /**

@@ -163,6 +163,7 @@ import GuiContainer from "@/Components/GUI/GuiContainer";
 import FormDictionary from "@/Components/Form/FormDictionary";
 import form from "@/Core/Form";
 import roles from "@/Mixins/roles.vue";
+import InputDropDown from "@/Components/Inputs/InputDropDown.vue";
 
 export default {
     props: {
@@ -173,6 +174,7 @@ export default {
     emits: ['setTitle', 'setStartPier'],
 
     components: {
+      InputDropDown,
         FormDictionary,
         GuiContainer,
         FormPopUp,

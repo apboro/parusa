@@ -17,10 +17,12 @@ class PiersListController extends ApiController
 {
     protected array $defaultFilters = [
         'status_id' => PiersStatus::active,
+        'provider_id' => null,
     ];
 
     protected array $rememberFilters = [
         'status_id',
+        'provider_id'
     ];
 
     protected string $rememberKey = CookieKeys::pier_list;
@@ -43,6 +45,9 @@ class PiersListController extends ApiController
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey)) && !empty($filters['status_id'])) {
             $query->where('status_id', $filters['status_id']);
         }
+        if (!empty($filters['provider_id'])) {
+            $query->where('provider_id', $filters['provider_id']);
+        }
 
         // current page automatically resolved from request via `page` parameter
         $piers = $query->paginate($request->perPage(10, $this->rememberKey));
@@ -53,12 +58,14 @@ class PiersListController extends ApiController
                 'active' => $pier->hasStatus(PiersStatus::active),
                 'id' => $pier->id,
                 'name' => $pier->name,
+                'provider_name' => $pier->provider->name,
+                'provider_id' => $pier->provider->id,
                 'status' => $pier->status->name,
             ];
         });
 
         return APIResponse::list(
-            $piers, ['name' => 'Название', 'status' => 'Статус'],
+            $piers, ['name' => 'Название', 'status' => 'Статус', 'source'=>'Владелец'],
             $filters,
             $this->defaultFilters,
             []

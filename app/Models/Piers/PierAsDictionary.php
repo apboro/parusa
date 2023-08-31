@@ -14,6 +14,7 @@ trait PierAsDictionary
             ->select([
                 'id',
                 'name',
+                'provider_id',
                 DB::raw('IF(status_id = ' . PiersStatus::active . ', true, false) as enabled'),
                 'name as order',
                 'created_at',
