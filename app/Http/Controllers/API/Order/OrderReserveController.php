@@ -51,7 +51,7 @@ class OrderReserveController extends ApiController
 
         // delete all tickets
         DB::transaction(static function () use ($order) {
-            if ($order->neva_travel_id) {
+            if ($order->additionalData?->provider_order_id) {
                 $nevaOrder = new NevaOrder($order);
                 $nevaOrder->cancel();
             }

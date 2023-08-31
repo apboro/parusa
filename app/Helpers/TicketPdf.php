@@ -18,7 +18,7 @@ class TicketPdf
     {
         $size = [0, 0, 595.28, 841.89]; // A4
 
-        if ($ticket->order->neva_travel_order_number) {
+        if ($ticket->order->additionalData?->provider_id == 10) {
             $view = config('tickets.ticket_template_neva');
         } elseif ($ticket->trip->excursion->is_single_ticket) {
             $view = config('tickets.ticket_template_single');
