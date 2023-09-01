@@ -56,6 +56,7 @@ class PromoCodeEditController extends ApiEditController
                 'code' => $promoCode->code,
                 'amount' => $promoCode->amount,
                 'status_id' => $promoCode->status_id,
+                'excursions' => $promoCode->excursions,
             ],
             $this->rules,
             $this->titles,

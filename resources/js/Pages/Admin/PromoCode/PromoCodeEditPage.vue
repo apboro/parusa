@@ -1,7 +1,7 @@
 <template>
     <LayoutPage :loading="processing" :title="form.payload['name']"
                 :breadcrumbs="[{caption: 'Промокоды', to: {name: 'promo-code-list'}}]"
-                :link="{name: 'excursion-list'}"
+                :link="{name: 'promo-code-list'}"
                 :link-title="'К списку промокодов'"
     >
         <GuiContainer mt-30>
@@ -74,7 +74,9 @@ export default {
 
     created() {
         this.form.toaster = this.$toast;
-        this.form.load({id: this.promoCodeId});
+        this.form.load({id: this.promoCodeId}).then(()=> {
+            this.arrExcursions = this.form.originals.excursions.map(excursion => excursion.id)
+        });
     },
 
     methods: {

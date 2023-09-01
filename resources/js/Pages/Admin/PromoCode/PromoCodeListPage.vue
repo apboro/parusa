@@ -44,6 +44,7 @@
                 <ListTableCell>
                     <GuiActionsMenu :title="null">
                         <span class="link" @click="editStatus(promoCode)">{{ promoCode['active'] ? 'Деактивировать' : 'Активировать' }}</span>
+                        <span class="link" @click="editPromocode(promoCode)">Редактировать</span>
                     </GuiActionsMenu>
                 </ListTableCell>
             </ListTableRow>
@@ -118,6 +119,15 @@ export default {
             this.$dialog.show(`<b>Промокод ${promoCode['code']}</b> (${promoCode['name']})<br/><br/>${excursions}`, null, 'red', [
                 this.$dialog.button('no', 'Закрыть', 'blue'),
             ]);
+        },
+        editPromocode(code){
+            this.$router.push({
+                name: 'promo-code-edit',
+                params: {
+                    id: code.id,
+                }
+            }
+            );
         },
     }
 }
