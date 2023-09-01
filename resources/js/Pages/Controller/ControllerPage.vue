@@ -1,11 +1,24 @@
 <script>
+import { QrcodeStream, QrcodeDropZone, QrcodeCapture } from 'vue-qrcode-reader'
 export default {
-    name: "ControllerPage"
+    name: "ControllerPage",
+
+    components: {
+        QrcodeStream,
+        QrcodeDropZone,
+        QrcodeCapture
+    },
+
+    methods: {
+        onDetect(detectedCode){
+            console.log(detectedCode)
+        }
+    }
 }
 </script>
 
 <template>
-Privet
+    <qrcode-stream @detect="onDetect"></qrcode-stream>
 </template>
 
 <style scoped lang="scss">
