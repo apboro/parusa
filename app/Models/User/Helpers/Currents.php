@@ -98,7 +98,7 @@ class Currents
         // assign role only for side parts, e.g. terminal page
         $role = $position->roles()
             ->where(['id' => $roleId])
-            ->whereIn('id', [Role::terminal])
+            ->whereIn('id', [Role::terminal, Role::controller])
             ->first();
         if ($role === null) {
             return;

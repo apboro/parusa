@@ -108,6 +108,7 @@ class FrontendController extends Controller
             if ($position->hasStatus(PositionStatus::active)) {
                 $adminSideRoles = [];
                 $terminalSideRoles = [];
+                $controllerRole = [];
                 foreach ($position->roles as $role) {
                     /** @var Role $role */
                     if (in_array($role->id, $this->adminSideRoles, true)) {
@@ -117,13 +118,17 @@ class FrontendController extends Controller
                         $terminalSideRoles[] = $role;
                     }
                     if ($role->matches(Role::controller)){
-                        $variants[] = $this->variantRecord($position, [$role], null);
+                        $controllerRole[] = $role;
                     }
                 }
 
                 if (!empty($adminSideRoles)) {
                     // Staff with admin role
                     $variants[] = $this->variantRecord($position, $adminSideRoles, null);
+                }
+                if (!empty($controllerRole)) {
+                    // Staff with admin role
+                    $variants[] = $this->variantRecord($position, $controllerRole, null);
                 }
                 if (!empty($terminalSideRoles)) {
                     // Staff with terminal role
@@ -138,7 +143,6 @@ class FrontendController extends Controller
                         $variants[] = $this->variantRecord($position, $terminalSideRoles, $terminal);
                     }
                 }
-
             }
         }
 
@@ -168,6 +172,10 @@ class FrontendController extends Controller
             $title = $position->partner->name;
         }
 
+        if (isset($roles[0]) && $roles[0]->id == Role::controller ){
+            $role = $roles[0];
+        }
+
         if(isset($role)) {
             $roleNames = $role->name;
         } else {
@@ -181,7 +189,7 @@ class FrontendController extends Controller
             'position_id' => $position->id,
             'position' => $position->title,
             'organization' => $title,
-            'role_id' => isset($role) ? $role->id : $roles[0]->id,
+            'role_id' => $role->id ?? null,
             'role' => $roleNames,
             'terminal_id' => $terminal->id ?? null,
             'terminal' => $terminal ? "$terminal->name ({$terminal->pier->name})" : null,
