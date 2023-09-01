@@ -71,7 +71,7 @@ use App\Models\Tickets\Ticket;
                     <div style="position:absolute; left: 95pt; top: 105pt; font-size: 7pt;">Стоимость</div>
 
                     <div style="position:absolute; left: 90pt; top: 115pt; width: 133pt;">
-                        <div style="font-size: 8pt;text-align: right">N заказа {{ $ticket->order->neva_travel_order_number ?? $ticket->order_id }}, N билета {{ $ticket->id }}</div>
+                        <div style="font-size: 8pt;text-align: right">N заказа {{ $ticket->order->additionalData?->provider_order_id ?? $ticket->order_id }}, N билета {{ $ticket->id }}</div>
                     </div>
                 </div>
             </div>
