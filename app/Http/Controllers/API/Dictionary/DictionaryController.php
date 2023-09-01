@@ -178,6 +178,9 @@ class DictionaryController extends ApiController
             if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'accountant' && $current->isStaffAccountant()) {
                 return true;
             }
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'controller' && $current->isStaffController()) {
+                return true;
+            }
         }
 
         return false;

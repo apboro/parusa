@@ -69,6 +69,10 @@ class FrontendController extends Controller
         if ($current->isStaff() && $current->terminal() !== null && $current->role() !== null && $current->role()->matches(Role::terminal)) {
             return $this->terminalPage($current, $loginVariantsCount > 1);
         }
+        // controller user role selected
+        if ($current->isStaff() &&  $current->role() !== null && $current->role()->matches(Role::controller)) {
+            return $this->controllerPage($current);
+        }
 
         // admin side
         if ($current->isStaff() && $current->hasRole($this->adminSideRoles)) {
@@ -112,6 +116,9 @@ class FrontendController extends Controller
                     if ($role->matches(Role::terminal)) {
                         $terminalSideRoles[] = $role;
                     }
+                    if ($role->matches(Role::controller)){
+                        $variants[] = $this->variantRecord($position, [$role], null);
+                    }
                 }
 
                 if (!empty($adminSideRoles)) {
@@ -131,6 +138,7 @@ class FrontendController extends Controller
                         $variants[] = $this->variantRecord($position, $terminalSideRoles, $terminal);
                     }
                 }
+
             }
         }
 
@@ -173,7 +181,7 @@ class FrontendController extends Controller
             'position_id' => $position->id,
             'position' => $position->title,
             'organization' => $title,
-            'role_id' => $role->id ?? null,
+            'role_id' => isset($role) ? $role->id : $roles[0]->id,
             'role' => $roleNames,
             'terminal_id' => $terminal->id ?? null,
             'terminal' => $terminal ? "$terminal->name ({$terminal->pier->name})" : null,
@@ -276,6 +284,27 @@ class FrontendController extends Controller
             ->withCookie($current->positionToCookie())
             ->withCookie($current->roleToCookie())
             ->withCookie($current->terminalToCookie());
+    }
+
+    /**
+     * Render controller page.
+     *
+     * @param Currents $current
+     *
+     * @return Response
+     * @throws JsonException
+     */
+    protected function controllerPage(Currents $current): Response
+    {
+        return response()->view('controller', [
+            'user' => json_encode([
+                'name' => $this->e($current->user()->profile->compactName),
+                'position' => $this->e($current->position()->title),
+                'organization' => "Панель контроля билетов"
+            ], JSON_THROW_ON_ERROR),
+        ])
+            ->withCookie($current->positionToCookie())
+            ->withCookie($current->roleToCookie());
     }
 
     /**

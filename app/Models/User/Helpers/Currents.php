@@ -251,6 +251,10 @@ class Currents
     {
         return $this->isStaffNotInTerminalMode() && $this->hasRole(Role::accountant);
     }
+    public function isStaffController(): bool
+    {
+        return $this->isStaffNotInTerminalMode() && $this->hasRole(Role::controller);
+    }
 
     /**
      * Get user id.
