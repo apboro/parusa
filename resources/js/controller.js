@@ -8,7 +8,7 @@ import App from './Apps/ControllerApp.vue';
 import Toast from "./Plugins/Toast/toaster";
 import Dialog from "./Plugins/Dialog/dialog";
 import Highlight from "./Plugins/Highlight/highlight";
-import routes from './Definitions/Terminal/Routes';
+import routes from './Definitions/Controller/Routes';
 
 let user = typeof window.user === "undefined" ? null : JSON.parse(window.user);
 const router = createRouter({
