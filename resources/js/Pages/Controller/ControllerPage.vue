@@ -1,24 +1,34 @@
 <script>
-import { QrcodeStream, QrcodeDropZone, QrcodeCapture } from 'vue-qrcode-reader'
+import {QrcodeStream, QrcodeDropZone, QrcodeCapture} from 'vue-qrcode-reader'
+import GuiButton from "@/Components/GUI/GuiButton.vue";
+import GuiContainer from "@/Components/GUI/GuiContainer.vue";
+import TicketInfoPage from "@/Pages/Admin/Registries/TicketInfoPage.vue";
+import CompactTicket from "@/Components/CompactTicket.vue";
+
 export default {
     name: "ControllerPage",
 
     data: () => ({
-       cameraOn: false,
+        cameraOn: false,
+        ticket: null,
     }),
 
     components: {
+        CompactTicket,
+        TicketInfoPage,
+        GuiContainer,
+        GuiButton,
         QrcodeStream,
         QrcodeDropZone,
         QrcodeCapture
     },
 
     methods: {
-        onDetect(detectedCode){
-            console.log(detectedCode)
-            axios.post('http://localhost:8000/api/ticket/qrcode/check', detectedCode).then(response => console.log(response.data))
+        onDetect(detectedCode) {
+            axios.post('http://localhost:8000/api/ticket/qrcode/check', detectedCode)
+                .then(response => this.ticket = response.data.data)
         },
-        cameraToggle(){
+        cameraToggle() {
             this.cameraOn = !this.cameraOn;
         }
     }
@@ -26,10 +36,17 @@ export default {
 </script>
 
 <template>
-    <button @click="onDetect">KNOPA</button>
-    <button @click="cameraToggle">CAMERA TOGGLE</button>
-    <qrcode-drop-zone @detect="onDetect"><div style ="margin-left: 30%; width: 450px; height: 200px; border-style: solid;">DROP ZONE</div></qrcode-drop-zone>
-    <div style ="margin-left: 30%; width: 450px; height: 500px"><qrcode-stream @camera-on="cameraOn" @detect="onDetect"></qrcode-stream></div>
+    <!--    <button @click="onDetect">KNOPA</button>-->
+    <GuiContainer mt-10 center>
+        <GuiButton @click="cameraToggle">{{cameraOn ? 'ВЫКЛЮЧИТЬ КАМЕРУ' : 'ВКЛЮЧИТЬ КАМЕРУ'}}</GuiButton>
+        <qrcode-drop-zone @detect="onDetect">
+            <div style="margin-left: 30%; width: 450px; height: 200px; border-style: solid;">DROP ZONE</div>
+        </qrcode-drop-zone>
+        <div v-if="cameraOn" style="margin-left: 30%; width: 450px; height: 500px">
+            <qrcode-stream @paused="cameraOn" @detect="onDetect"></qrcode-stream>
+        </div>
+        <CompactTicket :ticket="ticket"/>
+    </GuiContainer>
 </template>
 
 <style scoped lang="scss">

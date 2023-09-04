@@ -307,7 +307,7 @@ class Ticket extends Model implements Statusable
             ->size(200)
             ->margin(0)
             ->roundBlockSizeMode(new RoundBlockSizeModeNone())
-            ->data($this->order->additionalData?->provider_order_id ?? json_encode($payload, JSON_THROW_ON_ERROR))
+            ->data(json_encode($payload, JSON_THROW_ON_ERROR))
             ->build()
             ->getDataUri();
     }
