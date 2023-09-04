@@ -47,7 +47,10 @@
             </GuiActionsMenu>
         </TicketRate>
 
-        <ExcursionRateForm :excursionId="excursionId" ref="rate_form"/>
+        <ExcursionRateForm v-if="data.is_loaded"
+                           :excursionId="excursionId"
+                           :providerId="providerId"
+                           ref="rate_form"/>
     </LoadingProgress>
 </template>
 
@@ -80,6 +83,7 @@ export default {
     props: {
         excursionId: {type: Number, required: true},
         editable: {type: Boolean, default: false},
+        providerId:  {type: Number, required: true},
     },
 
     mixins: [DeleteEntry],
