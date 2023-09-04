@@ -2,29 +2,41 @@
 import GuiContainer from "@/Components/GUI/GuiContainer.vue";
 import GuiText from "@/Components/GUI/GuiText.vue";
 import GuiValue from "@/Components/GUI/GuiValue.vue";
+import GuiHeading from "@/Components/GUI/GuiHeading.vue";
+import GuiButton from "@/Components/GUI/GuiButton.vue";
 
 export default {
     name: "CompactTicket",
-    components: {GuiValue, GuiText, GuiContainer},
+    components: {GuiButton, GuiHeading, GuiValue, GuiText, GuiContainer},
 
     props: {
         ticket: null,
+    },
+
+    methods: {
+        useTicket(){
+            axios.post('http://localhost:8000/api/ticket/qrcode/use', {ticketId: this.ticket.ticket.ticket_id})
+        },
+        close(){
+            location.reload();
+        }
     }
 
 }
 </script>
 
 <template>
-
-        <GuiContainer w-70>
-            <GuiValue :title="isReserve ? 'Номер брони' : 'Номер заказа'">
-                <router-link class="link" :to="{name: 'order-info', params: {id: info.data['order_id'] }}" v-if="info.is_loaded">{{ info.data['order_id'] }}</router-link>
-            </GuiValue>
-            <GuiValue :title="isReserve ? 'Дата и время бронирования' : 'Дата и время продажи'">{{ info.data['sold_at'] }}</GuiValue>
-            <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['order_type'] }}</GuiValue>
-            <GuiValue :title="isReserve ? 'Кем забронировано' : 'Продавец'">{{ info.data['position'] ? info.data['position'] + ', ' : '' }} {{ info.data['partner'] }}</GuiValue>
-            <GuiValue :title="'Статус'">{{ info.data['status'] }}</GuiValue>
-
+        <GuiContainer ml-50 w-30>
+            <GuiText bold v-if="ticket.notValidTicket">{{ticket.notValidTicket}}</GuiText>
+            <GuiValue :title="'Номер билета:'">{{ticket.ticket.ticket_id}}</GuiValue>
+            <GuiValue :title="'Номер заказа:'">{{ticket.ticket.order_id}}</GuiValue>
+            <GuiValue :title="'Номер рейса:'">{{ticket.ticket.trip_id}}</GuiValue>
+            <GuiValue :title="'Статус билета:'">{{ticket.ticket.ticket_status}}</GuiValue>
+            <GuiValue :title="'Начало рейса:'">{{ticket.ticket.trip_start_time}}</GuiValue>
+            <GuiValue :title="'Экскурсия:'">{{ticket.ticket.excursion_name}}</GuiValue>
+            <GuiValue :title="'Причал отправления:'">{{ticket.ticket.pier}}</GuiValue>
+            <GuiButton v-if="!ticket.notValidTicket" @click="useTicket()" :color="'green'">ОТМЕТИТЬ КАК ИСПОЛЬЗОВАННЫЙ</GuiButton>
+            <GuiButton :color="'red'" @click="close()">ЗАКРЫТЬ</GuiButton>
     </GuiContainer>
 </template>
 

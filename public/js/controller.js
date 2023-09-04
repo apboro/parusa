@@ -19469,18 +19469,34 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_GUI_GuiContainer_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/Components/GUI/GuiContainer.vue */ "./resources/js/Components/GUI/GuiContainer.vue");
 /* harmony import */ var _Components_GUI_GuiText_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @/Components/GUI/GuiText.vue */ "./resources/js/Components/GUI/GuiText.vue");
 /* harmony import */ var _Components_GUI_GuiValue_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @/Components/GUI/GuiValue.vue */ "./resources/js/Components/GUI/GuiValue.vue");
+/* harmony import */ var _Components_GUI_GuiHeading_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @/Components/GUI/GuiHeading.vue */ "./resources/js/Components/GUI/GuiHeading.vue");
+/* harmony import */ var _Components_GUI_GuiButton_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @/Components/GUI/GuiButton.vue */ "./resources/js/Components/GUI/GuiButton.vue");
+
+
 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "CompactTicket",
   components: {
+    GuiButton: _Components_GUI_GuiButton_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+    GuiHeading: _Components_GUI_GuiHeading_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
     GuiValue: _Components_GUI_GuiValue_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
     GuiText: _Components_GUI_GuiText_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
     GuiContainer: _Components_GUI_GuiContainer_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   props: {
     ticket: null
+  },
+  methods: {
+    useTicket: function useTicket() {
+      axios.post('http://localhost:8000/api/ticket/qrcode/use', {
+        ticketId: this.ticket.ticket.ticket_id
+      });
+    },
+    close: function close() {
+      location.reload();
+    }
   }
 });
 
@@ -20539,67 +20555,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 
+
+var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("ОТМЕТИТЬ КАК ИСПОЛЬЗОВАННЫЙ");
+
+var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("ЗАКРЫТЬ");
+
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
+  var _component_GuiText = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("GuiText");
 
   var _component_GuiValue = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("GuiValue");
+
+  var _component_GuiButton = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("GuiButton");
 
   var _component_GuiContainer = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("GuiContainer");
 
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_GuiContainer, {
-    "w-70": ""
+    "ml-50": "",
+    "w-30": ""
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiValue, {
-        title: _ctx.isReserve ? 'Номер брони' : 'Номер заказа'
-      }, {
-        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [_ctx.info.is_loaded ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_router_link, {
-            key: 0,
-            "class": "link",
-            to: {
-              name: 'order-info',
-              params: {
-                id: _ctx.info.data['order_id']
-              }
-            }
-          }, {
-            "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-              return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.info.data['order_id']), 1
-              /* TEXT */
-              )];
-            }),
-            _: 1
-            /* STABLE */
-
-          }, 8
-          /* PROPS */
-          , ["to"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)];
-        }),
-        _: 1
-        /* STABLE */
-
-      }, 8
-      /* PROPS */
-      , ["title"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiValue, {
-        title: _ctx.isReserve ? 'Дата и время бронирования' : 'Дата и время продажи'
-      }, {
-        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.info.data['sold_at']), 1
-          /* TEXT */
-          )];
-        }),
-        _: 1
-        /* STABLE */
-
-      }, 8
-      /* PROPS */
-      , ["title"]), !_ctx.isReserve ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_GuiValue, {
+      return [$props.ticket.notValidTicket ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_GuiText, {
         key: 0,
-        title: 'Способ продажи'
+        bold: ""
       }, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.info.data['order_type']), 1
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.ticket.notValidTicket), 1
           /* TEXT */
           )];
         }),
@@ -20607,25 +20587,103 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         /* STABLE */
 
       })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiValue, {
-        title: _ctx.isReserve ? 'Кем забронировано' : 'Продавец'
+        title: 'Номер билета:'
       }, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.info.data['position'] ? _ctx.info.data['position'] + ', ' : '') + " " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.info.data['partner']), 1
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.ticket.ticket.ticket_id), 1
           /* TEXT */
           )];
         }),
         _: 1
         /* STABLE */
 
-      }, 8
-      /* PROPS */
-      , ["title"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiValue, {
-        title: 'Статус'
+      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiValue, {
+        title: 'Номер заказа:'
       }, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.info.data['status']), 1
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.ticket.ticket.order_id), 1
           /* TEXT */
           )];
+        }),
+        _: 1
+        /* STABLE */
+
+      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiValue, {
+        title: 'Номер рейса:'
+      }, {
+        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.ticket.ticket.trip_id), 1
+          /* TEXT */
+          )];
+        }),
+        _: 1
+        /* STABLE */
+
+      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiValue, {
+        title: 'Статус билета:'
+      }, {
+        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.ticket.ticket.ticket_status), 1
+          /* TEXT */
+          )];
+        }),
+        _: 1
+        /* STABLE */
+
+      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiValue, {
+        title: 'Начало рейса:'
+      }, {
+        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.ticket.ticket.trip_start_time), 1
+          /* TEXT */
+          )];
+        }),
+        _: 1
+        /* STABLE */
+
+      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiValue, {
+        title: 'Экскурсия:'
+      }, {
+        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.ticket.ticket.excursion_name), 1
+          /* TEXT */
+          )];
+        }),
+        _: 1
+        /* STABLE */
+
+      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiValue, {
+        title: 'Причал отправления:'
+      }, {
+        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.ticket.ticket.pier), 1
+          /* TEXT */
+          )];
+        }),
+        _: 1
+        /* STABLE */
+
+      }), !$props.ticket.notValidTicket ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_GuiButton, {
+        key: 1,
+        onClick: _cache[0] || (_cache[0] = function ($event) {
+          return $options.useTicket();
+        }),
+        color: 'green'
+      }, {
+        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+          return [_hoisted_1];
+        }),
+        _: 1
+        /* STABLE */
+
+      })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiButton, {
+        color: 'red',
+        onClick: _cache[1] || (_cache[1] = function ($event) {
+          return $options.close();
+        })
+      }, {
+        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+          return [_hoisted_2];
         }),
         _: 1
         /* STABLE */
@@ -21827,7 +21885,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
   var _component_GuiContainer = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("GuiContainer");
 
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("    <button @click=\"onDetect\">KNOPA</button>"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_GuiContainer, {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_GuiContainer, {
     "mt-10": "",
     center: ""
   }, {
@@ -21861,18 +21919,17 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         onDetect: $options.onDetect
       }, null, 8
       /* PROPS */
-      , ["onPaused", "onDetect"])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_CompactTicket, {
+      , ["onPaused", "onDetect"])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _ctx.ticket ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_CompactTicket, {
+        key: 1,
         ticket: _ctx.ticket
       }, null, 8
       /* PROPS */
-      , ["ticket"])];
+      , ["ticket"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)];
     }),
     _: 1
     /* STABLE */
 
-  })], 2112
-  /* STABLE_FRAGMENT, DEV_ROOT_FRAGMENT */
-  );
+  });
 }
 
 /***/ }),

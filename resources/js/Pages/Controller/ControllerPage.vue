@@ -36,7 +36,6 @@ export default {
 </script>
 
 <template>
-    <!--    <button @click="onDetect">KNOPA</button>-->
     <GuiContainer mt-10 center>
         <GuiButton @click="cameraToggle">{{cameraOn ? 'ВЫКЛЮЧИТЬ КАМЕРУ' : 'ВКЛЮЧИТЬ КАМЕРУ'}}</GuiButton>
         <qrcode-drop-zone @detect="onDetect">
@@ -45,7 +44,8 @@ export default {
         <div v-if="cameraOn" style="margin-left: 30%; width: 450px; height: 500px">
             <qrcode-stream @paused="cameraOn" @detect="onDetect"></qrcode-stream>
         </div>
-        <CompactTicket :ticket="ticket"/>
+        <CompactTicket v-if="ticket" :ticket="ticket"/>
+
     </GuiContainer>
 </template>
 

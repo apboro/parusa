@@ -122,6 +122,7 @@ class StatusesSeeder extends GenericSeeder
             OrderStatus::showcase_returned => ['name' => 'Оформлен возврат'],
             OrderStatus::showcase_partial_returned => ['name' => 'Оформлен частичный возврат'],
             OrderStatus::showcase_canceled => ['name' => 'Отменён'],
+            OrderStatus::done => ['name' => 'Выполнен'],
         ],
 
         TerminalStatus::class => [

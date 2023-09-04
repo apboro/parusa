@@ -309,7 +309,7 @@ class FrontendController extends Controller
                 'name' => $this->e($current->user()->profile->compactName),
                 'position' => $this->e($current->position()->title),
                 'organization' => "Панель контроля билетов"
-            ], JSON_THROW_ON_ERROR),
+            ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
         ])
             ->withCookie($current->positionToCookie())
             ->withCookie($current->roleToCookie());
