@@ -14,7 +14,10 @@
 
         <ExcursionInfo v-if="tab === 'description'" :excursion-id="excursionId" :data="data.data" :editable="true" @update="update"/>
 
-        <ExcursionRates v-if="tab === 'rates'" :excursion-id="excursionId" :editable="true"/>
+        <ExcursionRates v-if="data.is_loaded && tab === 'rates'"
+                        :excursion-id="excursionId"
+                        :providerId ="data.data.excursion_provider_id"
+            :editable="true"/>
 
         <GuiHeading v-if="tab === 'schedule' && trips_title !== null" mt-15>{{ trips_title }}</GuiHeading>
         <TripsList v-if="tab === 'schedule'" :excursion-id="excursionId" @setTitle="trips_title = $event"/>

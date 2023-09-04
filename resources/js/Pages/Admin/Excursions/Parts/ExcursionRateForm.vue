@@ -102,6 +102,7 @@ import FormDropdown from "@/Components/Form/FormDropdown";
 export default {
     props: {
         excursionId: {type: Number, required: true},
+        providerId:  {type: Number, required: true},
     },
 
     components: {FormDropdown, FormNumber, FormDate, FormPopUp},
@@ -139,7 +140,7 @@ export default {
 
             let index = 0;
 
-            this.$store.getters['dictionary/dictionary']('ticket_grades').filter(grade => grade.provider_id === null).map(item => {
+            this.$store.getters['dictionary/dictionary']('ticket_grades').filter(grade => grade.provider_id === this.providerId).map(item => {
                 let grade = null;
                 if (rate === null && item['enabled'] || rate !== null && rate['rates'].some(rate => (rate['grade_id'] === item['id']) && (grade = rate))) {
                     let isDefault = index > 2;
