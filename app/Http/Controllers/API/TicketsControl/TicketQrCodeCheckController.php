@@ -85,13 +85,13 @@ class TicketQrCodeCheckController extends Controller
         $ticket = Ticket::with(['order', 'order.tickets'])->find($request->ticketId);
         $ticket->setStatus(TicketStatus::used);
 
-        $orderTicketsCount = $ticket->order->tickets->count();
-        $orderTicketsUsed = $ticket->order->tickets->filter(function (Ticket $ticket){
-           return $ticket->hasStatus(TicketStatus::used);
-        });
-        if ($orderTicketsCount == $orderTicketsUsed->count()){
-            $ticket->order->setStatus(OrderStatus::done);
-        }
+//        $orderTicketsCount = $ticket->order->tickets->count();
+//        $orderTicketsUsed = $ticket->order->tickets->filter(function (Ticket $ticket){
+//           return $ticket->hasStatus(TicketStatus::used);
+//        });
+//        if ($orderTicketsCount == $orderTicketsUsed->count()){
+//            $ticket->order->setStatus(OrderStatus::done);
+//        }
 
         return APIResponse::success('Билет отмечен как использованный');
     }
