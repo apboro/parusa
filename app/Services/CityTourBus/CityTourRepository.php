@@ -66,10 +66,15 @@ class CityTourRepository
     public function sendTickets(Order $order)
     {
         $orderId = $order->additionalData->provider_order_id;
-        $query = ['send_tickets' => "true"];
 
-        return $this->apiClient->get('orders/'.$orderId, $query);
+        return $this->apiClient->get('tickets', ['order_id' => $orderId]);
+    }
 
+    public function getOrderTickets(Order $order)
+    {
+        $orderId = $order->additionalData->provider_order_id;
+
+        return $this->apiClient->get('tickets', ['order_id' => $orderId]);
     }
 
     public function getOrderInfo(Order $order): array
@@ -92,9 +97,9 @@ class CityTourRepository
                 $ticketsList[$ticket->grade->id] = isset($ticketsList[$ticket->grade->id]) ? $ticketsList[$ticket->grade->id]  + 1 : 1;
             }
             $params = [
-                'customer_name'=>$order->name,
+                'customer_name'=>$order->name ?? 'Покупатель',
                 'customer_phone' => $order->phone,
-                'customer_email' => $order->email,
+                'customer_email' => $order->email ?? 'noreply@city-tours-spb.ru',
                 'excursion_id' => $order->tickets[0]->trip->excursion->additionalData->provider_excursion_id,
                 'excursion_datetime' => $order->tickets[0]->trip->start_at->format('Y-m-d H:i:s'),
                 'payment_status' => 0,

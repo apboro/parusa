@@ -42,12 +42,9 @@ class ImportTrips
                     $trip->tickets_total = 100;
                     $trip->provider_id = Provider::city_tour;
                     $trip->save();
-
                 } while ($start_date->addDay() < Carbon::now()->addDays(60));
-
-            } else {
+            } elseif ($schedule['status'] === 200) {
                 foreach ($schedule['body'] as $date => $timeTickets) {
-
                     $time = array_key_first($timeTickets);
                     $trip = Trip::firstOrNew(['excursion_id' => $excursion->id, 'start_at' => Carbon::parse($date.' '.$time)->format('Y-m-d H:i:s')]);
                     $trip->start_at = Carbon::parse($date.' '.$time)->format('Y-m-d H:i:s');

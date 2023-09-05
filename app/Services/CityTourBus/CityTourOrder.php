@@ -15,7 +15,6 @@ class CityTourOrder
     private Order $order;
     private CityTourRepository $cityTourRepository;
 
-
     public function __construct(Order $order)
     {
         $this->order = $order;
@@ -53,16 +52,24 @@ class CityTourOrder
     {
         if ($this->checkOrderHasCityTourTickets()) {
             $result = $this->cityTourRepository->approveOrder($this->order);
-            if (!$result || $result['status'] != 200) {
+            if ($result || $result['status'] == 200) {
+                Log::channel('city_tour')->info('City Tour API approve order request success: ', [$result, $this->order->additionalData]);
+                $this->getAndSaveTickets();
+            } else {
                 Log::channel('city_tour')->error('City Tour API approve Error', [$result]);
                 throw new RuntimeException('Невозможно оформить заказ на этот рейс.');
-            } else {
-                Log::channel('city_tour')->info('City Tour API approve order request success: ', [$result, $this->order->additionalData]);
             }
         }
 
     }
 
+    public function getAndSaveTickets()
+    {
+        $tickets = $this->cityTourRepository->getOrderTickets($this->order);
+
+
+
+    }
 
     public function checkOrderHasCityTourTickets()
     {
@@ -101,10 +108,6 @@ class CityTourOrder
         }
     }
 
-    public function getOrderInfo()
-    {
-        return $this->cityTourRepository->getOrderInfo($this->order);
-    }
 
     public function sendTickets()
     {
