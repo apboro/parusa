@@ -15,7 +15,7 @@ class ImportTrips
     {
         $rep = new CityTourRepository();
 
-        $pier = Pier::where('source', 'CityTour')->first();
+        $pier = Pier::where('provider_id', Provider::city_tour)->first();
         $bus = Ship::where('owner', 'CityTour')->first();
         $excursions = Excursion::with('additionalData')->where('provider_id', Provider::city_tour)->get();
 
