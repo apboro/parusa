@@ -1,12 +1,11 @@
 {
-    "/js/login.js": "/js/login.js",
-    "/js/admin.js": "/js/admin.js",
-    "/js/partner.js": "/js/partner.js",
-    "/js/terminal.js": "/js/terminal.js",
-    "/js/controller.js": "/js/controller.js",
-    "/js/showcase.js": "/js/showcase.js",
-    "/js/showcase2.js": "/js/showcase2.js",
-    "/js/checkout.js": "/js/checkout.js",
-    "/css/app.css": "/css/app.css",
-    "/css/select.css": "/css/select.css"
+    "/js/login.js": "/js/login.js?id=d2d0395816647fb91fae",
+    "/js/admin.js": "/js/admin.js?id=bd3d78611e6967235f12",
+    "/js/partner.js": "/js/partner.js?id=f737b25d431bc52ca775",
+    "/js/terminal.js": "/js/terminal.js?id=ca4aa9136dd41fcb4eab",
+    "/js/showcase.js": "/js/showcase.js?id=adfa2eb164c98498948c",
+    "/js/showcase2.js": "/js/showcase2.js?id=90ea5f48d04d0127d341",
+    "/js/checkout.js": "/js/checkout.js?id=f2f0a3dfd663a88a0686",
+    "/css/app.css": "/css/app.css?id=e736ddc952f05160a76d",
+    "/css/select.css": "/css/select.css?id=79f266d790919903cc26"
 }

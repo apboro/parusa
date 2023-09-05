@@ -77,12 +77,14 @@ class CityTourOrder
 
     public function cancel()
     {
-        $result = $this->cityTourRepository->cancelOrder($this->order);
-        if (!$result || $result['status'] != 200) {
-            Log::channel('city_tour')->error('City Tour API cancel Error', [$result]);
-            throw new RuntimeException('Не получилось сделать возврат/перенос.');
-        } else {
-            Log::channel('city_tour')->info('City Tour API cancel order request success: ', [$result, $this->order->additionalData]);
+        if ($this->checkOrderHasCityTourTickets()) {
+            $result = $this->cityTourRepository->cancelOrder($this->order);
+            if (!$result || $result['status'] != 200) {
+                Log::channel('city_tour')->error('City Tour API cancel Error', [$result]);
+                throw new RuntimeException('Не получилось сделать возврат/перенос.');
+            } else {
+                Log::channel('city_tour')->info('City Tour API cancel order request success: ', [$result, $this->order->additionalData]);
+            }
         }
     }
 
