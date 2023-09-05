@@ -71,7 +71,7 @@ class FrontendController extends Controller
         }
         // controller user role selected
         if ($current->isStaff() &&  $current->role() !== null && $current->role()->matches(Role::controller)) {
-            return $this->controllerPage($current);
+            return $this->controllerPage($current, $loginVariantsCount > 1);
         }
 
         // admin side
@@ -298,18 +298,22 @@ class FrontendController extends Controller
      * Render controller page.
      *
      * @param Currents $current
-     *
+     * @param bool $canChangePosition
      * @return Response
      * @throws JsonException
      */
-    protected function controllerPage(Currents $current): Response
+    protected function controllerPage(Currents $current, bool $canChangePosition): Response
     {
         return response()->view('controller', [
             'user' => json_encode([
                 'name' => $this->e($current->user()->profile->compactName),
                 'position' => $this->e($current->position()->title),
-                'organization' => "Панель контроля билетов"
+                'positions' => $canChangePosition,
+                'organization' => "Контроль билетов"
             ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
+            'roles' => json_encode($current->position()->roles->map(function (Role $role) {
+                return $role->toConst();
+            }), JSON_THROW_ON_ERROR),
         ])
             ->withCookie($current->positionToCookie())
             ->withCookie($current->roleToCookie());

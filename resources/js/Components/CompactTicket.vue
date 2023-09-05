@@ -9,6 +9,10 @@ export default {
     name: "CompactTicket",
     components: {GuiButton, GuiHeading, GuiValue, GuiText, GuiContainer},
 
+    data: () => ({
+        hidden: true,
+    }),
+
     props: {
         ticket: null,
     },
@@ -35,13 +39,21 @@ export default {
     <GuiText bold v-if="ticket.notValidTicket">{{ ticket.notValidTicket }}</GuiText>
     <GuiContainer v-if="ticket.ticket">
         <GuiValue :title="'Номер билета:'">{{ ticket.ticket.ticket_id }}</GuiValue>
+        <GuiValue :title="'Тип билета:'">{{ ticket.ticket.type }}</GuiValue>
         <GuiValue :title="'Номер заказа:'">{{ ticket.ticket.order_id }}</GuiValue>
         <GuiValue :title="'Номер рейса:'">{{ ticket.ticket.trip_id }}</GuiValue>
         <GuiValue :title="'Статус билета:'">{{ ticket.ticket.ticket_status }}</GuiValue>
         <GuiValue :title="'Начало рейса:'">{{ ticket.ticket.trip_start_time }}</GuiValue>
         <GuiValue :title="'Экскурсия:'">{{ ticket.ticket.excursion_name }}</GuiValue>
-        <GuiValue :title="'Причал отправления:'">{{ ticket.ticket.pier }}</GuiValue>
-        <GuiButton style="margin-top: 30px" v-if="!ticket.notValidTicket" @click="useTicket()" :color="'green'">ОТМЕТИТЬ КАК ИСПОЛЬЗОВАННЫЙ
+        <GuiValue :title="'Причал:'">{{ ticket.ticket.pier }}</GuiValue>
+        <p @click="hidden = !hidden">подробнее ...</p>
+        <div v-if="!hidden">
+            <GuiValue v-if="ticket.ticket.customer_fio" :title="'Клиент:'">{{ ticket.ticket.customer_fio }}</GuiValue>
+            <GuiValue :title="'Телефон клиента:'">{{ ticket.ticket.customer_phone }}</GuiValue>
+            <GuiValue v-if="ticket.ticket.promocode" :title="'Промокод:'">{{ ticket.ticket.promocode }}</GuiValue>
+        </div>
+        <GuiButton style="margin-top: 30px" v-if="!ticket.notValidTicket" @click="useTicket()" :color="'green'">ОТМЕТИТЬ
+            КАК ИСПОЛЬЗОВАННЫЙ
         </GuiButton>
     </GuiContainer>
     <GuiButton style="margin-top: 40px" :color="'red'" @click="close()">ЗАКРЫТЬ</GuiButton>

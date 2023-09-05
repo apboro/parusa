@@ -1,8 +1,9 @@
 <template>
     <div class="application">
-        <LayoutHeader :user="user">
+        <LayoutHeader :user="user" :hide-menu="true">
             <template #personal>
                 <LayoutUserMenu :user="user">
+                    <span class="link" v-if="user.positions" @click="change">Сменить компанию</span>
                     <span class="link" @click="logout">Выход</span>
                 </LayoutUserMenu>
             </template>
@@ -36,7 +37,6 @@ export default {
     data: () => ({
     }),
 
-
     methods: {
         logout() {
             axios.post('/logout', {})
@@ -44,6 +44,12 @@ export default {
                     window.location.href = '/';
                 });
         },
+        change() {
+            axios.post('/login/change', {})
+                .then(() => {
+                    window.location.href = '/';
+                })
+        }
     },
 }
 </script>
