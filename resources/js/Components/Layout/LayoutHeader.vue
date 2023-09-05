@@ -7,7 +7,7 @@
                 </router-link>
                 <span class="application__header-title-text">{{ user.organization }}</span>
             </div>
-            <div class="application__header-menu">
+            <div class="application__header-menu" v-if="!hideMenu">
                 <slot name="menu"/>
             </div>
             <div class="application__header-widgets">
@@ -36,6 +36,7 @@ export default {
                 avatar: null,
             })
         },
+        hideMenu: {type: Boolean, default: false},
     },
 }
 </script>

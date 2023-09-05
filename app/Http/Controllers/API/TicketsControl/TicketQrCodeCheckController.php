@@ -9,6 +9,7 @@ use App\Models\Dictionaries\TicketStatus;
 use App\Models\Tickets\Ticket;
 use Exception;
 use Illuminate\Http\Request;
+use Str;
 use function Symfony\Component\String\s;
 
 class TicketQrCodeCheckController extends Controller
@@ -17,6 +18,9 @@ class TicketQrCodeCheckController extends Controller
     {
         try {
             $data = $request->all();
+            if (!Str::contains($data[0]['rawValue'], '1|t|')){
+                return APIResponse::response(['notValidQrCode' => 'Вы отсканировали неверный QR-код']);
+            }
             $ticketData = explode('|', $data[0]['rawValue']);
             $ticketNumber = $ticketData[2];
             $signature = str_replace('"', '', $ticketData[3]);
@@ -72,6 +76,7 @@ class TicketQrCodeCheckController extends Controller
             'ticket_created_at' => $ticket->created_at->format('d.m.Y H:i'),
             'pier' => $ticket->trip->startPier->name,
             'order_type' => $ticket->order->type->name,
+            'promocode' => $ticket->order->promocode->first()?->name,
         ];
     }
 
@@ -84,7 +89,7 @@ class TicketQrCodeCheckController extends Controller
         $orderTicketsUsed = $ticket->order->tickets->filter(function (Ticket $ticket){
            return $ticket->hasStatus(TicketStatus::used);
         });
-        if ($orderTicketsCount === $orderTicketsUsed->count()){
+        if ($orderTicketsCount == $orderTicketsUsed->count()){
             $ticket->order->setStatus(OrderStatus::done);
         }
 
