@@ -17,12 +17,8 @@
 
 <script>
 import LayoutHeader from "@/Components/Layout/LayoutHeader";
-import LayoutMenu from "@/Components/Layout/LayoutMenu";
 import LayoutUserMenu from "@/Components/Layout/LayoutUserMenu";
 import LayoutHeaderWidget from "@/Components/Layout/LayoutHeaderWidget";
-import IconBoxOffice from "@/Components/Icons/IconBoxOffice";
-import PopUp from "@/Components/PopUp";
-import {mapState} from "vuex";
 import ControllerPage from "@/Pages/Controller/ControllerPage.vue";
 
 export default {

@@ -17,18 +17,21 @@
                     <IconForward/>
                 </GuiIconButton>
             </LayoutFiltersItem>
-            <LayoutFiltersItem :class="'w-25'" :title="'Тип программы'">
+
+            <LayoutFiltersItem :class="'w-25'" :title="'Тип'">
                 <DictionaryDropDown
-                        :dictionary="'excursion_programs'"
-                        :fresh="true"
-                        v-model="list.filters['program_id']"
-                        :original="list.filters_original['program_id']"
-                        :placeholder="'Все'"
-                        :has-null="true"
-                        :small="true"
-                        @change="list.load()"
+                    :dictionary="'excursion_types'"
+                    :fresh="true"
+                    v-model="list.filters['excursion_type_id']"
+                    :original="list.filters_original['excursion_type_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :right="true"
+                    :small="true"
+                    @change="list.load()"
                 />
             </LayoutFiltersItem>
+
             <LayoutFiltersItem :class="'w-25'" :title="'Экскурсия'">
                 <DictionaryDropDown
                         :dictionary="'excursions'"
@@ -42,7 +45,7 @@
                         @change="list.load()"
                 />
             </LayoutFiltersItem>
-            <LayoutFiltersItem :class="'w-25'" :title="'Причал отправления'">
+            <LayoutFiltersItem :class="'w-25'" :title="'Причалы и остановки'">
                 <DictionaryDropDown
                         :dictionary="'piers'"
                         :fresh="true"
@@ -57,15 +60,14 @@
                 />
             </LayoutFiltersItem>
 
-            <LayoutFiltersItem :class="'w-25'" :title="'Тип'">
+            <LayoutFiltersItem :class="'w-25'" :title="'Тип программы'">
                 <DictionaryDropDown
-                    :dictionary="'excursion_types'"
+                    :dictionary="'excursion_programs'"
                     :fresh="true"
-                    v-model="list.filters['excursion_type_id']"
-                    :original="list.filters_original['excursion_type_id']"
+                    v-model="list.filters['program_id']"
+                    :original="list.filters_original['program_id']"
                     :placeholder="'Все'"
                     :has-null="true"
-                    :right="true"
                     :small="true"
                     @change="list.load()"
                 />

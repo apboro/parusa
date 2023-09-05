@@ -1,8 +1,9 @@
 {
     "/js/login.js": "/js/login.js?id=d2d0395816647fb91fae",
-    "/js/admin.js": "/js/admin.js?id=bd3d78611e6967235f12",
-    "/js/partner.js": "/js/partner.js?id=f737b25d431bc52ca775",
-    "/js/terminal.js": "/js/terminal.js?id=ca4aa9136dd41fcb4eab",
+    "/js/admin.js": "/js/admin.js?id=bf4f2033a16b2ae15b0d",
+    "/js/partner.js": "/js/partner.js?id=40e8197b5118f2315af8",
+    "/js/terminal.js": "/js/terminal.js?id=1b83b8ea44a7aa7c8c92",
+    "/js/controller.js": "/js/controller.js?id=6f17e8b88165b70fa4bd",
     "/js/showcase.js": "/js/showcase.js?id=adfa2eb164c98498948c",
     "/js/showcase2.js": "/js/showcase2.js?id=90ea5f48d04d0127d341",
     "/js/checkout.js": "/js/checkout.js?id=f2f0a3dfd663a88a0686",

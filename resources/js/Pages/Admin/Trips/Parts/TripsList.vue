@@ -17,18 +17,21 @@
                     <IconForward/>
                 </GuiIconButton>
             </LayoutFiltersItem>
-            <LayoutFiltersItem :class="'w-25'" :title="'Статус движения'">
+
+            <LayoutFiltersItem :class="'w-25'" :title="'Тип'">
                 <DictionaryDropDown
-                    :dictionary="'trip_statuses'"
+                    :dictionary="'excursion_types'"
                     :fresh="true"
-                    v-model="list.filters['status_id']"
-                    :original="list.filters_original['status_id']"
+                    v-model="list.filters['excursion_type_id']"
+                    :original="list.filters_original['excursion_type_id']"
                     :placeholder="'Все'"
                     :has-null="true"
+                    :right="true"
                     :small="true"
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+
             <LayoutFiltersItem :class="'w-25'" :title="'Экскурсия'" v-if="excursionId === null">
                 <DictionaryDropDown
                     :dictionary="'excursions'"
@@ -42,7 +45,7 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
-            <LayoutFiltersItem :class="'w-25'" :title="'Причал отправления'" v-if="pierId === null">
+            <LayoutFiltersItem :class="'w-25'" :title="'Причалы и остановки'" v-if="pierId === null">
                 <DictionaryDropDown
                     :dictionary="'piers'"
                     :fresh="true"
@@ -57,19 +60,18 @@
                 />
             </LayoutFiltersItem>
 
-        <LayoutFiltersItem :class="'w-25'" :title="'Тип'">
-            <DictionaryDropDown
-                :dictionary="'excursion_types'"
-                :fresh="true"
-                v-model="list.filters['excursion_type_id']"
-                :original="list.filters_original['excursion_type_id']"
-                :placeholder="'Все'"
-                :has-null="true"
-                :right="true"
-                :small="true"
-                @change="list.load()"
-            />
-        </LayoutFiltersItem>
+            <LayoutFiltersItem :class="'w-25'" :title="'Статус движения'">
+                <DictionaryDropDown
+                    :dictionary="'trip_statuses'"
+                    :fresh="true"
+                    v-model="list.filters['status_id']"
+                    :original="list.filters_original['status_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
         </LayoutFilters>
 
 

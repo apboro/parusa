@@ -23,29 +23,43 @@ export default {
         QrcodeCapture
     },
 
+    watch: {
+        ticket(newTicket) {
+            if (newTicket !== null) {
+                this.cameraOn = false;
+            }
+        }
+    },
+
     methods: {
         onDetect(detectedCode) {
-            axios.post('http://localhost:8000/api/ticket/qrcode/check', detectedCode)
+            axios.post('/api/ticket/qrcode/check', detectedCode)
                 .then(response => this.ticket = response.data.data)
         },
         cameraToggle() {
             this.cameraOn = !this.cameraOn;
+        },
+        used() {
+            this.ticket = null;
+            this.cameraOn = true;
+        },
+        close() {
+            this.ticket = null;
+            this.cameraOn = true;
         }
     }
 }
 </script>
 
 <template>
-    <GuiContainer mt-10 center>
-        <GuiButton @click="cameraToggle">{{cameraOn ? 'ВЫКЛЮЧИТЬ КАМЕРУ' : 'ВКЛЮЧИТЬ КАМЕРУ'}}</GuiButton>
-        <qrcode-drop-zone @detect="onDetect">
-            <div style="margin-left: 30%; width: 450px; height: 200px; border-style: solid;">DROP ZONE</div>
-        </qrcode-drop-zone>
-        <div v-if="cameraOn" style="margin-left: 30%; width: 450px; height: 500px">
-            <qrcode-stream @paused="cameraOn" @detect="onDetect"></qrcode-stream>
+    <GuiContainer w-100 ph-10 mt-10 center>
+        <div style="max-width: 450px; display: inline-block;">
+            <GuiButton style="margin-bottom: 30px" v-if="ticket === null" @click="cameraToggle">
+                {{ cameraOn ? 'ВЫКЛЮЧИТЬ КАМЕРУ' : 'ВКЛЮЧИТЬ КАМЕРУ' }}
+            </GuiButton>
+            <qrcode-stream v-if="cameraOn" @paused="cameraOn" @detect="onDetect"></qrcode-stream>
+            <CompactTicket v-if="ticket" :ticket="ticket" @used="used" @close="close"/>
         </div>
-        <CompactTicket v-if="ticket" :ticket="ticket"/>
-
     </GuiContainer>
 </template>
 
