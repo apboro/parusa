@@ -259,8 +259,8 @@ class TicketsRegistryController extends ApiController
                 if (empty($filters['date_to'])) {
                     $filters['date_to'] = $this->defaultFilters['date_to'];
                 }
-                $query->where('created_at', '>=', Carbon::parse($filters['date_from']));
-                $query->where('created_at', '<=', Carbon::parse($filters['date_to']));
+                $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
+                $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
             }
             if (!empty($filters['order_type_id'])) {
                 $query->whereHas('order', function (Builder $query) use ($filters) {

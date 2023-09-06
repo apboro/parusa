@@ -241,6 +241,7 @@ export default {
                         let options = {
                             filters: this.list.filters,
                             search: this.list.search,
+                            partner_id: this.partnerId,
                         }
                         axios.post('/api/registries/tickets/export', options)
                             .then(response => {
