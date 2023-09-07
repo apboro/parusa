@@ -61,9 +61,10 @@ export default {
 
     <div v-if="data.tickets.length > 0">
         <GuiHeading bold> ЗАКАЗ </GuiHeading>
-        <GuiValue :title="'Номер заказа:'">{{ data.tickets[0].order_id }}</GuiValue>
+        <GuiValue :title="'Номер билета:'">{{ data.tickets[0].order_id }}</GuiValue>
         <GuiValue :title="'Экскурсия:'">{{ data.tickets[0].excursion_name }}</GuiValue>
         <GuiValue :title="'Начало рейса:'">{{ data.tickets[0].trip_start_time }}</GuiValue>
+        <GuiValue :title="'Номер рейса:'">{{ data.tickets[0].trip_id }}</GuiValue>
         <GuiValue :title="'Причал:'">{{ data.tickets[0].pier }}</GuiValue>
         <GuiValue v-if="data.tickets[0].customer_fio" :title="'Клиент:'">{{ data.tickets[0].customer_fio }}</GuiValue>
         <GuiValue :title="'Телефон клиента:'"><span @click="phoneValue = data.tickets[0].customer_phone">{{ phoneValue }}</span></GuiValue>
