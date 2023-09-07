@@ -11,7 +11,7 @@ export default {
 
     data: () => ({
         cameraOn: false,
-        ticket: null,
+        data: null,
         message: null,
         isVisible: false,
     }),
@@ -28,10 +28,8 @@ export default {
     },
 
     watch: {
-        ticket(newTicket) {
-            if (newTicket !== null) {
-                this.cameraOn = false;
-            }
+        data(newValue) {
+            this.cameraOn = newValue === null;
         },
         isVisible(newVal) {
             if (newVal) {
@@ -50,7 +48,7 @@ export default {
                         this.message = response.data.data.notValidQrCode;
                         this.isVisible = true;
                     } else {
-                        this.ticket = response.data.data
+                        this.data = response.data.data
                         this.message = null;
                     }
                 })
@@ -59,12 +57,10 @@ export default {
             this.cameraOn = !this.cameraOn;
         },
         used() {
-            this.ticket = null;
-            this.cameraOn = true;
+            this.data = null;
         },
         close() {
-            this.ticket = null;
-            this.cameraOn = true;
+            this.data = null;
         }
     }
 }
@@ -73,11 +69,11 @@ export default {
 <template>
     <GuiContainer w-100 h-80 ph-10 mt-10 center>
         <div style="max-width: 450px; display: inline-block;">
-            <GuiButton style="margin-bottom: 30px" v-if="ticket === null" @click="cameraToggle">
+            <GuiButton style="margin-bottom: 30px" v-if="!data" @click="cameraToggle">
                 {{ cameraOn ? 'ВЫКЛЮЧИТЬ КАМЕРУ' : 'ВКЛЮЧИТЬ КАМЕРУ' }}
             </GuiButton>
             <qrcode-stream v-if="cameraOn" @paused="cameraOn" @detect="onDetect"></qrcode-stream>
-            <CompactTicket v-if="ticket" :ticket="ticket" @used="used" @close="close"/>
+            <CompactTicket v-if="data" :data="data" @used="used" @close="close"/>
             <div style="text-align: center; font-weight: bold; color: red;" v-if="isVisible">{{ message }}</div>
         </div>
     </GuiContainer>
