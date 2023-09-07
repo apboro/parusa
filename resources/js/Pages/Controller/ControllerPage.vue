@@ -72,9 +72,6 @@ export default {
             <GuiButton style="margin-bottom: 30px" v-if="!data" @click="cameraToggle">
                 {{ cameraOn ? 'ВЫКЛЮЧИТЬ КАМЕРУ' : 'ВКЛЮЧИТЬ КАМЕРУ' }}
             </GuiButton>
-            <qrcode-drop-zone @detect="onDetect">
-                <div style="margin-left: 30%; width: 450px; height: 200px; border-style: solid;">DROP ZONE</div>
-            </qrcode-drop-zone>
             <qrcode-stream v-if="cameraOn" @paused="cameraOn" @detect="onDetect"></qrcode-stream>
             <CompactTicket v-if="data" :data="data" @used="used" @close="close"/>
             <div style="text-align: center; font-weight: bold; color: red;" v-if="isVisible">{{ message }}</div>
