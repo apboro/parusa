@@ -16,53 +16,42 @@ class TicketQrCodeCheckController extends Controller
 {
     public function getScanData(Request $request)
     {
-        try {
-            $data = $request->all();
-            if (!Str::contains($data[0]['rawValue'], '1|t|')){
-                return APIResponse::response(['notValidQrCode' => 'Вы отсканировали неверный QR-код']);
-            }
-            $ticketData = explode('|', $data[0]['rawValue']);
-            $ticketNumber = $ticketData[2];
-            $signature = str_replace('"', '', $ticketData[3]);
-            $expectedSignature = md5(config('app.key') . '|1|t|' . $ticketNumber);
-            $ticket = Ticket::with(['order', 'trip', 'trip.excursion', 'trip.startPier'])->find($ticketNumber);
-
-            if (($signature == $expectedSignature) && $ticket) {
-                $ticketResource = $this->makeTicketResource($ticket);
-                $this->checkTicketStatus($ticket);
-                $this->checkTripStatus($ticket);
-                return APIResponse::response(['ticket' => $ticketResource]);
-            } else {
-                return APIResponse::response(['ticket'=> null, 'notValidTicket' => 'Билет не найден']);
-            }
-        } catch (Exception $e) {
-            return APIResponse::response(['ticket' => $ticketResource ?? null, 'notValidTicket' => $e->getMessage()]);
+        $data = $request->all();
+        if (!Str::contains($data[0]['rawValue'], '1|t|')) {
+            return APIResponse::response(['notValidQrCode' => 'Вы отсканировали неверный QR-код']);
         }
-    }
+        $ticketData = explode('|', $data[0]['rawValue']);
+        $ticketNumber = $ticketData[2];
+        $signature = str_replace('"', '', $ticketData[3]);
+        $expectedSignature = md5(config('app.key') . '|1|t|' . $ticketNumber);
+        $ticket = Ticket::with(['order', 'trip', 'trip.excursion', 'trip.startPier'])->find($ticketNumber);
 
-    /**
-     * @throws Exception
-     */
-    private function checkTicketStatus(Ticket $ticket)
-    {
-        if (!in_array($ticket->status_id, TicketStatus::ticket_paid_statuses)) {
-            throw new Exception('Билет уже использован или возвращён');
-        }
-    }
+        if (($signature == $expectedSignature) && $ticket) {
 
-    /**
-     * @throws Exception
-     */
-    private function checkTripStatus(Ticket $ticket)
-    {
-        if (in_array($ticket->trip->status_id, [3, 4])) {
-            throw new Exception('Рейс по этому билету завершен');
+            if (!in_array($ticket->status_id, TicketStatus::ticket_paid_statuses)) {
+                return APIResponse::response(['tickets' => [$this->makeTicketResource($ticket)], 'notValidTicket' => 'Билет уже использован или возвращен']);
+            }
+            if (in_array($ticket->trip->status_id, [3, 4])) {
+                return APIResponse::response(['tickets' => [$this->makeTicketResource($ticket)], 'notValidTicket' => 'Рейс по этому билету завершен']);
+            }
+
+            $orderTickets = $ticket
+                ->order
+                ->tickets
+                ->whereIn('status_id', TicketStatus::ticket_paid_statuses)
+                ->transform(function (Ticket $ticket) {
+                    return $this->makeTicketResource($ticket);
+                });
+
+            return APIResponse::response(['tickets' => $orderTickets]);
+        } else {
+            return APIResponse::response(['notValidQrCode' => 'Билет не найден']);
         }
     }
 
     private function makeTicketResource(Ticket $ticket)
     {
-      return [
+        return [
             'order_id' => $ticket->order_id,
             'ticket_id' => $ticket->id,
             'ticket_status' => $ticket->status->name,
@@ -82,15 +71,9 @@ class TicketQrCodeCheckController extends Controller
 
     public function useTicket(Request $request)
     {
-        $ticket = Ticket::with(['order', 'order.tickets'])->find($request->ticketId);
-        $ticket->setStatus(TicketStatus::used);
-
-        $orderTicketsCount = $ticket->order->tickets->count();
-        $orderTicketsUsed = $ticket->order->tickets->filter(function (Ticket $ticket){
-           return $ticket->hasStatus(TicketStatus::used);
-        });
-        if ($orderTicketsCount == $orderTicketsUsed->count()){
-            $ticket->order->setStatus(OrderStatus::done);
+        $tickets = Ticket::whereIn('id', $request->ticketIds)->get();
+        foreach ($tickets as $ticket) {
+            $ticket->setStatus(TicketStatus::used);
         }
 
         return APIResponse::success('Билет отмечен как использованный');
