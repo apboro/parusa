@@ -27,11 +27,23 @@
                     :has-null="true"
                     :right="true"
                     :small="true"
-                    @change="list.load()"
+                    @change="emptyFilters(); list.load()"
                 />
             </LayoutFiltersItem>
             <LayoutFiltersItem :class="'w-25'" :title="'Экскурсия'">
-                <DictionaryDropDown
+                <InputDropDown v-if="list.payload.excursions_filter && list.payload.excursions_filter.length > 0"
+                               :options="list.payload.excursions_filter"
+                               v-model = "list.filters['excursion_id']"
+                               :original="list.filters_original['excursion_id']"
+                               :placeholder="'Все'"
+                               :identifier="'id'"
+                               :show="'name'"
+                               :search="true"
+                               :has-null="true"
+                               :small="true"
+                               @change="list.load()"
+                />
+                <DictionaryDropDown v-else
                         :dictionary="'excursions'"
                         :fresh="true"
                         v-model="list.filters['excursion_id']"
@@ -44,7 +56,19 @@
                 />
             </LayoutFiltersItem>
             <LayoutFiltersItem :class="'w-25'" :title="'Причалы и остановки'">
-                <DictionaryDropDown
+                <InputDropDown v-if="list.payload.piers_filter && list.payload.piers_filter.length > 0"
+                               :options="list.payload.piers_filter"
+                               v-model = "list.filters['start_pier_id']"
+                               :original="list.filters_original['start_pier_id']"
+                               :placeholder="'Все'"
+                               :identifier="'id'"
+                               :show="'name'"
+                               :search="true"
+                               :has-null="true"
+                               :small="true"
+                               @change="list.load()"
+                />
+                <DictionaryDropDown v-else
                         :dictionary="'piers'"
                         :fresh="true"
                         v-model="list.filters['start_pier_id']"
@@ -130,9 +154,11 @@
     import GuiButton from "@/Components/GUI/GuiButton";
     import TicketsSelect from "@/Pages/Terminal/Parts/TicketsSelect";
     import GuiContainer from "@/Components/GUI/GuiContainer";
+    import InputDropDown from "@/Components/Inputs/InputDropDown.vue";
 
     export default {
         components: {
+            InputDropDown,
             GuiContainer,
             TicketsSelect,
             GuiButton,
@@ -161,6 +187,10 @@
         },
 
         methods: {
+            emptyFilters() {
+                this.list.filters['start_pier_id'] = null;
+                this.list.filters['excursion_id'] = null;
+            },
             dateChanged(value) {
                 if (value !== null) {
                     this.list.load();

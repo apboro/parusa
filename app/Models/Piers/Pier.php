@@ -99,4 +99,5 @@ class Pier extends Model implements Statusable, AsDictionary
     {
         return $this->belongsTo(Provider::class);
     }
+
 }

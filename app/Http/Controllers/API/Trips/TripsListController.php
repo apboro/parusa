@@ -8,7 +8,9 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Excursions\Excursion;
 use App\Models\Hit\Hit;
+use App\Models\Piers\Pier;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
 use Carbon\Carbon;
@@ -57,10 +59,10 @@ class TripsListController extends ApiController
             ->with(['chains' => function (BelongsToMany $query) {
                 $query->withCount('trips');
             }])
-            ->withCount(['chains', 'tickets' => function(Builder $query) {
+            ->withCount(['chains', 'tickets' => function (Builder $query) {
                 $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
             }])
-            ->join('excursions','excursions.id','=', 'trips.excursion_id')
+            ->join('excursions', 'excursions.id', '=', 'trips.excursion_id')
             ->groupByRaw("case when `is_single_ticket`=1 THEN excursion_id else trips.id end")
             ->orderBy('is_single_ticket', 'desc')
             ->orderBy('trips.start_at');
@@ -103,7 +105,7 @@ class TripsListController extends ApiController
                 'start_date' => $trip->start_at->format('d.m.Y'),
                 'start_time' => $trip->start_at->format('H:i'),
                 'excursion' => $trip->excursion->name,
-                'excursion_type_id' =>$trip->excursion->type_id,
+                'excursion_type_id' => $trip->excursion->type_id,
                 'pier' => $trip->startPier->name,
                 'ship' => $trip->ship->name,
                 'tickets_count' => $trip->getAttribute('tickets_count'),
@@ -134,7 +136,24 @@ class TripsListController extends ApiController
             [
                 'date' => Carbon::parse($filters['date'])->setTimezone(config('app.timezone'))->format('d.m.Y'),
                 'day' => Carbon::parse($filters['date'])->setTimezone(config('app.timezone'))->dayOfWeek,
-            ]
-        )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
+                'excursions_filter' => Excursion::query()
+                    ->whereHas('trips', function ($trip) use ($filters) {
+                        $trip->whereDate('start_at', Carbon::parse($filters['date']));
+                    })
+                    ->where('type_id', $filters['excursion_type_id'])
+                    ->where('status_id', 1)
+                    ->get(['excursions.id', 'excursions.name']),
+                'piers_filter' => Pier::query()
+                    ->join('trips', function ($join) use ($filters){
+                        $join->on('trips.start_pier_id', '=', 'piers.id')
+                            ->whereDate('trips.start_at',Carbon::parse($filters['date']));
+                    })
+                    ->join('excursions', 'excursions.id', '=', 'trips.excursion_id')
+                    ->where('excursions.status_id', 1)
+                    ->where('excursions.type_id', $filters['excursion_type_id'])
+                    ->whereNotNull('excursions.type_id')
+                    ->groupBy('piers.id')
+                    ->get(['piers.id', 'piers.name'])
+            ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }
