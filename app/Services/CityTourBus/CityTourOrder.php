@@ -65,10 +65,21 @@ class CityTourOrder
 
     public function getAndSaveTickets()
     {
-        $tickets = $this->cityTourRepository->getOrderTickets($this->order);
-
-
-
+        $providerTickets = $this->cityTourRepository->getOrderTickets($this->order)['body'];
+        $orderTickets = $this->order->tickets()->with('additionalData')->get();
+        foreach ($orderTickets as $orderTicket) {
+            foreach ($providerTickets as $index => $providerTicket) {
+                if ($providerTicket['ticket_cat_id'] === $orderTicket->grade_id) {
+                    $orderTicket->additionalData()->create([
+                        'provider_id' => Provider::city_tour,
+                        'ticket_id' => $orderTicket->id,
+                        'provider_ticket_id' => $providerTicket['id'],
+                        'provider_qr_code' => $providerTicket['qr_code']
+                    ]);
+                    unset($providerTickets[$index]);
+                }
+            }
+        }
     }
 
     public function checkOrderHasCityTourTickets()
@@ -105,14 +116,6 @@ class CityTourOrder
             } else {
                 Log::channel('city_tour')->info('City Tour API delete order request success: ', [$result, $this->order->additionalData]);
             }
-        }
-    }
-
-
-    public function sendTickets()
-    {
-        if ($this->checkOrderHasCityTourTickets()) {
-            return $this->cityTourRepository->sendTickets($this->order);
         }
     }
 }

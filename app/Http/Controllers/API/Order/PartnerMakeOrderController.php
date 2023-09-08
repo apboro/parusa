@@ -104,7 +104,7 @@ class   PartnerMakeOrderController extends ApiEditController
                         $ticketStatus = TicketStatus::partner_reserve;
                         break;
                     case OrderStatus::partner_paid:
-                        $ticketStatus = TicketStatus::partner_paid;
+                        $ticketStatus = $ordering->trip->excursion->is_single_ticket ? TicketStatus::partner_paid_single : TicketStatus::partner_paid;
                         break;
                     default:
                         return APIResponse::error('Ошибка. Неверные данные заказа.');

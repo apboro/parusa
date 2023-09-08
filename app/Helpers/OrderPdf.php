@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use Illuminate\Support\Facades\View;
@@ -17,7 +18,9 @@ class OrderPdf
      */
     public static function a4(Order $order): ?string
     {
-        if ($order->tickets[0]->trip->excursion->is_single_ticket) {
+        if ($order->additionalData?->provider_id == Provider::city_tour) {
+            $view = config('tickets.order_template_city_tour');
+        } elseif ($order->tickets[0]->trip->excursion->is_single_ticket && $order->additionalData?->provider_id === null) {
             $view = config('tickets.order_template_single');
         } else {
             $view = config('tickets.order_template');
@@ -36,7 +39,9 @@ class OrderPdf
     public static function print(Order $order): ?string
     {
         $size = [0, 0, 226, 340];
-        if ($order->tickets[0]->trip->excursion->is_single_ticket) {
+        if ($order->additionalData?->provider_id == Provider::city_tour) {
+            $view = config('tickets.order_print_city_tour');
+        } elseif ($order->tickets[0]->trip->excursion->is_single_ticket  && $order->additionalData?->provider_id === null) {
             $view = config('tickets.order_print_single');
         } else {
             $view = config('tickets.order_print');
