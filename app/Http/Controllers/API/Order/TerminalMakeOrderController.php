@@ -161,7 +161,10 @@ class TerminalMakeOrderController extends ApiEditController
                 NewCityTourOrderEvent::dispatch($order);
 
                 // send order to POS
-                LifePosSales::send($order, $terminal, $current->position());
+                if (app()->environment('production')) {
+                    LifePosSales::send($order, $terminal, $current->position());
+                }
+
                 $order->setStatus(OrderStatus::terminal_wait_for_pay);
             });
         } catch (Exception $exception) {
