@@ -15,6 +15,5 @@ class CityTourOrderPaidListener
     {
         $cityTourOrder = new CityTourOrder($event->order);
         $cityTourOrder->approve();
-        $cityTourOrder->sendTickets();
     }
 }

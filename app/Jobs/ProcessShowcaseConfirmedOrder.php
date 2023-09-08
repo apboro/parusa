@@ -88,8 +88,7 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
 
         // send tickets
         try {
-            if ($order->tickets[0]->trip->excursion->provider_id != Provider::city_tour)
-                Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+            Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
         } catch (Exception $exception) {
             Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
         }
