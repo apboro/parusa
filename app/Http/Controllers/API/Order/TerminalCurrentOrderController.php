@@ -173,6 +173,8 @@ class TerminalCurrentOrderController extends ApiController
                 $order->setStatus(OrderStatus::terminal_paid);
             });
 
+            NevaTravelOrderPaidEvent::dispatch($order);
+
             $order->payCommissions();
 
         } catch (Exception $exception) {

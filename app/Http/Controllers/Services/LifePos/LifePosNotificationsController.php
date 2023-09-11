@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Services\LifePos;
 
 use App\Events\NevaTravelCancelOrderEvent;
+use App\Events\NevaTravelOrderPaidEvent;
 use App\Helpers\Fiscal;
 use App\Http\Controllers\ApiController;
 use App\LifePos\LifePosSales;
@@ -14,7 +15,6 @@ use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\StaffPositionInfo;
 use App\Models\Tickets\Ticket;
-use App\Services\NevaTravel\NevaOrder;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -136,8 +136,9 @@ class LifePosNotificationsController extends ApiController
                     $order->tickets->map(function (Ticket $ticket) {
                         $ticket->setStatus(TicketStatus::terminal_finishing);
                     });
+                    Log::channel('neva')->debug('terminal_finishing');
+                    NevaTravelOrderPaidEvent::dispatch($order);
 
-                    (new NevaOrder($order))->approve();
 
                 } else if ($order && $order->terminal_id !== null && !$order->hasStatus(OrderStatus::terminal_finishing)) {
 
@@ -146,6 +147,9 @@ class LifePosNotificationsController extends ApiController
                         $ticket->setStatus(TicketStatus::terminal_paid);
                     });
                     $order->setStatus(OrderStatus::terminal_paid);
+
+                    Log::channel('neva')->debug('terminal_paid');
+                    NevaTravelOrderPaidEvent::dispatch($order);
 
                 } else {
                     Log::channel('lifepos_payments')->error(sprintf('LifePos [SalePayment:%s] - order not found', $input['guid']));
