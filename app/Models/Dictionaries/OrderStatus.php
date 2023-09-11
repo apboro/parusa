@@ -48,6 +48,8 @@ class OrderStatus extends AbstractDictionary
     public const showcase_partial_returned = 82;
     public const showcase_canceled = 90;
 
+    public const done = 100;
+
     public const order_returnable_statuses = [
         self::partner_paid,
         self::partner_partial_returned,

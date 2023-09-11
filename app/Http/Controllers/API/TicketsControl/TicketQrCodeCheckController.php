@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Controllers\API\TicketsControl;
+
+use App\Http\APIResponse;
+use App\Http\Controllers\Controller;
+use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\TicketStatus;
+use App\Models\Tickets\Ticket;
+use Exception;
+use Illuminate\Http\Request;
+use Str;
+use function Symfony\Component\String\s;
+
+class TicketQrCodeCheckController extends Controller
+{
+    public function getScanData(Request $request)
+    {
+        $data = $request->all();
+        if (!Str::contains($data[0]['rawValue'], '1|t|')) {
+            return APIResponse::response(['notValidQrCode' => 'Вы отсканировали неверный QR-код']);
+        }
+        $ticketData = explode('|', $data[0]['rawValue']);
+        $ticketNumber = $ticketData[2];
+        $signature = str_replace('"', '', $ticketData[3]);
+        $expectedSignature = md5(config('app.key') . '|1|t|' . $ticketNumber);
+        $ticket = Ticket::with(['order', 'trip', 'trip.excursion', 'trip.startPier'])->find($ticketNumber);
+
+        if (($signature == $expectedSignature) && $ticket) {
+
+            if (!in_array($ticket->status_id, TicketStatus::ticket_paid_statuses)) {
+                return APIResponse::response(['tickets' => [$this->makeTicketResource($ticket)], 'notValidTicket' => 'Билет уже использован или возвращен']);
+            }
+            if (in_array($ticket->trip->status_id, [3, 4])) {
+                return APIResponse::response(['tickets' => [$this->makeTicketResource($ticket)], 'notValidTicket' => 'Рейс по этому билету завершен']);
+            }
+
+            $orderTickets = $ticket
+                ->order
+                ->tickets
+                ->whereIn('status_id', TicketStatus::ticket_paid_statuses)
+                ->transform(function (Ticket $ticket) {
+                    return $this->makeTicketResource($ticket);
+                });
+
+            return APIResponse::response(['tickets' => $orderTickets]);
+        } else {
+            return APIResponse::response(['notValidQrCode' => 'Билет не найден']);
+        }
+    }
+
+    private function makeTicketResource(Ticket $ticket)
+    {
+        return [
+            'order_id' => $ticket->order_id,
+            'ticket_id' => $ticket->id,
+            'ticket_status' => $ticket->status->name,
+            'trip_id' => $ticket->trip_id,
+            'excursion_name' => $ticket->trip->excursion->name,
+            'trip_start_time' => $ticket->trip->start_at->format('d.m.Y H:i'),
+            'customer_fio' => $ticket->order->name,
+            'customer_email' => $ticket->order->email,
+            'customer_phone' => $ticket->order->phone,
+            'type' => $ticket->grade->name,
+            'ticket_created_at' => $ticket->created_at->format('d.m.Y H:i'),
+            'pier' => $ticket->trip->startPier->name,
+            'order_type' => $ticket->order->type->name,
+            'promocode' => $ticket->order->promocode->first()?->name,
+        ];
+    }
+
+    public function useTicket(Request $request)
+    {
+        $tickets = Ticket::whereIn('id', $request->ticketIds)->get();
+        foreach ($tickets as $ticket) {
+            $ticket->setStatus(TicketStatus::used);
+        }
+
+        return APIResponse::success('Билет отмечен как использованный');
+    }
+}

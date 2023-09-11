@@ -3,6 +3,7 @@
 namespace App\Services\NevaTravel;
 
 
+use App\Models\Dictionaries\Provider;
 use App\Models\Excursions\Excursion;
 use App\Models\Piers\Pier;
 use App\Models\Sails\Trip;
@@ -61,7 +62,7 @@ class ImportTrips
                         $seatsAvailable = $nevaTrip['default_arrival']['prices_table'][0]['available_seats'];
 
                         $trip = Trip::query()
-                            ->whereHas('additionalData', function(Builder $query) use ($nevaTrip){
+                            ->whereHas('additionalData', function (Builder $query) use ($nevaTrip) {
                                 $query->where('provider_trip_id', $nevaTrip['id']);
                             })->firstOrNew();
 
@@ -78,10 +79,17 @@ class ImportTrips
                         $trip->provider_id = 10;
                         $trip->save();
 
-                        $trip->additionalData?->updateOrCreate(
-                            ['provider_trip_id' => $nevaTrip['id']],
-                            ['provider_price_id' => $nevaTrip['default_arrival']['prices_table'][0]['program_price_id']]
-                        );
+                        if (!$trip->additionalData) {
+                            $trip->additionalData()->create([
+                                'provider_id' => Provider::neva_travel,
+                                'provider_trip_id' => $nevaTrip['id'],
+                                'provider_price_id' => $nevaTrip['default_arrival']['prices_table'][0]['program_price_id']
+                            ]);
+                        } else {
+                            $trip->additionalData()->update([
+                                'provider_price_id' => $nevaTrip['default_arrival']['prices_table'][0]['program_price_id']
+                            ]);
+                        }
                     }
                 }
             }

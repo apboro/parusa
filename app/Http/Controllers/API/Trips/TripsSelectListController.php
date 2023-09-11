@@ -12,7 +12,9 @@ use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
+use App\Models\Excursions\Excursion;
 use App\Models\Hit\Hit;
+use App\Models\Piers\Pier;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
 use App\Models\User\Helpers\Currents;
@@ -175,7 +177,26 @@ class TripsSelectListController extends ApiController
             ],
             $filters,
             $this->defaultFilters,
-            []
+            [
+                'excursions_filter' => Excursion::query()
+                    ->whereHas('trips', function ($trip) use ($filters) {
+                        $trip->whereDate('start_at', Carbon::parse($filters['date']));
+                    })
+                    ->where('type_id', $filters['excursion_type_id'])
+                    ->where('status_id', 1)
+                    ->get(['excursions.id', 'excursions.name']),
+                'piers_filter' => Pier::query()
+                    ->join('trips', function ($join) use ($filters){
+                        $join->on('trips.start_pier_id', '=', 'piers.id')
+                            ->whereDate('trips.start_at',Carbon::parse($filters['date']));
+                    })
+                    ->join('excursions', 'excursions.id', '=', 'trips.excursion_id')
+                    ->where('excursions.status_id', 1)
+                    ->where('excursions.type_id', $filters['excursion_type_id'])
+                    ->whereNotNull('excursions.type_id')
+                    ->groupBy('piers.id')
+                    ->get(['piers.id', 'piers.name'])
+            ]
         )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 }

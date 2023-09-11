@@ -47,6 +47,7 @@ use JsonException;
  * @property TicketReturn $return
  * @property BackwardTicket $backward
  * @property Boolean $IsBackward
+ * @property AdditionalDataTicket $additionalData
  */
 class Ticket extends Model implements Statusable
 {
@@ -307,9 +308,24 @@ class Ticket extends Model implements Statusable
             ->size(200)
             ->margin(0)
             ->roundBlockSizeMode(new RoundBlockSizeModeNone())
-            ->data($this->order->additionalData?->provider_order_id ?? json_encode($payload, JSON_THROW_ON_ERROR))
+            ->data(json_encode($payload, JSON_THROW_ON_ERROR))
             ->build()
             ->getDataUri();
+    }
+
+    public function provider_qr()
+    {
+
+        return Builder::create()
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(new ErrorCorrectionLevelLow())
+            ->size(200)
+            ->margin(0)
+            ->roundBlockSizeMode(new RoundBlockSizeModeNone())
+            ->data($this->additionalData->provider_qr_code)
+            ->build()
+            ->getDataUri();
+
     }
 
     public function isBackward(): bool

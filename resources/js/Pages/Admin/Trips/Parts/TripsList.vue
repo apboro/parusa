@@ -17,6 +17,73 @@
                     <IconForward/>
                 </GuiIconButton>
             </LayoutFiltersItem>
+
+            <LayoutFiltersItem :class="'w-25'" :title="'Тип'">
+                <DictionaryDropDown
+                    :dictionary="'excursion_types'"
+                    :fresh="true"
+                    v-model="list.filters['excursion_type_id']"
+                    :original="list.filters_original['excursion_type_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :right="true"
+                    :small="true"
+                    @change="emptyFilters(); list.load()"
+                />
+            </LayoutFiltersItem>
+
+            <LayoutFiltersItem :class="'w-25'" :title="'Экскурсия'" v-if="excursionId === null">
+                <InputDropDown v-if="list.payload.excursions_filter && list.payload.excursions_filter.length > 0"
+                               :options="list.payload.excursions_filter"
+                               v-model = "list.filters['excursion_id']"
+                               :original="list.filters_original['excursion_id']"
+                               :placeholder="'Все'"
+                               :identifier="'id'"
+                               :show="'name'"
+                               :search="true"
+                               :has-null="true"
+                               :small="true"
+                               @change="list.load()"
+                />
+                <DictionaryDropDown v-else
+                    :dictionary="'excursions'"
+                    :fresh="true"
+                    v-model="list.filters['excursion_id']"
+                    :original="list.filters_original['excursion_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :search="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :class="'w-25'" :title="'Причалы и остановки'" v-if="pierId === null">
+                <InputDropDown v-if="list.payload.piers_filter && list.payload.piers_filter.length > 0"
+                               :options="list.payload.piers_filter"
+                               v-model = "list.filters['start_pier_id']"
+                               :original="list.filters_original['start_pier_id']"
+                               :placeholder="'Все'"
+                               :identifier="'id'"
+                               :show="'name'"
+                               :search="true"
+                               :has-null="true"
+                               :small="true"
+                               @change="list.load()"
+                />
+                <DictionaryDropDown v-else
+                                    :dictionary="'piers'"
+                                    :fresh="true"
+                                    v-model="list.filters['start_pier_id']"
+                                    :original="list.filters_original['start_pier_id']"
+                                    :placeholder="'Все'"
+                                    :has-null="true"
+                                    :search="true"
+                                    :right="true"
+                                    :small="true"
+                                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
+
             <LayoutFiltersItem :class="'w-25'" :title="'Статус движения'">
                 <DictionaryDropDown
                     :dictionary="'trip_statuses'"
@@ -29,47 +96,6 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
-            <LayoutFiltersItem :class="'w-25'" :title="'Экскурсия'" v-if="excursionId === null">
-                <DictionaryDropDown
-                    :dictionary="'excursions'"
-                    :fresh="true"
-                    v-model="list.filters['excursion_id']"
-                    :original="list.filters_original['excursion_id']"
-                    :placeholder="'Все'"
-                    :has-null="true"
-                    :search="true"
-                    :small="true"
-                    @change="list.load()"
-                />
-            </LayoutFiltersItem>
-            <LayoutFiltersItem :class="'w-25'" :title="'Причал отправления'" v-if="pierId === null">
-                <DictionaryDropDown
-                    :dictionary="'piers'"
-                    :fresh="true"
-                    v-model="list.filters['start_pier_id']"
-                    :original="list.filters_original['start_pier_id']"
-                    :placeholder="'Все'"
-                    :has-null="true"
-                    :search="true"
-                    :right="true"
-                    :small="true"
-                    @change="list.load()"
-                />
-            </LayoutFiltersItem>
-
-        <LayoutFiltersItem :class="'w-25'" :title="'Тип'">
-            <DictionaryDropDown
-                :dictionary="'excursion_types'"
-                :fresh="true"
-                v-model="list.filters['excursion_type_id']"
-                :original="list.filters_original['excursion_type_id']"
-                :placeholder="'Все'"
-                :has-null="true"
-                :right="true"
-                :small="true"
-                @change="list.load()"
-            />
-        </LayoutFiltersItem>
         </LayoutFilters>
 
 
@@ -78,14 +104,18 @@
                 <ListTableResponsiveCell :mobile-title="list.titles[0]">
                     <div v-if="!trip.is_single_ticket">
                         <b>
-                            <router-link :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
+                            <router-link :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'"
+                                         :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}
+                            </router-link>
                         </b>
                     </div>
                     <div v-if="!trip.is_single_ticket">{{ trip['start_date'] }}</div>
                     <div v-if="trip.is_single_ticket">ЕДИНЫЙ БИЛЕТ</div>
                 </ListTableResponsiveCell>
                 <ListTableResponsiveCell :mobile-title="list.titles[1]">
-                    <router-link :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}</router-link>
+                    <router-link :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'"
+                                 :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}
+                    </router-link>
                 </ListTableResponsiveCell>
                 <ListTableResponsiveCell :mobile-title="list.titles[2]">
                     {{ trip['excursion'] }}
@@ -102,7 +132,8 @@
                         <span :class="{'link': accepted}" @click="statusChange(trip)">{{ trip['status'] }}</span>
                     </div>
                     <div>
-                        <span :class="{'link': accepted}" v-if="trip['has_rate']" @click="saleStatusChange(trip)">{{ trip['sale_status'] }}</span>
+                        <span :class="{'link': accepted}" v-if="trip['has_rate']"
+                              @click="saleStatusChange(trip)">{{ trip['sale_status'] }}</span>
                         <span class="text-red" v-else><IconExclamation :class="'h-1em inline'"/> Тариф не задан</span>
                     </div>
                 </ListTableResponsiveCell>
@@ -111,8 +142,11 @@
                         <IconLink/>
                     </GuiIconButton>
                     <GuiActionsMenu v-if="accepted" :title="null">
-                        <router-link :to="{name: 'trip-edit', params: {id: trip['id']}}" class="link">Редактировать</router-link>
-                        <router-link :to="{name: 'trip-edit', params: {id: 0}, query: {from: trip['id']}}" class="link">Копировать рейс</router-link>
+                        <router-link :to="{name: 'trip-edit', params: {id: trip['id']}}" class="link">Редактировать
+                        </router-link>
+                        <router-link :to="{name: 'trip-edit', params: {id: 0}, query: {from: trip['id']}}" class="link">
+                            Копировать рейс
+                        </router-link>
                         <span class="link" @click="remove(trip)">Удалить</span>
                     </GuiActionsMenu>
                 </ListTableResponsiveCell>
@@ -129,7 +163,8 @@
                    ref="popup"
         >
             <GuiContainer w-350px>
-                <FormDictionary v-if="dictionary !== null" :form="form" :name="'value'" :dictionary="dictionary" :fresh="true" :hide-title="true"/>
+                <FormDictionary v-if="dictionary !== null" :form="form" :name="'value'" :dictionary="dictionary"
+                                :fresh="true" :hide-title="true"/>
             </GuiContainer>
         </FormPopUp>
 
@@ -174,7 +209,7 @@ export default {
     emits: ['setTitle', 'setStartPier'],
 
     components: {
-      InputDropDown,
+        InputDropDown,
         FormDictionary,
         GuiContainer,
         FormPopUp,
@@ -207,10 +242,10 @@ export default {
             this.$emit('setTitle', this.title);
             this.$emit('setStartPier', this.list.filters['start_pier_id']);
         }
-        if(this.pierId !== 0) {
+        if (this.pierId !== 0) {
             this.list.options['start_pier_id'] = this.pierId;
         }
-        if(this.excursionId !== 0) {
+        if (this.excursionId !== 0) {
             this.list.options['excursion_id'] = this.excursionId;
         }
         this.list.initial();
@@ -228,6 +263,10 @@ export default {
     },
 
     methods: {
+        emptyFilters() {
+            this.list.filters['start_pier_id'] = null;
+            this.list.filters['excursion_id'] = null;
+        },
         dateChanged(value) {
             if (value !== null) {
                 this.list.load();
@@ -248,7 +287,10 @@ export default {
         },
         remove(trip) {
             if (!trip['chained']) {
-                this.deleteEntry('Удалить рейс №' + trip['id'] + '?', '/api/trips/delete', {id: trip['id'], mode: 'single'})
+                this.deleteEntry('Удалить рейс №' + trip['id'] + '?', '/api/trips/delete', {
+                    id: trip['id'],
+                    mode: 'single'
+                })
                     .then(() => {
                         this.list.reload();
                     });
@@ -282,11 +324,11 @@ export default {
                 })
         },
         statusChange(trip) {
-            if(!this.accepted) return;
+            if (!this.accepted) return;
             this.showForm(trip, 'Статус движения', 'status_id', 'required', 'trip_statuses');
         },
         saleStatusChange(trip) {
-            if(!this.accepted) return;
+            if (!this.accepted) return;
             this.showForm(trip, 'Статус продаж', 'sale_status_id', 'required', 'trip_sale_statuses');
         },
     },
@@ -294,7 +336,6 @@ export default {
 </script>
 
 <style lang="scss">
-
 
 
 </style>

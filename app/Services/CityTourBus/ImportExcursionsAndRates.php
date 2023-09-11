@@ -75,7 +75,7 @@ class ImportExcursionsAndRates
         $pier = Pier::firstOrCreate([
             'external_id' => 54,
             'name' => 'Остановка автобусов City Tour',
-            'source' => 'CityTour',
+            'provider_id' => Provider::city_tour,
             ]);
         $info = $pier->info;
         $info->address = 'Санкт-Петербург, Площадь Островского, дом 1/3';

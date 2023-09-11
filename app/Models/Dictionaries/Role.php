@@ -25,6 +25,9 @@ class Role extends AbstractDictionary
     /** @var int Бухгалтер */
     public const accountant = 5;
 
+    /** @var int Контролёр */
+    public const controller = 10;
+
     /** @var string Referenced table name. */
     protected $table = 'dictionary_roles';
 
@@ -42,18 +45,14 @@ class Role extends AbstractDictionary
 
     public function toConst(): string
     {
-        switch ($this->id) {
-            case self::admin:
-                return 'admin';
-            case self::terminal:
-                return 'terminal';
-            case self::office_manager:
-                return 'office_manager';
-            case self::piers_manager:
-                return 'piers_manager';
-            case self::accountant:
-                return 'accountant';
-        }
-        return 'unknown';
+        return match ($this->id) {
+            self::admin => 'admin',
+            self::terminal => 'terminal',
+            self::office_manager => 'office_manager',
+            self::piers_manager => 'piers_manager',
+            self::accountant => 'accountant',
+            self::controller => 'controller',
+            default => 'unknown',
+        };
     }
 }

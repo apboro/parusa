@@ -98,7 +98,7 @@ class Currents
         // assign role only for side parts, e.g. terminal page
         $role = $position->roles()
             ->where(['id' => $roleId])
-            ->whereIn('id', [Role::terminal])
+            ->whereIn('id', [Role::terminal, Role::controller])
             ->first();
         if ($role === null) {
             return;
@@ -250,6 +250,10 @@ class Currents
     public function isStaffAccountant(): bool
     {
         return $this->isStaffNotInTerminalMode() && $this->hasRole(Role::accountant);
+    }
+    public function isStaffController(): bool
+    {
+        return $this->isStaffNotInTerminalMode() && $this->hasRole(Role::controller);
     }
 
     /**

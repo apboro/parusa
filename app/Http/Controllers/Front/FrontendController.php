@@ -69,6 +69,10 @@ class FrontendController extends Controller
         if ($current->isStaff() && $current->terminal() !== null && $current->role() !== null && $current->role()->matches(Role::terminal)) {
             return $this->terminalPage($current, $loginVariantsCount > 1);
         }
+        // controller user role selected
+        if ($current->isStaff() &&  $current->role() !== null && $current->role()->matches(Role::controller)) {
+            return $this->controllerPage($current, $loginVariantsCount > 1);
+        }
 
         // admin side
         if ($current->isStaff() && $current->hasRole($this->adminSideRoles)) {
@@ -104,6 +108,7 @@ class FrontendController extends Controller
             if ($position->hasStatus(PositionStatus::active)) {
                 $adminSideRoles = [];
                 $terminalSideRoles = [];
+                $controllerRole = [];
                 foreach ($position->roles as $role) {
                     /** @var Role $role */
                     if (in_array($role->id, $this->adminSideRoles, true)) {
@@ -112,11 +117,18 @@ class FrontendController extends Controller
                     if ($role->matches(Role::terminal)) {
                         $terminalSideRoles[] = $role;
                     }
+                    if ($role->matches(Role::controller)){
+                        $controllerRole[] = $role;
+                    }
                 }
 
                 if (!empty($adminSideRoles)) {
                     // Staff with admin role
                     $variants[] = $this->variantRecord($position, $adminSideRoles, null);
+                }
+                if (!empty($controllerRole)) {
+                    // Staff with admin role
+                    $variants[] = $this->variantRecord($position, $controllerRole, null);
                 }
                 if (!empty($terminalSideRoles)) {
                     // Staff with terminal role
@@ -158,6 +170,10 @@ class FrontendController extends Controller
             }
         } else {
             $title = $position->partner->name;
+        }
+
+        if (isset($roles[0]) && $roles[0]->id == Role::controller ){
+            $role = $roles[0];
         }
 
         if(isset($role)) {
@@ -276,6 +292,31 @@ class FrontendController extends Controller
             ->withCookie($current->positionToCookie())
             ->withCookie($current->roleToCookie())
             ->withCookie($current->terminalToCookie());
+    }
+
+    /**
+     * Render controller page.
+     *
+     * @param Currents $current
+     * @param bool $canChangePosition
+     * @return Response
+     * @throws JsonException
+     */
+    protected function controllerPage(Currents $current, bool $canChangePosition): Response
+    {
+        return response()->view('controller', [
+            'user' => json_encode([
+                'name' => $this->e($current->user()->profile->compactName),
+                'position' => $this->e($current->position()->title),
+                'positions' => $canChangePosition,
+                'organization' => "Контроль билетов"
+            ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
+            'roles' => json_encode($current->position()->roles->map(function (Role $role) {
+                return $role->toConst();
+            }), JSON_THROW_ON_ERROR),
+        ])
+            ->withCookie($current->positionToCookie())
+            ->withCookie($current->roleToCookie());
     }
 
     /**
