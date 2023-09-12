@@ -116,7 +116,7 @@ use App\Models\Common\Image;
                                         </tr>
                                         <tr>
                                         <td colspan="2" style="font-family: 'Proxima Nova',serif; color: #6b7280; vertical-align: top; padding-right: 3pt;">
-                                            <em>*Билет действителен в течении 6 месяцев с даты покупки</em>
+                                            <em>*Билет действителен в течении 6 месяцев с даты покупки.</em>
                                         </td>
                                         </tr>
                                     </table>
