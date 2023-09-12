@@ -20,6 +20,7 @@
                 <th>Цена обратного билета, руб.</th>
                 <th v-if="overridable" colspan="2">Специальные условия</th>
                 <th v-if="withSitePrice" style="color: #4a0d8d">Цена для сайта, руб.</th>
+                <th style="color: #4a0d8d">Цена для партнера, руб.</th>
             </tr>
             </thead>
             <tbody>
@@ -59,6 +60,7 @@
                 </template>
 
                 <td v-if="withSitePrice" style="color: #4a0d8d">{{ item['site_price'] ? item['site_price'] + ' руб.' : '—' }}</td>
+                <td style="color: #4a0d8d">{{ item['partner_price'] ? item['partner_price'] + ' руб.' : '—' }}</td>
             </tr>
             </tbody>
         </table>

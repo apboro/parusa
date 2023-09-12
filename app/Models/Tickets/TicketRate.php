@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection $partnerRates
  * @property string $backward_price_type
  * @property int $backward_price_value
+ * @property int $partner_price
  */
 class TicketRate extends Model
 {
@@ -40,6 +41,7 @@ class TicketRate extends Model
         'min_price',
         'max_price',
         'site_price',
+        'partner_price',
         'commission_type',
         'commission_value',
         'backward_price_type',

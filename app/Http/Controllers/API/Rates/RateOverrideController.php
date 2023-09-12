@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Rates;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Excursions\Excursion;
 use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
@@ -101,6 +102,7 @@ class RateOverrideController extends ApiEditController
                         // set parameters
                         $partnerRate->commission_type = $rate['partner_commission_type'];
                         $partnerRate->commission_value = $rate['partner_commission_value'] ?? 0;
+                        $partnerRate->mass_assignment = 0;
 
                         // and check if them are changed
                         if ($partnerRate->isDirty()) {
@@ -164,6 +166,163 @@ class RateOverrideController extends ApiEditController
                 ],
             ]
         );
+    }
+
+
+    public function overrideMass(Request $request): JsonResponse
+    {
+        Hit::register(HitSource::admin);
+
+        if (null === ($excursionId = $request->input('excursion_id')) || null === (Excursion::query()->where('id', $excursionId)->first())) {
+            return APIResponse::notFound('Экскурсия не найдена');
+        }
+
+        if (null === ($rateId = $request->input('rate_id')) || null === ($ratesList = TicketsRatesList::query()->where('id', $rateId)->first())) {
+            return APIResponse::notFound('Тариф не найден');
+        }
+
+        /** @var TicketsRatesList $ratesList */
+        /** @var Partner $partner */
+
+        $flat = $request->input('data');
+        $data = Arr::undot($flat);
+
+        // make dynamic validation rules and check
+        $count = count($data['rates'] ?? []);
+        $rules = [];
+        $titles = [];
+
+        for ($i = 0; $i < $count; $i++) {
+            $rules["rates.$i.partner_commission_type"] = 'nullable';
+            $rules["rates.$i.partner_commission_value"] = 'nullable|integer|min:0|bail';
+            $titles["rates.$i.partner_commission_type"] = 'Тип';
+            $titles["rates.$i.partner_commission_value"] = 'Комиссия';
+        }
+
+        if ($errors = $this->validate($data, $rules, $titles)) {
+            return APIResponse::validationError($errors);
+        }
+
+        $ratesList->loadMissing('rates');
+
+        $created = [];
+        $changed = [];
+        $unchanged = [];
+        $missing = [];
+        $deleted = [];
+
+        $rates = $ratesList->rates->keyBy('grade_id');
+        $gradeKeys = $rates->pluck('grade_id')->toArray();
+
+        // iterate received rates
+        foreach ($data['rates'] as $rate) {
+
+            // if received rate grade exists in ticket rate
+            if (in_array($rate['grade_id'], $gradeKeys, true)) {
+
+                $createdPartnerRate = [];
+                $changedPartnerRate = [];
+                $unchangedPartnerRate = [];
+
+                /** @var TicketRate $ticketRate */
+                $ticketRate = $rates->where('grade_id', $rate['grade_id'])->first();
+
+                // if override for partner (if unset, will be deleted later)
+                if ($rate['partner_commission_type'] !== null) {
+
+                    // get already overridden parameter
+                    /** @var TicketPartnerRate $partnerRate */
+
+                    $partners = Partner::where('status_id', PartnerStatus::active)->get();
+
+                    foreach ($partners as $partner) {
+
+                        $partnerRate = $ticketRate->partnerRates()->where('partner_id', $partner->id)->first();
+
+                        // if it exists
+                        if ($partnerRate !== null) {
+                            // set parameters
+                            if ($partnerRate->mass_assignment) {
+                                $partnerRate->commission_type = $rate['partner_commission_type'];
+                                $partnerRate->commission_value = $rate['partner_commission_value'] ?? 0;
+                            }
+
+                            // and check if them are changed
+                            if ($partnerRate->isDirty()) {
+                                $partnerRate->save();
+                                $changedPartnerRate[] = $partnerRate->id;
+                            } else {
+                                $unchangedPartnerRate[] = $partnerRate->id;
+                            }
+                        } else {
+                            // if it not exists - create
+                            /** @var TicketPartnerRate $partnerRate */
+                            $partnerRate = $ticketRate->partnerRates()->create(['partner_id' => $partner->id]);
+                            $partnerRate->commission_type = $rate['partner_commission_type'];
+                            $partnerRate->commission_value = $rate['partner_commission_value'] ?? 0;
+                            $partnerRate->mass_assignment = 1;
+                            $partnerRate->save();
+                            $createdPartnerRate[] = $partnerRate->id;
+                        }
+
+
+                        // next get touched records and delete others
+                        $touched = array_merge($createdPartnerRate, $changedPartnerRate, $unchangedPartnerRate);
+                        $ticketRate->partnerRates()->where('partner_id', $partner->id)->first();
+
+                        $deletedPartnerRate = $ticketRate->partnerRates()
+                            ->where('partner_id', $partner->id)
+                            ->whereNotIn('id', $touched)
+                            ->pluck('id')->toArray();
+                        $ticketRate->partnerRates()->whereIn('id', $deletedPartnerRate)->delete();
+                    }
+                    $created[] = $createdPartnerRate;
+                    $changed[] = $changedPartnerRate;
+                    $unchanged[] = $unchangedPartnerRate;
+                    $deleted[] = $deletedPartnerRate ?? null;
+                }
+            } else {
+                // received rate grade not exists in ticket rate
+                $missing[] = $rate;
+            }
+        }
+
+        // reload rate list
+        /** @var TicketsRatesList $ratesList */
+        $ratesList = TicketsRatesList::query()
+            ->where('id', $rateId)
+            ->with('rates')
+            ->first();
+
+        return APIResponse::success('Специальные условия обновлены',
+            [
+                'rate' => $this->rateToArray($ratesList),
+                'excursion_id' => $excursionId,
+                'debug' => [
+                    'created' => $created,
+                    'changed' => $changed,
+                    'unchanged' => $unchanged,
+                    'deleted' => $deleted,
+                    'missing' => $missing,
+                ],
+            ]
+        );
+    }
+
+    public function loadOverrideForm(Request $request)
+    {
+
+        $rate = TicketsRatesList::find($request->input('rateId'));
+        $ticketRates = TicketRate::where('rate_id', $rate->id)->pluck('id')->toArray();
+
+        $partnerRates = TicketPartnerRate::whereIn('rate_id', $ticketRates)
+            ->where('mass_assignment', 1)
+            ->groupBy('rate_id')
+            ->get(['rate_id', 'commission_type', 'commission_value']);
+
+        return APIResponse::form([
+            'filled' => $partnerRates
+        ], [], []);
     }
 
 //    /**

@@ -14,6 +14,7 @@
             <GuiActionsMenu :title="null" v-if="editable">
                 <span class="link" @click="edit(currentRate)">Редактировать</span>
                 <span class="link" @click="createFrom(currentRate)">Копировать тариф</span>
+                <span class="link" @click="override(currentRate)">Установить спец. условия</span>
                 <span class="link" @click="remove(currentRate)">Удалить</span>
             </GuiActionsMenu>
         </TicketRate>
@@ -51,6 +52,9 @@
                            :excursionId="excursionId"
                            :providerId="providerId"
                            ref="rate_form"/>
+
+        <PartnerTicketRateOverrideMass @update="update" ref="override"/>
+
     </LoadingProgress>
 </template>
 
@@ -66,9 +70,11 @@ import TicketRate from "@/Pages/Parts/Rates/TicketRate";
 import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import GuiExpand from "@/Components/GUI/GuiExpand";
 import ExcursionRateForm from "@/Pages/Admin/Excursions/Parts/ExcursionRateForm";
+import PartnerTicketRateOverrideMass from "@/Pages/Admin/Partners/Parts/PartnerTicketRateOverrideMass.vue";
 
 export default {
     components: {
+        PartnerTicketRateOverrideMass,
         ExcursionRateForm,
         GuiExpand,
         GuiActionsMenu,
@@ -151,6 +157,9 @@ export default {
             if (!is_replaced) {
                 this.data.data.push(payload);
             }
+        },
+        override(rate) {
+            this.$refs.override.show(rate);
         },
         remove(rate) {
             let message;

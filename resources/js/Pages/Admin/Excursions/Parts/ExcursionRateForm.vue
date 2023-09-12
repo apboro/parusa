@@ -18,9 +18,10 @@
                 <th class="w-15"></th>
                 <th class="w-5 p-10">Базовая стоимость (БС) билетов, руб.</th>
                 <th class="w-20 p-10" colspan="2">Минимальный и максимальный диапазон стоимости билетов, руб.</th>
-                <th class="w-25 p-10" colspan="3">Комиссионное вознаграждение партнёров за продажу билетов, руб.</th>
-                <th class="w-25 p-10" colspan="3">Цена обратного билета, руб.</th>
+                <th class="w-20 p-10" colspan="3">Комиссионное вознаграждение партнёров за продажу билетов, руб.</th>
+                <th class="w-20 p-10" colspan="3">Цена обратного билета, руб.</th>
                 <th class="w-10 p-10">Цена для сайта, руб.</th>
+                <th class="w-10 p-10">Цена для партнера, руб.</th>
             </tr>
             </thead>
             <tbody>
@@ -86,6 +87,9 @@
                 <td>
                     <FormNumber :form="form" :name="'rates.' + key + '.site_price'" :hide-title="true" :small="true"/>
                 </td>
+                <td>
+                    <FormNumber :form="form" :name="'rates.' + key + '.partner_price'" :hide-title="true" :small="true"/>
+                </td>
             </tr>
             </tbody>
         </table>
@@ -149,6 +153,7 @@ export default {
                     this.form.set('rates.' + index + '.grade_name', item['name'], null, '', true);
                     this.form.set('rates.' + index + '.base_price', grade === null ? (isDefault ? 0 : null) : grade['base_price'], 'required|number|min:0|bail', 'Базовая цена', true);
                     this.form.set('rates.' + index + '.site_price', grade === null ? (isDefault ? 0 : null) : grade['site_price'], 'nullable|number|min:0|bail', 'Цена для сайта', true);
+                    this.form.set('rates.' + index + '.partner_price', grade === null ? (isDefault ? 0 : null) : grade['partner_price'], 'nullable|number|min:0|bail', 'Цена для партнера', true);
                     this.form.set('rates.' + index + '.min_price', grade === null ? (isDefault ? 0 : null) : grade['min_price'], 'required|number|min:0|bail', 'Минимальная', true);
                     this.form.set('rates.' + index + '.max_price', grade === null ? (isDefault ? 0 : null) : grade['max_price'], 'required|number|gte:rates.' + index + '.base_price|min:0|bail', 'Максимальная', true);
                     this.form.set('rates.' + index + '.commission_type', grade === null ? (isDefault ? 'fixed' : null) : grade['commission_type'], 'required', 'Тип', true);

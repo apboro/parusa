@@ -66,6 +66,18 @@ class PositionOrderingTicket extends Model
 
         return $rateList?->rates()->where('grade_id', $this->grade_id)->value('base_price');
     }
+    /**
+     * Get ticket partner price.
+     *
+     * @return  float|null
+     */
+    public function getPartnerPrice(): ?float
+    {
+        $rateList = $this->trip->getRate();
+
+        return $rateList?->rates()->where('grade_id', $this->grade_id)->value('partner_price');
+    }
+
     public function getBackwardPrice(): ?float
     {
         $trip = $this->parentTicket->trip;

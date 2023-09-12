@@ -75,7 +75,7 @@ class PartnerCartController extends ApiEditController
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
                 'pier' => $trip->startPier->name,
                 'grade' => $ticket->grade->name,
-                'base_price' => $price = $ticket->getPrice(),
+                'base_price' => $price = $ticket->getPartnerPrice() ?? $ticket->getPrice(),
                 'min_price' => $ticket->getMinPrice(),
                 'max_price' => $ticket->getMaxPrice(),
                 'backward_price' => $ticket->parent_ticket_id !== null ? $ticket->getBackwardPrice() : null,
@@ -233,7 +233,7 @@ class PartnerCartController extends ApiEditController
         if ($ticket === null) {
             return APIResponse::error('Билет не найден.');
         }
-
+        /* @var PositionOrderingTicket $backwardTicket **/
         $backwardTicket = $ticket->backwardTicket;
         if ($ticket->trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
             throw new RuntimeException('Недостаточно свободных мест на теплоходе.');

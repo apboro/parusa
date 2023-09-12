@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $commission_value
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property int $mass_assignment
  */
 class TicketPartnerRate extends Model
 {
@@ -27,6 +28,7 @@ class TicketPartnerRate extends Model
         'partner_id',
         'commission_type',
         'commission_value',
+        'mass_assignment'
     ];
 
     /**

@@ -56,6 +56,7 @@ class RateUpdateController extends ApiEditController
         for ($i = 0; $i < $count; $i++) {
             $rules["rates.$i.base_price"] = 'required|numeric|min:0|bail';
             $rules["rates.$i.site_price"] = 'nullable|numeric|min:0|bail';
+            $rules["rates.$i.partner_price"] = 'nullable|numeric|min:0|bail';
             $rules["rates.$i.min_price"] = 'required|numeric|min:0|bail';
             $rules["rates.$i.max_price"] = "required|numeric|gte:rates.$i.base_price|min:0|bail";
             $rules["rates.$i.commission_type"] = 'required';
@@ -67,6 +68,7 @@ class RateUpdateController extends ApiEditController
             $titles["rates.$i.commission_value"] = 'Комиссия';
             $titles["rates.$i.backward_price_type"] = 'Тип';
             $titles["rates.$i.backward_price_value"] = 'Цена';
+            $titles["rates.$i.partner_price"] = 'Цена';
         }
 
         if ($errors = $this->validate($data, $rules, $titles)) {
@@ -120,6 +122,7 @@ class RateUpdateController extends ApiEditController
                 $existing = $rates->where('grade_id', $rate['grade_id'])->first();
                 $existing->base_price = $rate['base_price'];
                 $existing->site_price = $rate['site_price'] ?? null;
+                $existing->partner_price = $rate['partner_price'] ?? null;
                 $existing->min_price = $rate['min_price'];
                 $existing->max_price = $rate['max_price'];
                 $existing->commission_type = $rate['commission_type'];
@@ -141,6 +144,7 @@ class RateUpdateController extends ApiEditController
                     'min_price' => $rate['min_price'],
                     'max_price' => $rate['max_price'],
                     'site_price' => $rate['site_price'] ?? null,
+                    'partner_price' => $rate['partner_price'] ?? null,
                     'commission_type' => $rate['commission_type'],
                     'commission_value' => $rate['commission_value'],
                     'backward_price_type' => $rate['backward_price_type'],

@@ -124,18 +124,18 @@ class TripsSelectListController extends ApiController
         $trips = $query->orderBy('start_at')->paginate($request->perPage(10, $this->rememberKey));
 
         /** @var LengthAwarePaginator $trips */
-        $trips->transform(function (Trip $trip) use ($date) {
+        $trips->transform(function (Trip $trip) use ($date, $current) {
             $excursion = $trip->excursion;
             $rateList = $excursion->rateForDate($date);
             $rates = !$rateList ? [] : $rateList->rates
-                ->filter(function (TicketRate $rate) {
+                ->filter(function (TicketRate $rate) use ($current){
                     return $rate->grade_id === TicketGrade::guide || $rate->base_price > 0;
                 })
-                ->map(function (TicketRate $rate) {
+                ->map(function (TicketRate $rate) use ($current){
                     return [
                         'id' => $rate->grade->id,
                         'name' => $rate->grade->name,
-                        'value' => $rate->base_price,
+                        'value' => ($rate->partner_price && ($current->isRepresentative() || $current->partnerId())) ? $rate->partner_price : $rate->base_price,
                         'preferential' => $rate->grade->preferential,
                     ];
                 })->toArray();
