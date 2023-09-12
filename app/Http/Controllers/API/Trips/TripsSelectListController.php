@@ -183,6 +183,7 @@ class TripsSelectListController extends ApiController
                         $trip->whereDate('start_at', Carbon::parse($filters['date']));
                     })
                     ->where('type_id', $filters['excursion_type_id'])
+                    ->whereNotNull('excursions.type_id')
                     ->where('status_id', 1)
                     ->get(['excursions.id', 'excursions.name']),
                 'piers_filter' => Pier::query()
