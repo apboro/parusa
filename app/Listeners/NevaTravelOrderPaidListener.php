@@ -15,7 +15,7 @@ class NevaTravelOrderPaidListener
 
     public function handle(NevaTravelOrderPaidEvent $event): void
     {
-        Log::channel('neva')->debug('call listener neva paid order', [$event]);
+        Log::channel('neva')->info('call listener neva paid order', [$event]);
         (new NevaOrder($event->order))->approve();
     }
 }

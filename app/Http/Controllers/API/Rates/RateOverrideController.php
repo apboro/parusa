@@ -233,7 +233,7 @@ class RateOverrideController extends ApiEditController
                     // get already overridden parameter
                     /** @var TicketPartnerRate $partnerRate */
 
-                    $partners = Partner::where('status_id', PartnerStatus::active)->get();
+                    $partners = Partner::all();
 
                     foreach ($partners as $partner) {
 
@@ -242,7 +242,7 @@ class RateOverrideController extends ApiEditController
                         // if it exists
                         if ($partnerRate !== null) {
                             // set parameters
-                            if ($partnerRate->mass_assignment) {
+                            if ($partnerRate->mass_assignment || $request->rewrite) {
                                 $partnerRate->commission_type = $rate['partner_commission_type'];
                                 $partnerRate->commission_value = $rate['partner_commission_value'] ?? 0;
                             }

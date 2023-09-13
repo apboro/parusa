@@ -2,7 +2,8 @@
     <LayoutPage :loading="list.is_loading" :title="$route.meta['title']">
         <template #actions>
             <GuiActionsMenu>
-                <router-link class="link" :to="{ name: 'excursion-edit', params: { id: 0 }}">Добавить экскурсию</router-link>
+                <router-link class="link" :to="{ name: 'excursion-edit', params: { id: 0 }}">Добавить экскурсию
+                </router-link>
             </GuiActionsMenu>
         </template>
 
@@ -18,19 +19,32 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+            <LayoutFiltersItem :title="'Владелец'">
+                <DictionaryDropDown :dictionary="'providers'"
+                                    :placeholder="'Все'"
+                                    :has-null="true"
+                                    :original="list.filters_original['provider_id']"
+                                    v-model="list.filters['provider_id']"
+                                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
         </LayoutFilters>
 
         <ListTable :titles="list.titles" v-if="list.list && list.list.length > 0">
             <ListTableRow v-for="excursion in list.list">
-                    <ListTableCell>
-                        <GuiActivityIndicator :active="excursion['active']"/>
-                        <router-link class="link" :to="{ name: 'excursion-view', params: { id: excursion['id'] }}">{{ excursion['name'] }}</router-link>
-                    </ListTableCell>
-                    <ListTableCell>
-                        {{ excursion['provider'] }}
-                    </ListTableCell>                    <ListTableCell>
-                        {{ excursion['status'] }}
-                    </ListTableCell>
+                <ListTableCell :class="'w-60'">
+                    <GuiActivityIndicator :active="excursion['active']"/>
+                    <router-link class="link" :to="{ name: 'excursion-view', params: { id: excursion['id'] }}">
+                        {{ excursion['name'] }}
+                    </router-link>
+                </ListTableCell>
+                <ListTableCell :class="'w-20'">
+                    {{ excursion['provider'] }}
+                </ListTableCell>
+
+                <ListTableCell :class="'w-20'">
+                    {{ excursion['status'] }}
+                </ListTableCell>
             </ListTableRow>
         </ListTable>
 

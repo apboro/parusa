@@ -209,7 +209,7 @@ class Excursion extends Model implements Statusable, AsDictionary
 
     public function provider()
     {
-        return Provider::where('id', $this->additionalData?->provider_id)->first();
+        return $this->belongsTo(Provider::class);
     }
 
     public function type()

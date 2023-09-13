@@ -43,6 +43,9 @@ class ExcursionsListController extends ApiController
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey)) && !empty($filters['status_id'])) {
             $query->where('status_id', $filters['status_id']);
         }
+        if (!empty($filters['provider_id'])) {
+            $query->where('provider_id', $filters['provider_id']);
+        }
 
         // current page automatically resolved from request via `page` parameter
         $excursions = $query->paginate($request->perPage(10, $this->rememberKey));
@@ -53,7 +56,7 @@ class ExcursionsListController extends ApiController
                 'active' => $excursions->hasStatus(ExcursionStatus::active),
                 'id' => $excursions->id,
                 'name' => $excursions->name,
-                'provider' => $excursions->provider()?->name,
+                'provider' => $excursions->provider->name,
                 'status' => $excursions->status->name,
             ];
         });

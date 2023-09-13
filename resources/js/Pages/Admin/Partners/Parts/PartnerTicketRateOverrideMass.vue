@@ -1,7 +1,7 @@
 <template>
     <FormPopUp v-if="rate" :title="'Спец. условия для партнёра'"
                :form="form"
-               :options="{rate_id: rate['id'], excursion_id: rate['excursion_id']}"
+               :options="{rate_id: rate['id'], excursion_id: rate['excursion_id'], rewrite: rewrite}"
                ref="popup"
     >
         <GuiText text-md mb-5>{{ rate['excursion'] }}</GuiText>
@@ -63,6 +63,13 @@
                 </td>
                 <td colspan="2"></td>
             </tr>
+            <tr>
+                <td colspan="2"></td>
+                <td colspan="2">
+                    <InputCheckbox v-model="rewrite">Перезаписать спец. условия установленные индивидуально</InputCheckbox>
+                </td>
+                <td colspan="2"></td>
+            </tr>
         </table>
     </FormPopUp>
 </template>
@@ -74,6 +81,7 @@ import GuiText from "@/Components/GUI/GuiText";
 import FormDropdown from "@/Components/Form/FormDropdown";
 import FormNumber from "@/Components/Form/FormNumber";
 import GuiHint from "@/Components/GUI/GuiHint";
+import InputCheckbox from "@/Components/Inputs/InputCheckbox.vue";
 
 export default {
     props: {
@@ -83,6 +91,7 @@ export default {
     emits: ['update'],
 
     components: {
+        InputCheckbox,
         GuiHint,
         FormNumber,
         FormDropdown,
@@ -94,6 +103,7 @@ export default {
         form: form('/api/rates/override/form', '/api/rates/override_mass'),
         rate: null,
         indexes: [],
+        rewrite: false,
     }),
 
     created() {
@@ -127,6 +137,7 @@ export default {
                             this.form.set(`rates.${index}.commission_value`, dataRate['commission_value'], '', '', true);
                             this.form.set(`rates.${index}.partner_commission_type`, commission_type ?? dataRate['partner_commission_type'], null, 'Тип', true);
                             this.form.set(`rates.${index}.partner_commission_value`, commission_value ?? dataRate['partner_commission_value'], 'nullable|numeric|min:0|bail', 'Комиссия', true);
+                            this.form.set('rewrite', this.rewrite);
                             indexes.push(index++);
                         }
                     });
