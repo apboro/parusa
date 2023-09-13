@@ -31,7 +31,7 @@
                 />
             </LayoutFiltersItem>
             <LayoutFiltersItem :class="'w-25'" :title="'Экскурсия'">
-                <InputDropDown v-if="list.payload.excursions_filter && list.payload.excursions_filter.length > 0"
+                <InputDropDown v-if="list.payload.excursions_filter"
                                :options="list.payload.excursions_filter"
                                v-model = "list.filters['excursion_id']"
                                :original="list.filters_original['excursion_id']"
@@ -56,7 +56,7 @@
                 />
             </LayoutFiltersItem>
             <LayoutFiltersItem :class="'w-25'" :title="'Причалы и остановки'">
-                <InputDropDown v-if="list.payload.piers_filter && list.payload.piers_filter.length > 0"
+                <InputDropDown v-if="list.payload.piers_filter"
                                :options="list.payload.piers_filter"
                                v-model = "list.filters['start_pier_id']"
                                :original="list.filters_original['start_pier_id']"
@@ -82,7 +82,19 @@
                 />
             </LayoutFiltersItem>
             <LayoutFiltersItem :class="'w-25'" :title="'Тип программы'">
-                <DictionaryDropDown
+                <InputDropDown v-if="list.payload.programs_filter"
+                               :options="list.payload.programs_filter"
+                               v-model = "list.filters['program_id']"
+                               :original="list.filters_original['program_id']"
+                               :placeholder="'Все'"
+                               :identifier="'id'"
+                               :show="'name'"
+                               :search="true"
+                               :has-null="true"
+                               :small="true"
+                               @change="list.load();"
+                />
+                <DictionaryDropDown v-else
                     :dictionary="'excursion_programs'"
                     :fresh="true"
                     v-model="list.filters['program_id']"
