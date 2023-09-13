@@ -296,7 +296,7 @@ class RateOverrideController extends ApiEditController
 
         return APIResponse::success('Специальные условия обновлены',
             [
-                'rate' => $this->rateToArray($ratesList),
+                'rate' => $this->rateToArray($ratesList, false, true),
                 'excursion_id' => $excursionId,
                 'debug' => [
                     'created' => $created,

@@ -155,6 +155,10 @@ class TicketRate extends Model
     {
         return $value === null ? null : PriceConverter::storeToPrice($value);
     }
+    public function getPartnerPriceAttribute(?int $value): ?float
+    {
+        return $value === null ? null : PriceConverter::storeToPrice($value);
+    }
 
     /**
      * Convert site_price to store value.
@@ -166,6 +170,10 @@ class TicketRate extends Model
     public function setSitePriceAttribute(?float $value): void
     {
         $this->attributes['site_price'] = $value === null ? null : PriceConverter::priceToStore($value);
+    }
+    public function setPartnerPriceAttribute(?float $value): void
+    {
+        $this->attributes['partner_price'] = $value === null ? null : PriceConverter::priceToStore($value);
     }
 
     /**
