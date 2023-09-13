@@ -33,7 +33,7 @@
             </LayoutFiltersItem>
 
             <LayoutFiltersItem :class="'w-25'" :title="'Экскурсия'" v-if="excursionId === null">
-                <InputDropDown v-if="list.payload.excursions_filter && list.payload.excursions_filter.length > 0"
+                <InputDropDown v-if="list.payload.excursions_filter"
                                :options="list.payload.excursions_filter"
                                v-model = "list.filters['excursion_id']"
                                :original="list.filters_original['excursion_id']"
@@ -58,7 +58,7 @@
                 />
             </LayoutFiltersItem>
             <LayoutFiltersItem :class="'w-25'" :title="'Причалы и остановки'" v-if="pierId === null">
-                <InputDropDown v-if="list.payload.piers_filter && list.payload.piers_filter.length > 0"
+                <InputDropDown v-if="list.payload.piers_filter"
                                :options="list.payload.piers_filter"
                                v-model = "list.filters['start_pier_id']"
                                :original="list.filters_original['start_pier_id']"

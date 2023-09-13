@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Excursions\Excursion;
@@ -136,25 +137,58 @@ class TripsListController extends ApiController
             [
                 'date' => Carbon::parse($filters['date'])->setTimezone(config('app.timezone'))->format('d.m.Y'),
                 'day' => Carbon::parse($filters['date'])->setTimezone(config('app.timezone'))->dayOfWeek,
-                'excursions_filter' => Excursion::query()
-                    ->whereHas('trips', function ($trip) use ($filters) {
-                        $trip->whereDate('start_at', Carbon::parse($filters['date']));
-                    })
-                    ->where('type_id', $filters['excursion_type_id'])
-                    ->whereNotNull('excursions.type_id')
-                    ->where('status_id', 1)
-                    ->get(['excursions.id', 'excursions.name']),
-                'piers_filter' => Pier::query()
-                    ->join('trips', function ($join) use ($filters){
-                        $join->on('trips.start_pier_id', '=', 'piers.id')
-                            ->whereDate('trips.start_at',Carbon::parse($filters['date']));
-                    })
-                    ->join('excursions', 'excursions.id', '=', 'trips.excursion_id')
-                    ->where('excursions.status_id', 1)
-                    ->where('excursions.type_id', $filters['excursion_type_id'])
-                    ->whereNotNull('excursions.type_id')
-                    ->groupBy('piers.id')
-                    ->get(['piers.id', 'piers.name'])
+
+                'excursions_filter' => $this->excursionFilter($filters),
+
+                'piers_filter' => $this->piersFilter($filters),
+
             ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));
+    }
+
+    private function piersFilter(array $filters)
+    {
+        $result = Pier::query()
+            ->join('trips', function ($join) use ($filters) {
+                $join->on('trips.start_pier_id', '=', 'piers.id')
+                    ->whereDate('trips.start_at', Carbon::parse($filters['date']));
+            })
+            ->join('excursions', 'excursions.id', '=', 'trips.excursion_id')
+            ->where('excursions.status_id', 1)
+            ->when($filters['excursion_type_id'], function ($query) use ($filters) {
+                $query->where('type_id', $filters['excursion_type_id']);
+            })
+            ->when($filters['excursion_id'], function ($query) use ($filters) {
+                $query->where('excursions.id', $filters['excursion_id']);
+            })
+            ->groupBy('piers.id')
+            ->get(['piers.id', 'piers.name']);
+
+        if ($result->isEmpty()) {
+            return null;
+        } else {
+            return $result;
+        }
+    }
+
+    private function excursionFilter(array $filters)
+    {
+        $result = Excursion::query()
+            ->whereHas('trips', function ($trip) use ($filters) {
+                $trip->whereDate('start_at', Carbon::parse($filters['date']));
+                $trip->when($filters['start_pier_id'], function ($query) use ($filters) {
+                    $query->where('start_pier_id', $filters['start_pier_id']);
+                });
+            })
+            ->when($filters['excursion_type_id'], function ($query) use ($filters) {
+                $query->where('type_id', $filters['excursion_type_id']);
+            })
+            ->where('status_id', 1)
+            ->get(['excursions.id', 'excursions.name']);
+
+        if ($result->isEmpty()) {
+            return null;
+        } else {
+            return $result;
+        }
     }
 }

@@ -136,7 +136,7 @@ class LifePosNotificationsController extends ApiController
                     $order->tickets->map(function (Ticket $ticket) {
                         $ticket->setStatus(TicketStatus::terminal_finishing);
                     });
-                    Log::channel('neva')->debug('terminal_finishing');
+                    Log::channel('neva')->info('terminal_finishing');
                     NevaTravelOrderPaidEvent::dispatch($order);
 
 
@@ -148,7 +148,7 @@ class LifePosNotificationsController extends ApiController
                     });
                     $order->setStatus(OrderStatus::terminal_paid);
 
-                    Log::channel('neva')->debug('terminal_paid');
+                    Log::channel('neva')->info('terminal_paid');
                     NevaTravelOrderPaidEvent::dispatch($order);
 
                 } else {

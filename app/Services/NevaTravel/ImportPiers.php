@@ -2,6 +2,7 @@
 
 namespace App\Services\NevaTravel;
 
+use App\Models\Dictionaries\Provider;
 use App\Models\Piers\Pier;
 use App\Models\Piers\PierInfo;
 
@@ -17,7 +18,7 @@ class ImportPiers
                     'external_parent_id' => $nevaPier['parent_id'] ?? null,
                     'name' => $nevaPier['name'],
                     'status_id' => $nevaPier['is_active'] ? 1 : 2,
-                    'source'=>'NevaTravel',
+                    'provider_id'=> Provider::neva_travel,
                 ]);
             PierInfo::updateOrCreate(['pier_id' => $pier->id],
                 [

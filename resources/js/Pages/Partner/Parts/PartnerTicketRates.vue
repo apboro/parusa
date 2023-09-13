@@ -16,7 +16,7 @@
                         <IconEyeSlash/>
                     </div>
                     <GuiMessage border mt-15 v-if="currentRate(excursion) === null">Тарифы не заданы</GuiMessage>
-                    <TicketRate v-else :rate="currentRate(excursion)"
+                    <TicketRatePartner v-else :rate="currentRate(excursion)"
                                 :overridable="true"
                                 :hints="false"
                                 :min-max="false"
@@ -37,9 +37,11 @@ import GuiMessage from "@/Components/GUI/GuiMessage";
 import GuiContainer from "@/Components/GUI/GuiContainer";
 import InputCheckbox from "@/Components/Inputs/InputCheckbox";
 import IconEyeSlash from "@/Components/Icons/IconEyeSlash";
+import TicketRatePartner from "@/Pages/Parts/Rates/TicketRatePartner.vue";
 
 export default {
     components: {
+        TicketRatePartner,
         IconEyeSlash,
         InputCheckbox,
         GuiContainer,
