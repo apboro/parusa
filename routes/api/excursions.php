@@ -18,6 +18,6 @@ Route::post('/excursions/update', [ExcursionEditController::class, 'update'])->m
 
 Route::post('/excursions/delete', [ExcursionDeleteController::class, 'delete'])->middleware(['allow:staff_admin']);
 
-Route::post('/excursions/info', [ExcursionInfoController::class, 'info'])->middleware(['allow:partner']);
+Route::post('/excursions/info', [ExcursionInfoController::class, 'info'])->middleware(['allow:partner,staff_admin,staff_office_manager,staff_accountant,staff_terminal']);
 
 Route::post('/excursions/visibility', [ExcursionPartnerShowcaseVisibilityController::class, 'visibility'])->middleware(['allow:partner']);

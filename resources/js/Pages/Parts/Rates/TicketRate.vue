@@ -54,7 +54,7 @@
                     <td v-else-if="item['partner_commission_type'] === 'fixed'">фикс.</td>
                     <td v-else>—</td>
 
-                    <td v-if="item['partner_commission_type'] === 'percents'">{{ Math.floor(item['partner_commission_value'] * item['base_price']) / 100 }} руб.</td>
+                    <td v-if="item['partner_commission_type'] === 'percents'">{{ Math.floor(item['partner_commission_value'] * item['partner_price']) / 100 }} руб.</td>
                     <td v-else-if="item['partner_commission_type'] === 'fixed'">{{ item['partner_commission_value'] }} руб.</td>
                     <td v-else>—</td>
                 </template>

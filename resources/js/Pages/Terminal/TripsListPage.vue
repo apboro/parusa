@@ -116,7 +116,7 @@
                     <div v-if="trip.is_single_ticket"><b class="text-lg">ЕДИНЫЙ БИЛЕТ</b></div>
                 </ListTableCell>
                 <ListTableCell>
-                    <div><b>{{ trip['excursion'] }}</b></div>
+                    <div :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" @click="excursionInfo(trip['excursion_id'])"><b>{{ trip['excursion'] }}</b></div>
                     <div><span :style="{fontSize: '13px'}">{{ trip['programs'] && trip['programs'].length ? trip['programs'].join(', ') : '' }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
@@ -145,6 +145,7 @@
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
         <TicketsSelect ref="select_popup"/>
+        <ExcursionInfo ref="excursion_info"/>
     </LayoutPage>
 </template>
 
@@ -167,9 +168,11 @@
     import TicketsSelect from "@/Pages/Terminal/Parts/TicketsSelect";
     import GuiContainer from "@/Components/GUI/GuiContainer";
     import InputDropDown from "@/Components/Inputs/InputDropDown.vue";
+    import ExcursionInfo from "@/Pages/Partner/Parts/ExcursionInfo.vue";
 
     export default {
         components: {
+            ExcursionInfo,
             InputDropDown,
             GuiContainer,
             TicketsSelect,
@@ -207,6 +210,9 @@
                 if (value !== null) {
                     this.list.load();
                 }
+            },
+            excursionInfo(excursion_id) {
+                this.$refs.excursion_info.show(excursion_id);
             },
             setDay(increment) {
                 this.$refs.date.addDays(increment);
