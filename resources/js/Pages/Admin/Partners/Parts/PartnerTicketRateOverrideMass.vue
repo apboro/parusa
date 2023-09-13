@@ -11,14 +11,14 @@
             <thead>
             <tr>
                 <th></th>
-                <th>Базовая стоимость билетов</th>
+                <th>Цена для партнёров</th>
                 <th colspan="2">Комиссионное вознаграждение за продажу билетов, руб.</th>
                 <th colspan="2"></th>
             </tr>
             </thead>
             <tr v-for="key in indexes">
                 <td class="w-25">{{ form.values[`rates.${key}.grade_name`] }}</td>
-                <td class="w-10">{{ form.values[`rates.${key}.base_price`] }} руб.</td>
+                <td class="w-10">{{ form.values[`rates.${key}.partner_price`] }} руб.</td>
                 <td class="w-20">
                     <FormDropdown :form="form" :name="`rates.${key}.partner_commission_type`" :identifier="'id'" :show="'name'"
                                   :options="[{id: 'fixed', name: 'фикс.'}, {id: 'percents', name: '% от БС'}]"
@@ -40,7 +40,7 @@
                     <td class="w-10" v-else>фикс.</td>
 
                     <td class="w-10" v-if="form.values[`rates.${key}.commission_type`] === 'percents'">
-                        {{ Math.floor(form.values[`rates.${key}.commission_value`] * form.values['rates.' + key + '.base_price']) / 100 }} руб.
+                        {{ Math.floor(form.values[`rates.${key}.commission_value`] * form.values['rates.' + key + '.partner_price']) / 100 }} руб.
                     </td>
                     <td class="w-10" v-else>{{ form.values[`rates.${key}.commission_value`] }} руб.</td>
                 </template>
@@ -51,7 +51,7 @@
                         {{ Math.floor(Number(form.values[`rates.${key}.partner_commission_value`]) * 100) / 100 }} руб.
                     </td>
                     <td class="w-10" v-else>
-                        {{ Math.floor(form.values[`rates.${key}.partner_commission_value`] * form.values[`rates.${key}.base_price`]) / 100 }} руб.
+                        {{ Math.floor(form.values[`rates.${key}.partner_commission_value`] * form.values[`rates.${key}.partner_price`]) / 100 }} руб.
                     </td>
                 </template>
             </tr>
@@ -132,7 +132,7 @@ export default {
                             this.form.set(`rates.${index}.id`, dataRate['id'], '', '', true);
                             this.form.set(`rates.${index}.grade_id`, item['id'], '', '', true);
                             this.form.set(`rates.${index}.grade_name`, item['name'], '', '', true);
-                            this.form.set(`rates.${index}.base_price`, dataRate['base_price'], '', '', true);
+                            this.form.set(`rates.${index}.partner_price`, dataRate['partner_price'], '', '', true);
                             this.form.set(`rates.${index}.commission_type`, dataRate['commission_type'], '', '', true);
                             this.form.set(`rates.${index}.commission_value`, dataRate['commission_value'], '', '', true);
                             this.form.set(`rates.${index}.partner_commission_type`, commission_type ?? dataRate['partner_commission_type'], null, 'Тип', true);
