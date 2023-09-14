@@ -37,12 +37,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
  * @property int $status_id
  * @property int $type_id
  * @property int $partner_id
+ * @property string|null $hash
  * @property int|null $position_id
  * @property int|null $terminal_id
  * @property int|null $terminal_position_id
@@ -71,7 +73,7 @@ class Order extends Model implements Statusable, Typeable
     use HasStatus, HasType;
 
     /** @var string[] Fillable attributes */
-    protected $fillable = ['partner_id', 'position_id', 'name', 'email', 'phone'];
+    protected $fillable = ['partner_id', 'position_id', 'name', 'email', 'phone', 'hash'];
 
     /**
      * Order status.
@@ -96,6 +98,20 @@ class Order extends Model implements Statusable, Typeable
     public function setStatus($status, bool $save = true): void
     {
         $this->checkAndSetStatus(OrderStatus::class, $status, WrongOrderStatusException::class, $save);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(static function (self $approvement) {
+
+        $hash = Str::random(16);
+
+        while (Order::where('hash', $hash)->exists()) {
+            $hash = Str::random(16);
+        }
+            $approvement->hash = $hash;
+        });
     }
 
     /**

@@ -57,6 +57,9 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/checkout.php'));
 
             Route::namespace($this->namespace)
+                ->group(base_path('routes/order_pdf.php'));
+
+            Route::namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
         });
     }

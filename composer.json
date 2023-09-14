@@ -22,7 +22,8 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "opcodesio/log-viewer": "^2.4",
-        "phpoffice/phpspreadsheet": "^1.26"
+        "phpoffice/phpspreadsheet": "^1.26",
+        "rubium/redsms": "^0.2.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\Order\OrderBackwardTicketsController;
 use App\Http\Controllers\API\Order\OrderReserveController;
 use App\Http\Controllers\API\Order\OrderReturnController;
+use App\Http\Controllers\API\Order\OrderSMSController;
 use App\Http\Controllers\API\Order\OrderTicketReplacementController;
 use App\Http\Controllers\API\Order\PartnerMakeOrderController;
 use App\Http\Controllers\API\Order\TerminalCurrentOrderController;
@@ -19,6 +20,8 @@ Route::post('/order/terminal/delete', [TerminalCurrentOrderController::class, 'd
 Route::post('/order/terminal/status', [TerminalCurrentOrderController::class, 'status'])->middleware(['allow:staff_terminal']);
 Route::post('/order/terminal/close', [TerminalCurrentOrderController::class, 'close'])->middleware(['allow:staff_terminal']);
 Route::post('/order/terminal/save_unconfirmed', [TerminalCurrentOrderController::class, 'saveUnconfirmed'])->middleware(['allow:staff_terminal']);
+
+Route::post('/order/send_sms', [OrderSMSController::class, 'sendSMS'])->middleware(['allow:staff_terminal']);
 
 Route::post('/order/return', [OrderReturnController::class, 'return']);
 

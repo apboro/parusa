@@ -105,6 +105,7 @@
         <div v-if="info.is_loaded && !isReserve" class="flex">
             <GuiContainer inline-flex v-if="printable">
                 <GuiButton :disabled="!info.data['is_printable'] || is_returning || is_replacement" @clicked="printOrder">Распечатать</GuiButton>
+                <GuiButton :disabled="is_returning || is_replacement" @clicked="sendSMS">Отправить СМС</GuiButton>
             </GuiContainer>
             <GuiContainer inline-flex grow justify-end v-if="returnable">
                 <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress || is_replacement" @clicked="makeReturn" :color="'red'">Оформить
@@ -216,6 +217,13 @@ export default {
     methods: {
         in_dev() {
             this.$toast.info('В разработке');
+        },
+
+        sendSMS() {
+            axios.post('/api/order/send_sms', {orderId: this.$route.params.id})
+                .then((response) => {
+                    this.$toast.success(response.data.message, 2100);
+                })
         },
 
         makeReturn() {

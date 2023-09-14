@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cd75cf76a545c25a92dc79a568f61ec6",
+    "content-hash": "591583b5d9082dc914b1c1bbafde44da",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4143,6 +4143,60 @@
                 }
             ],
             "time": "2022-12-19T22:30:49+00:00"
+        },
+        {
+            "name": "rubium/redsms",
+            "version": "v0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rubium-web/laravel-redsms.git",
+                "reference": "c76b2316381c9ccdd6a649c8a0bfe85f888c5afc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rubium-web/laravel-redsms/zipball/c76b2316381c9ccdd6a649c8a0bfe85f888c5afc",
+                "reference": "c76b2316381c9ccdd6a649c8a0bfe85f888c5afc",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "illuminate/support": "^6.0|^7.0|^8.0|^9.0"
+            },
+            "type": "package",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Rubium\\RedSms\\RedSmsServiceProvider"
+                    ],
+                    "aliases": {
+                        "RedSms": "Rubium\\RedSms\\Facades\\RedSms"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Rubium\\RedSms\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rubium Web",
+                    "email": "hello@rubium.ru"
+                }
+            ],
+            "description": "Package for send sms via redsms.ru. Based on official PHP class https://github.com/redsms/api-samples-php",
+            "keywords": [
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/rubium-web/laravel-redsms/issues",
+                "source": "https://github.com/rubium-web/laravel-redsms/tree/v0.2"
+            },
+            "time": "2022-08-12T04:22:43+00:00"
         },
         {
             "name": "sabberworm/php-css-parser",
