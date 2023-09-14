@@ -9,20 +9,29 @@
 
     <LayoutPage :title="title" :loading="processing" :breadcrumbs="breadcrumbs">
         <GuiContainer w-70>
-            <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
+            <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{
+                    info.data['valid_until']
+                }}</b></GuiValue>
             <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}</GuiValue>
-            <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
-            <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }}<span
+            <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }}<span
                 v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
-            <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }}<span v-if="info.data['cashier']">, {{ info.data['cashier'] }}</span></GuiValue>
+            <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">
+                {{ info.data['partner'] }}<span
+                v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
+            <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }}<span
+                v-if="info.data['cashier']">, {{ info.data['cashier'] }}</span></GuiValue>
         </GuiContainer>
 
         <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>
 
-        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve || is_returning || is_replacement">
+        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']"
+                   :has-action="isReserve || is_returning || is_replacement">
             <ListTableRow v-for="ticket in info.data['tickets']">
                 <ListTableCell>
-                    <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
+                    <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{
+                            ticket['id']
+                        }}
+                    </router-link>
                 </ListTableCell>
                 <ListTableCell>
                     <div v-if="!ticket.is_single_ticket">{{ ticket['trip_start_date'] }}</div>
@@ -38,7 +47,8 @@
                 <ListTableCell>{{ ticket['status'] }}</ListTableCell>
                 <ListTableCell v-if="isReserve" class="va-middle">
                     <div>
-                        <GuiIconButton :title="'Удалить из брони'" :border="false" :color="'red'" @click="removeTicketFromReserve(ticket)">
+                        <GuiIconButton :title="'Удалить из брони'" :border="false" :color="'red'"
+                                       @click="removeTicketFromReserve(ticket)">
                             <IconCross/>
                         </GuiIconButton>
                     </div>
@@ -62,7 +72,8 @@
             <ListTableRow :no-highlight="true">
                 <ListTableCell colspan="3"/>
                 <ListTableCell><b>Итого: {{ info.data['tickets_count'] }}</b></ListTableCell>
-                <ListTableCell><b>{{ info.data['promocode'] ? info.data['order_total'] : info.data['total'] }} руб.</b></ListTableCell>
+                <ListTableCell><b>{{ info.data['promocode'] ? info.data['order_total'] : info.data['total'] }} руб.</b>
+                </ListTableCell>
                 <ListTableCell/>
                 <ListTableCell v-if="isReserve || is_returning || is_replacement"/>
             </ListTableRow>
@@ -70,7 +81,8 @@
 
         <GuiContainer w-50 mt-30 mb-30 inline>
             <GuiHeading mb-20>Информация о плательщике
-                <IconEdit v-if="!is_returning && !is_replacement" class="link w-20px ml-5" style="position: relative; top: 1px;" @click="editInfo"/>
+                <IconEdit v-if="!is_returning && !is_replacement" class="link w-20px ml-5"
+                          style="position: relative; top: 1px;" @click="editInfo"/>
             </GuiHeading>
             <GuiValue :title="'Имя'">{{ info.data['name'] }}</GuiValue>
             <GuiValue :title="'Email'">{{ info.data['email'] }}</GuiValue>
@@ -82,24 +94,33 @@
             <GuiMessage v-else-if="dates.length === 0" border>Нет подходящих рейсов</GuiMessage>
             <template v-else>
                 <GuiHeading mb-20>Выберите дату рейса</GuiHeading>
-                <InputDate v-model="replacement_date" :dates="dates" placeholder="Выберите дату" @change="replacementDateSelected"/>
-                <GuiMessage v-if="replacement_trips && replacement_trips.length === 0" border>На выбранную дату нет рейсов с достаточным количеством свободных мест</GuiMessage>
+                <InputDate v-model="replacement_date" :dates="dates" placeholder="Выберите дату"
+                           @change="replacementDateSelected"/>
+                <GuiMessage v-if="replacement_trips && replacement_trips.length === 0" border>На выбранную дату нет
+                    рейсов с достаточным количеством свободных мест
+                </GuiMessage>
             </template>
         </GuiContainer>
 
         <GuiContainer v-if="replacement_trips && replacement_trips.length" mb-50>
-            <ListTable :titles="['Отправление', '№ Рейса', 'Экскурсия', 'Осталось билетов', 'Статусы движение / продажа', '']">
+            <ListTable
+                :titles="['Отправление', '№ Рейса', 'Экскурсия', 'Осталось билетов', 'Статусы движение / продажа', '']">
                 <ListTableRow v-for="trip in replacement_trips">
                     <ListTableCell>
                         <div>
                             <b>
-                                <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
+                                <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">
+                                    {{ trip['start_time'] }}
+                                </router-link>
                             </b>
                         </div>
                         <div>{{ trip['start_date'] }}</div>
                     </ListTableCell>
                     <ListTableCell>
-                        <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}</router-link>
+                        <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{
+                                trip['id']
+                            }}
+                        </router-link>
                     </ListTableCell>
                     <ListTableCell>
                         {{ trip['excursion'] }}
@@ -121,15 +142,30 @@
         <template v-if="info.is_loaded">
             <template v-if="!isReserve">
                 <GuiContainer mb-20>
-                    <GuiButton :disabled="!info.data['is_printable'] || is_returning || is_replacement" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
-                    <GuiButton :disabled="!info.data['is_printable'] || is_returning || is_replacement || !info.data['email']" @clicked="emailOrder">Отправить клиенту на почту</GuiButton>
-                    <GuiButton :disabled="!info.data['is_printable'] || is_returning || is_replacement" @clicked="printOrder">Распечатать</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning || is_replacement"
+                               @clicked="downloadOrder">Скачать заказ в PDF
+                    </GuiButton>
+                    <GuiButton :disabled="is_returning || is_replacement" @clicked="sendSMS">Отправить СМС</GuiButton>
+                    <GuiButton
+                        :disabled="!info.data['is_printable'] || is_returning || is_replacement || !info.data['email']"
+                        @clicked="emailOrder">Отправить клиенту на почту
+                    </GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || is_returning || is_replacement"
+                               @clicked="printOrder">Распечатать
+                    </GuiButton>
                 </GuiContainer>
                 <GuiContainer>
-                    <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress || is_replacement" @clicked="makeReturn" :color="'red'">Оформить возврат
+                    <GuiButton v-if="info.data['can_return']"
+                               :disabled="!info.data['returnable'] || returning_progress || is_replacement"
+                               @clicked="makeReturn" :color="'red'">Оформить возврат
                     </GuiButton>
-                    <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress" @clicked="cancelReturn">Отмена</GuiButton>
-                    <GuiButton v-if="!is_replacement && info.data.tickets.filter(ticket=>ticket.transferable === true).length > 0" @clicked="replaceTickets" :color="'red'">Оформить перенос рейса</GuiButton>
+                    <GuiButton v-if="info.data['can_return'] && is_returning" :disabled="returning_progress"
+                               @clicked="cancelReturn">Отмена
+                    </GuiButton>
+                    <GuiButton
+                        v-if="!is_replacement && info.data.tickets.filter(ticket=>ticket.transferable === true).length > 0"
+                        @clicked="replaceTickets" :color="'red'">Оформить перенос рейса
+                    </GuiButton>
                     <GuiButton v-if="is_replacement" @clicked="replaceTickets(true)">Отменить</GuiButton>
                 </GuiContainer>
             </template>
@@ -268,6 +304,13 @@ export default {
     },
 
     methods: {
+        sendSMS() {
+            axios.post('/api/order/send_sms', {orderId: this.$route.params.id})
+                .then((response) => {
+                    this.$toast.success(response.data.message, 2100);
+                })
+        },
+
         discardReserve() {
             if (!this.isReserve) {
                 return;
@@ -284,7 +327,10 @@ export default {
                 return;
             }
 
-            this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {id: this.orderId, ticket_id: ticket['id']})
+            this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {
+                id: this.orderId,
+                ticket_id: ticket['id']
+            })
                 .then(response => {
                     if (response.data.payload['reserve_cancelled']) {
                         this.$router.push({name: 'reserves-registry'});
