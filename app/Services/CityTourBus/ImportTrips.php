@@ -19,6 +19,10 @@ class ImportTrips
         $bus = Ship::where('owner', 'CityTour')->first();
         $excursions = Excursion::with('additionalData')->where('provider_id', Provider::city_tour)->get();
 
+        Trip::query()
+            ->where('provider_id', Provider::city_tour)
+            ->update(['status_id' => 4, 'sale_status_id' => 3]);
+
         foreach ($excursions as $excursion) {
             $schedule = $rep->getSchedule($excursion->additionalData->provider_excursion_id);
             if (isset($schedule['body']['schedule_state']) && $schedule['body']['schedule_state'] === 'free') {
@@ -29,9 +33,9 @@ class ImportTrips
                 do {
                     $trip = Trip::firstOrNew([
                         'excursion_id' => $excursion->id,
-                        'start_at' => $start_date->clone()->setTime(9,0)->format('Y-m-d H:i:s')
+                        'start_at' => $start_date->clone()->setTime(9, 0)->format('Y-m-d H:i:s')
                     ]);
-                    $trip->end_at = $start_date->clone()->setTime(21,50)->format('Y-m-d H:i:s');
+                    $trip->end_at = $start_date->clone()->setTime(21, 50)->format('Y-m-d H:i:s');
                     $trip->excursion_id = $excursion->id;
                     $trip->start_pier_id = $pier->id;
                     $trip->end_pier_id = $pier->id;
@@ -46,9 +50,9 @@ class ImportTrips
             } elseif ($schedule['status'] === 200) {
                 foreach ($schedule['body'] as $date => $timeTickets) {
                     $time = array_key_first($timeTickets);
-                    $trip = Trip::firstOrNew(['excursion_id' => $excursion->id, 'start_at' => Carbon::parse($date.' '.$time)->format('Y-m-d H:i:s')]);
-                    $trip->start_at = Carbon::parse($date.' '.$time)->format('Y-m-d H:i:s');
-                    $trip->end_at = Carbon::parse($date.' '.$time)->addHours(7)->format('Y-m-d H:i:s');
+                    $trip = Trip::firstOrNew(['excursion_id' => $excursion->id, 'start_at' => Carbon::parse($date . ' ' . $time)->format('Y-m-d H:i:s')]);
+                    $trip->start_at = Carbon::parse($date . ' ' . $time)->format('Y-m-d H:i:s');
+                    $trip->end_at = Carbon::parse($date . ' ' . $time)->addHours(7)->format('Y-m-d H:i:s');
                     $trip->excursion_id = $excursion->id;
                     $trip->start_pier_id = $pier->id;
                     $trip->end_pier_id = $pier->id;
