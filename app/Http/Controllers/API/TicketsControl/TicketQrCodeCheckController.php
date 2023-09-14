@@ -28,7 +28,7 @@ class TicketQrCodeCheckController extends Controller
 
         if (($signature == $expectedSignature) && $ticket) {
 
-            if (!in_array($ticket->status_id, TicketStatus::ticket_paid_statuses)) {
+            if (!in_array($ticket->status_id, [...TicketStatus::ticket_paid_statuses, TicketStatus::terminal_finishing])) {
                 return APIResponse::response(['tickets' => [$this->makeTicketResource($ticket)], 'notValidTicket' => 'Билет уже использован или возвращен']);
             }
             if (in_array($ticket->trip->status_id, [3, 4])) {
@@ -38,7 +38,7 @@ class TicketQrCodeCheckController extends Controller
             $orderTickets = $ticket
                 ->order
                 ->tickets
-                ->whereIn('status_id', TicketStatus::ticket_paid_statuses)
+                ->whereIn('status_id', [...TicketStatus::ticket_paid_statuses, TicketStatus::terminal_finishing])
                 ->transform(function (Ticket $ticket) {
                     return $this->makeTicketResource($ticket);
                 });
