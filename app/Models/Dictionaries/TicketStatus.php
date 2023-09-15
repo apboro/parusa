@@ -63,6 +63,7 @@ class TicketStatus extends AbstractDictionary
         self::showcase_creating,
         self::showcase_wait_for_pay,
         self::showcase_paid,
+        self::used,
     ];
 
     public const ticket_printable_statuses = [
