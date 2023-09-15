@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Helpers\Fiscal;
 use App\Http\APIResponse;
@@ -174,6 +175,8 @@ class TerminalCurrentOrderController extends ApiController
             });
 
             NevaTravelOrderPaidEvent::dispatch($order);
+            CityTourOrderPaidEvent::dispatch($order);
+
 
             $order->payCommissions();
 
@@ -290,7 +293,7 @@ class TerminalCurrentOrderController extends ApiController
                         });
 
                         NevaTravelOrderPaidEvent::dispatch($order);
-
+                        CityTourOrderPaidEvent::dispatch($order);
                     }
                 }
             }
