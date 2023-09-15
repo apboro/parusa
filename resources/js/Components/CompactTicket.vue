@@ -74,7 +74,7 @@ export default {
         <ListTable :titles="['Номер заказа','Статус билета','Тип билета']" class="list-table-check">
             <ListTableRow v-for="ticket in data.tickets">
                 <ListTableCell :nowrap="true">
-                    <InputCheckbox :label="ticket.ticket_id" v-model="selected" :value="ticket.ticket_id" small></InputCheckbox>
+                    <InputCheckbox :label="ticket.ticket_id.toString()" v-model="selected" :value="ticket.ticket_id" small></InputCheckbox>
                 </ListTableCell>
                 <ListTableCell :nowrap="true">
                     {{ ticket.ticket_status }}

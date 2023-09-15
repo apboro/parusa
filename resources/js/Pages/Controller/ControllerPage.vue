@@ -10,10 +10,9 @@ export default {
     name: "ControllerPage",
 
     data: () => ({
-        cameraOn: false,
         data: null,
         message: null,
-        isVisible: false,
+        paused: false,
     }),
 
     components: {
@@ -29,32 +28,48 @@ export default {
 
     watch: {
         data(newValue) {
-            this.cameraOn = newValue === null;
-        },
-        isVisible(newVal) {
-            if (newVal) {
-                setTimeout(() => {
-                    this.isVisible = false;
-                }, 2100);
-            }
-        },
+            this.paused = newValue !== null;
+        }
     },
 
     methods: {
-        onDetect(detectedCode) {
-            axios.post('/api/ticket/qrcode/check', detectedCode)
+        async onDetect(detectedCode) {
+            await this.timeout(1500)
+
+            await axios.post('/api/ticket/qrcode/check', detectedCode)
                 .then(response => {
                     if (response.data.data.notValidQrCode) {
                         this.message = response.data.data.notValidQrCode;
-                        this.isVisible = true;
                     } else {
                         this.data = response.data.data
                         this.message = null;
                     }
                 })
+            if (this.message !== null) {
+                await this.timeout(2000)
+                this.message = null;
+                location.reload()
+            }
         },
+        timeout(ms) {
+            return new Promise((resolve) => {
+                window.setTimeout(resolve, ms)
+            })
+        },
+        
+        paintBoundingBox(detectedCodes, ctx) {
+            for (const detectedCode of detectedCodes) {
+                const {
+                    boundingBox: {x, y, width, height}
+                } = detectedCode
+                ctx.lineWidth = 2
+                ctx.strokeStyle = '#124dee'
+                ctx.strokeRect(x, y, width, height)
+            }
+        },
+
         cameraToggle() {
-            this.cameraOn = !this.cameraOn;
+            this.paused = !this.paused;
         },
         used() {
             this.data = null;
@@ -70,15 +85,35 @@ export default {
     <GuiContainer w-100 h-80 ph-10 mt-10 center>
         <div style="max-width: 450px; display: inline-block;">
             <GuiButton style="margin-bottom: 30px" v-if="!data" @click="cameraToggle">
-                {{ cameraOn ? 'ВЫКЛЮЧИТЬ КАМЕРУ' : 'ВКЛЮЧИТЬ КАМЕРУ' }}
+                {{ paused ? 'ВКЛЮЧИТЬ КАМЕРУ' : 'ВЫКЛЮЧИТЬ КАМЕРУ' }}
             </GuiButton>
-            <qrcode-stream v-if="cameraOn" @paused="cameraOn" @detect="onDetect"></qrcode-stream>
+            <qrcode-stream v-if="!paused" @paused="paused" @detect="onDetect" :track="paintBoundingBox">
+                <div v-if="message !== null" class="validation-failure">{{ message }}</div>
+            </qrcode-stream>
             <CompactTicket v-if="data" :data="data" @used="used" @close="close"/>
-            <div style="text-align: center; font-weight: bold; color: red;" v-if="isVisible">{{ message }}</div>
         </div>
     </GuiContainer>
 </template>
 
 <style scoped lang="scss">
 
+.validation-failure {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: black;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+}
+.validation-failure {
+    color: red;
+}
 </style>
