@@ -8,6 +8,7 @@ use App\Helpers\Fiscal;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\LifePos\LifePosSales;
+use App\LifePos\MockLifePos;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;
@@ -21,6 +22,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 class TerminalCurrentOrderController extends ApiController
@@ -247,7 +249,11 @@ class TerminalCurrentOrderController extends ApiController
 
         try {
             if ($order->external_id) {
-                $payments = LifePosSales::getSalePayments($order->external_id);
+                if (app()->environment('production')){
+                    $payments = LifePosSales::getSalePayments($order->external_id);
+                } else {
+                    $payments = MockLifePos::getSalePayments($order->external_id);
+                }
                 if (isset($payments['items']) && count($payments['items']) > 0) {
                     foreach ($payments['items'] as $receivedPayment) {
                         if (!isset($receivedPayment['type_of']) || $receivedPayment['type_of'] !== 'SalePayment') {
@@ -298,7 +304,7 @@ class TerminalCurrentOrderController extends ApiController
                 }
             }
         } catch (Exception $exception) {
-
+            Log::channel('lifepos_payments')->error('status method error', [$exception]);
         }
 
         return APIResponse::response([

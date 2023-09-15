@@ -22,7 +22,7 @@ class FakeLifePosNotification implements ShouldQueue
      */
     public function __construct(public Order $order)
     {
-        //
+        $this->connection='database';
     }
 
     /**
@@ -33,6 +33,6 @@ class FakeLifePosNotification implements ShouldQueue
     public function handle()
     {
         $data = ['type_of'=>'SalePayment'];
-        Http::get('/lifepos/notifications', $data);
+        Http::timeout(10)->get(config('app.url').'/lifepos/notifications', $data);
     }
 }
