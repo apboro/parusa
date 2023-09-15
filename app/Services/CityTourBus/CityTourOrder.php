@@ -3,6 +3,7 @@
 namespace App\Services\CityTourBus;
 
 use App\Models\AdditionalDataOrder;
+use App\Models\AdditionalDataTicket;
 use App\Models\Dictionaries\Provider;
 use App\Models\Model;
 use App\Models\Order\Order;
@@ -70,13 +71,14 @@ class CityTourOrder
         foreach ($orderTickets as $orderTicket) {
             foreach ($providerTickets as $index => $providerTicket) {
                 if ($providerTicket['ticket_cat_id'] === $orderTicket->grade_id) {
-                    $orderTicket->additionalData()->create([
-                        'provider_id' => Provider::city_tour,
-                        'ticket_id' => $orderTicket->id,
-                        'provider_ticket_id' => $providerTicket['id'],
-                        'provider_qr_code' => $providerTicket['qr_code']
-                    ]);
+                    $addDataTicket = new AdditionalDataTicket();
+                    $addDataTicket->ticket_id = $orderTicket->id;
+                    $addDataTicket->provider_id = Provider::city_tour;
+                    $addDataTicket->provider_ticket_id = $providerTicket['id'];
+                    $addDataTicket->provider_qr_code = $providerTicket['qr_code'];
+                    $addDataTicket->save();
                     unset($providerTickets[$index]);
+                    break;
                 }
             }
         }
