@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Events\CityTourCancelOrderEvent;
+use App\Events\NevaTravelCancelOrderEvent;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Account\AccountTransaction;
@@ -51,10 +53,10 @@ class OrderReserveController extends ApiController
 
         // delete all tickets
         DB::transaction(static function () use ($order) {
-            if ($order->additionalData?->provider_order_id) {
-                $nevaOrder = new NevaOrder($order);
-                $nevaOrder->cancel();
-            }
+
+            NevaTravelCancelOrderEvent::dispatch($order);
+            CityTourCancelOrderEvent::dispatch($order);
+
             foreach ($order->tickets as $ticket) {
                 $ticket->setStatus(TicketStatus::partner_reserve_canceled);
             }

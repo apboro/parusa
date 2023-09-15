@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\API\Order;
 
 use App\Classes\EmailReceiver;
+use App\Events\CityTourCancelOrderEvent;
 use App\Events\CityTourOrderPaidEvent;
+use App\Events\NevaTravelCancelOrderEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
@@ -106,7 +108,9 @@ class OrderReturnController extends ApiController
                         $order->setStatus(OrderStatus::partner_partial_returned);
                     }
 
-                    (new NevaOrder($order))->cancel();
+                    NevaTravelCancelOrderEvent::dispatch($order);
+                    CityTourCancelOrderEvent::dispatch($order);
+
                     if ($order->status_id == OrderStatus::partial_returned_statuses) {
                         NewNevaTravelOrderEvent::dispatch($order);
                         NevaTravelOrderPaidEvent::dispatch($order);
@@ -117,7 +121,6 @@ class OrderReturnController extends ApiController
                         }
                     }
 
-                    (new CityTourOrder($order))->cancel();
                     if ($order->status_id == OrderStatus::partial_returned_statuses) {
                         NewCityTourOrderEvent::dispatch($order);
                         CityTourOrderPaidEvent::dispatch($order);
@@ -198,7 +201,9 @@ class OrderReturnController extends ApiController
 
             $successMessage = 'Возврат оформлен.';
 
-            (new NevaOrder($order))->cancel();
+            NevaTravelCancelOrderEvent::dispatch($order);
+            CityTourCancelOrderEvent::dispatch($order);
+
             if ($order->status_id == OrderStatus::partial_returned_statuses) {
                 NewNevaTravelOrderEvent::dispatch($order);
                 NevaTravelOrderPaidEvent::dispatch($order);
@@ -210,7 +215,6 @@ class OrderReturnController extends ApiController
                 }
             }
 
-            (new CityTourOrder($order))->cancel();
             if ($order->status_id == OrderStatus::partial_returned_statuses) {
                 NewCityTourOrderEvent::dispatch($order);
                 CityTourOrderPaidEvent::dispatch($order);

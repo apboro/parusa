@@ -2,6 +2,7 @@
 
 namespace App\LifePos;
 
+use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelCancelOrderEvent;
 use App\Helpers\Fiscal;
 use App\Models\Dictionaries\OrderStatus;
@@ -145,6 +146,7 @@ class LifePosSync
 
             if ($isReturned) {
                 NevaTravelCancelOrderEvent::dispatch($order);
+                CityTourOrderPaidEvent::dispatch($order);
             }
         }
 

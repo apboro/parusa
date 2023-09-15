@@ -149,8 +149,8 @@ class TripsListController extends ApiController
     {
         $result = Pier::query()
             ->join('trips', function ($join) use ($filters) {
-                $join->on('trips.start_pier_id', '=', 'piers.id')
-                    ->whereDate('trips.start_at', Carbon::parse($filters['date']));
+                $join->on('trips.start_pier_id', '=', 'piers.id');
+//                    ->whereDate('trips.start_at', Carbon::parse($filters['date']));
             })
             ->join('excursions', 'excursions.id', '=', 'trips.excursion_id')
             ->where('excursions.status_id', 1)
@@ -174,7 +174,7 @@ class TripsListController extends ApiController
     {
         $result = Excursion::query()
             ->whereHas('trips', function ($trip) use ($filters) {
-                $trip->whereDate('start_at', Carbon::parse($filters['date']));
+//                $trip->whereDate('start_at', Carbon::parse($filters['date']));
                 $trip->when($filters['start_pier_id'], function ($query) use ($filters) {
                     $query->where('start_pier_id', $filters['start_pier_id']);
                 });

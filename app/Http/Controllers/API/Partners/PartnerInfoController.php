@@ -38,7 +38,6 @@ class PartnerInfoController extends ApiController
             $tickets = $current->position()->ordering()
                 ->where('terminal_id', null)
                 ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
-                ->where('trips.start_at', '>', Carbon::now())
                 ->leftJoin('excursions', 'excursions.id', '=', 'trips.excursion_id')
                 ->leftJoin('tickets_rates_list', function (JoinClause $join) {
                     $join
@@ -49,7 +48,7 @@ class PartnerInfoController extends ApiController
                 ->leftJoin('ticket_rates', function (JoinClause $join) {
                     $join->on('ticket_rates.rate_id', '=', 'tickets_rates_list.id')
                         ->on('ticket_rates.grade_id', '=', 'position_ordering_tickets.grade_id');
-                })->get(['position_ordering_tickets.id as pot_id', 'parent_ticket_id', 'backward_price_value', 'quantity', 'base_price']);
+                })->get(['position_ordering_tickets.id as pot_id', 'parent_ticket_id', 'backward_price_value', 'quantity', 'base_price', 'partner_price']);
 
             $orderAmount = 0;
             $tickets->map(function ($ticket) use ($tickets, &$orderAmount){
@@ -57,7 +56,7 @@ class PartnerInfoController extends ApiController
                     $parent_ticket = $tickets->where('pot_id',$ticket->parent_ticket_id)->first();
                     $orderAmount += $parent_ticket->backward_price_value * $ticket->quantity;
                 } else {
-                    $orderAmount += $ticket->quantity * $ticket->base_price;
+                    $orderAmount += $ticket->quantity * $ticket->partner_price ?? $ticket->base_price;
                 }
             });
         }
