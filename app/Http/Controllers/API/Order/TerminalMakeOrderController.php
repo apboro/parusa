@@ -7,6 +7,7 @@ use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\LifePos\LifePosSales;
+use App\LifePos\MockLifePos;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
@@ -163,6 +164,8 @@ class TerminalMakeOrderController extends ApiEditController
                 // send order to POS
                 if (app()->environment('production')) {
                     LifePosSales::send($order, $terminal, $current->position());
+                } else {
+                    MockLifePos::send($order, $terminal, $current->position());
                 }
 
                 $order->setStatus(OrderStatus::terminal_wait_for_pay);

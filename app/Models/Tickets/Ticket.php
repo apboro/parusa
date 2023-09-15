@@ -315,7 +315,7 @@ class Ticket extends Model implements Statusable
 
     public function provider_qr()
     {
-
+        $this->loadMissing('additionalData');
         return Builder::create()
             ->encoding(new Encoding('UTF-8'))
             ->errorCorrectionLevel(new ErrorCorrectionLevelLow())
