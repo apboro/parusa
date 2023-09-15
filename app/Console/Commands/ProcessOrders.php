@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Events\CityTourCancelOrderEvent;
+use App\Events\NevaTravelCancelOrderEvent;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
@@ -94,10 +96,10 @@ class ProcessOrders extends Command
             /** @var Order $order */
             try{
             DB::transaction(static function() use ($order){
-                if ($order->additionalData?->provider_id === 10) {
-                    $nevaOrder = new NevaOrder($order);
-                    $nevaOrder->cancel();
-                }
+
+                NevaTravelCancelOrderEvent::dispatch($order);
+                CityTourCancelOrderEvent::dispatch($order);
+
                 $order->setStatus(OrderStatus::partner_reserve_canceled);
                 $order->tickets->map(function (Ticket $ticket) {
                     $ticket->setStatus(TicketStatus::partner_reserve_canceled);
@@ -107,6 +109,7 @@ class ProcessOrders extends Command
                 Log::channel('neva')->error('destroyPartnerReserves error', [$exception]);
             }
         }
+        $this->info('All done.');
     }
 
     /**

@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Events\CityTourCancelOrderEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelCancelOrderEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
+use App\Listeners\CityTourCancelOrderListener;
 use App\Listeners\CityTourOrderPaidListener;
 use App\Listeners\NevaTravelCancelOrderListener;
 use App\Listeners\NevaTravelOrderPaidListener;
@@ -35,6 +37,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         CityTourOrderPaidEvent::class => [
             CityTourOrderPaidListener::class,
+        ],
+        CityTourCancelOrderEvent::class => [
+            CityTourCancelOrderListener::class,
         ],
         NevaTravelOrderPaidEvent::class => [
             NevaTravelOrderPaidListener::class,
