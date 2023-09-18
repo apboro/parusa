@@ -48,6 +48,7 @@
         <GuiMessage v-if="data['status']['finishing']">Заказ оплачен.</GuiMessage>
         <GuiContainer mt-30 text-right v-if="data['status']['finishing']">
             <GuiButton :color="'green'" :disabled="!data['actions']['print']" @clicked="printOrder">Печать билетов</GuiButton>
+            <GuiButton :color="'purple'" @clicked="sendSMS">Отправить СМС с билетом</GuiButton>
             <GuiButton :disabled="!data['actions']['finish']" @clicked="closeOrder">Закрыть заказ</GuiButton>
         </GuiContainer>
     </LoadingProgress>
@@ -100,6 +101,15 @@ export default {
     },
 
     methods: {
+        sendSMS() {
+            axios.post('/api/order/send_sms', {orderId: this.data.order_id})
+                .then((response) => {
+                    this.$toast.success(response.data.message, 2100);
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data.message, 2100);
+                })
+        },
         handleInterval() {
             if (this.data['status']['waiting_for_payment'] && !this.order_cancelling) {
                 axios.post('/api/order/terminal/status', {})
