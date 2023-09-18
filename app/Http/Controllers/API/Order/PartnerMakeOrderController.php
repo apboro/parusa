@@ -123,7 +123,7 @@ class   PartnerMakeOrderController extends ApiEditController
                     $ticket->cart_parent_ticket_id = $ordering->parent_ticket_id;
                     $ticket->backward_price = $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : null;
 
-                    $totalAmount += $ordering->parent_ticket_id !== null ? $ordering->getBackwardPrice() : $ordering->getPrice();
+                    $totalAmount += $ordering->parent_ticket_id !== null ? $ordering->getBackwardPrice() : $ordering->getPartnerPrice() ?? $ordering->getPrice();
                     $tickets[] = $ticket;
                 }
             }
