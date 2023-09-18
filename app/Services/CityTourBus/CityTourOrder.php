@@ -53,7 +53,7 @@ class CityTourOrder
     {
         if ($this->checkOrderHasCityTourTickets()) {
             $result = $this->cityTourRepository->approveOrder($this->order);
-            if ($result || $result['status'] == 200) {
+            if ($result && $result['status'] == 200) {
                 Log::channel('city_tour')->info('City Tour API approve order request success: ', [$result, $this->order->additionalData]);
                 $this->getAndSaveTickets();
             } else {
