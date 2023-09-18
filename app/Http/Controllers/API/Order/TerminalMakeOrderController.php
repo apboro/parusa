@@ -165,7 +165,7 @@ class TerminalMakeOrderController extends ApiEditController
                 if (app()->environment('production')) {
                     LifePosSales::send($order, $terminal, $current->position());
                 } else {
-                    MockLifePos::send($order, $terminal, $current->position());
+                    MockLifePos::send($order);
                 }
 
                 $order->setStatus(OrderStatus::terminal_wait_for_pay);

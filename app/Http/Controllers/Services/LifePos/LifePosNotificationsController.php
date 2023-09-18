@@ -9,6 +9,7 @@ use App\Events\NevaTravelOrderPaidEvent;
 use App\Helpers\Fiscal;
 use App\Http\Controllers\ApiController;
 use App\LifePos\LifePosSales;
+use App\LifePos\MockLifePos;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\TicketStatus;
@@ -98,7 +99,7 @@ class LifePosNotificationsController extends ApiController
 
                 // get POS and cashier
                 try {
-                    $sale = LifePosSales::getSale($externalId);
+                    $sale = app()->environment('production') ? LifePosSales::getSale($externalId) : MockLifePos::getSale($externalId);
                     $terminalExternalId = $sale['workplace']['guid'];
                     $positionExternalId = $sale['opened_by']['guid'];
                     $terminalId = Terminal::query()->where('workplace_id', $terminalExternalId)->value('id');

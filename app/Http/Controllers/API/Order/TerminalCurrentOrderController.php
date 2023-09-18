@@ -176,10 +176,6 @@ class TerminalCurrentOrderController extends ApiController
                 $order->setStatus(OrderStatus::terminal_paid);
             });
 
-            NevaTravelOrderPaidEvent::dispatch($order);
-            CityTourOrderPaidEvent::dispatch($order);
-
-
             $order->payCommissions();
 
         } catch (Exception $exception) {
@@ -249,7 +245,7 @@ class TerminalCurrentOrderController extends ApiController
 
         try {
             if ($order->external_id) {
-                if (app()->environment('production')){
+                if (app()->environment('production')) {
                     $payments = LifePosSales::getSalePayments($order->external_id);
                 } else {
                     $payments = MockLifePos::getSalePayments($order->external_id);
@@ -282,6 +278,7 @@ class TerminalCurrentOrderController extends ApiController
                         $payment->terminal_id = $current->terminalId();
                         $payment->position_id = $current->positionId();
                         $payment->save();
+
 
                         if ($receivedPayment['fiscal_document']['guid']) {
                             $receipt = LifePosSales::getFiscal($receivedPayment['fiscal_document']['guid']);

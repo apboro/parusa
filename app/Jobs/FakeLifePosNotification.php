@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class FakeLifePosNotification implements ShouldQueue
 {
@@ -32,7 +33,14 @@ class FakeLifePosNotification implements ShouldQueue
      */
     public function handle()
     {
-        $data = ['type_of'=>'SalePayment'];
-        Http::timeout(10)->get(config('app.url').'/lifepos/notifications', $data);
+        $data = [
+            'type_of'=>'SalePayment',
+            'guid' => Str::random(8),
+            'total_sum' => ['value' => $this->order->total()],
+            'sale' => ['guid' => $this->order->external_id],
+            'sum_by_cash' => ['value' => rand(10, 1000)],
+            'fiscal_document' => ['guid' => Str::random(8)]
+            ];
+        Http::timeout(10)->post(config('app.url').'/services/lifepos/notifications', $data);
     }
 }
