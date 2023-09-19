@@ -45,6 +45,7 @@ class PartnerViewController extends ApiController
             'type' => $partner->type->name,
             'tickets_for_guides' => $profile->tickets_for_guides ?? 0,
             'can_reserve_tickets' => $profile->can_reserve_tickets ? 1 : 0,
+            'can_send_sms' => $profile->can_send_sms ? 1 : 0,
             'notes' => $profile->notes,
             'documents' => $partner->files->map(function (File $file) {
                 return ['id' => $file->id, 'name' => $file->original_filename, 'url' => $file->url, 'type' => $file->mime];

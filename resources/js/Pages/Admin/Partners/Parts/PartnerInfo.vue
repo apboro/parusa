@@ -4,6 +4,7 @@
             <GuiValue :title="'Название партнера'">{{ data['name'] }}</GuiValue>
             <GuiValue :title="'Дата заведения'" v-if="editable">{{ data['created_at'] }}</GuiValue>
             <GuiValue :title="'Тип партнера'">{{ data['type'] }}</GuiValue>
+            <GuiValue :title="'Отправка СМС'">{{ data['can_send_sms'] === 1? 'Разрешена' : 'Запрещена' }}</GuiValue>
             <GuiValue :title="'Статус'">
                 <span class="link" v-if="editable" @click="statusChange"><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
                 <span v-else><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>

@@ -74,6 +74,7 @@ class PartnerInfoController extends ApiController
             'reserves' => Order::query()->where(['partner_id' => $partner->id, 'status_id' => OrderStatus::partner_reserve])->count(),
             'order_amount' => PriceConverter::storeToPrice($orderAmount ?? 0),
             'can_reserve' => $current->partner()->profile->can_reserve_tickets,
+            'can_send_sms' => $current->partner()->profile->can_send_sms,
         ]);
     }
 }

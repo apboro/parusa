@@ -65,7 +65,8 @@
             <template v-if="!isReserve">
                 <GuiContainer>
                     <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
-                    <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning" @clicked="emailOrder">Отправить клиенту на почту</GuiButton>
+                    <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning" @clicked="emailOrder">Отправить на почту</GuiButton>
+                    <GuiButton v-if="info.data['can_send_sms']" @clicked="sendSMS">Отправить по СМС</GuiButton>
                     <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
                     <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
                     </GuiButton>
@@ -174,6 +175,15 @@ export default {
     },
 
     methods: {
+        sendSMS() {
+            axios.post('/api/order/send_sms', {orderId: this.orderId})
+                .then((response) => {
+                    this.$toast.success(response.data.message, 2100);
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data.message, 2100);
+                })
+        },
         makeReturn() {
             if (this.is_returning === false) {
                 this.to_return = [];

@@ -21,7 +21,7 @@ Route::post('/order/terminal/status', [TerminalCurrentOrderController::class, 's
 Route::post('/order/terminal/close', [TerminalCurrentOrderController::class, 'close'])->middleware(['allow:staff_terminal']);
 Route::post('/order/terminal/save_unconfirmed', [TerminalCurrentOrderController::class, 'saveUnconfirmed'])->middleware(['allow:staff_terminal']);
 
-Route::post('/order/send_sms', [OrderSMSController::class, 'sendSMS'])->middleware(['allow:staff_terminal,staff_admin']);
+Route::post('/order/send_sms', [OrderSMSController::class, 'sendSMS'])->middleware(['allow:staff_terminal,staff_admin,partner']);
 
 Route::post('/order/return', [OrderReturnController::class, 'return']);
 

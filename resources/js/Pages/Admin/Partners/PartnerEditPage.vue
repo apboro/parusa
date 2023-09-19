@@ -9,6 +9,10 @@
             <FormDictionary :form="form" :dictionary="'partner_types'" :name="'type_id'"/>
             <FormDictionary :form="form" :dictionary="'position_statuses'" :name="'status_id'"/>
             <FormNumber :form="form" :name="'tickets_for_guides'"/>
+            <FormDropdown :form="form" :name="'can_send_sms'" :identifier="'id'" :show="'name'" :options="[
+                {id: 0, name: 'Запрещена'},
+                {id: 1, name: 'Разрешена'},
+            ]" :placeholder="'Отправка СМС'"/>
             <FormDropdown :form="form" :name="'can_reserve_tickets'" :identifier="'id'" :show="'name'" :options="[
                 {id: 0, name: 'Запрещено'},
                 {id: 1, name: 'Разрешено'},

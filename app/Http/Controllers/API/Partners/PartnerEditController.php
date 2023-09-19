@@ -26,6 +26,7 @@ class PartnerEditController extends ApiEditController
         'status_id' => 'Статус',
         'tickets_for_guides' => 'Билеты для гидов',
         'can_reserve_tickets' => 'Бронирование билетов',
+        'can_send_sms' => 'Отправка СМС',
         'documents' => 'Документы',
         'notes' => 'Заметки',
     ];
@@ -56,6 +57,7 @@ class PartnerEditController extends ApiEditController
                 'status_id' => $partner->status_id,
                 'tickets_for_guides' => $partner->profile->tickets_for_guides,
                 'can_reserve_tickets' => $partner->profile->can_reserve_tickets ? 1 : 0,
+                'can_send_sms' => $partner->profile->can_send_sms ? 1 : 0,
                 'documents' => $partner->files->map(function (File $file) {
                     return ['id' => $file->id, 'name' => $file->original_filename, 'url' => $file->url, 'type' => $file->mime, 'size' => $file->size];
                 }),
@@ -101,6 +103,7 @@ class PartnerEditController extends ApiEditController
 
         $profile->tickets_for_guides = $data['tickets_for_guides'];
         $profile->can_reserve_tickets = $data['can_reserve_tickets'];
+        $profile->can_send_sms = $data['can_send_sms'];
         $profile->notes = $data['notes'];
         $profile->save();
 
