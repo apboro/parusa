@@ -33,6 +33,8 @@ import StatisticsSalesTodayPage from "@/Pages/Admin/Statistics/StatisticsSalesTo
 import StatisticsQrCodesPage from "@/Pages/Admin/Statistics/StatisticsQrCodesPage.vue";
 import PromoCodeListPage from "@/Pages/Admin/PromoCode/PromoCodeListPage.vue";
 import PromoCodeEditPage from "@/Pages/Admin/PromoCode/PromoCodeEditPage.vue";
+import PromotersListPage from "@/Pages/Admin/Promoters/PromotersListPage.vue";
+import PromoterEditPage from "@/Pages/Admin/Promoters/PromoterEditPage.vue";
 
 export default [
     {path: '/', name: 'home', component: TripsListPage, meta: {title: 'Список рейсов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
@@ -55,6 +57,8 @@ export default [
     {path: '/partners', name: 'partners-list', component: PartnersListPage, meta: {title: 'Компании-партнёры', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/partners/:id', name: 'partners-view', component: PartnerViewPage, meta: {title: 'Просмотр партнёра', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/partners/:id/edit', name: 'partners-edit', component: PartnerEditPage, meta: {title: 'Редактирование партнёра', roles: ['admin', 'office_manager', 'accountant']}},
+
+    {path: '/promoters/:id/edit', name: 'promoters-edit', component: PromoterEditPage, meta: {title: 'Редактирование промоутера', roles: ['admin', 'office_manager', 'accountant']}},
 
     {path: '/representatives', name: 'representatives-list', component: RepresentativesListPage, meta: {title: 'Представители', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/representatives/:id', name: 'representatives-view', component: RepresentativeViewPage, meta: {title: 'Просмотр представителя', roles: ['admin', 'office_manager', 'accountant']}},
@@ -81,4 +85,6 @@ export default [
 
     {path: '/dictionaries', name: 'dictionaries', component: DictionariesPage, meta: {title: 'Справочники', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
+
+    {path: '/promoters', name: 'promoters-list', component: PromotersListPage, meta: {title: 'Промоутеры', roles: ['admin', 'office_manager', 'accountant']}},
 ];

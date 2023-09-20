@@ -14,6 +14,7 @@ export default [
             {'title': 'Компании-партнёры', 'route': 'partners-list', 'roles': ['admin', 'office_manager', 'accountant']},
             {'title': 'Представители', 'route': 'representatives-list', 'roles': ['admin', 'office_manager', 'accountant']},
             {'title': 'Мобильные кассы', 'route': 'terminals-list', 'roles': ['admin', 'office_manager', 'accountant']},
+            {'title': 'Промоутеры', 'route': 'promoters-list', 'roles': ['admin', 'office_manager', 'accountant']},
         ]
     },
     {
