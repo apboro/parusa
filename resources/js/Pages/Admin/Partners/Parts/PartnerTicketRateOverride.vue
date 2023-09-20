@@ -114,7 +114,7 @@ export default {
                             this.form.set(`rates.${index}.id`, dataRate['id'], '', '', true);
                             this.form.set(`rates.${index}.grade_id`, item['id'], '', '', true);
                             this.form.set(`rates.${index}.grade_name`, item['name'], '', '', true);
-                            this.form.set(`rates.${index}.base_price`, dataRate['base_price'], '', '', true);
+                            this.form.set(`rates.${index}.base_price`, dataRate['partner_price'] ?? dataRate['base_price'], '', '', true);
                             this.form.set(`rates.${index}.commission_type`, dataRate['commission_type'], '', '', true);
                             this.form.set(`rates.${index}.commission_value`, dataRate['commission_value'], '', '', true);
                             this.form.set(`rates.${index}.partner_commission_type`, dataRate['partner_commission_type'], null, 'Тип', true);

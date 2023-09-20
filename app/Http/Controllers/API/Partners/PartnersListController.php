@@ -40,7 +40,7 @@ class PartnersListController extends ApiController
     public function list(APIListRequest $request): JsonResponse
     {
         Hit::register(HitSource::admin);
-        $query = Partner::query()->with(['type', 'status'])
+        $query = Partner::query()->with(['type', 'status', 'account'])
             ->with('positions', function (HasMany $query) {
                 $query->where('status_id', PositionStatus::active)
                     ->with(['user', 'user.profile'])

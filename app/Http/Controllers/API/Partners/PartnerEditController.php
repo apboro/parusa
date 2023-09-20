@@ -112,6 +112,8 @@ class PartnerEditController extends ApiEditController
         $fileIds = $files->pluck('id')->toArray();
         $partner->files()->sync($fileIds);
 
+        $partner->createMassRates();
+
         return APIResponse::success('Данные партнёра обновлены', [
             'id' => $partner->id,
             'title' => $partner->name,

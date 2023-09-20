@@ -15,6 +15,7 @@ use App\Models\Excursions\Excursion;
 use App\Models\Model;
 use App\Models\Positions\Position;
 use App\Models\QrCode;
+use App\Models\Tickets\TicketPartnerRate;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use Carbon\Carbon;
@@ -153,5 +154,19 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
     {
         return $this->hasMany(QrCode::class, 'partner_id', 'id');
 
+    }
+
+    public function createMassRates()
+    {
+        $partnerMassRates = TicketPartnerRate::where('mass_assignment', 1)->groupBy('rate_id')->get();
+        foreach ($partnerMassRates as $rate){
+            $newPartnerRate = new TicketPartnerRate();
+            $newPartnerRate->partner_id = $this->id;
+            $newPartnerRate->rate_id = $rate->rate_id;
+            $newPartnerRate->commission_type = $rate->commission_type;
+            $newPartnerRate->commission_value = $rate->commission_value ?? 0;
+            $newPartnerRate->mass_assignment = 1;
+            $newPartnerRate->save();
+        }
     }
 }
