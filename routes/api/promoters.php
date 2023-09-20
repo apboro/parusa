@@ -10,12 +10,13 @@ use App\Http\Controllers\API\Partners\PartnerRepresentativeStatusController;
 use App\Http\Controllers\API\Partners\PartnerViewController;
 use App\Http\Controllers\API\Promoters\PromoterEditController;
 use App\Http\Controllers\API\Promoters\PromotersListController;
+use App\Http\Controllers\API\Promoters\PromoterViewController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/promoters', [PromotersListController::class, 'list'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 
-Route::post('/promoters/view', [PartnerViewController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
-Route::post('/promoters/properties', [PartnerPropertiesController::class, 'properties'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/promoters/view', [PromoterViewController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+
 Route::post('/promoters/representative/details', [PartnerRepresentativesController::class, 'details'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 Route::post('/promoters/representative/attach', [PartnerRepresentativesController::class, 'attach'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 Route::post('/promoters/representative/detach', [PartnerRepresentativesController::class, 'detach'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');

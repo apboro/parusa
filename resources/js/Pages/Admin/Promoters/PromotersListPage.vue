@@ -18,7 +18,7 @@
                 />
             </LayoutFiltersItem>
             <template #search>
-                <LayoutFiltersItem :title="'Поиск по ФИО'">
+                <LayoutFiltersItem :title="'Поиск по ФИО и по ID'">
                     <InputSearch v-model="list.search" @change="list.load()"/>
                 </LayoutFiltersItem>
             </template>
@@ -28,8 +28,9 @@
             <ListTableRow v-for="partner in list.list">
                 <ListTableCell>
                     <GuiActivityIndicator :active="partner['active']"/>
-                    <router-link class="link" :to="{ name: 'partners-view', params: { id: partner['id'] }}" v-html="highlight(partner['name'])"/>
+                    <router-link class="link" :to="{ name: 'promoters-view', params: { id: partner['id'] }}" v-html="highlight(partner['name'])"/>
                 </ListTableCell>
+                <ListTableCell>{{partner['id']}}</ListTableCell>
                 <ListTableCell>{{ partner['balance'] }} руб.</ListTableCell>
                 <ListTableCell>{{ partner['limit'] }} руб.</ListTableCell>
             </ListTableRow>

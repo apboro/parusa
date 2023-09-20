@@ -56,12 +56,12 @@ class PromotersListController extends ApiController
         // apply search
         if (!empty($search = $request->search())) {
             $query->where(function (Builder $query) use ($search) {
-                $query
-                    ->where(function (Builder $query) use ($search) {
+                $query->where(function (Builder $query) use ($search) {
                         foreach ($search as $term) {
                             $query->where('name', 'LIKE', "%$term%");
                         }
                     })
+                    ->orWhere('partners.id', $search)
                     ->orWhere(function (Builder $query) use ($search) {
                         $query->whereHas('positions.user.profile', function (Builder $query) use ($search) {
                             foreach ($search as $term) {
@@ -94,6 +94,7 @@ class PromotersListController extends ApiController
         return APIResponse::list($partners,
             [
                 'name' => 'ФИО промоутера',
+                'ID' => 'ID',
                 'balance' => 'Лицевой счет',
                 'limit' => 'Лимит',
             ],

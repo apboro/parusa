@@ -13,6 +13,10 @@
         </GuiContainer>
 
         <GuiContainer mt-30>
+            <FormText :form="form" :name="'notes'"/>
+        </GuiContainer>
+
+        <GuiContainer mt-30>
             <GuiButton @click="save" :color="'green'">Сохранить</GuiButton>
             <GuiButton @click="cancel">Отмена</GuiButton>
         </GuiContainer>
@@ -73,9 +77,9 @@ export default {
             this.form.save({id: this.partnerId})
                 .then(response => {
                     if (this.partnerId === 0) {
-                        this.$router.push({name: 'partners-view', params: {id: response.payload['id']}});
+                        this.$router.push({name: 'promoters-view', params: {id: response.payload['id']}});
                     } else {
-                        this.$router.push({name: 'partners-view', params: {id: this.partnerId}});
+                        this.$router.push({name: 'promoters-view', params: {id: this.partnerId}});
                     }
                 })
         },
@@ -83,7 +87,7 @@ export default {
             if (this.partnerId === 0) {
                 this.$router.push({name: 'promoters-list'});
             } else {
-                this.$router.push({name: 'partners-view', params: {id: this.partnerId}})
+                this.$router.push({name: 'promoters-view', params: {id: this.partnerId}})
             }
         },
     }

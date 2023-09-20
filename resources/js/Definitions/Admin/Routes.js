@@ -35,6 +35,7 @@ import PromoCodeListPage from "@/Pages/Admin/PromoCode/PromoCodeListPage.vue";
 import PromoCodeEditPage from "@/Pages/Admin/PromoCode/PromoCodeEditPage.vue";
 import PromotersListPage from "@/Pages/Admin/Promoters/PromotersListPage.vue";
 import PromoterEditPage from "@/Pages/Admin/Promoters/PromoterEditPage.vue";
+import PromoterViewPage from "@/Pages/Admin/Promoters/PromoterViewPage.vue";
 
 export default [
     {path: '/', name: 'home', component: TripsListPage, meta: {title: 'Список рейсов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
@@ -59,6 +60,7 @@ export default [
     {path: '/partners/:id/edit', name: 'partners-edit', component: PartnerEditPage, meta: {title: 'Редактирование партнёра', roles: ['admin', 'office_manager', 'accountant']}},
 
     {path: '/promoters/:id/edit', name: 'promoters-edit', component: PromoterEditPage, meta: {title: 'Редактирование промоутера', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/promoters/:id', name: 'promoters-view', component: PromoterViewPage, meta: {title: 'Просмотр промоутера', roles: ['admin', 'office_manager', 'accountant']}},
 
     {path: '/representatives', name: 'representatives-list', component: RepresentativesListPage, meta: {title: 'Представители', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/representatives/:id', name: 'representatives-view', component: RepresentativeViewPage, meta: {title: 'Просмотр представителя', roles: ['admin', 'office_manager', 'accountant']}},

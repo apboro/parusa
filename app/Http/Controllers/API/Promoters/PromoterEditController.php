@@ -9,6 +9,7 @@ use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
+use App\Models\Positions\Position;
 use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,6 +30,7 @@ class PromoterEditController extends ApiEditController
         'patronymic' => 'Отчество',
         'email' => 'Почта',
         'phone' => 'Телефон',
+        'notes' => 'Заметки'
     ];
 
     /**
@@ -48,17 +50,18 @@ class PromoterEditController extends ApiEditController
         if ($partner === null) {
             return APIResponse::notFound('Промоутер не найден');
         }
-        $promoterUser = $partner->positions()->first()?->user->profile;
+        $promoterUserProfile = $partner->positions()->first()?->user->profile;
 
         // send response
         return APIResponse::form(
             [
-                'last_name' => $promoterUser->lastname ?? null,
-                'first_name' => $promoterUser->firstname ?? null,
-                'patronymic' => $promoterUser->patronymic ?? null,
-                'email' => $promoterUser->email ?? null,
-                'phone' => $promoterUser->mobile_phone ?? null,
+                'last_name' => $promoterUserProfile->lastname ?? null,
+                'first_name' => $promoterUserProfile->firstname ?? null,
+                'patronymic' => $promoterUserProfile->patronymic ?? null,
+                'email' => $promoterUserProfile->email ?? null,
+                'phone' => $promoterUserProfile->mobile_phone ?? null,
                 'status_id' => $partner->status_id ?? null,
+                'notes' => $promoterUserProfile->notes ?? null,
             ],
             $this->rules,
             $this->titles,
@@ -94,8 +97,8 @@ class PromoterEditController extends ApiEditController
         $promoterUser = $partner->positions()->first()?->user;
         if (!$promoterUser){
             $promoterUser = new User();
+            $promoterUser->save();
         }
-        $promoterUser->save();
 
         $promoterUserProfile = $promoterUser->profile;
 
@@ -104,6 +107,7 @@ class PromoterEditController extends ApiEditController
         $promoterUserProfile->patronymic = $data['patronymic'];
         $promoterUserProfile->email = $data['email'];
         $promoterUserProfile->mobile_phone = $data['phone'];
+        $promoterUserProfile->notes = $data['notes'];
         $promoterUserProfile->save();
 
         $partner->name = $promoterUserProfile->fullName;
@@ -111,12 +115,19 @@ class PromoterEditController extends ApiEditController
         $partner->status_id = $data['status_id'];
         $partner->save();
 
+        $promoterUserPosition = new Position();
+        $promoterUserPosition->user_id = $promoterUser->id;
+        $promoterUserPosition->status_id = 1;
+        $promoterUserPosition->access_status_id = 1;
+        $promoterUserPosition->partner_id = $partner->id;
+        $promoterUserPosition->title = "Промоутер";
+        $promoterUserPosition->is_staff = 0;
+        $promoterUserPosition->save();
+
         $profile = $partner->profile;
 
         $profile->tickets_for_guides = 0;
         $profile->save();
-
-        $position = $partner->positions()->first();
 
         return APIResponse::success('Данные промоутера обновлены', [
             'id' => $partner->id,
