@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\NevaTravelTests;
+namespace Tests\NevaTravel;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

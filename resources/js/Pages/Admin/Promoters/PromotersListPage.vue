@@ -7,16 +7,6 @@
         </template>
 
         <LayoutFilters>
-            <LayoutFiltersItem :title="'Статус промоутера'">
-                <DictionaryDropDown
-                    :dictionary="'partner_statuses'"
-                    v-model="list.filters['partner_status_id']"
-                    :original="list.filters_original['partner_status_id']"
-                    :placeholder="'Все'"
-                    :has-null="true"
-                    @change="list.load()"
-                />
-            </LayoutFiltersItem>
             <template #search>
                 <LayoutFiltersItem :title="'Поиск по ФИО и по ID'">
                     <InputSearch v-model="list.search" @change="list.load()"/>

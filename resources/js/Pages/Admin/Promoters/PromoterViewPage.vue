@@ -17,7 +17,7 @@
             }" @change="tab = $event"/>
 
             <PromoterInfo v-if="tab === 'details'" :data="data.data" :partner-id="partnerId" :editable="true" @update="update"/>
-<!--            <RepresentativeAccess v-if="tab === 'access'" :representative-id="representativeId" :data="data.data" :editable="true" @update="update"/>-->
+            <RepresentativeAccess v-if="tab === 'access'" :representative-id="data.data.representativeId" :data="data.data" :editable="true" @update="update"/>
 
         </template>
     </LayoutPage>

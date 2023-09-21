@@ -2,7 +2,10 @@
     <div>
         <GuiContainer w-50 mt-30>
             <GuiValue :title="'ФИО промоутера'">{{ data['name'] }}</GuiValue>
+            <GuiValue :title="'ID'">{{ data['id'] }}</GuiValue>
             <GuiValue :title="'Дата заведения'" v-if="editable">{{ data['created_at'] }}</GuiValue>
+            <GuiValue :title="'Телефон'" v-if="editable">{{ data['phone'] }}</GuiValue>
+            <GuiValue :title="'Почта'" v-if="editable">{{ data['email'] }}</GuiValue>
         </GuiContainer>
 
         <GuiContainer w-100 mt-20 v-if="editable">
@@ -55,39 +58,14 @@ export default {
     },
 
     data: () => ({
-        form: form(null, '/api/partners/properties'),
+        form: form(null, '/api/promoters/update'),
         form_title: null,
         dictionary: null,
     }),
 
     methods: {
         edit() {
-            this.$router.push({name: 'partners-edit', params: {id: this.partnerId}});
-        },
-        showForm(title, key, rules, dictionary = null) {
-            this.form_title = title;
-            this.form.reset();
-            this.form.set('name', key);
-            this.form.set('value', this.data[key], rules, title, true);
-            this.dictionary = dictionary;
-            this.form.toaster = this.$toast;
-            this.form.load();
-            this.$refs.popup.show()
-                .then(response => {
-                    this.$emit('update', response.payload);
-                })
-        },
-
-        statusChange() {
-            this.showForm('Изменить статус партнёра', 'status_id', 'required', 'partner_statuses');
-        },
-
-        ticketsChange() {
-            this.showForm('Билеты для гидов', 'tickets_for_guides', 'required', null);
-        },
-
-        reserveChange() {
-            this.showForm('Бронирование билетов', 'can_reserve_tickets', 'required', 'bool');
+            this.$router.push({name: 'promoters-edit', params: {id: this.partnerId}});
         },
     }
 }

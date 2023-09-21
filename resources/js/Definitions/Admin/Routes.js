@@ -59,6 +59,7 @@ export default [
     {path: '/partners/:id', name: 'partners-view', component: PartnerViewPage, meta: {title: 'Просмотр партнёра', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/partners/:id/edit', name: 'partners-edit', component: PartnerEditPage, meta: {title: 'Редактирование партнёра', roles: ['admin', 'office_manager', 'accountant']}},
 
+    {path: '/promoters', name: 'promoters-list', component: PromotersListPage, meta: {title: 'Промоутеры', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/promoters/:id/edit', name: 'promoters-edit', component: PromoterEditPage, meta: {title: 'Редактирование промоутера', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/promoters/:id', name: 'promoters-view', component: PromoterViewPage, meta: {title: 'Просмотр промоутера', roles: ['admin', 'office_manager', 'accountant']}},
 
@@ -88,5 +89,4 @@ export default [
     {path: '/dictionaries', name: 'dictionaries', component: DictionariesPage, meta: {title: 'Справочники', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 
-    {path: '/promoters', name: 'promoters-list', component: PromotersListPage, meta: {title: 'Промоутеры', roles: ['admin', 'office_manager', 'accountant']}},
 ];
