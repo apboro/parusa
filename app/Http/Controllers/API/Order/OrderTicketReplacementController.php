@@ -139,7 +139,8 @@ class OrderTicketReplacementController extends ApiController
                 NewNevaTravelOrderEvent::dispatch($order);
                 NevaTravelOrderPaidEvent::dispatch($order);
                 try {
-                    Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
+                    if ($order->email)
+                        Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
                 } catch (Exception $exception) {
                     Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
                 }
