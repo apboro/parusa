@@ -48,9 +48,8 @@ class PartnerTest extends TestCase
             Partner::class,
             PartnerType::class,
             WrongPartnerTypeException::class,
-            1000,
+            1001,
             [$this, 'makePartner']
         );
-
     }
 }

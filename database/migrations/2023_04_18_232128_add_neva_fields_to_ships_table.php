@@ -28,9 +28,17 @@ class AddNevaFieldsToShipsTable extends Migration
     public function down()
     {
         Schema::table('ships', function (Blueprint $table) {
-            $table->dropColumn('partner_inner_id');
-            $table->dropColumn('label');
-            $table->dropColumn('source');
+            if (Schema::hasColumn('ships', 'partner_inner_id')) {
+                $table->dropColumn('partner_inner_id');
+            }
+
+            if (Schema::hasColumn('ships', 'label')) {
+                $table->dropColumn('label');
+            }
+
+            if (Schema::hasColumn('ships', 'source')) {
+                $table->dropColumn('source');
+            }
         });
     }
 }

@@ -29,12 +29,14 @@ class PaymentsTableAddTerminalPosition extends Migration
      */
     public function down(): void
     {
-        Schema::table('payments', static function (Blueprint $table) {
-            $table->dropForeign(['terminal_id']);
-            $table->dropForeign(['position_id']);
+        if (Schema::hasColumns('payments', ['terminal_id', 'position_id'])) {
+            Schema::table('payments', static function (Blueprint $table) {
+                $table->dropForeign(['terminal_id']);
+                $table->dropForeign(['position_id']);
 
-            $table->dropColumn('terminal_id');
-            $table->dropColumn('position_id');
-        });
+                $table->dropColumn('terminal_id');
+                $table->dropColumn('position_id');
+            });
+        }
     }
 }

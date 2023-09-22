@@ -27,10 +27,12 @@ class AddPartnerIdFieldToPiersTable extends Migration
      */
     public function down()
     {
-        Schema::table('piers', function (Blueprint $table) {
-            $table->dropColumn('external_id');
-            $table->dropColumn('external_parent_id');
-            $table->dropColumn('source');
-        });
+        if (Schema::hasColumns('piers', ['external_id', 'external_parent_id', 'source'])) {
+            Schema::table('piers', function (Blueprint $table) {
+                $table->dropColumn('external_id');
+                $table->dropColumn('external_parent_id');
+                $table->dropColumn('source');
+            });
+        }
     }
 }

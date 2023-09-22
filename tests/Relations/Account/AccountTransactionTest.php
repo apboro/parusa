@@ -9,6 +9,7 @@ use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Partner\Partner;
+use App\Models\Positions\Position;
 use App\Models\User\User;
 use Illuminate\Database\QueryException;
 use Tests\Relations\StatusTestTrait;
@@ -77,16 +78,16 @@ class AccountTransactionTest extends TestCase
     public function testLocking(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $position = Position::factory()->create();
 
-        $transaction = $this->makeTransaction(['committer_id' => $user->id]);
+        $transaction = $this->makeTransaction(['committer_id' => $position->id]);
 
         $account = $transaction->account;
 
         // try to delete user
         $deleted = null;
         try {
-            $user->delete();
+            $position->user->delete();
             $deleted = true;
         } catch (QueryException $e) {
             $deleted = false;

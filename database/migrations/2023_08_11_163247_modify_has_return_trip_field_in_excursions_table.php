@@ -8,9 +8,13 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('excursions', function (Blueprint $table) {
-            $table->dropColumn('has_return_trip');
-            $table->unsignedSmallInteger('reverse_excursion_id')->nullable();
-            $table->foreign('reverse_excursion_id')->on('excursions')->references('id');
+            if (Schema::hasColumn('excursions', 'has_return_trip')) {
+                $table->dropColumn('has_return_trip');
+            }
+            if (!Schema::hasColumn('excursions', 'reverse_excursion_id')) {
+                $table->unsignedSmallInteger('reverse_excursion_id')->nullable();
+                $table->foreign('reverse_excursion_id')->on('excursions')->references('id');
+            }
         });
     }
 

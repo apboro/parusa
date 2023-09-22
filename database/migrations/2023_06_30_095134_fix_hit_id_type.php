@@ -25,8 +25,6 @@ class FixHitIdType extends Migration
      */
     public function down()
     {
-        Schema::table('hits', function (Blueprint $table) {
-            $table->unsignedTinyInteger('id', true)->change();
-        });
+
     }
 }

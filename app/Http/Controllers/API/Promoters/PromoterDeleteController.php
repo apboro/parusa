@@ -34,6 +34,7 @@ class PromoterDeleteController extends ApiController
         try {
             $partner->positions()->first()->user()->delete();
             $partner->positions()->delete();
+            $partner->account()->delete();
             $partner->delete();
         } catch (QueryException $exception) {
             return APIResponse::error('Невозможно удалить промоутера. Есть блокирующие связи.', ['error' => $exception->getMessage()]);

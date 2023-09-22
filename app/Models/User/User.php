@@ -112,7 +112,7 @@ class User extends Authenticatable implements Statusable, AsDictionary
      */
     public function staffPosition(): HasOne
     {
-        return $this->hasOne(Position::class, 'user_id', 'id')->where('is_staff', true)->withDefault();
+        return $this->hasOne(Position::class, 'user_id', 'id')->where('is_staff', 1)->withDefault();
     }
 
     /**

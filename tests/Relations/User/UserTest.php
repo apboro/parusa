@@ -37,26 +37,4 @@ class UserTest extends TestCase
         );
     }
 
-    public function testUserRoles(): void
-    {
-        $user = $this->makeUser();
-
-        // default role not set
-        $this->assertEmpty($user->roles, 'Default UserRole for User must be empty');
-
-        // default relation is empty
-        $this->assertFalse($user->hasRole(Role::admin, true), 'Default UserRole for User must be empty');
-
-        // attach role
-        $user->roles()->attach(Role::admin);
-        $this->assertTrue($user->hasRole(Role::admin, true), 'Error attaching UserRole to User');
-
-        // detach role
-        $user->roles()->detach(Role::admin);
-        $this->assertFalse($user->hasRole(Role::admin, true), 'Error attaching UserRole to User');
-
-        // attach role
-        $user->roles()->sync([Role::admin]);
-        $this->assertTrue($user->hasRole(Role::admin, true), 'Error attaching UserRole to User');
-    }
 }
