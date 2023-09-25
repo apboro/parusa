@@ -112,7 +112,7 @@ class ExcursionEditController extends ApiEditController
         $excursion->setAttribute('name', $data['name']);
         $excursion->setAttribute('name_receipt', $data['name_receipt']);
         $excursion->setAttribute('type_id', $data['excursion_type_id']);
-        $excursion->setAttribute('provider_id', Provider::scarlet_sails);
+        $excursion->provider_id = $excursion->provider_id ?? Provider::scarlet_sails;
         $excursion->setAttribute('only_site', $data['only_site'] ?? false);
         $excursion->setAttribute('is_single_ticket', $data['is_single_ticket'] ?? false);
         $excursion->setAttribute('reverse_excursion_id', $data['reverse_excursion_id'] ?? null);
