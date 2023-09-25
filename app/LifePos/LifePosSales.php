@@ -61,7 +61,8 @@ class LifePosSales
             /** @var Ticket $ticket */
             $tickets[] = [
                 'good_type' => 'Service',
-                'name' => 'Билет №' . $ticket->id . ' (' . mb_strtolower($ticket->grade->name) . ')  на экскурсию ' . $ticket->trip->excursion->name
+                'name' => 'Билет №' . $ticket->id . ' (' . mb_strtolower($ticket->grade->name) . ')
+                  на экскурсию ' . $ticket->trip->excursion->name_receipt ?? $ticket->trip->excursion->name
                     . ', рейс №' . $ticket->trip->id . ', ' . $ticket->trip->start_at->format('d.m.Y H:i'),
                 'uom' => ['guid' => env('LIFE_POS_TICKET_UOM')],
                 'tax' => env('LIFE_POS_TICKET_TAX'),
