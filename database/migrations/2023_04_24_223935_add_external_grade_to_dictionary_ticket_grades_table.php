@@ -25,8 +25,10 @@ class AddExternalGradeToDictionaryTicketGradesTable extends Migration
      */
     public function down()
     {
-        Schema::table('dictionary_ticket_rates', function (Blueprint $table) {
-            $table->dropColumn('external_grade_name');
-        });
+        if (Schema::hasColumn('dictionary_ticket_rates', 'external_grade_name')) {
+            Schema::table('dictionary_ticket_rates', function (Blueprint $table) {
+                $table->dropColumn('external_grade_name');
+            });
+        }
     }
 }

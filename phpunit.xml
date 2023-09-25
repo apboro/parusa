@@ -14,6 +14,9 @@
         <testsuite name="Feature">
             <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
+        <testsuite name="NevaTravel">
+            <directory suffix="Test.php">./tests/NevaTravel</directory>
+        </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
@@ -21,7 +24,7 @@
         </include>
     </coverage>
     <php>
-        <server name="APP_ENV" value="testing"/>
+        <server name="APP_ENV" value="local"/>
         <server name="BCRYPT_ROUNDS" value="4"/>
         <server name="CACHE_DRIVER" value="array"/>
         <server name="DB_CONNECTION" value="testing_parusa"/>

@@ -69,7 +69,7 @@ class TestDataSeeder extends Seeder
                 'comments' => 'Начальное пополнение',
                 'timestamp' => $date,
             ]));
-            for ($i = 1; $i <= 30; $i++) {
+            for ($i = 1; $i <= 29; $i++) {
                 $date->addDay();
                 $partner->account->attachTransaction(new AccountTransaction([
                     'type_id' => $typeIds[random_int(0, count($typeIds) - 1)],

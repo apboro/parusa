@@ -27,10 +27,12 @@ class AddIntegrationFieldsToTripsTable extends Migration
      */
     public function down()
     {
-        Schema::table('trips', function (Blueprint $table) {
-            $table->dropColumn('external_id');
-            $table->dropColumn('source');
-            $table->dropColumn('program_price_id');
-        });
+        if (Schema::hasColumns('trips', ['external_id', 'source', 'program_price_id'])) {
+            Schema::table('trips', function (Blueprint $table) {
+                $table->dropColumn('external_id');
+                $table->dropColumn('source');
+                $table->dropColumn('program_price_id');
+            });
+        }
     }
 }

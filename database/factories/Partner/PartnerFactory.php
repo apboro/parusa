@@ -18,7 +18,7 @@ class PartnerFactory extends Factory
     {
         return [
             'name' => $this->faker->company,
-            'type_id' => 1000,
+            'type_id' => 1001,
         ];
     }
 }

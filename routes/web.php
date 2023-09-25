@@ -14,7 +14,7 @@ Route::middleware('web')->group(function () {
     Route::post('/login/change', [FrontendController::class, 'change'])->middleware('auth');
 });
 
-Route::get('/test',[TestController::class, 'test'])->middleware(['web', 'auth']);
+Route::get('/test',[TestController::class, 'test']);
 
 Route::name('frontend')
     ->any('/{query?}', [FrontendController::class, 'index'])

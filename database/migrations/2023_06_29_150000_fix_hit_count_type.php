@@ -25,8 +25,6 @@ class FixHitCountType extends Migration
      */
     public function down()
     {
-        Schema::table('hits', function (Blueprint $table) {
-            $table->unsignedTinyInteger('count')->default(0)->change();
-        });
+
     }
 }

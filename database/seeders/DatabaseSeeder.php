@@ -7,6 +7,7 @@ use Database\Seeders\Dictionaries\ContactTypesSeeder;
 use Database\Seeders\Dictionaries\ExcursionTypesSeeder;
 use Database\Seeders\Dictionaries\HitSeeder;
 use Database\Seeders\Dictionaries\OrderTypesSeeder;
+use Database\Seeders\Dictionaries\PartnerTypesSeeder;
 use Database\Seeders\Dictionaries\ProviderTypesSeeder;
 use Database\Seeders\Dictionaries\StatusesSeeder;
 use Database\Seeders\Dictionaries\TypesSeeder;
@@ -25,7 +26,8 @@ class DatabaseSeeder extends Seeder
         ExcursionTypesSeeder::class,
         ContactTypesSeeder::class,
         AccountTransactionTypesSeeder::class,
-        OrderTypesSeeder::class
+        OrderTypesSeeder::class,
+        PartnerTypesSeeder::class
     ];
 
     /**

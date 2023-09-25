@@ -55,6 +55,8 @@ class Position extends Model implements Statusable
      */
     protected $fillable = [
         'position_title',
+        'is_staff',
+        'partner_id',
     ];
 
     /**

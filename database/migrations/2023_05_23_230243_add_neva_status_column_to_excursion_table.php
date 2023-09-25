@@ -25,8 +25,10 @@ class AddNevaStatusColumnToExcursionTable extends Migration
      */
     public function down()
     {
-        Schema::table('excursions', function (Blueprint $table) {
-            $table->dropColumn('neva_status');
-        });
+        if (Schema::hasColumn('tickets', 'neva_travel_ticket')) {
+            Schema::table('excursions', function (Blueprint $table) {
+                $table->dropColumn('neva_status');
+            });
+        }
     }
 }

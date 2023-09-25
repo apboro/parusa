@@ -25,8 +25,10 @@ class AddNevaTravelOrderNumberFieldToOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('neva_travel_order_number');
-        });
+        if (Schema::hasColumn('orders', 'neva_travel_order_number')) {
+            Schema::table('orders', function (Blueprint $table) {
+                $table->dropColumn('neva_travel_order_number');
+            });
+        }
     }
 }

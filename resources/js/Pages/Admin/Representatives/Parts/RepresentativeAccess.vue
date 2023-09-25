@@ -85,7 +85,7 @@ export default {
 
         closeAccess() {
             const name = this.data['full_name'];
-            this.$dialog.show('Закрыть доступ в систему для сотрудника "' + name + '"?', 'question', 'red', [
+            this.$dialog.show('Закрыть доступ в систему для "' + name + '"?', 'question', 'red', [
                 this.$dialog.button('no', 'Отмена', 'blue'),
                 this.$dialog.button('yes', 'Продолжить', 'red'),
             ]).then(result => {

@@ -21,7 +21,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('dictionary_ticket_grades', function (Blueprint $table) {
-            $table->dropColumn('provider_id');
+            $table->dropForeign('dictionary_ticket_grades_provider_id_foreign');
         });
     }
 };

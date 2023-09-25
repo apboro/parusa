@@ -42,7 +42,7 @@ class addTypeToExcursionsTable extends Migration
     public function down()
     {
         Schema::table('excursions', function (Blueprint $table) {
-            $table->dropColumn('type_id');
+            $table->dropForeign('excursions_type_id_foreign');
         });
     }
 }

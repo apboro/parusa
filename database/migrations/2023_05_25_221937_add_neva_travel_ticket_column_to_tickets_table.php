@@ -25,8 +25,10 @@ class AddNevaTravelTicketColumnToTicketsTable extends Migration
      */
     public function down()
     {
-        Schema::table('tickets', function (Blueprint $table) {
-            $table->dropColumn('neva_travel_ticket');
-        });
+        if (Schema::hasColumn('tickets', 'neva_travel_ticket')) {
+            Schema::table('tickets', function (Blueprint $table) {
+                $table->dropColumn('neva_travel_ticket');
+            });
+        }
     }
 }

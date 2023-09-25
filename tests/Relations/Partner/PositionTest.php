@@ -6,7 +6,10 @@ use App\Exceptions\Positions\WrongPositionStatusException;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Partner\Partner;
 use App\Models\Partner\PartnerUserPosition;
+use App\Models\Positions\Position;
 use App\Models\User\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Tests\Relations\StatusTestTrait;
 use Tests\TestCase;
@@ -18,20 +21,17 @@ class PositionTest extends TestCase
     /**
      * Local user factory.
      *
-     * @return PartnerUserPosition
+     * @return Collection|Model
      */
-    protected function makePosition(): PartnerUserPosition
+    protected function makePosition(): Collection|Model
     {
-        /** @var PartnerUserPosition $partner */
-        $partner = PartnerUserPosition::factory()->create();
-
-        return $partner;
+        return Position::factory()->create();
     }
 
     public function testUserStatus(): void
     {
         $this->runStatusTests(
-            PartnerUserPosition::class,
+            Position::class,
             PositionStatus::class,
             WrongPositionStatusException::class,
             PositionStatus::default,
@@ -42,36 +42,26 @@ class PositionTest extends TestCase
 
     public function testRelationsAndLocks(): void
     {
-        /** @var User $user */
-        $user = User::factory()->create();
-        /** @var Partner $partner */
-        $partner = Partner::factory()->create();
-
-        /** @var PartnerUserPosition $position */
-        $position = PartnerUserPosition::factory()->create(['user_id' => $user->id, 'partner_id' => $partner->id]);
-
-        // check user and position matching
-        $this->assertEquals($user->id, $position->user->id);
-        $this->assertEquals($partner->id, $position->partner->id);
+        $position = Position::factory()->create();
 
         // check user locked by position
         $deleted = null;
         try {
-            $user->delete();
+            $position->user->delete();
             $deleted = true;
         } catch (QueryException $e) {
             $deleted = false;
         }
-        $this->assertEquals(false, $deleted, 'User deletion must be blocked by PartnerUserPosition');
+        $this->assertEquals(true, $deleted, 'User deletion must not be blocked by Position');
 
         // check user locked by position
         $deleted = null;
         try {
-            $partner->delete();
+            $position->partner->delete();
             $deleted = true;
         } catch (QueryException $e) {
             $deleted = false;
         }
-        $this->assertEquals(false, $deleted, 'Partner deletion must be blocked by PartnerUserPosition');
+        $this->assertEquals(true, $deleted, 'Partner deletion must not be blocked by Position');
     }
 }
