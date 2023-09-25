@@ -16,6 +16,7 @@ mix
     .js('resources/js/partner.js', 'js').vue()
     .js('resources/js/terminal.js', 'js').vue()
     .js('resources/js/controller.js', 'js').vue()
+    .js('resources/js/promoter.js', 'js').vue()
     .sass('resources/css/app.scss', 'css')
 
     .js('resources/js/showcase.js', 'js').vue()

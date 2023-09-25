@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\Role;
@@ -61,8 +62,11 @@ class FrontendController extends Controller
         }
 
         // partner account
-        if ($current->position() !== null && !$current->isStaff()) {
+        if ($current->position() !== null && !$current->isStaff() && $current->partner()->type_id != PartnerType::promoter) {
             return $this->partnerPage($current, $loginVariantsCount > 1);
+        }
+        if ($current->position() !== null && !$current->isStaff() && $current->partner()->type_id === PartnerType::promoter) {
+            return $this->promoterPage($current, $loginVariantsCount > 1);
         }
 
         // terminal user role selected
@@ -239,6 +243,30 @@ class FrontendController extends Controller
             ->withCookie($current->positionToCookie())
             ->withCookie($current->roleToCookie())
             ->withCookie($current->terminalToCookie());
+    }
+
+    /**
+     * Render promoter page.
+     *
+     * @param Currents $current
+     * @param bool $canChangePosition
+     *
+     * @return  Response
+     * @throws JsonException
+     */
+    protected function promoterPage(Currents $current, bool $canChangePosition): Response
+    {
+        return response()->view('promoter', [
+            'user' => json_encode([
+                'name' => $this->e($current->user()->profile->compactName),
+                'organization' => $this->e($current->position()->partner->name),
+                'position' => $this->e($current->position()->title),
+                'positions' => $canChangePosition,
+                'can_reserve' => $current->partner()->profile->can_reserve_tickets,
+            ], JSON_THROW_ON_ERROR),
+        ])
+            ->withCookie($current->positionToCookie())
+            ->withCookie($current->roleToCookie());
     }
 
     /**
