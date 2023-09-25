@@ -1,15 +1,15 @@
 <template>
-    <PromotersListPage/>
+    <PromotersList/>
 </template>
 
 <script>
 
 
-import PromotersListPage from "@/Pages/Admin/Promoters/PromotersListPage.vue";
+import PromotersList from "@/Pages/Terminal/Parts/PromotersList.vue";
 
 export default {
     components: {
-        PromotersListPage
+        PromotersList: PromotersList
 
     }
 }

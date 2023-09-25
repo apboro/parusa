@@ -12,7 +12,7 @@
             <ListTableRow v-for="partner in list.list">
                 <ListTableCell>
                     <GuiActivityIndicator :active="partner['active']"/>
-                    <router-link class="link" :to="{ name: 'promoters-view', params: { id: partner['id'] }}" v-html="highlight(partner['name'])"/>
+                    <router-link class="link" :to="{ name: 'terminal-promoters-view', params: { id: partner['id'] }}" v-html="highlight(partner['name'])"/>
                 </ListTableCell>
                 <ListTableCell>{{partner['id']}}</ListTableCell>
                 <ListTableCell>{{ partner['balance'] }} руб.</ListTableCell>
@@ -28,19 +28,19 @@
 
 <script>
 import list from "@/Core/List";
-import LayoutPage from "@/Components/Layout/LayoutPage";
-import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
-import LayoutFilters from "@/Components/Layout/LayoutFilters";
-import LayoutFiltersItem from "@/Components/Layout/LayoutFiltersItem";
-import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown";
-import ListTable from "@/Components/ListTable/ListTable";
-import InputSearch from "@/Components/Inputs/InputSearch";
-import ListTableRow from "@/Components/ListTable/ListTableRow";
-import ListTableCell from "@/Components/ListTable/ListTableCell";
-import GuiAccessIndicator from "@/Components/GUI/GuiAccessIndicator";
-import GuiActivityIndicator from "@/Components/GUI/GuiActivityIndicator";
-import GuiMessage from "@/Components/GUI/GuiMessage";
-import Pagination from "@/Components/Pagination";
+import LayoutPage from "@/Components/Layout/LayoutPage.vue";
+import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu.vue";
+import LayoutFilters from "@/Components/Layout/LayoutFilters.vue";
+import LayoutFiltersItem from "@/Components/Layout/LayoutFiltersItem.vue";
+import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown.vue";
+import ListTable from "@/Components/ListTable/ListTable.vue";
+import InputSearch from "@/Components/Inputs/InputSearch.vue";
+import ListTableRow from "@/Components/ListTable/ListTableRow.vue";
+import ListTableCell from "@/Components/ListTable/ListTableCell.vue";
+import GuiAccessIndicator from "@/Components/GUI/GuiAccessIndicator.vue";
+import GuiActivityIndicator from "@/Components/GUI/GuiActivityIndicator.vue";
+import GuiMessage from "@/Components/GUI/GuiMessage.vue";
+import Pagination from "@/Components/Pagination.vue";
 
 export default {
     components: {
