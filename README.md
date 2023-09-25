@@ -2,6 +2,7 @@
 
 Документация
 https://apidoc.life-pay.ru/cloud-print/
+https://api-docs.life-pos.ru/documentation/ru-ru/dev/index.html
 
 ## QUESTIONS / PROBABLY TODO
 

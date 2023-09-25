@@ -4,4 +4,5 @@ export default [
     {'title': 'ВОЗВРАТ БИЛЕТОВ', 'route': 'return-search'},
     {'title': 'РЕЕСТР ЗАКАЗОВ', 'route': 'orders-registry'},
     {'title': 'РЕЕСТР ТРАНЗАКЦИЙ', 'route': 'transactions-registry'},
+    {'title': 'ПРОМОУТЕРЫ', 'route': 'terminal-promoters'},
 ];

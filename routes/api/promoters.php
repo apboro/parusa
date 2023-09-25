@@ -14,7 +14,7 @@ use App\Http\Controllers\API\Promoters\PromotersListController;
 use App\Http\Controllers\API\Promoters\PromoterViewController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/promoters', [PromotersListController::class, 'list'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/promoters', [PromotersListController::class, 'list'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_terminal');
 
 Route::post('/promoters/view', [PromoterViewController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 
