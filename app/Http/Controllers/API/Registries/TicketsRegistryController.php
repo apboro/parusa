@@ -58,11 +58,11 @@ class TicketsRegistryController extends ApiController
 
         $partnerId = $current->isStaff() ? $request->input('partner_id') : $current->partnerId();
         $tripId = $request->input('trip_id');
-        $excursionId = $request->input('excursion_id');
+        $excursionIds = $filters['excursion_id'] ?? [];
         $pierId = $request->input('pier_id');
         $shipId = $request->input('ship_id');
 
-        $query = $this->getListQuery($request->search(), $filters, $partnerId, $tripId, $excursionId, $pierId, $shipId);
+        $query = $this->getListQuery($request->search(), $filters, $partnerId, $tripId, $excursionIds, $pierId, $shipId);
 
         $tickets = $query->paginate($request->perPage());
 
@@ -121,11 +121,11 @@ class TicketsRegistryController extends ApiController
 
         $partnerId = $current->isStaff() ? $request->input('partner_id') : $current->partnerId();
         $tripId = $request->input('trip_id');
-        $excursionId = $request->input('excursion_id');
+        $excursionIds = $filters['excursion_id'] ?? [];
         $pierId = $request->input('pier_id');
         $shipId = $request->input('ship_id');
 
-        $tickets = $this->getListQuery($request->search(), $filters, $partnerId, $tripId, $excursionId, $pierId, $shipId)->get();
+        $tickets = $this->getListQuery($request->search(), $filters, $partnerId, $tripId, $excursionIds, $pierId, $shipId)->get();
 
         $titles = [
             '№ билета',
@@ -205,9 +205,9 @@ class TicketsRegistryController extends ApiController
      *
      * @return Builder
      */
-    protected function getListQuery(array $search, array $filters, ?int $partnerId, ?int $tripId, ?int $excursionId, ?int $pierId, ?int $shipId): Builder
+    protected function getListQuery(array $search, array $filters, ?int $partnerId, ?int $tripId, ?array $excursionIds, ?int $pierId, ?int $shipId): Builder
     {
-        $query = Ticket::query()->orderBy('updated_at', 'desc')
+        $query = Ticket::query()->orderBy('created_at')
             ->with(
                 ['status', 'order', 'order.terminal', 'order.cashier', 'order.type', 'order.partner', 'order.position', 'order.position.user.profile', 'transaction', 'grade', 'trip', 'trip.startPier', 'trip.excursion']
             )
@@ -218,11 +218,11 @@ class TicketsRegistryController extends ApiController
                 });
             })
             ->when($tripId, function (Builder $query) use ($tripId) {
-                $query->where('trip_id', $tripId);
+                $query->whereIn('trip_id', $tripId);
             })
-            ->when(($excursionId || !empty($filters['excursion_id'])), function (Builder $query) use ($excursionId, $filters) {
-                $query->whereHas('trip', function (Builder $query) use ($excursionId, $filters) {
-                    $query->where('excursion_id', $excursionId ?? $filters['excursion_id']);
+            ->when(!empty($excursionIds), function (Builder $query) use ($excursionIds) {
+                $query->whereHas('trip', function (Builder $query) use ($excursionIds) {
+                    $query->whereIn('excursion_id', $excursionIds);
                 });
             })
             ->when($pierId, function (Builder $query) use ($pierId) {
@@ -259,8 +259,8 @@ class TicketsRegistryController extends ApiController
                 if (empty($filters['date_to'])) {
                     $filters['date_to'] = $this->defaultFilters['date_to'];
                 }
-                $query->whereDate('created_at', '>=', Carbon::parse($filters['date_from']));
-                $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+                $query->where('created_at', '>=', Carbon::parse($filters['date_from']));
+                $query->where('created_at', '<=', Carbon::parse($filters['date_to']));
             }
             if (!empty($filters['order_type_id'])) {
                 $query->whereHas('order', function (Builder $query) use ($filters) {
