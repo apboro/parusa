@@ -1,7 +1,7 @@
 <template>
     <LoadingProgress :loading="list.is_loading || fiscal_loading">
 
-        <LayoutFilters>
+        <LayoutFilters style="padding: 10px">
             <LayoutFiltersItem :title="'Период'">
                 <div class="w-210px mr-10">
                     <InputDateTime
@@ -46,7 +46,11 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
-            <LayoutFiltersItem :title="'Экскурсия'">
+
+        </LayoutFilters>
+
+        <LayoutFilters style="padding: 10px">
+            <LayoutFiltersItem :title="'Экскурсия'" style="width: 70%">
                 <DictionaryDropDown
                     :dictionary="'excursions'"
                     :fresh="true"
@@ -55,22 +59,22 @@
                     :placeholder="'Все'"
                     :has-null="true"
                     :search="true"
+                    :multi="true"
                     :small="true"
                     :disabled="!!list.search"
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
-            <template #search>
                 <LayoutFiltersItem :title="'Поиск по номеру заказа, транзакции, сумме'">
                     <InputSearch v-model="list.search" @change="list.load()"/>
-                </LayoutFiltersItem>
                 <div style="display: flex; align-items: flex-end; margin-left: 10px;">
                     <GuiActionsMenu :title="null">
                         <span class="link" @click="excelExport">Экспорт в Excel</span>
                     </GuiActionsMenu>
                 </div>
-            </template>
+                </LayoutFiltersItem>
         </LayoutFilters>
+
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
             <template v-for="transaction in list.list">
