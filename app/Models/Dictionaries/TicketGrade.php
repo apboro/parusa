@@ -2,6 +2,8 @@
 
 namespace App\Models\Dictionaries;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 /**
  * @property int $id
  * @property string $name
@@ -11,6 +13,7 @@ namespace App\Models\Dictionaries;
  */
 class TicketGrade extends AbstractDictionary
 {
+    use HasFactory;
     protected $guarded = [];
     /** @var int The id of guide ticket grade */
     public const guide = 1;

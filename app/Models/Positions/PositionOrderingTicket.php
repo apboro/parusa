@@ -6,6 +6,7 @@ use App\Models\Dictionaries\TicketGrade;
 use App\Models\Model;
 use App\Models\Sails\Trip;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -27,6 +28,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class PositionOrderingTicket extends Model
 {
+    use HasFactory;
+
     /** @var int[] Default attributes. */
     protected $attributes = [
         'quantity' => 0,
@@ -120,5 +123,10 @@ class PositionOrderingTicket extends Model
     public function backwardTicket()
     {
         return $this->hasOne(PositionOrderingTicket::class, 'parent_ticket_id', 'id');
+    }
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
     }
 }

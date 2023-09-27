@@ -32,6 +32,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -70,7 +71,7 @@ use Illuminate\Support\Str;
  */
 class Order extends Model implements Statusable, Typeable
 {
-    use HasStatus, HasType;
+    use HasStatus, HasType, HasFactory;
 
     /** @var string[] Fillable attributes */
     protected $fillable = ['partner_id', 'position_id', 'name', 'email', 'phone', 'hash'];
