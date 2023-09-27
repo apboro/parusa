@@ -12,6 +12,7 @@ use App\Models\Positions\Position;
 use App\Traits\HasStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +33,7 @@ use Illuminate\Support\Facades\DB;
  */
 class Terminal extends Model implements Statusable, AsDictionary
 {
-    use HasStatus;
+    use HasStatus, HasFactory;
 
     /** @var array Attributes casting. */
     protected $casts = [

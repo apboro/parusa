@@ -3,6 +3,7 @@
 return [
     'ticket_template' => env('PDF_TICKET_A4', 'pdf/ticket/ticket_a4_v3'),
     'ticket_template_neva' => 'pdf/ticket/ticket_a4_neva',
+    'ticket_template_city_tour' => 'pdf/ticket/ticket_a4_city_tour',
     'ticket_template_single' => 'pdf/ticket/ticket_a4_edin',
 
     'order_template' => env('PDF_ORDER_A4', 'pdf/order/order_a4'),

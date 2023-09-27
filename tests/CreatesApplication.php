@@ -29,8 +29,10 @@ trait CreatesApplication
 
         if (!static::$setUpHasRunOnce) {
 
-            Artisan::call('migrate:refresh');
+//            Artisan::call('migrate:fresh');
             Artisan::call('db:seed');
+//            Artisan::call('db:seed --class=TestDataSeeder');
+//            Artisan::call('db:seed --class=AdminSeeder');
 
             static::$setUpHasRunOnce = true;
         }

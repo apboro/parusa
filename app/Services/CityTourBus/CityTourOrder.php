@@ -52,19 +52,23 @@ class CityTourOrder
     public function approve()
     {
         if ($this->checkOrderHasCityTourTickets()) {
-            $result = $this->cityTourRepository->approveOrder($this->order);
-            if ($result && $result['status'] == 200) {
-                Log::channel('city_tour')->info('City Tour API approve order request success: ', [$result, $this->order->additionalData]);
-                $this->getAndSaveTickets();
-            } else {
-                Log::channel('city_tour')->error('City Tour API approve Error', [$result]);
-                throw new RuntimeException('Невозможно оформить заказ на этот рейс.');
+            $orderStatus = $this->cityTourRepository->getOrderInfo($this->order);
+            if ($orderStatus['body']['payment_status'] == 0) {
+
+                $result = $this->cityTourRepository->approveOrder($this->order);
+
+                if ($result && $result['status'] == 200) {
+                    Log::channel('city_tour')->info('City Tour APPROVE OK: ', [$result, $this->order->additionalData]);
+                    $this->getAndSaveTickets();
+                } else {
+                    Log::channel('city_tour')->error('City Tour API approve Error', [$orderStatus, $result]);
+                }
             }
         }
-
     }
 
-    public function getAndSaveTickets()
+    public
+    function getAndSaveTickets()
     {
         $providerTickets = $this->cityTourRepository->getOrderTickets($this->order)['body'];
         $orderTickets = $this->order->tickets()->with('additionalData')->get();
@@ -84,7 +88,8 @@ class CityTourOrder
         }
     }
 
-    public function checkOrderHasCityTourTickets()
+    public
+    function checkOrderHasCityTourTickets()
     {
         $tickets = $this->order->tickets;
         foreach ($tickets as $ticket) {
@@ -95,7 +100,8 @@ class CityTourOrder
         return false;
     }
 
-    public function cancel()
+    public
+    function cancel()
     {
         if ($this->checkOrderHasCityTourTickets()) {
             $result = $this->cityTourRepository->cancelOrder($this->order);
@@ -108,7 +114,8 @@ class CityTourOrder
         }
     }
 
-    public function delete()
+    public
+    function delete()
     {
         if ($this->checkOrderHasCityTourTickets()) {
             $result = $this->cityTourRepository->deleteOrder($this->order);

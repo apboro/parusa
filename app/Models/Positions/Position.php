@@ -10,6 +10,8 @@ use App\Models\Dictionaries\PositionStatus;
 use App\Models\Dictionaries\Role;
 use App\Models\Model;
 use App\Models\Partner\Partner;
+use App\Models\POS\Terminal;
+use App\Models\POS\TerminalPositions;
 use App\Models\User\User;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
@@ -192,4 +194,5 @@ class Position extends Model implements Statusable
     {
         return $this->hasMany(PositionOrderingTicket::class, 'position_id', 'id');
     }
+
 }
