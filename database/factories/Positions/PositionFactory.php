@@ -18,21 +18,10 @@ class PositionFactory extends Factory
      */
     public function definition(): array
     {
-        $userId = null;
-        $partnerId = null;
-
-        if (is_null($userId)) {
-            $user = User::factory()->create();
-            $userId = $user->id;
-        }
-        if (is_null($partnerId)) {
-            $partner = Partner::factory()->create();
-            $partnerId = $partner->id;
-        }
 
         return [
-            'user_id' => $userId,
-            'partner_id' => $partnerId,
+            'user_id' => User::factory()->create()->id,
+            'partner_id' => Partner::factory()->create()->id,
             'title' => $this->faker->jobTitle,
         ];
     }
