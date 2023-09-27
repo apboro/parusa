@@ -21,34 +21,29 @@
                 </div>
                 <GuiButton style="margin-left: 10px" @clicked="resetDate" :disabled="!!list.search">Сегодня</GuiButton>
             </LayoutFiltersItem>
-            <template #search>
-                <LayoutFiltersItem :title="'Дата рейса'">
-                    <div class="w-150px">
-                        <InputDate
-                            v-model="list.filters['trip_date']"
-                            :original="list.filters_original['trip_date']"
-                            @change="list.load()"
-                            :clearable="true"
-                            :pick-on-clear="false"
-                            :disabled="!!list.search"
-                        />
-                    </div>
-                </LayoutFiltersItem>
-                <LayoutFiltersItem :title="'Экскурсия'" style="margin-left: 10px; width: 280px;">
-                    <DictionaryDropDown
-                        :dictionary="'excursions'"
-                        :fresh="true"
-                        v-model="list.filters['excursion_id']"
-                        :original="list.filters_original['excursion_id']"
-                        :placeholder="'Все'"
-                        :has-null="true"
-                        :search="true"
-                        :small="true"
-                        :disabled="!!list.search"
+
+            <LayoutFiltersItem :title="'Дата рейса'">
+                <div class="w-150px">
+                    <InputDate
+                        v-model="list.filters['trip_date']"
+                        :original="list.filters_original['trip_date']"
                         @change="list.load()"
+                        :clearable="true"
+                        :pick-on-clear="false"
+                        :disabled="!!list.search"
                     />
-                </LayoutFiltersItem>
-            </template>
+                </div>
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :title="'Поиск заказа/билета по номеру, имени, email, телефону покупателя'"
+                               style="max-width: 100%;">
+                <InputSearch v-model="list.search" @change="list.load()"/>
+
+            <div style="display: flex; align-items: flex-end; margin-left: 10px">
+                <GuiActionsMenu :title="null">
+                    <span class="link" @click="excelExport">Экспорт в Excel</span>
+                </GuiActionsMenu>
+            </div>
+            </LayoutFiltersItem>
         </LayoutFilters>
 
         <LayoutFilters style="padding-top: 0;">
@@ -78,16 +73,21 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
-            <template #search>
-                <LayoutFiltersItem :title="'Поиск заказа/билета по номеру, имени, email, телефону покупателя'" style="max-width: 450px;">
-                    <InputSearch v-model="list.search" @change="list.load()"/>
-                </LayoutFiltersItem>
-                <div style="display: flex; align-items: flex-end; margin-left: 10px;">
-                    <GuiActionsMenu :title="null">
-                        <span class="link" @click="excelExport">Экспорт в Excel</span>
-                    </GuiActionsMenu>
-                </div>
-            </template>
+            <LayoutFiltersItem :title="'Экскурсия'" style="margin-left: 10px; width: 100%;">
+                <DictionaryDropDown
+                    :dictionary="'excursions'"
+                    :fresh="true"
+                    v-model="list.filters['excursion_id']"
+                    :original="list.filters_original['excursion_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :search="true"
+                    :small="true"
+                    :disabled="!!list.search"
+                    :multi="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
         </LayoutFilters>
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
@@ -98,12 +98,15 @@
                 </ListTableCell>
                 <ListTableCell>
                     <div class="bold">
-                        <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}" v-html="highlight(ticket['id'])"/>
+                        <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}"
+                                     v-html="highlight(ticket['id'])"/>
                     </div>
                     <div>
-                        <router-link class="link" :to="{name: 'order-info', params: {id: ticket['order_id']}}" v-html="highlight(ticket['order_id'])"/>
+                        <router-link class="link" :to="{name: 'order-info', params: {id: ticket['order_id']}}"
+                                     v-html="highlight(ticket['order_id'])"/>
                     </div>
-                    <div v-if="ticket['neva_travel_order_number']" v-html="highlight(ticket['neva_travel_order_number'])"></div>
+                    <div v-if="ticket['neva_travel_order_number']"
+                         v-html="highlight(ticket['neva_travel_order_number'])"></div>
                 </ListTableCell>
                 <ListTableCell>
                     <div>{{ ticket['type'] }}</div>
@@ -130,7 +133,8 @@
                 <ListTableCell>
                     <div v-if="ticket['buyer_name']"><span v-html="highlight(ticket['buyer_name'])"/></div>
                     <div v-if="ticket['buyer_email']"><span v-html="highlight(ticket['buyer_email'])"/></div>
-                    <div v-if="ticket['buyer_phone']"><span style="white-space: nowrap;" v-html="highlight(ticket['buyer_phone'])"/></div>
+                    <div v-if="ticket['buyer_phone']"><span style="white-space: nowrap;"
+                                                            v-html="highlight(ticket['buyer_phone'])"/></div>
                 </ListTableCell>
                 <ListTableCell>
                     {{ ticket['status'] }}

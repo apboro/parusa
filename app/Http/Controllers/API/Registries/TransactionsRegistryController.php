@@ -66,9 +66,9 @@ class TransactionsRegistryController extends ApiController
         $filters['date_to'] = $dateTo->format('Y-m-d\TH:i');
 
         $terminalId = $this->getTerminalId($request);
-        $excursionId = $filters['excursion_id'] ?? null;
+        $excursionIds = $filters['excursion_id'] ?? [];
 
-        $query = $this->getListQuery($request->search(), $filters, $terminalId, $excursionId);
+        $query = $this->getListQuery($request->search(), $filters, $terminalId, $excursionIds)->orderBy('created_at');
 
         $queryBackup = $query->clone();
         $payments = $query->paginate($request->perPage(10, $this->rememberKey));
@@ -96,7 +96,7 @@ class TransactionsRegistryController extends ApiController
             ];
         });
 
-        if (empty($excursionId)) {
+        if (empty($excursionIds)) {
             $saleQuery = $queryBackup->clone()->where('status_id', PaymentStatus::sale);
             $returnQuery = $queryBackup->clone()->where('status_id', PaymentStatus::return);
 
@@ -111,10 +111,10 @@ class TransactionsRegistryController extends ApiController
             $overallTotal = $saleTotal - $returnTotal;
         } else {
             $ticketsByCash = Ticket::query()
-                ->whereHas('trip', function (Builder $query) use ($excursionId) {
-                    $query->where('excursion_id', $excursionId);
+                ->whereHas('trip', function (Builder $query) use ($excursionIds) {
+                    $query->whereIn('excursion_id', $excursionIds);
                 })
-                ->whereHas('order.payments', function (Builder $query) use ($excursionId, $filters) {
+                ->whereHas('order.payments', function (Builder $query) use ($filters) {
                     $query->where('by_cash', '>', 0)
                         ->where('status_id', PaymentStatus::sale)
                         ->where('gate', 'lifepos')
@@ -124,10 +124,10 @@ class TransactionsRegistryController extends ApiController
             $ticketsByCash = PriceConverter::storeToPrice($ticketsByCash);
 
             $ticketsByCard = Ticket::query()
-                ->whereHas('trip', function (Builder $query) use ($excursionId) {
-                    $query->where('excursion_id', $excursionId);
+                ->whereHas('trip', function (Builder $query) use ($excursionIds) {
+                    $query->whereIn('excursion_id', $excursionIds);
                 })
-                ->whereHas('order.payments', function (Builder $query) use ($excursionId, $filters) {
+                ->whereHas('order.payments', function (Builder $query) use ($filters) {
                     $query->where('by_card', '>', 0)
                         ->where('status_id', PaymentStatus::sale)
                         ->where('gate', 'lifepos')
@@ -137,10 +137,10 @@ class TransactionsRegistryController extends ApiController
             $ticketsByCard = PriceConverter::storeToPrice($ticketsByCard);
 
             $returnTicketsByCash = Ticket::query()
-                ->whereHas('trip', function (Builder $query) use ($excursionId) {
-                    $query->where('excursion_id', $excursionId);
+                ->whereHas('trip', function (Builder $query) use ($excursionIds) {
+                    $query->whereIn('excursion_id', $excursionIds);
                 })
-                ->whereHas('order.payments', function (Builder $query) use ($excursionId, $filters) {
+                ->whereHas('order.payments', function (Builder $query) use ($filters) {
                     $query->where('by_cash', '>', 0)
                         ->where('status_id', PaymentStatus::return)
                         ->where('gate', 'lifepos')
@@ -150,10 +150,10 @@ class TransactionsRegistryController extends ApiController
             $returnTicketsByCash = PriceConverter::storeToPrice($returnTicketsByCash);
 
             $returnTicketsByCard = Ticket::query()
-                ->whereHas('trip', function (Builder $query) use ($excursionId) {
-                    $query->where('excursion_id', $excursionId);
+                ->whereHas('trip', function (Builder $query) use ($excursionIds) {
+                    $query->whereIn('excursion_id', $excursionIds);
                 })
-                ->whereHas('order.payments', function (Builder $query) use ($excursionId, $filters) {
+                ->whereHas('order.payments', function (Builder $query) use ($filters) {
                     $query->where('by_card', '>', 0)
                         ->where('status_id', PaymentStatus::return)
                         ->where('gate', 'lifepos')
@@ -209,9 +209,9 @@ class TransactionsRegistryController extends ApiController
         $filters['date_to'] = $dateTo->format('Y-m-d\TH:i');
 
         $terminalId = $this->getTerminalId($request);
-        $excursionId = $request->input('excursion_id');
+        $excursionIds = $filters['excursion_id'] ?? [];
 
-        $payments = $this->getListQuery($request->search(), $filters, $terminalId, $excursionId)->get();
+        $payments = $this->getListQuery($request->search(), $filters, $terminalId, $excursionIds)->get();
 
         $titles = [
             'Дата и время',
@@ -264,7 +264,7 @@ class TransactionsRegistryController extends ApiController
      *
      * @return Builder
      */
-    protected function getListQuery(array $search, array $filters, ?int $terminalId, ?int $excursionId): Builder
+    protected function getListQuery(array $search, array $filters, ?int $terminalId, ?array $excursionIds): Builder
     {
         $query = Payment::query()
             ->where('gate', 'lifepos')
@@ -321,9 +321,9 @@ class TransactionsRegistryController extends ApiController
             }
         }
 
-        $query->when(($excursionId || !empty($filters['excursion_id'])), function (Builder $query) use ($excursionId, $filters) {
-            $query->whereHas('order.tickets.trip', function (Builder $query) use ($excursionId, $filters) {
-                $query->where('excursion_id', $excursionId ?? $filters['excursion_id']);
+        $query->when(!empty($excursionIds), function (Builder $query) use ($excursionIds) {
+            $query->whereHas('order.tickets.trip', function (Builder $query) use ($excursionIds) {
+                $query->whereIn('excursion_id', $excursionIds);
             });
         });
 

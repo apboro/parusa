@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\Dictionaries\Provider;
 use App\Models\Tickets\Ticket;
 use Illuminate\Support\Facades\View;
 
@@ -18,8 +19,8 @@ class TicketPdf
     {
         $size = [0, 0, 595.28, 841.89]; // A4
 
-        if ($ticket->order->additionalData?->provider_id == 10) {
-            $view = config('tickets.ticket_template_neva');
+        if ($ticket->order->additionalData?->provider_id == Provider::city_tour) {
+            $view = config('tickets.ticket_template_city_tour');
         } elseif ($ticket->trip->excursion->is_single_ticket) {
             $view = config('tickets.ticket_template_single');
         } else {
