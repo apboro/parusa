@@ -54,6 +54,11 @@ class ShowcaseOrderController extends ApiEditController
             return response()->json(['message' => 'Ошибка сессии.'], 400);
         }
 
+        list($user, $domain) = explode('@', $request->data['email']);
+        if (!checkdnsrr($domain, 'MX')) {
+            return APIResponse::error('Указан несуществующий email');
+        }
+
         /** @var ?Partner $partner */
         $partner = $originalKey['partner_id'] ? Partner::query()->where('id', $originalKey['partner_id'])->first() : null;
         $partnerId = $partner->id ?? null;

@@ -6,19 +6,10 @@ export default [
         //     {'title': 'Возврат билетов', 'route': 'return'},
         // ]
     // },
-    // {
-    //     'title': 'РЕЕСТРЫ', 'route': '',
-    //     'items': [
-    //         {'title': 'Реестр заказов', 'route': 'orders-registry'},
-    //         {'title': 'Реестр билетов', 'route': 'tickets-registry'},
-    //         {'title': 'Реестр броней', 'route': 'reserves-registry'},
-    //     ]
-    // },
-    // {
-    //     'title': 'Аккаунт', 'route': '',
-    //     'items': [
-    //         {'title': 'Карточка партнера', 'route': 'company-info'},
-    //         {'title': 'Лицевой счет', 'route': 'company-account'},
-    //     ]
-    // },
+    {
+        'title': 'СЧЁТ', 'route': 'company-account',
+    },
+    {
+        'title': 'РЕЕСТР ПРОДАЖ', 'route': 'orders-registry',
+    },
 ];

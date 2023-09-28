@@ -11,6 +11,7 @@ import TransactionsRegistryPage from "@/Pages/Terminal/TransactionsRegistryPage"
 import TripViewPage from "../../Pages/Admin/Trips/TripViewPage.vue";
 import PromotersPage from "@/Pages/Terminal/PromotersPage.vue";
 import PromoterViewPage from "@/Pages/Terminal/PromoterViewPage.vue";
+import TicketInfoPage from "@/Pages/Admin/Registries/TicketInfoPage.vue";
 
 
 export default [
@@ -22,6 +23,7 @@ export default [
     {path: '/return/:id', name: 'return', component: ReturnPage, meta: {title: 'Заказ'}},
     {path: '/registry/orders', name: 'orders-registry', component: OrdersRegistryPage, meta: {title: 'Реестр заказов'}},
     {path: '/registry/orders/:id', name: 'order-info', component: OrderPage, meta: {title: 'Заказ'}},
+    {path: '/registry/tickets/:id', name: 'ticket-info', component: TicketInfoPage, meta: {title: 'Билет', roles: ['admin', 'office_manager', 'piers_manager', 'accountant', 'terminal']}},
     {path: '/registry/transactions', name: 'transactions-registry', component: TransactionsRegistryPage, meta: {title: 'Реестр транзакций'}},
 
     {path: '/terminal/promoters', name: 'terminal-promoters', component: PromotersPage, meta: {title: 'Промоутеры'}},

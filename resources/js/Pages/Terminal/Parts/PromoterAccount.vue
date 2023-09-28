@@ -121,6 +121,11 @@ import GuiHint from "@/Components/GUI/GuiHint";
 import GuiValue from "@/Components/GUI/GuiValue";
 
 export default {
+
+    props: {
+        partnerId: {type: Number, default: null},
+    },
+
     components: {
         DictionaryDropDown,
         InputDate,
@@ -138,15 +143,13 @@ export default {
         LoadingProgress
 
     },
-    props: {
-       partnerId: Number,
-    },
 
     data: () => ({
-        list: list('/api/account', {id: this.partnerId}),
+        list: null,
     }),
 
     created() {
+        this.list = list('/api/account', {id: this.partnerId}),
         this.list.initial();
     },
 }

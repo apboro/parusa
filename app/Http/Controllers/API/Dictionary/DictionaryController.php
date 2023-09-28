@@ -50,7 +50,7 @@ class DictionaryController extends ApiController
         'excursion_programs' => ['class' => ExcursionProgram::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant,staff_terminal,partner'],
         'excursion_statuses' => ['class' => ExcursionStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
         'excursions' => ['class' => Excursion::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,staff_terminal,partner'],
-        'order_types' => ['class' => OrderType::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner'],
+        'order_types' => ['class' => OrderType::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
         'partner_order_types' => ['class' => PartnerOrderType::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner'],
         'partner_statuses' => ['class' => PartnerStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
         'partner_types' => ['class' => PartnerType::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],

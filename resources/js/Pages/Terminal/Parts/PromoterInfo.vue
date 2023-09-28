@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import form from "@/Core/Form";
 import GuiContainer from "@/Components/GUI/GuiContainer";
 import GuiValue from "@/Components/GUI/GuiValue";
 import GuiValueArea from "@/Components/GUI/GuiValueArea";
@@ -24,10 +23,7 @@ import GuiButton from "@/Components/GUI/GuiButton";
 import GuiActivityIndicator from "@/Components/GUI/GuiActivityIndicator";
 import GuiHint from "@/Components/GUI/GuiHint";
 import GuiFilesList from "@/Components/GUI/GuiFilesList";
-import FormPopUp from "@/Components/FormPopUp";
-import FormDictionary from "@/Components/Form/FormDictionary";
-import FormNumber from "@/Components/Form/FormNumber";
-import FormDropdown from "@/Components/Form/FormDropdown";
+
 
 export default {
     props: {
@@ -39,10 +35,6 @@ export default {
     emits: ['update'],
 
     components: {
-        FormDropdown,
-        FormNumber,
-        FormDictionary,
-        FormPopUp,
         GuiFilesList,
         GuiHint,
         GuiActivityIndicator,
@@ -50,19 +42,8 @@ export default {
         GuiValueArea,
         GuiValue,
         GuiContainer
-
     },
 
-    data: () => ({
-        form: form(null, '/api/promoters/update'),
-        form_title: null,
-        dictionary: null,
-    }),
 
-    methods: {
-        edit() {
-            this.$router.push({name: 'promoters-edit', params: {id: this.partnerId}});
-        },
-    }
 }
 </script>

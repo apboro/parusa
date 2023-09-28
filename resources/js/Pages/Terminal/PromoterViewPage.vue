@@ -5,15 +5,16 @@
                 :link-title="'К списку промоутеров'"
     >
 
-        <template v-if="data.is_loaded">
+        <template v-if="data.is_loaded && partnerId">
             <LayoutRoutedTabs :tabs="{
                 details: 'Персональные данные',
-                access: 'Лицевой счёт',
+                account: 'Лицевой счёт',
                 registry: 'Реестр продаж',
             }" @change="tab = $event"/>
 
-            <PromoterInfo v-if="tab === 'details'" :data="data.data" :partner-id="partnerId" :editable="true"/>
-            <PromoterAccount v-if="tab === 'access'" :partnerId="partnerId"/>
+            <PromoterInfo v-if="tab === 'details'" :data="data.data" :partnerId="partnerId" :editable="true"/>
+            <PromoterAccount v-if="tab === 'account'" :partnerId="partnerId"/>
+            <AdminOrderRegistry v-if="tab === 'registry'" :partnerId="partnerId"/>
         </template>
     </LayoutPage>
 </template>
@@ -27,9 +28,6 @@ import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 import GuiContainer from "@/Components/GUI/GuiContainer";
 import GuiTabs from "@/Components/GUI/GuiTabs";
-import PartnerInfo from "@/Pages/Admin/Partners/Parts/PartnerInfo";
-import PartnerRepresentatives from "@/Pages/Admin/Partners/Parts/PartnerRepresentatives";
-import PartnerAccount from "@/Pages/Admin/Partners/Parts/PartnerAccount";
 import PromoterInfo from "@/Pages/Terminal/Parts/PromoterInfo.vue";
 import PromoterAccount from "@/Pages/Terminal/Parts/PromoterAccount.vue";
 
@@ -37,16 +35,11 @@ export default {
     components: {
         PromoterAccount,
         PromoterInfo,
-        PartnerAccount,
-        PartnerRepresentatives,
-        PartnerInfo,
         GuiTabs,
         GuiContainer,
         LayoutRoutedTabs,
         GuiActionsMenu,
         LayoutPage,
-
-
         AdminOrderRegistry,
     },
 
@@ -54,7 +47,6 @@ export default {
 
     data: () => ({
         tab: null,
-        sub_tab: null,
         data: data('/api/promoters/view'),
     }),
 
