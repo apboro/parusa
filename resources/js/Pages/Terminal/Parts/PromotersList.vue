@@ -114,9 +114,9 @@ export default {
             this.form.load();
             this.$refs.popup.show()
                 .then(response => {
-                    this.$emit('update', response.payload);
+                    this.list.list.find(promoter2 => promoter2['id'] === promoter['id']).open_shift = {start_at: response.payload.start_at}
                 })
-        }
+        },
     },
 }
 </script>

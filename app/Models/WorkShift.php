@@ -10,4 +10,9 @@ class WorkShift extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function tariff()
+    {
+        return $this->hasOne(Tariff::class);
+    }
 }

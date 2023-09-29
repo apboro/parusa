@@ -1,8 +1,14 @@
 <template>
     <div>
-        <GuiContainer w-50 mt-30>
-            Смена открыта: {{data.open_shift.start_at}} -
+        <GuiContainer w-50 mt-30 v-if="!data.open_shift" >
+            <GuiMessage border>Смена не открыта</GuiMessage>
+        </GuiContainer>
 
+        <GuiContainer w-50 mt-30 v-else>
+            <GuiText>Смена открыта: {{data.open_shift.start_at}}</GuiText>
+            <GuiText>Оплата за выход: </GuiText>
+            <GuiText>Оплата за время: </GuiText>
+            <GuiText>Оплата за продажи: </GuiText>
         </GuiContainer>
 
         <GuiContainer w-100 mt-20>
@@ -20,6 +26,8 @@ import GuiButton from "@/Components/GUI/GuiButton";
 import GuiActivityIndicator from "@/Components/GUI/GuiActivityIndicator";
 import GuiHint from "@/Components/GUI/GuiHint";
 import GuiFilesList from "@/Components/GUI/GuiFilesList";
+import GuiMessage from "@/Components/GUI/GuiMessage.vue";
+import GuiText from "@/Components/GUI/GuiText.vue";
 
 
 export default {
@@ -31,6 +39,8 @@ export default {
     emits: ['update'],
 
     components: {
+        GuiText,
+        GuiMessage,
         GuiFilesList,
         GuiHint,
         GuiActivityIndicator,
@@ -51,7 +61,7 @@ export default {
                         axios.post('/api/terminals/promoters/close_work_shift', {partnerId: this.partnerId})
                             .then((response) => {
                                 this.$toast.success(response.data['message']);
-                                this.info.load({id: this.orderId});
+                                this.data.open_shift = null;
                             })
                             .catch(error => {
                                 this.$toast.error(error.response.data['message']);

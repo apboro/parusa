@@ -11,6 +11,7 @@ use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use App\Models\Positions\Position;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -36,6 +37,13 @@ class PromoterViewController extends ApiController
         $profile = $partner->profile;
         $promoterUser = $partner->positions()->first()->user;
         $promoterUserProfile = $partner->positions()->first()->user->profile;
+
+        if ($openShift = $partner->getOpenedShift()){
+
+            $interval = Carbon::parse($openShift->start_at)->diff(now());
+            $payForTime = ($interval->h * 60 + $interval->i);
+        }
+
         // fill data
         $values = [
             'id' => $partner->id,
@@ -49,7 +57,7 @@ class PromoterViewController extends ApiController
             'login' => $promoterUser->login,
             'full_name' => $promoterUserProfile->fullName,
             'open_shift' => $partner->getOpenedShift(),
-            ''
+            'payForTime' => $payForTime
         ];
 
         // send response

@@ -20,6 +20,7 @@ class CreateTariffsTable extends Migration
             $table->string('name', 120);
             $table->unsignedSmallInteger('pay_per_hour')->nullable();
             $table->unsignedSmallInteger('commission')->nullable();
+            $table->unsignedSmallInteger('pay_for_out')->nullable();
             $table->timestamps();
         });
     }

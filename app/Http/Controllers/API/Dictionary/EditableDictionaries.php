@@ -66,16 +66,19 @@ trait EditableDictionaries
             'titles' => [
                 'name' => 'Тариф',
                 'pay_per_hour' => 'Оплата в час, руб.',
+                'pay_for_out' => 'Оплата за выход, руб.',
                 'commission' => 'Комиссия, %'
             ],
             'fields' => [
                 'name' => 'string',
                 'pay_per_hour' => 'Оплата в час, руб.',
+                'pay_for_out' => 'Оплата за выход, руб.',
                 'commission' => 'Комиссия, %'
             ],
             'validation' => [
                 'name' => 'required',
                 'pay_per_hour' => 'integer',
+                'pay_for_out' => 'integer',
                 'commission' => 'integer'
             ],
 

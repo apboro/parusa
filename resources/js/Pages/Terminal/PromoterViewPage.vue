@@ -1,5 +1,5 @@
 <template>
-    <LayoutPage :loading="processing" :title="data.data['name']"
+    <LayoutPage :title="data.data['name']"
                 :breadcrumbs="[{caption: 'Промоутеры', to: {name: 'terminal-promoters'}}]"
                 :link="{name: 'terminal-promoters'}"
                 :link-title="'К списку промоутеров'"
@@ -24,7 +24,6 @@
 
 <script>
 import data from "@/Core/Data";
-import DeleteEntry from "@/Mixins/DeleteEntry";
 import AdminOrderRegistry from "@/Pages/Admin/Registries/Parts/AdminOrderRegistry";
 import LayoutPage from "@/Components/Layout/LayoutPage";
 import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
@@ -56,10 +55,6 @@ export default {
     computed: {
         partnerId() {
             return Number(this.$route.params.id);
-        },
-
-        processing() {
-            return this.deleting || this.data.is_loading;
         },
     },
 
