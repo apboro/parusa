@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Events\CityTourOrderPaidEvent;
+use App\Events\NevaTravelOrderPaidEvent;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
@@ -20,6 +21,7 @@ class OrderPdf
      */
     public static function a4(Order $order): ?string
     {
+        NevaTravelOrderPaidEvent::dispatch($order);
         CityTourOrderPaidEvent::dispatch($order);
 
         if ($order->additionalData?->provider_id == Provider::city_tour) {
@@ -44,6 +46,7 @@ class OrderPdf
     {
         $size = [0, 0, 226, 340];
 
+        NevaTravelOrderPaidEvent::dispatch($order);
         CityTourOrderPaidEvent::dispatch($order);
 
         if ($order->additionalData?->provider_id == Provider::city_tour) {

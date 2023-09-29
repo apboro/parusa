@@ -30,10 +30,7 @@ class TicketsRegistryController extends ApiController
     protected array $rememberFilters = [
         'date_from',
         'date_to',
-        'order_type_id',
         'trip_date',
-        'excursion_id',
-        'terminal_id',
     ];
 
     protected string $rememberKey = CookieKeys::ticket_registry_list;
@@ -218,7 +215,7 @@ class TicketsRegistryController extends ApiController
                 });
             })
             ->when($tripId, function (Builder $query) use ($tripId) {
-                $query->whereIn('trip_id', $tripId);
+                $query->where('trip_id', $tripId);
             })
             ->when(!empty($excursionIds), function (Builder $query) use ($excursionIds) {
                 $query->whereHas('trip', function (Builder $query) use ($excursionIds) {

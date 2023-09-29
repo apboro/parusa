@@ -37,7 +37,7 @@ class NevaOrder
                 throw new RuntimeException('Невозможно оформить заказ на этот рейс.');
             }
             AdditionalDataOrder::create([
-                'provider_id' => 10,
+                'provider_id' => Provider::neva_travel,
                 'order_id' => $this->order->id,
                 'provider_order_uuid' => $result['body']['id'],
             ]);
@@ -49,14 +49,24 @@ class NevaOrder
 
     public function approve()
     {
-
         if ($this->checkOrderHasNevaTickets()) {
-            $result = $this->nevaApiData->approveOrder($this->order->additionalData->provider_order_uuid);
-            if (isset($result['body']['number'])) {
-                $this->order->additionalData->update(['provider_order_id' => $result['body']['number']]);
-            } else {
-                Log::channel('neva')->error('Neva API Approve Error', [$result]);
-                throw new RuntimeException('Невозможно оформить заказ на этот рейс.');
+
+            if ($this->order->additionalData?->provider_order_id === null) {
+
+                $orderStatus = $this->nevaApiData->getOrderInfo($this->order->additionalData->provider_order_uuid);
+
+                if (isset($orderStatus['body']['status']) && $orderStatus['body']['status'] != 'confirmed') {
+
+                    $result = $this->nevaApiData->approveOrder($this->order->additionalData->provider_order_uuid);
+                    if (isset($result['body']['number'])) {
+                        $this->order->additionalData->update(['provider_order_id' => $result['body']['number']]);
+                    } else {
+                        Log::channel('neva')->error('Neva API Approve Error', [$result]);
+                        throw new RuntimeException($result['body']['message'] ?? 'Невозможно оформить заказ на этот рейс');
+                    }
+                } else {
+                    $this->order->additionalData->update(['provider_order_id' => $orderStatus['body']['number']]);
+                }
             }
         }
     }

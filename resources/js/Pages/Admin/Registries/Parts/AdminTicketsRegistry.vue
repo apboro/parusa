@@ -73,7 +73,7 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
-            <LayoutFiltersItem :title="'Экскурсия'" style="margin-left: 10px; width: 100%;">
+            <LayoutFiltersItem v-if="tripId === null" :title="'Экскурсия'" style="margin-left: 10px; width: 100%;">
                 <DictionaryDropDown
                     :dictionary="'excursions'"
                     :fresh="true"
