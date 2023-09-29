@@ -58,8 +58,8 @@ class PiersListController extends ApiController
                 'active' => $pier->hasStatus(PiersStatus::active),
                 'id' => $pier->id,
                 'name' => $pier->name,
-                'provider_name' => $pier->provider->name,
-                'provider_id' => $pier->provider->id,
+                'provider_name' => $pier->provider?->name,
+                'provider_id' => $pier->provider?->id,
                 'status' => $pier->status->name,
             ];
         });
