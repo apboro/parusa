@@ -64,6 +64,7 @@ class NevaTravelRepository
 
     public function approveOrder(string $query = ''): array
     {
+        Log::channel('neva')->info('approve Query', [$query]);
         return $this->apiClient->post('approve_order?order_id=' . $query);
     }
 
@@ -71,13 +72,13 @@ class NevaTravelRepository
     {
         Log::channel('neva')->info('cancelOrder Query', [$query]);
         $result = $this->apiClient->post('cancel_order', $query);
-        Log::channel('neva')->info('Neva cancel order result:', [$result]);
         return $result;
     }
 
-    public function getOrderInfo(string $query = ''): array
+    public function getOrderInfo(string $orderId): array
     {
-        return $this->apiClient->post('get_order_info?order_id=' . $query);
+        $query = ['order_id' => $orderId];
+        return $this->apiClient->get('get_order_info', $query);
     }
 
     public function commentOrder(array $query = []): array
