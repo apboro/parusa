@@ -16,6 +16,7 @@ use App\Models\Model;
 use App\Models\Positions\Position;
 use App\Models\QrCode;
 use App\Models\Tickets\TicketPartnerRate;
+use App\Models\WorkShift;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use Carbon\Carbon;
@@ -169,4 +170,15 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
             $newPartnerRate->save();
         }
     }
+
+    public function workShifts()
+    {
+        return $this->hasMany(WorkShift::class);
+    }
+
+    public function getOpenedShift()
+    {
+        return $this->workShifts()->whereNull('end_at')->first();
+    }
+
 }

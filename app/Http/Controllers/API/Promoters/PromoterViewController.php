@@ -48,6 +48,8 @@ class PromoterViewController extends ApiController
             'has_access' => !empty($promoterUser->login) && !empty($promoterUser->password),
             'login' => $promoterUser->login,
             'full_name' => $promoterUserProfile->fullName,
+            'open_shift' => $partner->getOpenedShift(),
+            ''
         ];
 
         // send response

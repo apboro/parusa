@@ -31,6 +31,7 @@ use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Dictionaries\UserContactType;
 use App\Models\Dictionaries\UserStatus;
+use App\Models\Dictionaries\WorkShiftStatus;
 use App\Models\Excursions\Excursion;
 use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
@@ -38,6 +39,7 @@ use App\Models\Piers\Pier;
 use App\Models\POS\Terminal;
 use App\Models\POS\TerminalPositions;
 use App\Models\Ships\Ship;
+use App\Models\Tariff;
 use App\Models\User\Helpers\Currents;
 use App\Models\User\User;
 use Carbon\Carbon;
@@ -79,6 +81,8 @@ class DictionaryController extends ApiController
         'user_statuses' => ['class' => UserStatus::class, 'allow' => 'staff_admin'],
         'excursion_types' => ['class' => ExcursionType::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
         'providers' => ['class' => Provider::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
+        'tariffs' => ['class' => Tariff::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
+        'work_shift_statuses' => ['class' => WorkShiftStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
     ];
 
     /**

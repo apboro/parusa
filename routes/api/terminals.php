@@ -7,6 +7,7 @@ use App\Http\Controllers\API\Terminals\TerminalPropertiesController;
 use App\Http\Controllers\API\Terminals\TerminalsListController;
 use App\Http\Controllers\API\Terminals\TerminalStaffController;
 use App\Http\Controllers\API\Terminals\TerminalViewController;
+use App\Http\Controllers\WorkShiftController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/terminals', [TerminalsListController::class, 'list'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);
@@ -23,3 +24,7 @@ Route::post('/terminals/delete', [TerminalDeleteController::class, 'delete'])->m
 
 // Info
 Route::post('/terminals/terminal/info', [TerminalInfoController::class, 'info'])->middleware(['allow:staff_terminal']);
+
+//promoters
+Route::post('/terminals/promoters/open_work_shift', [WorkShiftController::class, 'save'])->middleware(['allow:staff_terminal']);
+Route::post('/terminals/promoters/close_work_shift', [WorkShiftController::class, 'close'])->middleware(['allow:staff_terminal']);

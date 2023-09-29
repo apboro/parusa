@@ -56,7 +56,7 @@ class ExcursionsListController extends ApiController
                 'active' => $excursions->hasStatus(ExcursionStatus::active),
                 'id' => $excursions->id,
                 'name' => $excursions->name,
-                'provider' => $excursions->provider->name,
+                'provider' => $excursions->provider?->name,
                 'status' => $excursions->status->name,
             ];
         });

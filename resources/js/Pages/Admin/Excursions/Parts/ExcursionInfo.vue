@@ -94,7 +94,6 @@ export default {
         GuiActivityIndicator,
         GuiValue,
         GuiContainer
-
     },
 
     data: () => ({

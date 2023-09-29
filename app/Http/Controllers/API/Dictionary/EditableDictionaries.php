@@ -6,6 +6,7 @@ use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Ships\Ship;
+use App\Models\Tariff;
 
 trait EditableDictionaries
 {
@@ -57,6 +58,27 @@ trait EditableDictionaries
             'validation' => ['name' => 'required'],
             'titles' => ['name' => 'Тип партнёра'],
             'fields' => ['name' => 'string'],
+        ],
+        'tariffs' => [
+            'name' => 'Тарифы промоутеров',
+            'class' => Tariff::class,
+            'item_name' => 'тариф',
+            'titles' => [
+                'name' => 'Тариф',
+                'pay_per_hour' => 'Оплата в час, руб.',
+                'commission' => 'Комиссия, %'
+            ],
+            'fields' => [
+                'name' => 'string',
+                'pay_per_hour' => 'Оплата в час, руб.',
+                'commission' => 'Комиссия, %'
+            ],
+            'validation' => [
+                'name' => 'required',
+                'pay_per_hour' => 'integer',
+                'commission' => 'integer'
+            ],
+
         ],
     ];
 }

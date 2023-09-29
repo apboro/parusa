@@ -10,11 +10,14 @@
                 details: 'Персональные данные',
                 account: 'Лицевой счёт',
                 registry: 'Реестр продаж',
+                total: 'Сводка',
             }" @change="tab = $event"/>
 
             <PromoterInfo v-if="tab === 'details'" :data="data.data" :partnerId="partnerId" :editable="true"/>
             <PromoterAccount v-if="tab === 'account'" :partnerId="partnerId"/>
             <AdminOrderRegistry v-if="tab === 'registry'" :partnerId="partnerId"/>
+            <PromoterTotal v-if="tab === 'total'" :partnerId="partnerId" :data="data.data"/>
+
         </template>
     </LayoutPage>
 </template>
@@ -30,9 +33,11 @@ import GuiContainer from "@/Components/GUI/GuiContainer";
 import GuiTabs from "@/Components/GUI/GuiTabs";
 import PromoterInfo from "@/Pages/Terminal/Parts/PromoterInfo.vue";
 import PromoterAccount from "@/Pages/Terminal/Parts/PromoterAccount.vue";
+import PromoterTotal from "@/Pages/Terminal/Parts/PromoterTotal.vue";
 
 export default {
     components: {
+        PromoterTotal,
         PromoterAccount,
         PromoterInfo,
         GuiTabs,
@@ -42,8 +47,6 @@ export default {
         LayoutPage,
         AdminOrderRegistry,
     },
-
-    mixins: [DeleteEntry],
 
     data: () => ({
         tab: null,
