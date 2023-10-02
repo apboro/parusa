@@ -6,9 +6,9 @@
 
         <GuiContainer w-50 mt-30 v-else>
             <GuiText>Смена открыта: {{data.open_shift.start_at}}</GuiText>
-            <GuiText>Оплата за выход: </GuiText>
-            <GuiText>Оплата за время: </GuiText>
-            <GuiText>Оплата за продажи: </GuiText>
+            <GuiText>Оплата за выход: {{data.payForOut}} руб.</GuiText>
+            <GuiText>Оплата за время: {{data.payForTime}} руб.</GuiText>
+            <GuiText>Оплата за продажи: {{data.payCommission}} руб.</GuiText>
         </GuiContainer>
 
         <GuiContainer w-100 mt-20>

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\WorkShift;
 
+use App\Models\Tariff;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,6 +14,6 @@ class WorkShift extends Model
 
     public function tariff()
     {
-        return $this->hasOne(Tariff::class);
+        return $this->belongsTo(Tariff::class);
     }
 }

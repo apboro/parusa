@@ -16,7 +16,7 @@ use App\Models\Model;
 use App\Models\Positions\Position;
 use App\Models\QrCode;
 use App\Models\Tickets\TicketPartnerRate;
-use App\Models\WorkShift;
+use App\Models\WorkShift\WorkShift;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use Carbon\Carbon;
@@ -178,7 +178,7 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
 
     public function getOpenedShift()
     {
-        return $this->workShifts()->whereNull('end_at')->first();
+        return $this->workShifts()->with('tariff')->whereNull('end_at')->first();
     }
 
 }

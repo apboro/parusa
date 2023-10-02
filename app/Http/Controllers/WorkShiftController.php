@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\APIResponse;
 use App\Models\Dictionaries\WorkShiftStatus;
-use App\Models\WorkShift;
+use App\Models\WorkShift\WorkShift;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 

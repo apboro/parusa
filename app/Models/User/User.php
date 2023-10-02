@@ -9,7 +9,6 @@ use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\UserStatus;
 use App\Models\Positions\Position;
 use App\Models\User\Helpers\Currents;
-use App\Models\WorkShift;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;

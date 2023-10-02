@@ -6,9 +6,11 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Common\File;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PositionAccessStatus;
 use App\Models\Hit\Hit;
+use App\Models\Order\Order;
 use App\Models\Partner\Partner;
 use App\Models\Positions\Position;
 use Carbon\Carbon;
@@ -38,11 +40,23 @@ class PromoterViewController extends ApiController
         $promoterUser = $partner->positions()->first()->user;
         $promoterUserProfile = $partner->positions()->first()->user->profile;
 
-        if ($openShift = $partner->getOpenedShift()){
-
-            $interval = Carbon::parse($openShift->start_at)->diff(now());
-            $payForTime = ($interval->h * 60 + $interval->i);
+        $openShift = $partner->getOpenedShift();
+        if ($openShift) {
+            if ($openShift->tariff->pay_per_hour) {
+                $interval = Carbon::parse($openShift->start_at)->diff(now());
+                $payForTime = ($interval->days * 24 + $interval->h + $interval->i / 60) * $openShift->tariff->pay_per_hour;
+            }
         }
+
+        $statuses = array_merge(OrderStatus::order_printable_statuses, [OrderStatus::terminal_finishing]);
+        $ordersTotal = 0;
+        $orders = Order::query()
+            ->where('partner_id', $id)
+            ->whereIn('status_id', $statuses)
+            ->where('created_at', '>=', $openShift->start_at)
+            ->get();
+        $ordersTotal = $orders->sum(fn ($order) => $order->total());
+
 
         // fill data
         $values = [
@@ -51,13 +65,15 @@ class PromoterViewController extends ApiController
             'name' => $partner->name,
             'created_at' => $partner->created_at->format('d.m.Y'),
             'notes' => $promoterUserProfile->notes,
-            'phone' =>$promoterUserProfile->mobile_phone,
+            'phone' => $promoterUserProfile->mobile_phone,
             'email' => $promoterUserProfile->email,
             'has_access' => !empty($promoterUser->login) && !empty($promoterUser->password),
             'login' => $promoterUser->login,
             'full_name' => $promoterUserProfile->fullName,
             'open_shift' => $partner->getOpenedShift(),
-            'payForTime' => $payForTime
+            'payForTime' => round($payForTime) ?? null,
+            'payForOut' => $openShift->tariff->pay_for_out ?? null,
+            'payCommission' => $ordersTotal * $openShift->tariff->commission / 100,
         ];
 
         // send response
