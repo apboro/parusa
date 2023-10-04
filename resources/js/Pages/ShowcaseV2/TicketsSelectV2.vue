@@ -193,7 +193,7 @@
                             {{ total }}
                         </template>
                     </span>
-                    <span v-else class="ap-showcase__checkout-total-value">В заказе отсутствуют билеты</span>
+                    <span v-else class="ap-showcase__checkout-not-selected">В заказе отсутствуют билеты</span>
                 </div>
                 <div class="ap-showcase__checkout-button">
                     <ShowcaseButton @clicked="order" :disabled="count < 1">Оплатить</ShowcaseButton>
@@ -637,6 +637,10 @@ export default {
     display: flex;
     flex-direction: row;
     margin: 20px 0;
+
+    &-not-selected {
+        color: red;
+    }
 
     &-total {
         font-family: $showcase_font;
