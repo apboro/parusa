@@ -190,6 +190,13 @@ export default {
         },
     },
 
+    mounted() {
+        const el = document.querySelector('#ap-showcase2');
+        if(el) {
+            el.style.width = '100%';
+        }
+    },
+
     methods: {
         /**
          * Helper function for url making.
