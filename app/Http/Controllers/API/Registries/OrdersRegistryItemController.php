@@ -57,14 +57,15 @@ class OrdersRegistryItemController extends ApiController
         /** @var PromoCode|null $promocode */
         $promocode = $order->promocode->first();
 
-        if ($promocode !== null) {
-            $returnable = false;
-        } else if ($current->isStaffTerminal()) {
+//        if ($promocode !== null) {
+//            $returnable = false;
+//        } else
+        if ($current->isStaffTerminal()) {
             $returnable = $order->hasStatus(OrderStatus::terminal_paid) || $order->hasStatus(OrderStatus::terminal_partial_returned);
         } else if ($current->isRepresentative()) {
             $returnable = $order->hasStatus(OrderStatus::partner_paid) || $order->hasStatus(OrderStatus::partner_partial_returned);
         } else if ($current->isStaffAdmin()) {
-            $returnable = true; //$order->hasStatus(OrderStatus::showcase_paid) || $order->hasStatus(OrderStatus::showcase_partial_returned);
+            $returnable = $order->hasStatus(OrderStatus::showcase_paid) || $order->hasStatus(OrderStatus::showcase_partial_returned);
         } else {
             $returnable = false;
         }
@@ -106,7 +107,7 @@ class OrdersRegistryItemController extends ApiController
             'name' => $order->name,
             'email' => $order->email,
             'phone' => $order->phone,
-            'can_send_sms' =>$current->partner()?->profile->can_send_sms,
+            'can_send_sms' => $current->partner()?->profile->can_send_sms,
             'can_buy' => $current->isRepresentative() || $current->isStaffTerminal(),
             'can_return' => $current->isRepresentative() || $current->isStaffAdmin(), // terminal users can not return tickets from CRM yet -> || $current->isStaffTerminal(),
             'returnable' => $returnable,

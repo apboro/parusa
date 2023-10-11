@@ -109,6 +109,7 @@ class TicketStatus extends AbstractDictionary
         self::showcase_paid_single,
         self::terminal_paid_single,
         self::partner_paid_single,
+        self::used
     ];
 
     public const ticket_cancelled_statuses = [
