@@ -134,7 +134,7 @@ $image = $ticket->trip->startPier->mapImages[0] ?? null;
             <tr>
                 <td colspan="3" style="width: 100%; padding-top: 8pt;">
                     <img style="width: 510pt; height: 350pt;" alt="img"
-                         src="{{$ticket->trip->excursion->images[0]?->asDataUri()}}">
+                         src="{{ $image ? $image->asDataUri() : null }}" alt="{{ $ticket->trip->startPier->name }}">
                 </td>
             </tr>
             <tr style="font-family: 'Proxima Nova',serif;font-size: 10pt;padding: 4pt 0 15pt;">

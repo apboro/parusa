@@ -53,7 +53,7 @@ class CityTourOrder
     {
         if ($this->checkOrderHasCityTourTickets()) {
             $orderStatus = $this->cityTourRepository->getOrderInfo($this->order);
-            if ($orderStatus['body']['payment_status'] == 0) {
+            if (isset($orderStatus['body']['payment_status']) && $orderStatus['body']['payment_status'] == 0) {
 
                 $result = $this->cityTourRepository->approveOrder($this->order);
 
