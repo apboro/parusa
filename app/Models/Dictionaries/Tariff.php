@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dictionaries;
 
-use App\Models\Dictionaries\AbstractDictionary;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Tariff extends AbstractDictionary

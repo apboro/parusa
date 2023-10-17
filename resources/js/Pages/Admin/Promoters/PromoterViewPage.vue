@@ -14,11 +14,12 @@
             <LayoutRoutedTabs :tabs="{
                 details: 'Персональные данные',
                 access: 'Доступ',
+                inventory: 'Инвентарь',
             }" @change="tab = $event"/>
 
             <PromoterInfo v-if="tab === 'details'" :data="data.data" :partner-id="partnerId" :editable="true" @update="update"/>
             <RepresentativeAccess v-if="tab === 'access'" :representative-id="data.data.representativeId" :data="data.data" :editable="true" @update="update"/>
-
+            <PromotersInventory v-if="tab === 'inventory'" :promoterId="partnerId"/>
         </template>
     </LayoutPage>
 </template>
@@ -41,9 +42,11 @@ import PartnerTicketRates from "@/Pages/Admin/Partners/Parts/PartnerTicketRates"
 import PartnerQrCodes from "@/Pages/Admin/Partners/Parts/PartnerQrCodes.vue";
 import RepresentativeAccess from "@/Pages/Admin/Representatives/Parts/RepresentativeAccess.vue";
 import PromoterInfo from "@/Pages/Admin/Promoters/Parts/PromoterInfo.vue";
+import PromotersInventory from "@/Pages/Admin/Promoters/Parts/PromotersInventory.vue";
 
 export default {
     components: {
+        PromotersInventory,
         PromoterInfo,
         RepresentativeAccess,
         PartnerQrCodes,

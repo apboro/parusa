@@ -2,7 +2,7 @@
 
 namespace App\Models\WorkShift;
 
-use App\Models\Tariff;
+use App\Models\Dictionaries\Tariff;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

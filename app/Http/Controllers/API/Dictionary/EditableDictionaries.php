@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\API\Dictionary;
 
 use App\Models\Dictionaries\ExcursionProgram;
+use App\Models\Dictionaries\Inventory;
 use App\Models\Dictionaries\PartnerType;
+use App\Models\Dictionaries\Tariff;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Ships\Ship;
-use App\Models\Tariff;
 
 trait EditableDictionaries
 {
@@ -81,7 +82,20 @@ trait EditableDictionaries
                 'pay_for_out' => 'integer',
                 'commission' => 'integer'
             ],
-
+        ],
+        'inventory' => [
+            'name' => 'Инвентарь промоутеров',
+            'class' => Inventory::class,
+            'item_name' => 'предмет',
+            'titles' => [
+                'name' => 'Предмет',
+            ],
+            'fields' => [
+                'name' => 'string',
+            ],
+            'validation' => [
+                'name' => 'required',
+            ],
         ],
     ];
 }

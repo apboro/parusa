@@ -9,6 +9,7 @@ use App\Interfaces\Typeable;
 use App\Models\Account\Account;
 use App\Models\Common\File;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
+use App\Models\Dictionaries\Inventory;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Excursions\Excursion;
@@ -179,6 +180,11 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
     public function getOpenedShift()
     {
         return $this->workShifts()->with('tariff')->whereNull('end_at')->first();
+    }
+
+    public function inventory()
+    {
+        return $this->hasMany(PromoterInventory::class, 'promoter_id', 'id')->with('dictionary');
     }
 
 }
