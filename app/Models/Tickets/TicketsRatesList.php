@@ -60,38 +60,14 @@ class TicketsRatesList extends Model
      */
     public function getShowcasePrice(?int $partnerId): ?int
     {
-        $this->loadMissing(['rates' => function (HasMany $query) {
-            $query
-                ->with('grade')
-                ->where('base_price', '>', 0)
-                ->whereNotIn('grade_id', [TicketGrade::guide]);
-        }]);
-
-        /**@var TicketRate $adultPrice */
-        $adultPrice = $this->rates->whereIn('grade_id', TicketGrade::showcaseDisplayPrice)->first();
-
-        $price = null;
-
-        if ($partnerId === null) {
-            if ($adultPrice !== null) {
-                $price = $adultPrice->site_price;
-            } else {
-                $price = $this->rates->max(function (TicketRate $rate) {
-                    return $rate->site_price;
+        if ($partnerId === null){
+            return $this->rates->max(function (TicketRate $rate) {
+                    return $rate->site_price ?? $rate->base_price;
                 });
-            }
-        }
-
-        if ($price === 0 || $price === null) {
-            if ($adultPrice !== null) {
-                $price = $adultPrice->base_price;
-            } else {
-                $price = $this->rates->max(function (TicketRate $rate) {
-                    return $rate->base_price;
+        } else {
+            return $this->rates->max(function (TicketRate $rate) {
+                    return $rate->partner_price ?? $rate->base_price;
                 });
-            }
         }
-
-        return $price === 0 ? null : $price;
     }
 }
