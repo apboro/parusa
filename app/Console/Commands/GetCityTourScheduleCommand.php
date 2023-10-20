@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic as Image;
 use Str;
 
 class GetCityTourScheduleCommand extends Command
@@ -40,9 +41,15 @@ class GetCityTourScheduleCommand extends Command
 
     private function saveImg(): void
     {
-        $response = Http::get($this->findScheduleImgUrl());
+        $imageUrl = $this->findScheduleImgUrl();
+        $response = Http::get($imageUrl);
         if ($response->successful()) {
-            Storage::disk('public_images')->put('city_tour-schedule.png',$response->body());
+            $image = Image::make($response->body());
+            $image->rectangle(0, 0, 330, 180, function ($draw) {
+                $draw->background('#e7443e');
+            });
+
+            Storage::disk('public_images')->put('city_tour-schedule.png', $image->encode());
         } else {
             Log::error('Could`t download CITY TOUR schedule');
         }
