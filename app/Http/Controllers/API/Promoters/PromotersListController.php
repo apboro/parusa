@@ -88,6 +88,7 @@ class PromotersListController extends ApiController
                 'type' => $partner->type->name,
                 'balance' => $partner->account->amount,
                 'limit' => $partner->account->limit,
+                'open_shift' => $partner->workShifts()->whereNull('end_at')->first(),
             ];
         });
 
@@ -96,7 +97,7 @@ class PromotersListController extends ApiController
                 'name' => 'ФИО промоутера',
                 'ID' => 'ID',
                 'balance' => 'Лицевой счет',
-                'limit' => 'Лимит',
+                'action' =>''
             ],
             $filters,
             $this->defaultFilters,
