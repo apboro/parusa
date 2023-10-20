@@ -200,7 +200,7 @@ class TransactionsRegistryController extends ApiController
                 'date' => $payment->created_at->format('d.m.Y H:i'),
                 'order_id' => $payment->order_id,
                 'status' => $payment->status->name,
-                'total' => PriceConverter::storeToPrice($payment->total_base_price),
+                'total' => empty($excursionIds) ? $payment->total : PriceConverter::storeToPrice($payment->total_base_price),
                 'terminal' => $payment->terminal->name ?? null,
                 'position' => $payment->position ? $payment->position->user->profile->compactName : null,
             ];
