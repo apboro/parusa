@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Promoters\WorkShiftController;
 use App\Http\Controllers\API\Terminals\TerminalDeleteController;
 use App\Http\Controllers\API\Terminals\TerminalEditController;
 use App\Http\Controllers\API\Terminals\TerminalInfoController;
@@ -7,7 +8,6 @@ use App\Http\Controllers\API\Terminals\TerminalPropertiesController;
 use App\Http\Controllers\API\Terminals\TerminalsListController;
 use App\Http\Controllers\API\Terminals\TerminalStaffController;
 use App\Http\Controllers\API\Terminals\TerminalViewController;
-use App\Http\Controllers\WorkShiftController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/terminals', [TerminalsListController::class, 'list'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);

@@ -14,6 +14,7 @@ import NotFound from '@/Pages/NotFound';
 import QrCodesPage from "@/Pages/Partner/QrCodesPage.vue";
 import TripViewPage from "@/Pages/Admin/Trips/TripViewPage.vue";
 import PromoterAccountPage from "@/Pages/Promoter/PromoterAccountPage.vue";
+import PromotersInventoryPage from "@/Pages/Promoter/PromotersInventoryPage.vue";
 
 export default [
     {path: '/', name: 'home', component: PromoterAccountPage, meta: {title: 'Аккаунт промоутера'}},
@@ -31,4 +32,5 @@ export default [
     {path: '/order', name: 'order', component: OrderMakePage, meta: {title: 'Оформление заказа'}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
     {path: '/trips/:id', name: 'trip-view', component: TripViewPage, meta: {title: 'Просмотр рейса', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/inventory', name: 'inventory', component: PromotersInventoryPage, meta: {title: 'Выданный инвентарь', roles: ['partner']}},
 ];

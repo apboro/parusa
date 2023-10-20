@@ -12,4 +12,7 @@ export default [
     {
         'title': 'РЕЕСТР ПРОДАЖ', 'route': 'orders-registry',
     },
+    {
+        'title': 'ИНВЕНТАРЬ', 'route': 'inventory',
+    },
 ];
