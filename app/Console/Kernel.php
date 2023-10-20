@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\GetCityTourScheduleCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -30,6 +31,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('lifepos:sync')->dailyAt('4:00');
         $schedule->command('sync:showcase_pay_waiting')->everyMinute();
         $schedule->command('city_tour:import')->weekly();
+        $schedule->command('get:city-tour-schedule')->hourly();
         if (config('app.env') === 'production') {
             $schedule->command('city_tour:refresh')->everyFifteenMinutes();
             $schedule->command('neva:today')->everyFiveMinutes();
