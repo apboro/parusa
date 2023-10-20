@@ -39,6 +39,7 @@ class ExcursionInfoController extends ApiController
 
         // fill data
         $values = [
+            'id' => $excursion->id,
             'name' => $excursion->name,
             'status' => $excursion->status->name,
             'active' => $excursion->hasStatus(ExcursionStatus::active),
@@ -57,6 +58,7 @@ class ExcursionInfoController extends ApiController
         ];
 
         // send response
-        return APIResponse::response($values);
+        return APIResponse::response($values,
+            ['schedule_img' => config('app.url').'/storage/images/city_tour-schedule.png']);
     }
 }

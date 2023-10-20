@@ -143,7 +143,7 @@ class OrderReturnController extends ApiController
                 foreach ($order->tickets as $ticket) {
                     /** @var Ticket $ticket */
                     if (in_array($ticket->id, $ticketsToReturnIds, true)) {
-                        if (!in_array($ticket->status_id,[TicketStatus::showcase_paid, TicketStatus::showcase_paid_single])) {
+                        if (!in_array($ticket->status_id,[TicketStatus::showcase_paid, TicketStatus::showcase_paid_single, TicketStatus::used])) {
                             throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
                         }
                         $tickets[] = $ticket;

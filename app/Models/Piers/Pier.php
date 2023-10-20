@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Collection $mapImages
  * @property string|null $external_id
  * @property string|null $external_parent_id
+ * @property int $provider_id
  * @property string|null $source
  * @property BelongsTo $provider
  */

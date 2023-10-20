@@ -17,6 +17,9 @@
                 <GuiValueArea :title="'Карта маршрута'" v-if="info.data['map_images'] && info.data['map_images'][0]">
                     <img class="w-100" :src="info.data['map_images'][0]" :alt="info.data['name']"/>
                 </GuiValueArea>
+                <GuiValueArea v-if="info.data['id'] === 127" :title="'Расписание'">
+                    <img class="w-100" :src="info.payload['schedule_img']" alt="schedule"/>
+                </GuiValueArea>
             </ScrollBox>
         </div>
     </PopUp>

@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\Provider;
 use App\Models\Hit\Hit;
 use App\Models\Piers\Pier;
 use Illuminate\Http\JsonResponse;
@@ -107,6 +108,7 @@ class PierEditController extends ApiEditController
 
         $pier->setAttribute('name', $data['name']);
         $pier->setStatus($data['status_id'], false);
+        $pier->provider_id = Provider::scarlet_sails;
         $pier->save();
 
         $info = $pier->info;

@@ -209,7 +209,7 @@ class ShowcaseTripsController extends ApiController
                     return [
                         'grade_id' => $rate->grade_id,
                         'name' => $rate->grade->name,
-                        'base_price' => $partnerId === null ? $rate->site_price : $rate->base_price,
+                        'base_price' => $partnerId === null  ? $rate->site_price : $rate->partner_price ?? $rate->base_price,
                         'backward_price' => $rate->backward_price_type === 'fixed' ? $rate->backward_price_value : $rate->base_price * ($rate->backward_price_value/100),
                         'preferential' => $rate->grade->preferential,
                     ];
