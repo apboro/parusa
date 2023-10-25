@@ -26,6 +26,8 @@ Route::post('/terminals/delete', [TerminalDeleteController::class, 'delete'])->m
 Route::post('/terminals/terminal/info', [TerminalInfoController::class, 'info'])->middleware(['allow:staff_terminal']);
 
 //promoters
-Route::post('/terminals/promoters/open_work_shift', [WorkShiftController::class, 'save'])->middleware(['allow:staff_terminal']);
+Route::post('/terminals/promoters/open_work_shift', [WorkShiftController::class, 'open'])->middleware(['allow:staff_terminal']);
 Route::post('/terminals/promoters/pay_work_shift', [WorkShiftController::class, 'pay'])->middleware(['allow:staff_terminal']);
 Route::post('/terminals/promoters/close_work_shift', [WorkShiftController::class, 'close'])->middleware(['allow:staff_terminal']);
+Route::post('/terminals/promoters/print_payout', [WorkShiftController::class, 'print'])->middleware(['allow:staff_terminal']);
+Route::post('/terminals/promoters/change_commissions', [WorkShiftController::class, 'changeCommissions'])->middleware(['allow:staff_terminal']);

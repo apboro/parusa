@@ -1,5 +1,10 @@
 <template>
     <LayoutPage :loading="list.is_loading" :title="$route.meta['title']">
+       <template #actions>
+        <GuiActionsMenu>
+            <span class="link" @click="showCommissionPopup" >Изменить ставку комиссии</span>
+        </GuiActionsMenu>
+       </template>
         <LayoutFilters>
             <template #search>
                 <LayoutFiltersItem :title="'Поиск по ФИО и по ID'">
@@ -38,6 +43,15 @@
                                 :hide-title="true" :placeholder="'Тариф'"/>
             </GuiContainer>
         </FormPopUp>
+        <FormPopUp :title="'Изменение ставки комиссии'"
+                   :form="formComm"
+                   :options="{newCommValue: newCommValue}"
+                   ref="commission_popup"
+        >
+            <GuiContainer w-350px>
+                <InputNumber v-model="newCommValue" :placeholder="'Введите новую ставку'"/>
+            </GuiContainer>
+        </FormPopUp>
 
     </LayoutPage>
 </template>
@@ -68,9 +82,11 @@ import form from "@/Core/Form";
 import FormPhone from "@/Components/Form/FormPhone.vue";
 import FormDictionary from "@/Components/Form/FormDictionary.vue";
 import GuiValue from "@/Components/GUI/GuiValue.vue";
+import InputNumber from "@/Components/Inputs/InputNumber.vue";
 
 export default {
     components: {
+        InputNumber,
         GuiValue,
         FormDictionary,
         FormPhone,
@@ -95,7 +111,9 @@ export default {
     data: () => ({
         list: list('/api/promoters'),
         form: form(null, '/api/terminals/promoters/open_work_shift'),
+        formComm: form(null, '/api/terminals/promoters/change_commissions'),
         promoterId: null,
+        newCommValue: null,
     }),
 
     created() {
@@ -103,6 +121,12 @@ export default {
     },
 
     methods: {
+        showCommissionPopup(){
+            this.formComm.reset();
+            this.formComm.load();
+            this.formComm.toaster = this.$toast;
+            this.$refs.commission_popup.show();
+        },
         highlight(text) {
             return this.$highlight(text, this.list.search);
         },

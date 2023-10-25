@@ -28,6 +28,7 @@ class CreateWorkShiftsTable extends Migration
             $table->unsignedInteger('pay_total')->nullable();
             $table->unsignedInteger('paid_out')->nullable();
             $table->integer('balance')->nullable();
+            $table->integer('commission_delta')->nullable()->default(0);
             $table->timestamps();
 
             $table->foreign('partner_id')->on('partners')->references('id')->cascadeOnDelete()->cascadeOnUpdate();

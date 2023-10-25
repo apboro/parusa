@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\API\Promoters;
 
+use App\Helpers\WorkShiftPdf;
 use App\Http\APIResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Dictionaries\WorkShiftStatus;
 use App\Models\User\Helpers\Currents;
 use App\Models\WorkShift\WorkShift;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class WorkShiftController extends Controller
 {
-    public function save(Request $request)
+    public function open(Request $request)
     {
         $current = Currents::get($request);
         if (!$current->terminalId())
@@ -35,11 +37,13 @@ class WorkShiftController extends Controller
             ->with('tariff')
             ->where('partner_id', $request->input('partnerId'))
             ->whereNull('end_at')->first();
+
         $sumToPay = $request->input('sumToPay');
 
         $workShift->paid_out = $workShift->paid_out + $sumToPay;
         $workShift->balance = $request->input('totalToPay') - $sumToPay;
-        $workShift->save();
+
+        $this->save($workShift);
 
         return APIResponse::success('Выплата записана.');
     }
@@ -49,20 +53,63 @@ class WorkShiftController extends Controller
         $workShift = WorkShift::query()
             ->where('partner_id', $request->partnerId)
             ->whereNull('end_at')->first();
+        $this->save($workShift, true);
 
+        return APIResponse::success('Смена закрыта');
+    }
+
+    public function save(WorkShift $workShift, bool $close = false)
+    {
         if ($payForTime = $workShift->tariff->pay_per_hour) {
             $interval = Carbon::parse($workShift->start_at)->diff(now());
             $payForTime = round(($interval->days * 24 + $interval->h + $interval->i / 60), 1) * $workShift->tariff->pay_per_hour;
         }
-
         $payTotal = $payForTime + $workShift->tariff->pay_for_out + $workShift->pay_commission;
         $workShift->pay_for_time = $payForTime ?? null;
         $workShift->pay_for_out = $workShift->tariff->pay_for_out;
         $workShift->pay_total = $payTotal;
-        $workShift->end_at = now();
+
+        if ($close){
+            $workShift->end_at = now();
+        }
+
         $workShift->save();
+    }
 
+    public function print(Request $request): JsonResponse
+    {
+        $workShift = WorkShift::query()
+            ->with(['promoter', 'tariff'])
+            ->where('partner_id', $request->input('partnerId'))
+            ->whereNull('end_at')
+            ->first();
 
-        return APIResponse::success('Смена закрыта');
+        if ($workShift === null) {
+            return APIResponse::error('Смена не найдена');
+        }
+
+        $pdf = WorkShiftPdf::print($workShift);
+
+        return APIResponse::response([
+            'workShift' => base64_encode($pdf),
+            'file_name' => "Расписка N$workShift->id.pdf",
+        ]);
+    }
+
+    public function changeCommissions(Request $request)
+    {
+        $current = Currents::get($request);
+
+        $onlyCommissionWorkShifts = WorkShift::query()
+            ->whereNull('end_at')
+            ->whereHas('tariff', function ($query){
+                $query->where('pay_per_hour', 0)->where('pay_for_out', 0);
+            })->where('terminal_id', $current->terminalId())->get();
+
+        foreach ($onlyCommissionWorkShifts as $workShift) {
+            $workShift->commission_delta = $request->input('newCommValue') - $workShift->tariff->commission;
+            $workShift->save();
+        }
+        return APIResponse::success('Ставка комиссии изменена');
     }
 }
