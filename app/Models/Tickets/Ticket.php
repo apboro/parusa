@@ -11,6 +11,8 @@ use App\Models\AdditionalDataTicket;
 use App\Models\BackwardTicket;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
+use App\Models\Dictionaries\PartnerType;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TerminalStatus;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
@@ -18,6 +20,7 @@ use App\Models\Model;
 use App\Models\Order\Order;
 use App\Models\Positions\Position;
 use App\Models\Sails\Trip;
+use App\Settings;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
 use Endroid\QrCode\Builder\Builder;
@@ -200,14 +203,26 @@ class Ticket extends Model implements Statusable
 
         $rate = $rate->partnerRates()->where('partner_id', $partner->id)->first() ?? $rate;
 
+        $promoterAmount = null;
+        $promoterCommission = null;
+        if ($partner->type_id === PartnerType::promoter) {
+            $openedShift = $partner->getOpenedShift();
+            $promoterCommission = ($this->provider_id != Provider::scarlet_sails)
+                ? Settings::get('promoters_commission_integrated_excursions', null, Settings::int)
+                : $openedShift->tariff->commission;
+            $promoterAmount = $promoterCommission * $this->base_price / 100;
+            $openedShift->pay_commission = $openedShift->pay_commission + $promoterAmount;
+            $openedShift->save();
+        }
+
         $partner->account->attachTransaction(new AccountTransaction([
             'type_id' => AccountTransactionType::tickets_sell_commission,
             'status_id' => AccountTransactionStatus::accepted,
             'timestamp' => Carbon::now(),
-            'amount' => $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100),
+            'amount' => $promoterAmount ?? $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100),
             'ticket_id' => $this->id,
             'commission_type' => $rate->commission_type,
-            'commission_value' => $rate->commission_value,
+            'commission_value' => $promoterCommission ?? $rate->commission_value,
         ]));
     }
 

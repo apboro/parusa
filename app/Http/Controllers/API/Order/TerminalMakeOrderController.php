@@ -11,6 +11,7 @@ use App\LifePos\MockLifePos;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Hit\Hit;
@@ -59,10 +60,21 @@ class TerminalMakeOrderController extends ApiEditController
             return APIResponse::error('Другой заказ уже находится в оформлении');
         }
 
-        $partnerId = $request->input('data.partner_id');
-        $partner = $partnerId ? Partner::query()->where('id', $partnerId)->first() : null;
-        if ($partnerId !== null && $partner === null) {
-            return APIResponse::validationError(['partner_id' => ['Партнёр не найден.']]);
+
+        $partnerId = null;
+        if ($request->input('data.without_partner') === false) {
+            $partnerId = $request->input('data.partner_id');
+            $partner = $partnerId ? Partner::query()->where('id', $partnerId)->first() : null;
+            if ($partnerId !== null && $partner === null) {
+                return APIResponse::validationError(['partner_id' => ['Партнёр не найден.']]);
+            }
+            if ($partner && $partner->type_id === PartnerType::promoter) {
+                if ($partner->getOpenedShift() === null) {
+                    return APIResponse::error('У выбранного промоутера не открыта смена');
+                }
+            } else {
+                return APIResponse::error('Выбранный партнёр не является промоутером');
+            }
         }
 
         $mode = $request->input('mode');

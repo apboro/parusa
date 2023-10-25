@@ -2,9 +2,15 @@
 
 namespace App\Models\WorkShift;
 
+use App\Http\APIResponse;
+use App\Models\Partner\Partner;
+use Request;
 use App\Models\Dictionaries\Tariff;
+use App\Models\POS\Terminal;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 
 class WorkShift extends Model
 {
@@ -16,4 +22,27 @@ class WorkShift extends Model
     {
         return $this->belongsTo(Tariff::class);
     }
+
+    public function promoter()
+    {
+        return $this->belongsTo(Partner::class, 'partner_id', 'id');
+    }
+
+    public function getPayForTime()
+    {
+        if ($this->tariff->pay_per_hour) {
+            $interval = Carbon::parse($this->start_at)->diff(now());
+
+            return round(($interval->days * 24 + $interval->h + $interval->i / 60), 1) * $this->tariff->pay_per_hour;
+        } else {
+
+            return null;
+        }
+    }
+
+    public function getShiftTotalPay()
+    {
+        return $this->tariff->pay_for_out + $this->getPayForTime() + $this->pay_commission;
+    }
+
 }

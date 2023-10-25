@@ -3,6 +3,7 @@
         <GuiContainer w-100 mt-30>
             <FormNumber :class="'settings-field__50'" :form="form" :name="'default_cancellation_time'"/>
             <FormNumber :class="'settings-field__50'" :form="form" :name="'cancellation_notify_time'"/>
+            <FormNumber :class="'settings-field__50'" :form="form" :name="'promoters_commission_integrated_excursions'"/>
             <FormText :class="'settings-field__col'" :form="form" :name="'buyer_email_welcome'"/>
         </GuiContainer>
 

@@ -10,13 +10,13 @@
                 details: 'Персональные данные',
                 account: 'Лицевой счёт',
                 registry: 'Реестр продаж',
-                total: 'Сводка',
+                total: 'Сводка'
             }" @change="tab = $event"/>
 
             <PromoterInfo v-if="tab === 'details'" :data="data.data" :partnerId="partnerId" :editable="true"/>
             <PromoterAccount v-if="tab === 'account'" :partnerId="partnerId"/>
             <AdminOrderRegistry v-if="tab === 'registry'" :partnerId="partnerId"/>
-            <PromoterTotal v-if="tab === 'total'" :partnerId="partnerId" :data="data.data"/>
+            <PromoterTotal v-if="tab === 'total'" :partnerId="partnerId" :data="data.data" @update="update"/>
 
         </template>
     </LayoutPage>
@@ -63,6 +63,9 @@ export default {
     },
 
     methods: {
+        update() {
+            this.data.load({id: this.partnerId});
+        }
     }
 }
 </script>
