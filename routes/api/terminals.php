@@ -27,4 +27,5 @@ Route::post('/terminals/terminal/info', [TerminalInfoController::class, 'info'])
 
 //promoters
 Route::post('/terminals/promoters/open_work_shift', [WorkShiftController::class, 'save'])->middleware(['allow:staff_terminal']);
+Route::post('/terminals/promoters/pay_work_shift', [WorkShiftController::class, 'pay'])->middleware(['allow:staff_terminal']);
 Route::post('/terminals/promoters/close_work_shift', [WorkShiftController::class, 'close'])->middleware(['allow:staff_terminal']);

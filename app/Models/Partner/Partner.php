@@ -187,4 +187,9 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
         return $this->hasMany(PromoterInventory::class, 'promoter_id', 'id')->with('dictionary');
     }
 
+    public function getLastShift()
+    {
+        return $this->workShifts()->whereNotNull('end_at')->orderBy('created_at', 'desc')->first();
+    }
+
 }

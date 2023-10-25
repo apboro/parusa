@@ -16,7 +16,7 @@
                                  v-html="highlight(partner['name'])"/>
                 </ListTableCell>
                 <ListTableCell :class="'w-25'">{{ partner['id'] }}</ListTableCell>
-                <ListTableCell :class="'w-25'">{{ partner['balance'] }} руб.</ListTableCell>
+                <ListTableCell :class="'w-25'">{{ partner['balance'] ?? 0 }} руб.</ListTableCell>
                 <ListTableCell :class="'w-15'">
                     <GuiButton v-if="!partner.open_shift" @click="openShift(partner)">открыть смену</GuiButton>
                     <GuiValue v-else>Смена открыта <br>{{ partner.open_shift.start_at }}</GuiValue>

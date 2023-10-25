@@ -5,30 +5,37 @@
         </GuiContainer>
 
         <GuiContainer w-50 mt-30 v-else>
-            <GuiText>Смена открыта: {{data.open_shift.start_at}}</GuiText>
-            <GuiText>Тариф: {{data.open_shift.tariff.name}}</GuiText>
-            <GuiText v-if="data.payForOut">Оплата за выход: {{data.payForOut}} руб.</GuiText>
-            <GuiText v-if="data.payForTime">Оплата за время: {{data.payForTime}} руб.</GuiText>
-            <GuiText v-if="data.payCommission">Оплата за продажи: {{data.payCommission}} руб.</GuiText>
+            <GuiValue :title="'Смена открыта:'"> {{data.open_shift.start_at}}</GuiValue>
+            <GuiValue :title="'Тариф:'"> {{data.open_shift.tariff.name}}</GuiValue>
+            <GuiValue v-if="data.payForOut" :title="'Оплата за выход:'"> {{data.payForOut}} руб.</GuiValue>
+            <GuiValue v-if="data.payForTime" :title="'Оплата за время:'"> {{data.payForTime}} руб.</GuiValue>
+            <GuiValue v-if="data.payCommission" :title="'Оплата за продажи:'"> {{data.payCommission}} руб.</GuiValue>
+            <GuiValue v-if="data.balance" :title="'Перенос с прошлой смены:'"> {{data.balance}} руб.</GuiValue>
+            <br>
+            <GuiValue v-if="paid_out" :title="'Выплачено:'"> {{paid_out}} руб.</GuiValue>
+            <GuiValue :title="'Итого к оплате:'"> {{totalToPay}} руб.</GuiValue>
         </GuiContainer>
 
         <GuiContainer w-100 mt-20>
-            <GuiButton v-if="data.open_shift" @click="closeShift" >Закрыть смену</GuiButton>
+            <GuiButton color="red" v-if="data.open_shift" @click="closeShift" >Закрыть смену</GuiButton>
+            <GuiButton color="green" v-if="data.open_shift" @click="payShift" >Оплата</GuiButton>
         </GuiContainer>
+
+        <PayoutShift ref="payout_popup" :totalToPay="totalToPay" :partnerId="partnerId" @made_payout="update"/>
 
     </div>
 </template>
 
 <script>
 import GuiContainer from "@/Components/GUI/GuiContainer";
-import GuiValue from "@/Components/GUI/GuiValue";
 import GuiValueArea from "@/Components/GUI/GuiValueArea";
 import GuiButton from "@/Components/GUI/GuiButton";
 import GuiActivityIndicator from "@/Components/GUI/GuiActivityIndicator";
 import GuiHint from "@/Components/GUI/GuiHint";
 import GuiFilesList from "@/Components/GUI/GuiFilesList";
 import GuiMessage from "@/Components/GUI/GuiMessage.vue";
-import GuiText from "@/Components/GUI/GuiText.vue";
+import GuiValue from "@/Components/GUI/GuiValue.vue";
+import PayoutShift from "@/Pages/Terminal/Parts/PayoutShift.vue";
 
 
 export default {
@@ -36,19 +43,31 @@ export default {
         partnerId: {type: Number, required: true},
         data: {type: Object},
     },
-
     emits: ['update'],
 
+    data: () => ({
+       payout: null
+    }),
+
     components: {
-        GuiText,
+        PayoutShift,
+        GuiValue,
         GuiMessage,
         GuiFilesList,
         GuiHint,
         GuiActivityIndicator,
         GuiButton,
         GuiValueArea,
-        GuiValue,
         GuiContainer
+    },
+
+    computed: {
+        totalToPay(){
+            return this.data.payForOut + this.data.payForTime + this.data.payCommission + this.data.balance - this.data.paid_out - this.payout;
+        },
+        paid_out(){
+            return this.data.paid_out + this.payout;
+        }
     },
 
     methods: {
@@ -69,9 +88,14 @@ export default {
                             })
                     }
                 });
+        },
+        payShift(){
+            this.$emit('update')
+            this.$refs.payout_popup.show()
+        },
+        update(sumToPay){
+            this.payout = sumToPay;
         }
     }
-
-
 }
 </script>

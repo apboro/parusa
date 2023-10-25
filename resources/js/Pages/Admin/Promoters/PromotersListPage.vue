@@ -21,8 +21,7 @@
                     <router-link class="link" :to="{ name: 'promoters-view', params: { id: partner['id'] }}" v-html="highlight(partner['name'])"/>
                 </ListTableCell>
                 <ListTableCell>{{partner['id']}}</ListTableCell>
-                <ListTableCell>{{ partner['balance'] }} руб.</ListTableCell>
-                <ListTableCell>{{ partner['limit'] }} руб.</ListTableCell>
+                <ListTableCell colspan="2">{{ partner['balance'] }} руб.</ListTableCell>
             </ListTableRow>
         </ListTable>
 

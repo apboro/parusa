@@ -36,7 +36,6 @@ class PromoterViewController extends ApiController
         }
 
         /** @var Partner $partner */
-        $profile = $partner->profile;
         $promoterUser = $partner->positions()->first()->user;
         $promoterUserProfile = $partner->positions()->first()->user->profile;
 
@@ -44,17 +43,8 @@ class PromoterViewController extends ApiController
         if ($openShift) {
             if ($openShift->tariff->pay_per_hour) {
                 $interval = Carbon::parse($openShift->start_at)->diff(now());
-                $payForTime = ($interval->days * 24 + $interval->h + $interval->i / 60) * $openShift->tariff->pay_per_hour;
+                $payForTime = round(($interval->days * 24 + $interval->h + $interval->i / 60), 1) * $openShift->tariff->pay_per_hour;
             }
-
-
-            $statuses = array_merge(OrderStatus::order_printable_statuses, [OrderStatus::terminal_finishing]);
-            $orders = Order::query()
-                ->where('partner_id', $id)
-                ->whereIn('status_id', $statuses)
-                ->where('created_at', '>=', $openShift->start_at)
-                ->get();
-            $ordersTotal = $orders->sum(fn($order) => $order->total());
         }
 
         // fill data
@@ -72,7 +62,9 @@ class PromoterViewController extends ApiController
             'open_shift' => $partner->getOpenedShift(),
             'payForTime' => isset($payForTime) ? round($payForTime) : null,
             'payForOut' => $openShift->tariff->pay_for_out ?? null,
-            'payCommission' => isset($ordersTotal) ?  $ordersTotal * $openShift->tariff->commission / 100 : null,
+            'payCommission' => $openShift->pay_commission ?? null, //записывается в методе Ticket->payCommission()
+            'paid_out' => $openShift->paid_out ?? null,
+            'balance' => $partner->getLastShift()?->balance ?? null,
         ];
 
         // send response

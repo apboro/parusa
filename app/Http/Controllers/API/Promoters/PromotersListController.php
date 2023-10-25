@@ -14,6 +14,7 @@ use App\Models\Dictionaries\PositionStatus;
 use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use App\Models\Positions\Position;
+use App\Models\User\Helpers\Currents;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
@@ -40,16 +41,32 @@ class PromotersListController extends ApiController
      */
     public function list(APIListRequest $request): JsonResponse
     {
+        $current = Currents::get($request);
+
         Hit::register(HitSource::admin);
+
+        $partnersWithOpenShiftsOnOtherTerminals = null;
+        if ($current->terminalId()) {
+            $partnersWithOpenShiftsOnOtherTerminals = Partner::query()
+                ->whereHas('workShifts', function ($query) use ($current){
+                    $query->whereNull('end_at')->where('terminal_id', '!=', $current->terminalId());
+                })->pluck('id');
+        }
+
         $query = Partner::query()
-            ->with(['type', 'status', 'positions', 'positions.user.profile', 'positions.user'])
-            ->where('type_id', PartnerType::promoter);
+            ->with(['type', 'status', 'positions', 'positions.user.profile', 'positions.user', 'workShifts'])
+            ->where('type_id', PartnerType::promoter)
+            ->when($current->terminalId(), function($query) use ($partnersWithOpenShiftsOnOtherTerminals){
+                $query->whereNotIn('id', $partnersWithOpenShiftsOnOtherTerminals);
+            });
+
+
 
 
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
             if (!empty($filters['partner_status_id'])) {
-                $query->where('status_id', $filters['partner_status_id']);
+                $query->where('partners.status_id', $filters['partner_status_id']);
             }
         }
 
@@ -80,13 +97,13 @@ class PromotersListController extends ApiController
         $partners = $query->orderBy('name')->paginate($request->perPage(10, $this->rememberKey));
 
         /** @var LengthAwarePaginator $partners */
-        $partners->transform(function (Partner $partner) {
+        $partners->transform(function (Partner $partner){
             return [
                 'id' => $partner->id,
                 'active' => $partner->hasStatus(PartnerStatus::active),
                 'name' => $partner->name,
                 'type' => $partner->type->name,
-                'balance' => $partner->account->amount,
+                'balance' => $partner->getOpenedShift()?->getShiftTotalPay() + $partner->getLastShift()?->balance,
                 'limit' => $partner->account->limit,
                 'open_shift' => $partner->workShifts()->whereNull('end_at')->first(),
             ];
@@ -96,7 +113,7 @@ class PromotersListController extends ApiController
             [
                 'name' => 'ФИО промоутера',
                 'ID' => 'ID',
-                'balance' => 'Лицевой счет',
+                'balance' => 'Баланс',
                 'action' =>''
             ],
             $filters,
