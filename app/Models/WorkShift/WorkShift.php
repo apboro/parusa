@@ -12,6 +12,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * @property mixed $promoter
+ * @property mixed $sales_total
+ */
 class WorkShift extends Model
 {
     use HasFactory;
@@ -28,15 +32,19 @@ class WorkShift extends Model
         return $this->belongsTo(Partner::class, 'partner_id', 'id');
     }
 
-    public function getPayForTime()
+    public function getPayForTime(): int
+    {
+            return  $this->getWorkingHours() * $this->tariff->pay_per_hour;
+    }
+
+    public function getWorkingHours(): float
     {
         if ($this->tariff->pay_per_hour) {
-            $interval = Carbon::parse($this->start_at)->diff(now());
+            $interval = Carbon::parse($this->start_at)->diff($this->end_at ? Carbon::parse($this->end_at) : now());
 
-            return round(($interval->days * 24 + $interval->h + $interval->i / 60), 1) * $this->tariff->pay_per_hour;
+            return round(($interval->days * 24 + $interval->h + $interval->i / 60), 1);
         } else {
-
-            return null;
+            return 0;
         }
     }
 

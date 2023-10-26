@@ -20,6 +20,7 @@ use App\Models\Model;
 use App\Models\Order\Order;
 use App\Models\Positions\Position;
 use App\Models\Sails\Trip;
+use App\Models\WorkShift\WorkShift;
 use App\Settings;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
@@ -203,28 +204,51 @@ class Ticket extends Model implements Statusable
 
         $rate = $rate->partnerRates()->where('partner_id', $partner->id)->first() ?? $rate;
 
-        $promoterAmount = null;
-        $promoterCommission = null;
         if ($partner->type_id === PartnerType::promoter) {
-            $openedShift = $partner->getOpenedShift();
-            $promoterCommission = ($this->provider_id != Provider::scarlet_sails)
-                ? Settings::get('promoters_commission_integrated_excursions', null, Settings::int)
-                : $openedShift->tariff->commission;
-            $promoterAmount = $promoterCommission * $this->base_price / 100;
-            $openedShift->pay_commission = $openedShift->pay_commission + $promoterAmount;
-            $openedShift->save();
+            if ($openedShift = $partner->getOpenedShift()) {
+                $dataForTransaction = $this->countPromotersCommission($openedShift);
+                $this->saveCommissionsInShift($openedShift, $dataForTransaction['promoter_amount']);
+            }
         }
 
         $partner->account->attachTransaction(new AccountTransaction([
             'type_id' => AccountTransactionType::tickets_sell_commission,
             'status_id' => AccountTransactionStatus::accepted,
             'timestamp' => Carbon::now(),
-            'amount' => $promoterAmount ?? $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100),
+            'amount' => $dataForTransaction['promoter_amount'] ?? $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100),
             'ticket_id' => $this->id,
             'commission_type' => $rate->commission_type,
-            'commission_value' => $promoterCommission ?? $rate->commission_value,
+            'commission_value' => $dataForTransaction['promoter_commission'] ?? $rate->commission_value,
+            'commission_delta' => $dataForTransaction['commission_delta'] ?? 0,
         ]));
     }
+
+    public function saveCommissionsInShift(WorkShift $shift, int $commission, $opened = true): void
+    {
+        if ($opened) {
+            $shift->pay_commission = $shift->pay_commission + $commission;
+            $shift->sales_total = $shift->sales_total + $this->base_price;
+        } else {
+            $shift->balance = $shift->balance - $commission;
+            $shift->sales_total = $shift->sales_total - $this->base_price;
+        }
+        $shift->save();
+    }
+
+    public function countPromotersCommission(WorkShift $shift): array
+    {
+        $promoterCommission = ($this->provider_id === Provider::scarlet_sails || $this->provider_id === null)
+            ? $shift->tariff->commission + $shift->commission_delta
+            : Settings::get('promoters_commission_integrated_excursions', null, Settings::int);
+        $promoterAmount = $promoterCommission * $this->base_price / 100;
+
+        return [
+            'promoter_commission' => $promoterCommission,
+            'promoter_amount' => $promoterAmount,
+            'commission_delta' => $shift->commission_delta
+        ];
+    }
+
 
     /**
      * Refund commission for this ticket.
@@ -290,6 +314,14 @@ class Ticket extends Model implements Statusable
 
         if ($transaction === null) {
             throw new AccountException('Транзакция по зачислению средств не найдена.');
+        }
+        if ($partner->type_id === PartnerType::promoter) {
+            if ($openedShift = $partner->getOpenedShift()) {
+                $this->saveCommissionsInShift($openedShift, -$transaction->amount);
+            } else {
+                $lastShift = $partner->getLastShift();
+                $this->saveCommissionsInShift($lastShift, $transaction->amount, false);
+            }
         }
 
         $partner->account->attachTransaction(new AccountTransaction([

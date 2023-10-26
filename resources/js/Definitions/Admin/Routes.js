@@ -36,6 +36,7 @@ import PromoCodeEditPage from "@/Pages/Admin/PromoCode/PromoCodeEditPage.vue";
 import PromotersListPage from "@/Pages/Admin/Promoters/PromotersListPage.vue";
 import PromoterEditPage from "@/Pages/Admin/Promoters/PromoterEditPage.vue";
 import PromoterViewPage from "@/Pages/Admin/Promoters/PromoterViewPage.vue";
+import PromotersRegistryPage from "@/Pages/Admin/Registries/PromotersRegistryPage.vue";
 
 export default [
     {path: '/', name: 'home', component: TripsListPage, meta: {title: 'Список рейсов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
@@ -46,6 +47,7 @@ export default [
     {path: '/registry/tickets/:id', name: 'ticket-info', component: TicketInfoPage, meta: {title: 'Билет', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/registry/transactions', name: 'transactions-registry', component: TransactionsRegistryPage, meta: {title: 'Реестр транзакций по кассам', roles: ['admin', 'accountant']}},
+    {path: '/registry/promoters', name: 'promoters-registry', component: PromotersRegistryPage, meta: {title: 'Реестр по промоутерам', roles: ['admin', 'accountant']}},
 
     {path: '/statistics/sales', name: 'statistics-sales', component: StatisticsSalesPage, meta: {title: 'Статистика продаж', roles: ['admin']}},
     {path: '/statistics/sales-today', name: 'statistics-sales-today', component: StatisticsSalesTodayPage, meta: {title: 'Статистика продаж за сегодня', roles: ['admin']}},

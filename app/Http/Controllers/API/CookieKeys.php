@@ -20,4 +20,6 @@ class CookieKeys
     public const terminals_list = 'terminals_list';
     public const statistics_sales_list = 'statistics_sales_list';
     public const qr_codes_list = 'qr_codes_list';
+
+    public const promoters_list = 'promoters_list';
 }

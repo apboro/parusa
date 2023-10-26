@@ -76,6 +76,7 @@ class AccountTransaction extends Model implements Statusable, Typeable
         'ticket_id',
         'commission_type',
         'commission_value',
+        'commission_delta',
     ];
 
     /** @var array Append attributes */

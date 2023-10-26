@@ -36,6 +36,7 @@ export default [
             {'title': 'Реестр билетов', 'route': 'tickets-registry', 'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
             {'title': 'Реестр броней', 'route': 'reserves-registry', 'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
             {'title': 'Реестр транзакций по кассам', 'route': 'transactions-registry', 'roles': ['admin', 'accountant']},
+            {'title': 'Реестр по промоутерам', 'route': 'promoters-registry', 'roles': ['admin', 'accountant']},
         ]
     },
     {

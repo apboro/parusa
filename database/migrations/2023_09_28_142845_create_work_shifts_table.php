@@ -24,6 +24,7 @@ class CreateWorkShiftsTable extends Migration
             $table->unsignedTinyInteger('status_id')->nullable();
             $table->unsignedInteger('pay_for_time')->nullable();
             $table->unsignedInteger('pay_for_out')->nullable();
+            $table->unsignedInteger('sales_total')->nullable();
             $table->unsignedInteger('pay_commission')->nullable();
             $table->unsignedInteger('pay_total')->nullable();
             $table->unsignedInteger('paid_out')->nullable();
