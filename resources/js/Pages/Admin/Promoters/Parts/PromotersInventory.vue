@@ -14,6 +14,7 @@ export default {
     data: () => ({
         inventory: null,
         promoterInventory: null,
+        editing: false,
     }),
 
     mounted() {
@@ -36,6 +37,7 @@ export default {
                 promoterInventory: this.promoterInventory
             })
                 .then(response => this.$toast.success(response.data.message, 3000))
+                .finally(this.editing = false)
         },
     }
 }
@@ -44,11 +46,12 @@ export default {
 <template>
     <GuiValueArea mt-30 :title="'Инвентарь'">
         <template v-for="item in inventory">
-            <InputCheckbox v-model="promoterInventory" :value="item.id" :label="item.name"/>
+            <InputCheckbox v-model="promoterInventory" :value="item.id" :label="item.name" :disabled="!editing"/>
         </template>
     </GuiValueArea>
     <GuiContainer mt-30>
-        <GuiButton @click="save" :color="'green'">Сохранить</GuiButton>
+        <GuiButton v-if="editing" @click="save" :color="'green'">Сохранить</GuiButton>
+        <GuiButton v-if="!editing" @click="editing = true" :color="'blue'">Редактировать</GuiButton>
     </GuiContainer>
 </template>
 
