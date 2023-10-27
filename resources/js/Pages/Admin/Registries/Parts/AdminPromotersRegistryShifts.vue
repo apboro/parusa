@@ -73,8 +73,9 @@
                 </ListTableRow>
             </template>
         </ListTable>
-
         <GuiMessage border v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
+        <GuiValue v-if="list.payload.total_to_pay_out" :title="'Всего начислено:'"> {{ list.payload.total_to_pay_out }} руб.</GuiValue>
+        <GuiValue v-if="list.payload.total_paid_out" :title="'Всего выплачено:'"> {{ list.payload.total_paid_out }} руб.</GuiValue>
 
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
     </LoadingProgress>
