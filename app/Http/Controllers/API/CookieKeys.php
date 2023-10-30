@@ -22,4 +22,5 @@ class CookieKeys
     public const qr_codes_list = 'qr_codes_list';
 
     public const promoters_list = 'promoters_list';
+    public const promoters_shifts_list = 'promoters_shifts_list';
 }

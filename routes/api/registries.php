@@ -6,6 +6,7 @@ use App\Http\Controllers\API\Registries\OrdersRegistryBuyerController;
 use App\Http\Controllers\API\Registries\OrdersRegistryItemController;
 use App\Http\Controllers\API\Registries\OrdersRegistryController;
 use App\Http\Controllers\API\Registries\PromotersRegistryController;
+use App\Http\Controllers\API\Registries\PromotersShiftsRegistryController;
 use App\Http\Controllers\API\Registries\ReservesRegistryController;
 use App\Http\Controllers\API\Registries\TicketRenderController;
 use App\Http\Controllers\API\Registries\TicketSendController;
@@ -36,4 +37,5 @@ Route::post('/registries/order/download', [OrderRenderController::class, 'downlo
 Route::post('/registries/order/print', [OrderRenderController::class, 'print'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_accountant,staff_terminal,partner']);
 Route::post('/registries/order/send', [OrderSendController::class, 'send'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_accountant,staff_terminal,partner']);
 
+Route::post('/registries/promoters/shifts', [PromotersShiftsRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_accountant']);
 Route::post('/registries/promoters', [PromotersRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_accountant']);

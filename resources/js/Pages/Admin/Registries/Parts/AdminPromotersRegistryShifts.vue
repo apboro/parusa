@@ -129,7 +129,7 @@ export default {
     }),
 
     created() {
-        this.list = list('/api/registries/promoters', {});
+        this.list = list('/api/registries/promoters/shifts', {});
         this.list.initial();
     },
 

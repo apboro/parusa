@@ -7,7 +7,9 @@ use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\PartnerType;
 use App\Models\Hit\Hit;
+use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
 use App\Models\WorkShift\WorkShift;
 use Carbon\Carbon;
@@ -16,7 +18,8 @@ use Illuminate\Http\JsonResponse;
 class PromotersRegistryController extends ApiController
 {
     protected array $defaultFilters = [
-        'date' => null,
+        'date_from' => null,
+        'date_to' => null,
         'terminal_id' => null,
     ];
     protected array $rememberFilters = [
@@ -24,7 +27,8 @@ class PromotersRegistryController extends ApiController
 
     public function __construct()
     {
-        $this->defaultFilters['date'] = Carbon::now()->startOfDay()->format('Y-m-d\TH:i');
+        $this->defaultFilters['date_from'] = Carbon::now()->startOfMonth()->format('Y-m-d\TH:i');
+        $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d\TH:i');
     }
 
     protected string $rememberKey = CookieKeys::promoters_list;
@@ -36,52 +40,61 @@ class PromotersRegistryController extends ApiController
         $terminalId = $this->getTerminalId($request);
 
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
-        $query = WorkShift::query()
-            ->with(['promoter', 'tariff'])
-            ->whereDate('created_at', $filters['date']);
+        $query = Partner::query()
+            ->with(['workShifts'])
+            ->where('type_id', PartnerType::promoter);
 
         if ($terminalId) {
-            $query->where('terminal_id', $terminalId);
+            $query->whereHas('workShifts', fn($q) => $q->where('terminal_id', $terminalId));
         }
         if ($request->input('search')) {
-            $query->whereHas('promoter', fn($q) => $q->where('name', 'like', '%' . $request->input('search') . '%')
-                ->orWhere('id', 'like', $request->input('search') . '%'));
+            $query->where('name', 'like', '%' . $request->input('search') . '%')
+                ->orWhere('id', 'like', $request->input('search') . '%');
         }
 
-        $totalToPayout = 0;
-        $totalPaidOut = $query->clone()->sum('paid_out');
-        $totalToPayout += $query->get()->map(function ($shift) {
-            return $shift->getShiftTotalPay();
-        })->sum();
-        $workShifts = $query->paginate($request->perPage(25, $this->rememberKey));
+        if (!empty($filters['date_from'])) {
+            $query->whereHas('workShifts', function ($query) use ($filters) {
+                $query->where('start_at', '>=', Carbon::parse($filters['date_from']));
+            });
+        }
+        if (!empty($filters['date_to'])) {
+            $query->whereHas('workShifts', function ($query) use ($filters) {
+                $query->where('start_at', '<=', Carbon::parse($filters['date_to']));
+            });
+        }
 
-        $workShifts->transform(function ($shift){
+        $partners = $query->paginate($request->perPage(25, $this->rememberKey));
+
+        $partners->transform(function (Partner $partner) {
+
             return [
-                'id' => $shift->promoter->id,
-                'name' => $shift->promoter->name,
-                'start_at' => $shift->start_at,
-                'end_at' => $shift->end_at,
-                'pay_for_out' => $shift->tariff->pay_for_out,
-                'working_hours' => $shift->getWorkingHours(),
-                'tariff' => $shift->tariff->name,
-                'pay_per_hour' => $shift->tariff->pay_per_hour,
-                'pay_for_time' => $shift->getPayForTime(),
-                'sales_total' => $shift->sales_total,
-                'pay_commission' => $shift->pay_commission,
-                'pay_total' => $shift->getShiftTotalPay(),
-                'paid_out' => $shift->paid_out,
+                'id' => $partner->id,
+                'name' => $partner->name,
+                'pay_for_out' => $partner->workShifts->sum('pay_for_out'),
+                'total_hours' => $partner->workShifts->sum(function ($shift) {
+                    return $shift->getWorkingHours();
+                }),
+                'pay_for_time' => $partner->workShifts->sum(function ($shift) {
+                    return $shift->getPayForTime();
+                }),
+                'sales_total' => $partner->workShifts->sum('sales_total'),
+                'commission' => $partner->workShifts->sum('pay_commission'),
+                'total_to_pay_out' => $partner->workShifts->sum(function ($shift) {
+                    return $shift->getShiftTotalPay();
+                }),
+                'total_paid_out' => $partner->workShifts->sum('paid_out')
             ];
         });
 
 
         return APIResponse::list(
-            $workShifts,
-            ['ID', 'ФИО', 'Начало смены', 'Конец смены', 'За выход', 'Кол-во часов', 'Тариф', 'Почасовка', 'Оплата за время', 'Касса', '% от кассы', 'Всего начислено', 'Получено'],
+            $partners,
+            ['ID', 'ФИО', 'За выход', 'Кол-во часов', 'Оплата за время', 'Касса', '% от кассы', 'Всего начислено', 'Получено'],
             $filters,
             $this->defaultFilters,
             [
-                'total_to_pay_out' => $totalToPayout,
-                'total_paid_out' => $totalPaidOut
+                'total_to_pay_out' => $partners->sum('total_to_pay_out'),
+                'total_paid_out' => $partners->sum('total_paid_out')
             ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));;
     }
 
