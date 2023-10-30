@@ -19,7 +19,7 @@ class PositionOrderingTicketFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'position_id' => Position::factory()->create()->id,

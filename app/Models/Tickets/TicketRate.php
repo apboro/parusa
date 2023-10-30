@@ -7,6 +7,7 @@ use App\Models\Dictionaries\TicketGrade;
 use App\Models\Model;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -30,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class TicketRate extends Model
 {
+    use HasFactory;
     /** @var string Referenced table name. */
     protected $table = 'ticket_rates';
 

@@ -2,12 +2,10 @@
 
 namespace App\Services\CityTourBus;
 
-use App\Models\AdditionalDataOrder;
-use App\Models\AdditionalDataTicket;
 use App\Models\Dictionaries\Provider;
-use App\Models\Model;
+use App\Models\Integration\AdditionalDataOrder;
+use App\Models\Integration\AdditionalDataTicket;
 use App\Models\Order\Order;
-use Exception;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 

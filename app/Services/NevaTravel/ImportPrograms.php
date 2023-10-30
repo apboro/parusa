@@ -3,9 +3,9 @@
 namespace App\Services\NevaTravel;
 
 
-use App\Models\AdditionalDataExcursion;
 use App\Models\Dictionaries\Provider;
 use App\Models\Excursions\Excursion;
+use App\Models\Integration\AdditionalDataExcursion;
 
 
 class ImportPrograms

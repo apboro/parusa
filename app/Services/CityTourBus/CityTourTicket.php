@@ -2,13 +2,7 @@
 
 namespace App\Services\CityTourBus;
 
-use App\Models\AdditionalDataOrder;
-use App\Models\Dictionaries\Provider;
-use App\Models\Model;
 use App\Models\Order\Order;
-use Exception;
-use Illuminate\Support\Facades\Log;
-use RuntimeException;
 
 class CityTourTicket
 {

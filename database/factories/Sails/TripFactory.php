@@ -6,6 +6,7 @@ use App\Models\Dictionaries\Provider;
 use App\Models\Excursions\Excursion;
 use App\Models\Piers\Pier;
 use App\Models\Ships\Ship;
+use App\Models\Tickets\TicketsRatesList;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TripFactory extends Factory

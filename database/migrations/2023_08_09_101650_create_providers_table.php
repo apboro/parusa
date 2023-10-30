@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->string('service', 35);
         });
 
-        Artisan::call('db:seed');
+//        Artisan::call('db:seed');
     }
 
     public function down(): void

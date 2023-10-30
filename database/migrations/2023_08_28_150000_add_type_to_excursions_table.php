@@ -13,7 +13,7 @@ class addTypeToExcursionsTable extends Migration
      */
     public function up()
     {
-        Artisan::call('db:seed');
+//        Artisan::call('db:seed');
         Schema::table('excursions', function (Blueprint $table) {
             $table->unsignedTinyInteger('type_id')->nullable();
 

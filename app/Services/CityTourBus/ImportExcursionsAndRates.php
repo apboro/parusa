@@ -3,10 +3,10 @@
 namespace App\Services\CityTourBus;
 
 
-use App\Models\AdditionalDataExcursion;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Excursions\Excursion;
+use App\Models\Integration\AdditionalDataExcursion;
 use App\Models\Piers\Pier;
 use App\Models\Ships\Ship;
 use App\Models\Tickets\TicketRate;

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\AdditionalDataExcursion;
+use App\Models\Integration\AdditionalDataExcursion;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

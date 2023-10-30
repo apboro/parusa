@@ -7,6 +7,7 @@ use App\Models\Excursions\Excursion;
 use App\Models\Model;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -23,6 +24,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class TicketsRatesList extends Model
 {
+    use HasFactory;
+
     protected $guarded = [];
     /** @var string Referenced table name. */
     protected $table = 'tickets_rates_list';

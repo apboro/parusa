@@ -2,24 +2,23 @@
 
 namespace Tests\Unit;
 
-use App\Http\Middleware\EncryptCookies;
 use App\Models\Dictionaries\Role;
+use App\Models\Dictionaries\TicketGrade;
+use App\Models\Excursions\Excursion;
+use App\Models\Integration\AdditionalDataExcursion;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\Positions\PositionOrderingTicket;
+use App\Models\Sails\Trip;
+use App\Models\Tickets\TicketRate;
+use App\Models\Tickets\TicketsRatesList;
 use App\Services\CityTourBus\CityTourRepository;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
-use Illuminate\Session\ArraySessionHandler;
-use Illuminate\Session\Store;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Crypt;
 use Tests\TestCase;
 
 class CityTourIntegrationTest extends TestCase
 {
 
-    private CityTourRepository $cityTourRepository;
+
     private PositionOrderingTicket $positionOrderingTicket;
 
     private Terminal $terminal;
@@ -27,16 +26,26 @@ class CityTourIntegrationTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->cityTourRepository = new CityTourRepository();
         $position = Position::factory()->create(['is_staff' => 1, 'partner_id' => null]);
-        $this->positionOrderingTicket = PositionOrderingTicket::factory()->create(['position_id' => $position->id]);
         $this->terminal = Terminal::factory()->create();
-        $this->terminal->staff()->save($position);
-    }
 
-    public function test_city_tour_api_available()
-    {
-        $this->assertEquals(200, $this->cityTourRepository->getExcursions()['status']);
+        $ticketGrade = TicketGrade::factory()->create(['provider_id' => 20]);
+        $excursion = Excursion::factory()->create(['provider_id' => 20]);
+        AdditionalDataExcursion::factory()->create([
+            'provider_id' => 20,
+            'excursion_id' => $excursion->id,
+            'provider_excursion_id' => 1]);
+        $ticketsRateList = TicketsRatesList::factory()->create(['excursion_id' => $excursion->id]);
+        TicketRate::factory()->create(['rate_id' => $ticketsRateList->id, 'grade_id' => $ticketGrade->id]);
+        $trip = Trip::factory()->create(['excursion_id' => $excursion->id]);
+
+        $this->positionOrderingTicket = PositionOrderingTicket::factory()->create([
+            'position_id' => $position->id,
+            'trip_id' => $trip->id,
+            'grade_id' => $ticketGrade->id,
+            'terminal_id' => $this->terminal->id
+        ]);
+        $this->terminal->staff()->save($position);
     }
 
     public function test_make_city_tour_order_from_terminal()
@@ -48,7 +57,7 @@ class CityTourIntegrationTest extends TestCase
             ->withCookies([
                 'current_user_role' => $this->positionOrderingTicket->position->roles()->save(Role::find(2))->id,
                 'current_user_position' => $this->positionOrderingTicket->position_id,
-                'current_user_terminal' => $this->terminal->id,
+                'current_user_terminal' => $this->positionOrderingTicket->terminal_id,
             ])->post('/api/order/terminal/make',
                 [
                     'mode' => 'order',
@@ -62,8 +71,10 @@ class CityTourIntegrationTest extends TestCase
                         "phone" => "+7 (666) 666-66-66"
                     ]
                 ]);
-
         $response->dump();
-
+        $response->assertStatus(200);
+        $response->assertJson([
+            'message' => 'Заказ отправлен в оплату.',
+        ]);
     }
 }

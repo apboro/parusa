@@ -2,10 +2,9 @@
 
 namespace App\Services\NevaTravel;
 
-use App\Models\AdditionalDataOrder;
 use App\Models\Dictionaries\Provider;
+use App\Models\Integration\AdditionalDataOrder;
 use App\Models\Order\Order;
-use Exception;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 

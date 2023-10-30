@@ -16,16 +16,15 @@ use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
+use App\Models\Integration\AdditionalDataOrder;
 use App\Models\Model;
 use App\Models\Partner\Partner;
 use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\PromoCode\PromoCode;
-use App\Models\AdditionalDataOrder;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
-
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use Carbon\Carbon;
@@ -36,7 +35,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
