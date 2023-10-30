@@ -7,10 +7,10 @@
 
         <template v-if="data.is_loaded && partnerId">
             <LayoutRoutedTabs :tabs="{
-                details: 'Персональные данные',
-                account: 'Лицевой счёт',
+                total: 'Сводка',
                 registry: 'Реестр продаж',
-                total: 'Сводка'
+                account: 'Лицевой счёт',
+                details: 'Персональные данные'
             }" @change="tab = $event"/>
 
             <PromoterInfo v-if="tab === 'details'" :data="data.data" :partnerId="partnerId" :editable="true"/>
