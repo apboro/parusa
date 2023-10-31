@@ -15,6 +15,7 @@ class UserRolesSeeder extends GenericSeeder
             Role::piers_manager => ['name' => 'Управляющий причала'],
             Role::accountant => ['name' => 'Бухгалтер'],
             Role::controller => ['name' => 'Контролёр'],
+            Role::promoter_manager => ['name' => 'Руководитель промо службы'],
         ]
     ];
 }

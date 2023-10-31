@@ -15,15 +15,15 @@ use App\Http\Controllers\API\Promoters\PromotersListController;
 use App\Http\Controllers\API\Promoters\PromoterViewController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/promoters', [PromotersListController::class, 'list'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_terminal');
+Route::post('/promoters', [PromotersListController::class, 'list'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_terminal,staff_promoter_manager');
 
-Route::post('/promoters/view', [PromoterViewController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_terminal');
-Route::get('/promoters/{promoter}/inventory', [PromoterInventoryController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_terminal');
-Route::post('/promoters/inventory',  [PromoterInventoryController::class, 'store'])->middleware('allow:staff_admin,staff_office_manager,staff_terminal');
+Route::post('/promoters/view', [PromoterViewController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_terminal,staff_promoter_manager');
+Route::get('/promoters/{promoter}/inventory', [PromoterInventoryController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_terminal,staff_promoter_manager');
+Route::post('/promoters/inventory',  [PromoterInventoryController::class, 'store'])->middleware('allow:staff_admin,staff_office_manager,staff_terminal,staff_promoter_manager');
 Route::post('/promoters/inventory/get',  [PromoterInventoryController::class, 'getForPromotersPage'])->middleware('allow:partner');
 
-Route::post('/promoters/get', [PromoterEditController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
-Route::post('/promoters/update', [PromoterEditController::class, 'update'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/promoters/get', [PromoterEditController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_promoter_manager');
+Route::post('/promoters/update', [PromoterEditController::class, 'update'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_promoter_manager');
 
-Route::post('/promoters/delete', [PromoterDeleteController::class, 'delete'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/promoters/delete', [PromoterDeleteController::class, 'delete'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_promoter_manager');
 

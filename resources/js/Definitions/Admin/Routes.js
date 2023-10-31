@@ -37,9 +37,10 @@ import PromotersListPage from "@/Pages/Admin/Promoters/PromotersListPage.vue";
 import PromoterEditPage from "@/Pages/Admin/Promoters/PromoterEditPage.vue";
 import PromoterViewPage from "@/Pages/Admin/Promoters/PromoterViewPage.vue";
 import PromotersRegistryPage from "@/Pages/Admin/Registries/PromotersRegistryPage.vue";
+import HomePage from "@/Pages/HomePage.vue";
 
 export default [
-    {path: '/', name: 'home', component: TripsListPage, meta: {title: 'Список рейсов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/', name: 'home', component: HomePage, meta: {title: 'Главная', roles: ['admin', 'office_manager', 'piers_manager', 'accountant', 'promoter_manager']}},
     {path: '/settings', name: 'settings', component: SettingsPage, meta: {title: 'Настройки', roles: ['admin']}},
     {path: '/registry/orders', name: 'orders-registry', component: OrdersRegistryPage, meta: {title: 'Реестр заказов', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/registry/orders/:id', name: 'order-info', component: OrderPage, meta: {title: 'Заказ', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
@@ -47,7 +48,7 @@ export default [
     {path: '/registry/tickets/:id', name: 'ticket-info', component: TicketInfoPage, meta: {title: 'Билет', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/registry/transactions', name: 'transactions-registry', component: TransactionsRegistryPage, meta: {title: 'Реестр транзакций по кассам', roles: ['admin', 'accountant']}},
-    {path: '/registry/promoters', name: 'promoters-registry', component: PromotersRegistryPage, meta: {title: 'Реестр по промоутерам', roles: ['admin', 'accountant']}},
+    {path: '/registry/promoters', name: 'promoters-registry', component: PromotersRegistryPage, meta: {title: 'Реестр по промоутерам', roles: ['admin', 'accountant', 'promoter_manager']}},
 
     {path: '/statistics/sales', name: 'statistics-sales', component: StatisticsSalesPage, meta: {title: 'Статистика продаж', roles: ['admin']}},
     {path: '/statistics/sales-today', name: 'statistics-sales-today', component: StatisticsSalesTodayPage, meta: {title: 'Статистика продаж за сегодня', roles: ['admin']}},
@@ -61,9 +62,9 @@ export default [
     {path: '/partners/:id', name: 'partners-view', component: PartnerViewPage, meta: {title: 'Просмотр партнёра', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/partners/:id/edit', name: 'partners-edit', component: PartnerEditPage, meta: {title: 'Редактирование партнёра', roles: ['admin', 'office_manager', 'accountant']}},
 
-    {path: '/promoters', name: 'promoters-list', component: PromotersListPage, meta: {title: 'Промоутеры', roles: ['admin', 'office_manager', 'accountant']}},
-    {path: '/promoters/:id/edit', name: 'promoters-edit', component: PromoterEditPage, meta: {title: 'Редактирование промоутера', roles: ['admin', 'office_manager', 'accountant']}},
-    {path: '/promoters/:id', name: 'promoters-view', component: PromoterViewPage, meta: {title: 'Просмотр промоутера', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/promoters', name: 'promoters-list', component: PromotersListPage, meta: {title: 'Промоутеры', roles: ['admin', 'office_manager', 'accountant', 'promoter_manager']}},
+    {path: '/promoters/:id/edit', name: 'promoters-edit', component: PromoterEditPage, meta: {title: 'Редактирование промоутера', roles: ['admin', 'office_manager', 'accountant', 'promoter_manager']}},
+    {path: '/promoters/:id', name: 'promoters-view', component: PromoterViewPage, meta: {title: 'Просмотр промоутера', roles: ['admin', 'office_manager', 'accountant', 'promoter_manager']}},
 
     {path: '/representatives', name: 'representatives-list', component: RepresentativesListPage, meta: {title: 'Представители', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/representatives/:id', name: 'representatives-view', component: RepresentativeViewPage, meta: {title: 'Просмотр представителя', roles: ['admin', 'office_manager', 'accountant']}},
@@ -88,7 +89,7 @@ export default [
     {path: '/trips/:id', name: 'trip-view', component: TripViewPage, meta: {title: 'Просмотр рейса', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/trips/:id/edit', name: 'trip-edit', component: TripEditPage, meta: {title: 'Редактирование рейса', roles: ['admin', 'office_manager']}},
 
-    {path: '/dictionaries', name: 'dictionaries', component: DictionariesPage, meta: {title: 'Справочники', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/dictionaries', name: 'dictionaries', component: DictionariesPage, meta: {title: 'Справочники', roles: ['admin', 'office_manager', 'piers_manager', 'accountant', 'promoter_manager']}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 
 ];

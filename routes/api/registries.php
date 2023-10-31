@@ -37,5 +37,5 @@ Route::post('/registries/order/download', [OrderRenderController::class, 'downlo
 Route::post('/registries/order/print', [OrderRenderController::class, 'print'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_accountant,staff_terminal,partner']);
 Route::post('/registries/order/send', [OrderSendController::class, 'send'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_accountant,staff_terminal,partner']);
 
-Route::post('/registries/promoters/shifts', [PromotersShiftsRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_accountant']);
-Route::post('/registries/promoters', [PromotersRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_accountant']);
+Route::post('/registries/promoters/shifts', [PromotersShiftsRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_accountant,staff_promoter_manager']);
+Route::post('/registries/promoters', [PromotersRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_accountant,staff_promoter_manager']);

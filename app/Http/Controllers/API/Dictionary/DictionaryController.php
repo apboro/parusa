@@ -70,7 +70,7 @@ class DictionaryController extends ApiController
         'ships_statuses' => ['class' => ShipStatus::class, 'allow' => 'staff_admin'],
         'terminal_positions' => ['class' => TerminalPositions::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
         'terminal_statuses' => ['class' => TerminalStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
-        'terminals' => ['class' => Terminal::class, 'allow' => 'staff_admin,staff_accountant'],
+        'terminals' => ['class' => Terminal::class, 'allow' => 'staff_admin,staff_accountant,staff_promoter_manager'],
         'ticket_grades' => ['class' => TicketGrade::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant,partner'],
         'transaction_primary_types' => ['class' => AccountTransactionTypePrimary::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant,partner,staff_terminal'],
         'transaction_refill_types' => ['class' => AccountTransactionTypeRefill::class, 'allow' => 'staff_admin,staff_office_manager,staff_accountant'],
@@ -185,6 +185,9 @@ class DictionaryController extends ApiController
                 return true;
             }
             if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'controller' && $current->isStaffController()) {
+                return true;
+            }
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'promoter_manager' && $current->isStaffPromoterManager()) {
                 return true;
             }
         }

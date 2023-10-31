@@ -54,6 +54,9 @@ class Allow
             if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'controller' && $current->isStaffController()) {
                 return $next($request);
             }
+            if ($set[0] === 'staff' && isset($set[1]) && $set[1] === 'promoter_manager' && $current->isStaffPromoterManager()) {
+                return $next($request);
+            }
         }
 
         if ($request->expectsJson()) {

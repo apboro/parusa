@@ -9,12 +9,12 @@ export default [
     },
     {
         'title': 'ПАРТНЕРЫ, КАССЫ', 'route': '',
-        'roles': ['admin', 'office_manager', 'accountant'],
+        'roles': ['admin', 'office_manager', 'accountant', 'promoter_manager'],
         'items': [
             {'title': 'Компании-партнёры', 'route': 'partners-list', 'roles': ['admin', 'office_manager', 'accountant']},
             {'title': 'Представители', 'route': 'representatives-list', 'roles': ['admin', 'office_manager', 'accountant']},
             {'title': 'Мобильные кассы', 'route': 'terminals-list', 'roles': ['admin', 'office_manager', 'accountant']},
-            {'title': 'Промоутеры', 'route': 'promoters-list', 'roles': ['admin', 'office_manager', 'accountant']},
+            {'title': 'Промоутеры', 'route': 'promoters-list', 'roles': ['admin', 'office_manager', 'accountant', 'promoter_manager']},
         ]
     },
     {
@@ -30,13 +30,13 @@ export default [
     },
     {
         'title': 'РЕЕСТРЫ', 'route': '',
-        'roles': ['admin', 'office_manager', 'piers_manager', 'accountant'],
+        'roles': ['admin', 'office_manager', 'piers_manager', 'accountant', 'promoter_manager'],
         'items': [
             {'title': 'Реестр заказов', 'route': 'orders-registry', 'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
             {'title': 'Реестр билетов', 'route': 'tickets-registry', 'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
             {'title': 'Реестр броней', 'route': 'reserves-registry', 'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
             {'title': 'Реестр транзакций по кассам', 'route': 'transactions-registry', 'roles': ['admin', 'accountant']},
-            {'title': 'Реестр по промоутерам', 'route': 'promoters-registry', 'roles': ['admin', 'accountant']},
+            {'title': 'Реестр по промоутерам', 'route': 'promoters-registry', 'roles': ['admin', 'accountant', 'promoter_manager']},
         ]
     },
     {

@@ -15,8 +15,8 @@ Route::post('/representatives/view', [RepresentativeViewController::class, 'view
 Route::post('/representatives/attach', [RepresentativePositionController::class, 'attach'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 Route::post('/representatives/detach', [RepresentativePositionController::class, 'detach'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 Route::post('/representatives/status', [RepresentativeStatusController::class, 'setStatus'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
-Route::post('/representatives/access/set', [RepresentativeAccessController::class, 'set'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
-Route::post('/representatives/access/release', [RepresentativeAccessController::class, 'release'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
+Route::post('/representatives/access/set', [RepresentativeAccessController::class, 'set'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_promoter_manager');
+Route::post('/representatives/access/release', [RepresentativeAccessController::class, 'release'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_promoter_manager');
 
 Route::post('/representatives/get', [RepresentativeEditController::class, 'get'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');
 Route::post('/representatives/update', [RepresentativeEditController::class, 'update'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant');

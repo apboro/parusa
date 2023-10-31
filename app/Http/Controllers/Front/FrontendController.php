@@ -21,7 +21,7 @@ use JsonException;
 
 class FrontendController extends Controller
 {
-    protected array $adminSideRoles = [Role::admin, Role::accountant, Role::piers_manager, Role::office_manager];
+    protected array $adminSideRoles = [Role::admin, Role::accountant, Role::piers_manager, Role::office_manager, Role::promoter_manager];
 
     /**
      * Handle requests to frontend index.

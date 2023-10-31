@@ -28,6 +28,8 @@ class Role extends AbstractDictionary
     /** @var int Контролёр */
     public const controller = 10;
 
+    public const promoter_manager = 15;
+
     /** @var string Referenced table name. */
     protected $table = 'dictionary_roles';
 
@@ -52,6 +54,7 @@ class Role extends AbstractDictionary
             self::piers_manager => 'piers_manager',
             self::accountant => 'accountant',
             self::controller => 'controller',
+            self::promoter_manager => 'promoter_manager',
             default => 'unknown',
         };
     }

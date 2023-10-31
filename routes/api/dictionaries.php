@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/dictionaries', [DictionaryController::class, 'getDictionary']);
 
-Route::post('/dictionaries/index', [DictionaryEditController::class, 'index'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);
-Route::post('/dictionaries/details', [DictionaryEditController::class, 'details'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);
+Route::post('/dictionaries/index', [DictionaryEditController::class, 'index'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant,staff_promoter_manager']);
+Route::post('/dictionaries/details', [DictionaryEditController::class, 'details'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant,staff_promoter_manager']);
 Route::post('/dictionaries/sync', [DictionaryEditController::class, 'sync'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);
 Route::post('/dictionaries/update', [DictionaryEditController::class, 'update'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);
 Route::post('/dictionaries/delete', [DictionaryDeleteController::class, 'delete'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant']);

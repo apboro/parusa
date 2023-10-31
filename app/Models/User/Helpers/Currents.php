@@ -255,6 +255,10 @@ class Currents
     {
         return $this->isStaffNotInTerminalMode() && $this->hasRole(Role::controller);
     }
+    public function isStaffPromoterManager(): bool
+    {
+        return $this->isStaffNotInTerminalMode() && $this->hasRole(Role::promoter_manager);
+    }
 
     /**
      * Get user id.
