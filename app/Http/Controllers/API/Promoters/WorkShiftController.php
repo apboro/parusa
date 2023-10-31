@@ -6,6 +6,7 @@ use App\Helpers\WorkShiftPdf;
 use App\Http\APIResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Dictionaries\WorkShiftStatus;
+use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
 use App\Models\WorkShift\WorkShift;
 use Carbon\Carbon;
@@ -95,15 +96,12 @@ class WorkShiftController extends Controller
     {
         $current = Currents::get($request);
 
-        $onlyCommissionWorkShifts = WorkShift::query()
-            ->whereNull('end_at')
-            ->whereHas('tariff', function ($query){
-                $query->where('pay_per_hour', 0)->where('pay_for_out', 0);
-            })->where('terminal_id', $current->terminalId())->get();
+        $promoters = Partner::whereIn('id', $request->input('promotersIds'))->with(['workShifts', 'workShifts.tariff'])->get();
 
-        foreach ($onlyCommissionWorkShifts as $workShift) {
-            $workShift->commission_delta = $request->input('newCommValue') - $workShift->tariff->commission;
-            $workShift->save();
+        foreach ($promoters as $promoter) {
+            $openedShift = $promoter->getOpenedShift();
+            $openedShift->commission_delta = $request->input('newCommValue') - $openedShift->tariff->commission;
+            $openedShift->save();
         }
         return APIResponse::success('Ставка комиссии изменена');
     }

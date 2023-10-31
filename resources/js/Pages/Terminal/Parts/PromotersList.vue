@@ -1,11 +1,14 @@
 <template>
     <LayoutPage :loading="list.is_loading" :title="$route.meta['title']">
-       <template #actions>
-        <GuiActionsMenu>
-            <span class="link" @click="showCommissionPopup" >Изменить ставку комиссии</span>
-        </GuiActionsMenu>
-       </template>
+        <template #actions>
+            <GuiActionsMenu>
+                <span class="link" @click="showCommissionChecks">Изменить ставку комиссии</span>
+            </GuiActionsMenu>
+        </template>
         <LayoutFilters>
+            <LayoutFiltersItem>
+                <GuiButton v-if="commissionChanging" @click="showCommissionPopup">Изменить ставку</GuiButton>
+            </LayoutFiltersItem>
             <template #search>
                 <LayoutFiltersItem :title="'Поиск по ФИО и по ID'">
                     <InputSearch v-model="list.search" @change="list.load()"/>
@@ -15,13 +18,16 @@
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
             <ListTableRow v-for="partner in list.list">
-                <ListTableCell :class="'w-35'">
+                <ListTableCell :class="'w-5'" v-if="commissionChanging"><InputCheckbox v-model="checkedPromoters" :value="partner['id']" :disabled="!partner['open_shift']"/></ListTableCell>
+                <ListTableCell :class="'w-30'">
                     <GuiActivityIndicator :active="partner['active']"/>
                     <router-link class="link" :to="{ name: 'terminal-promoters-view', params: { id: partner['id'] }}"
                                  v-html="highlight(partner['name'])"/>
                 </ListTableCell>
-                <ListTableCell :class="'w-25'">{{ partner['id'] }}</ListTableCell>
-                <ListTableCell :class="'w-25'">{{ partner['balance'] ?? 0 }} руб.</ListTableCell>
+                <ListTableCell :class="'w-20'">{{ partner['id'] }}</ListTableCell>
+                <ListTableCell :class="'w-20'">{{ partner['balance'] ?? 0 }} руб.</ListTableCell>
+                <ListTableCell :class="'w-20'">{{ partner['open_shift'] ? commissionPercent(partner) : null }}
+                </ListTableCell>
                 <ListTableCell :class="'w-15'">
                     <GuiButton v-if="!partner.open_shift" @click="openShift(partner)">открыть смену</GuiButton>
                     <GuiValue v-else>Смена открыта <br>{{ partner.open_shift.start_at }}</GuiValue>
@@ -45,7 +51,7 @@
         </FormPopUp>
         <FormPopUp :title="'Изменение ставки комиссии'"
                    :form="formComm"
-                   :options="{newCommValue: newCommValue}"
+                   :options="{newCommValue: newCommValue, promotersIds: checkedPromoters}"
                    ref="commission_popup"
         >
             <GuiContainer w-350px>
@@ -83,9 +89,13 @@ import FormPhone from "@/Components/Form/FormPhone.vue";
 import FormDictionary from "@/Components/Form/FormDictionary.vue";
 import GuiValue from "@/Components/GUI/GuiValue.vue";
 import InputNumber from "@/Components/Inputs/InputNumber.vue";
+import CheckBox from "@/Components/Inputs/Helpers/CheckBox.vue";
+import InputCheckbox from "@/Components/Inputs/InputCheckbox.vue";
 
 export default {
     components: {
+        InputCheckbox,
+        CheckBox,
         InputNumber,
         GuiValue,
         FormDictionary,
@@ -105,7 +115,6 @@ export default {
         LayoutFilters,
         GuiActionsMenu,
         LayoutPage
-
     },
 
     data: () => ({
@@ -114,6 +123,8 @@ export default {
         formComm: form(null, '/api/terminals/promoters/change_commissions'),
         promoterId: null,
         newCommValue: null,
+        commissionChanging: false,
+        checkedPromoters: [],
     }),
 
     created() {
@@ -121,14 +132,39 @@ export default {
     },
 
     methods: {
+        showCommissionChecks() {
+            this.commissionChanging = true;
+            this.list.titles = {
+                'checked': 'Выбрать',
+                'name': 'ФИО промоутера',
+                'ID': 'ID',
+                'balance': 'Баланс',
+                'commission': 'Ставка',
+                'action':''
+            }
+        },
         showCommissionPopup(){
             this.formComm.reset();
             this.formComm.load();
             this.formComm.toaster = this.$toast;
-            this.$refs.commission_popup.show();
+            this.$refs.commission_popup.show().then(()=>{
+                this.list.reload();
+                this.commissionChanging = false;
+                this.checkedPromoters = [];
+            });
+        },
+        commissionPercent(partner) {
+            let delta = partner['open_shift']['commission_delta'] !== 0 ? '+(' + partner['open_shift']['commission_delta'] + '%)' : null;
+            if (delta)
+                return partner['open_shift']['tariff']['commission'] + '%' + delta;
+            else
+                return partner['open_shift']['tariff']['commission'] + '%';
         },
         highlight(text) {
             return this.$highlight(text, this.list.search);
+        },
+        res(){
+          console.log('resolved');
         },
         openShift(promoter) {
             this.promoterId = promoter['id'];
@@ -137,8 +173,8 @@ export default {
             this.form.toaster = this.$toast;
             this.form.load();
             this.$refs.popup.show()
-                .then(response => {
-                    this.list.list.find(promoter2 => promoter2['id'] === promoter['id']).open_shift = {start_at: response.payload.start_at}
+                .then(() => {
+                    this.list.reload();
                 })
         },
     },

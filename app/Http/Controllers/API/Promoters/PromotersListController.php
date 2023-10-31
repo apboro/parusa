@@ -60,9 +60,6 @@ class PromotersListController extends ApiController
                 $query->whereNotIn('id', $partnersWithOpenShiftsOnOtherTerminals);
             });
 
-
-
-
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
             if (!empty($filters['partner_status_id'])) {
@@ -94,7 +91,7 @@ class PromotersListController extends ApiController
         }
 
         // current page automatically resolved from request via `page` parameter
-        $partners = $query->orderBy('name')->paginate($request->perPage(10, $this->rememberKey));
+        $partners = $query->orderBy('name')->paginate($request->perPage(25, $this->rememberKey));
 
         /** @var LengthAwarePaginator $partners */
         $partners->transform(function (Partner $partner){
@@ -105,15 +102,17 @@ class PromotersListController extends ApiController
                 'type' => $partner->type->name,
                 'balance' => $partner->getOpenedShift()?->getShiftTotalPay() + $partner->getLastShift()?->balance,
                 'limit' => $partner->account->limit,
-                'open_shift' => $partner->workShifts()->whereNull('end_at')->first(),
+                'open_shift' => $partner->workShifts()->with('tariff')->whereNull('end_at')->first(),
             ];
         });
 
-        return APIResponse::list($partners,
+        return APIResponse::list(
+            $partners,
             [
                 'name' => 'ФИО промоутера',
                 'ID' => 'ID',
                 'balance' => 'Баланс',
+                'commission' => 'Ставка',
                 'action' =>''
             ],
             $filters,
