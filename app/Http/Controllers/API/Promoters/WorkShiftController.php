@@ -60,14 +60,9 @@ class WorkShiftController extends Controller
 
     public function save(WorkShift $workShift, bool $close = false)
     {
-        if ($payForTime = $workShift->tariff->pay_per_hour) {
-            $interval = Carbon::parse($workShift->start_at)->diff(now());
-            $payForTime = round(($interval->days * 24 + $interval->h + $interval->i / 60), 1) * $workShift->tariff->pay_per_hour;
-        }
-        $payTotal = $payForTime + $workShift->tariff->pay_for_out + $workShift->pay_commission;
-        $workShift->pay_for_time = $payForTime ?? null;
+        $workShift->pay_for_time = $workShift->getPayForTime();
         $workShift->pay_for_out = $workShift->tariff->pay_for_out;
-        $workShift->pay_total = $payTotal;
+        $workShift->pay_total = $workShift->getShiftTotalPay();
 
         if ($close){
             $workShift->end_at = now();

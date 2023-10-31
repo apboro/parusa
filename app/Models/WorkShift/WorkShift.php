@@ -34,7 +34,7 @@ class WorkShift extends Model
 
     public function getPayForTime(): int
     {
-            return  $this->getWorkingHours() * $this->tariff->pay_per_hour;
+        return $this->getWorkingHours() * $this->tariff->pay_per_hour;
     }
 
     public function getWorkingHours(): float

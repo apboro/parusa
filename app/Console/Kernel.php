@@ -2,21 +2,13 @@
 
 namespace App\Console;
 
+use App\Console\Commands\CloseWorkShiftsCommand;
 use App\Console\Commands\GetCityTourScheduleCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
-    /**
-     * The Artisan commands provided by your application.
-     *
-     * @var array
-     */
-    protected $commands = [
-        //
-    ];
-
     /**
      * Define the application's command schedule.
      *
@@ -32,6 +24,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('sync:showcase_pay_waiting')->everyMinute();
         $schedule->command('city_tour:import')->weekly();
         $schedule->command('get:city-tour-schedule')->hourly();
+        $schedule->command('close:work-shifts')->dailyAt('1:05');
         if (config('app.env') === 'production') {
             $schedule->command('city_tour:refresh')->everyFifteenMinutes();
             $schedule->command('neva:today')->everyFiveMinutes();
