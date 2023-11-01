@@ -259,7 +259,7 @@ class FrontendController extends Controller
         return response()->view('promoter', [
             'user' => json_encode([
                 'name' => $this->e($current->user()->profile->compactName),
-                'organization' => $this->e($current->position()->partner->name),
+                'organization' => $this->e($current->position()->partner->name) . ' (ID: '.$current->partner()->id.')',
                 'position' => $this->e($current->position()->title),
                 'positions' => $canChangePosition,
                 'can_reserve' => $current->partner()->profile->can_reserve_tickets,
