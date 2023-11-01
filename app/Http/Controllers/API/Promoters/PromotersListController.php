@@ -9,14 +9,10 @@ use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
-use App\Models\Dictionaries\PositionAccessStatus;
-use App\Models\Dictionaries\PositionStatus;
 use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
-use App\Models\Positions\Position;
 use App\Models\User\Helpers\Currents;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -48,15 +44,16 @@ class PromotersListController extends ApiController
         $partnersWithOpenShiftsOnOtherTerminals = null;
         if ($current->terminalId()) {
             $partnersWithOpenShiftsOnOtherTerminals = Partner::query()
-                ->whereHas('workShifts', function ($query) use ($current){
+                ->whereHas('workShifts', function ($query) use ($current) {
                     $query->whereNull('end_at')->where('terminal_id', '!=', $current->terminalId());
                 })->pluck('id');
         }
 
         $query = Partner::query()
-            ->with(['type', 'status', 'positions', 'positions.user.profile', 'positions.user', 'workShifts'])
+            ->with(['type', 'status', 'positions', 'positions.user.profile', 'positions.user'])
+            ->with(['workShifts' => fn($q) => $q->orderBy('start_at', 'asc')])
             ->where('type_id', PartnerType::promoter)
-            ->when($current->terminalId(), function($query) use ($partnersWithOpenShiftsOnOtherTerminals){
+            ->when($current->terminalId(), function ($query) use ($partnersWithOpenShiftsOnOtherTerminals) {
                 $query->whereNotIn('id', $partnersWithOpenShiftsOnOtherTerminals);
             });
 
@@ -71,10 +68,10 @@ class PromotersListController extends ApiController
         if (!empty($search = $request->search())) {
             $query->where(function (Builder $query) use ($search) {
                 $query->where(function (Builder $query) use ($search) {
-                        foreach ($search as $term) {
-                            $query->where('name', 'LIKE', "%$term%");
-                        }
-                    })
+                    foreach ($search as $term) {
+                        $query->where('name', 'LIKE', "%$term%");
+                    }
+                })
                     ->orWhere('partners.id', $search)
                     ->orWhere(function (Builder $query) use ($search) {
                         $query->whereHas('positions.user.profile', function (Builder $query) use ($search) {
@@ -89,12 +86,11 @@ class PromotersListController extends ApiController
                     });
             });
         }
-
-        // current page automatically resolved from request via `page` parameter
+        $promotersWithOpenedShift = $query->clone()->whereHas('workShifts', fn($q) => $q->whereNull('end_at'))->pluck('id');
         $partners = $query->orderBy('name')->paginate($request->perPage(25, $this->rememberKey));
 
         /** @var LengthAwarePaginator $partners */
-        $partners->transform(function (Partner $partner){
+        $partners->transform(function (Partner $partner) {
             return [
                 'id' => $partner->id,
                 'active' => $partner->hasStatus(PartnerStatus::active),
@@ -113,10 +109,11 @@ class PromotersListController extends ApiController
                 'ID' => 'ID',
                 'balance' => 'Баланс',
                 'commission' => 'Ставка',
-                'action' =>''
+                'action' => ''
             ],
             $filters,
             $this->defaultFilters,
+            ['promotersWithOpenedShift' => $promotersWithOpenedShift]
         )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 

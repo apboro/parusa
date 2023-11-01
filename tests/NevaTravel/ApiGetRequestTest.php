@@ -13,7 +13,7 @@ class ApiGetRequestTest extends TestCase
     {
         $response = Http::withHeaders([
             'X-API-KEY' => 'ntk_NjY5NmRkZGMtYTNkNC0xMWVkLThjYzAtMDI0MmFjMTcwMDA4',
-        ])->get('https://testapi.neva.travel/api/partner/get_api_status');
+        ])->timeout(3)->get('https://testapi.neva.travel/api/partner/get_api_status');
 
         assertEquals(200, $response->status());
     }

@@ -17,7 +17,7 @@
         </LayoutFilters>
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
-            <ListTableRow v-for="partner in list.list">
+            <ListTableRow v-for="partner in sortedList">
                 <ListTableCell :class="'w-5'" v-if="commissionChanging"><InputCheckbox v-model="checkedPromoters" :value="partner['id']" :disabled="!partner['open_shift']"/></ListTableCell>
                 <ListTableCell :class="'w-30'">
                     <GuiActivityIndicator :active="partner['active']"/>
@@ -130,10 +130,24 @@ export default {
     created() {
         this.list.initial();
     },
+    computed:{
+      sortedList(){
+          return this.list.list.sort(((a, b) => {
+              if (a.open_shift !== null && b.open_shift === null) {
+                  return -1;
+              } else if (a.open_shift === null && b.open_shift !== null) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          }))
+      }
+    },
 
     methods: {
         showCommissionChecks() {
             this.commissionChanging = true;
+            this.checkedPromoters = this.list.payload.promotersWithOpenedShift
             this.list.titles = {
                 'checked': 'Выбрать',
                 'name': 'ФИО промоутера',
@@ -162,9 +176,6 @@ export default {
         },
         highlight(text) {
             return this.$highlight(text, this.list.search);
-        },
-        res(){
-          console.log('resolved');
         },
         openShift(promoter) {
             this.promoterId = promoter['id'];
