@@ -41,12 +41,12 @@ use App\Settings;
     @if ($workShift->pay_commission != 0)
         <div>Комиссионные: {{$workShift->pay_commission}} руб.</div>
     @endif
-    @if ($workShift->balance != 0)
-        <div>Остаток с прошлой смены: {{$workShift->balance}} руб.</div>
-    @endif
 
     <div>Сумма начислений: {{$workShift->pay_total}} руб.</div>
     <div>Сумма получена: {{$workShift->paid_out}} руб.</div>
+    @if ($workShift->balance != 0)
+        <div>Остаток на балансе: {{$workShift->balance}} руб.</div>
+    @endif
     <span>Подпись:</span><p style="border-bottom: 1px solid #000; width: 125px; margin-left: 47px"></p>
 </div>
 </body>
