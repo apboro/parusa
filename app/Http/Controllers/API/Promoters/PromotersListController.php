@@ -9,6 +9,7 @@ use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
+use App\Models\Dictionaries\Tariff;
 use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
@@ -113,7 +114,10 @@ class PromotersListController extends ApiController
             ],
             $filters,
             $this->defaultFilters,
-            ['promotersWithOpenedShift' => $promotersWithOpenedShift]
+            [
+                'promotersWithOpenedShift' => $promotersWithOpenedShift,
+                'tariffsCommissionsValues' => Tariff::all()->pluck('commission')
+            ]
         )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 

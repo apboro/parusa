@@ -18,7 +18,10 @@
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
             <ListTableRow v-for="partner in sortedList">
-                <ListTableCell :class="'w-5'" v-if="commissionChanging"><InputCheckbox v-model="checkedPromoters" :value="partner['id']" :disabled="!partner['open_shift']"/></ListTableCell>
+                <ListTableCell :class="'w-5'" v-if="commissionChanging">
+                    <InputCheckbox v-model="checkedPromoters" :value="partner['id']"
+                                   :disabled="!partner['open_shift']"/>
+                </ListTableCell>
                 <ListTableCell :class="'w-30'">
                     <GuiActivityIndicator :active="partner['active']"/>
                     <router-link class="link" :to="{ name: 'terminal-promoters-view', params: { id: partner['id'] }}"
@@ -26,7 +29,16 @@
                 </ListTableCell>
                 <ListTableCell :class="'w-20'">{{ partner['id'] }}</ListTableCell>
                 <ListTableCell :class="'w-20'">{{ partner['balance'] ?? 0 }} руб.</ListTableCell>
-                <ListTableCell :class="'w-20'">{{ partner['open_shift'] ? commissionPercent(partner) : null }}
+                <ListTableCell :class="'w-20'" v-if="!partner['open_shift']"></ListTableCell>
+                <ListTableCell :class="'w-20'" v-if="partner['open_shift']">
+                    <div style="font-weight: bold;">
+                        {{ commissionPercent(partner) }}%
+                    </div>
+                    <div v-if="partner['open_shift']['commission_delta'] !== 0">
+                        {{
+                            partner['open_shift']['tariff']['commission'] + '% ' + (partner['open_shift']['commission_delta'] > 0 ? ' + ' : ' - ') + Math.abs(partner['open_shift']['commission_delta']) + '%'
+                        }}
+                    </div>
                 </ListTableCell>
                 <ListTableCell :class="'w-15'">
                     <GuiButton v-if="!partner.open_shift" @click="openShift(partner)">открыть смену</GuiButton>
@@ -55,7 +67,8 @@
                    ref="commission_popup"
         >
             <GuiContainer w-350px>
-                <InputNumber v-model="newCommValue" :placeholder="'Введите новую ставку'"/>
+                <InputDropDown :options="list.payload.tariffsCommissionsValues" v-model="newCommValue"
+                               :placeholder="'Выберите новую ставку'"/>
             </GuiContainer>
         </FormPopUp>
 
@@ -91,9 +104,11 @@ import GuiValue from "@/Components/GUI/GuiValue.vue";
 import InputNumber from "@/Components/Inputs/InputNumber.vue";
 import CheckBox from "@/Components/Inputs/Helpers/CheckBox.vue";
 import InputCheckbox from "@/Components/Inputs/InputCheckbox.vue";
+import InputDropDown from "@/Components/Inputs/InputDropDown.vue";
 
 export default {
     components: {
+        InputDropDown,
         InputCheckbox,
         CheckBox,
         InputNumber,
@@ -130,18 +145,18 @@ export default {
     created() {
         this.list.initial();
     },
-    computed:{
-      sortedList(){
-          return this.list.list.sort(((a, b) => {
-              if (a.open_shift !== null && b.open_shift === null) {
-                  return -1;
-              } else if (a.open_shift === null && b.open_shift !== null) {
-                  return 1;
-              } else {
-                  return 0;
-              }
-          }))
-      }
+    computed: {
+        sortedList() {
+            return this.list.list.sort(((a, b) => {
+                if (a.open_shift !== null && b.open_shift === null) {
+                    return -1;
+                } else if (a.open_shift === null && b.open_shift !== null) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }))
+        }
     },
 
     methods: {
@@ -154,25 +169,21 @@ export default {
                 'ID': 'ID',
                 'balance': 'Баланс',
                 'commission': 'Ставка',
-                'action':''
+                'action': ''
             }
         },
-        showCommissionPopup(){
+        showCommissionPopup() {
             this.formComm.reset();
             this.formComm.load();
             this.formComm.toaster = this.$toast;
-            this.$refs.commission_popup.show().then(()=>{
+            this.$refs.commission_popup.show().then(() => {
                 this.list.reload();
                 this.commissionChanging = false;
                 this.checkedPromoters = [];
             });
         },
         commissionPercent(partner) {
-            let delta = partner['open_shift']['commission_delta'] !== 0 ? '+(' + partner['open_shift']['commission_delta'] + '%)' : null;
-            if (delta)
-                return partner['open_shift']['tariff']['commission'] + '%' + delta;
-            else
-                return partner['open_shift']['tariff']['commission'] + '%';
+            return partner['open_shift']['tariff']['commission'] + partner['open_shift']['commission_delta'];
         },
         highlight(text) {
             return this.$highlight(text, this.list.search);
