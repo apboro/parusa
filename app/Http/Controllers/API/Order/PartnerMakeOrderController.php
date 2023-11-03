@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Order;
 
 use App\Actions\CreateOrderFromPartner;
+use App\Actions\CreateTicketsFromPartner;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Events\NewCityTourOrderEvent;
@@ -92,65 +93,29 @@ class   PartnerMakeOrderController extends ApiEditController
             return APIResponse::validationError($errors);
         }
 
-        $totalAmount = 0;
-        $tickets = [];
+        $tickets = (new CreateTicketsFromPartner($current))->execute($data, $status_id);
 
-        foreach ($data['tickets'] as $id => $quantity) {
-            if ($quantity['quantity'] > 0) {
-                if (null === ($ordering = PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id, 'terminal_id' => null])->first())) {
-                    return APIResponse::error('Ошибка. Неверные данные билета.');
-                }
-                switch ($status_id) {
-                    case OrderStatus::partner_reserve:
-                        $ticketStatus = TicketStatus::partner_reserve;
-                        break;
-                    case OrderStatus::partner_paid:
-                        $ticketStatus = $ordering->trip->excursion->is_single_ticket ? TicketStatus::partner_paid_single : TicketStatus::partner_paid;
-                        break;
-                    default:
-                        return APIResponse::error('Ошибка. Неверные данные заказа.');
-                }
-                for ($i = 1; $i <= $quantity['quantity']; $i++) {
-                    /** @var PositionOrderingTicket $ordering */
-                    $ticket = new Ticket([
-                        'trip_id' => $ordering->trip_id,
-                        'grade_id' => $ordering->grade_id,
-                        'status_id' => $ticketStatus,
-                        'provider_id' => $ordering->trip->provider_id
-                    ]);
-
-                    $ticket->base_price = $ordering->getPartnerPrice() ?? $ordering->getPrice();
-                    $ticket->cart_ticket_id = $ordering->id;
-                    $ticket->cart_parent_ticket_id = $ordering->parent_ticket_id;
-                    $ticket->backward_price = $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : null;
-
-                    $totalAmount += $ordering->parent_ticket_id !== null ? $ordering->getBackwardPrice() : $ordering->getPartnerPrice() ?? $ordering->getPrice();
-                    $tickets[] = $ticket;
-                }
-            }
-        }
-
-        if (count($tickets) === 0) {
+        if (count($tickets['tickets']) === 0) {
             return APIResponse::error('Нельзя оформить заказ без билетов.');
         }
 
-        if (($status_id === OrderStatus::partner_paid) && ($partner->account->amount - $partner->account->limit < $totalAmount)) {
+        if (($status_id === OrderStatus::partner_paid) && ($partner->account->amount - $partner->account->limit < $tickets['totalAmount'])) {
             return APIResponse::error('Недостаточно средств на лицевом счёте для оформления заказа.');
         }
 
         try {
-            DB::transaction(static function () use ($totalAmount, $status_id, $current, $partner, $tickets, $position, &$order, $data) {
+            DB::transaction(static function () use ($status_id, $current, $partner, $tickets, $position, &$order, $data) {
                 // add transaction first
                 if ($status_id === OrderStatus::partner_paid) {
                     $transaction = $partner->account->attachTransaction(new AccountTransaction([
                         'type_id' => AccountTransactionType::tickets_buy,
                         'status_id' => AccountTransactionStatus::accepted,
                         'timestamp' => Carbon::now(),
-                        'amount' => $totalAmount,
+                        'amount' => $tickets['totalAmount'],
                         'committer_id' => $current->positionId(),
                     ]));
                 }
-                $order = (new CreateOrderFromPartner($current))->execute($tickets, $data, $status_id);
+                $order = (new CreateOrderFromPartner($current))->execute($tickets['tickets'], $data, $status_id);
 
                 NewNevaTravelOrderEvent::dispatch($order);
                 NevaTravelOrderPaidEvent::dispatch($order);
