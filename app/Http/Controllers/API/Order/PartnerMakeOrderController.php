@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Actions\CreateOrderFromPartner;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Events\NewCityTourOrderEvent;
@@ -149,19 +150,7 @@ class   PartnerMakeOrderController extends ApiEditController
                         'committer_id' => $current->positionId(),
                     ]));
                 }
-                // create order
-                $order = Order::make(
-                    OrderType::partner_sale,
-                    $tickets,
-                    $status_id,
-                    $partner->id,
-                    $position->id,
-                    null,
-                    null,
-                    $data['email'] ?? null,
-                    $data['name'] ?? null,
-                    $data['phone'] ?? null
-                );
+                $order = (new CreateOrderFromPartner($current))->execute($tickets, $data, $status_id);
 
                 NewNevaTravelOrderEvent::dispatch($order);
                 NevaTravelOrderPaidEvent::dispatch($order);

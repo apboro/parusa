@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Actions\CreateOrderFromTerminal;
+use App\Actions\CreateTicketsFromTerminal;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
@@ -10,17 +12,13 @@ use App\LifePos\LifePosSales;
 use App\LifePos\MockLifePos;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
-use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\Role;
-use App\Models\Dictionaries\TicketStatus;
 use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Partner\Partner;
 use App\Models\Positions\PositionOrderingTicket;
-use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
-use App\Services\NevaTravel\NevaOrder;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -59,7 +57,6 @@ class TerminalMakeOrderController extends ApiEditController
         ) {
             return APIResponse::error('Другой заказ уже находится в оформлении');
         }
-
 
         $partnerId = null;
         if ($request->input('data.without_partner') === false) {
@@ -110,64 +107,21 @@ class TerminalMakeOrderController extends ApiEditController
             return APIResponse::validationError($errors);
         }
 
-        $tickets = [];
-
-        foreach ($data['tickets'] as $id => $ticketInfo) {
-            if ($ticketInfo['quantity'] > 0) {
-                if (null === ($ordering = PositionOrderingTicket::query()
-                        ->where(['id' => $id, 'position_id' => $position->id, 'terminal_id' => $terminal->id])
-                        ->first())
-                ) {
-                    return APIResponse::error('Ошибка. Неверные данные билета.');
-                }
-                switch ($status_id) {
-                    case OrderStatus::terminal_creating:
-                        $ticketStatus = TicketStatus::terminal_creating;
-                        break;
-                    default:
-                        return APIResponse::error('Ошибка. Неверные данные заказа.');
-                }
-                for ($i = 1; $i <= $ticketInfo['quantity']; $i++) {
-                    /** @var PositionOrderingTicket $ordering */
-                    $ticket = new Ticket([
-                        'trip_id' => $ordering->trip_id,
-                        'grade_id' => $ordering->grade_id,
-                        'status_id' => $ticketStatus,
-                        'base_price' => $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : $ticketInfo['price'],
-                        'provider_id' => $ordering->trip->provider_id
-                    ]);
-
-                    $ticket->cart_ticket_id = $ordering->id;
-                    $ticket->cart_parent_ticket_id = $ordering->parent_ticket_id;
-                    $ticket->backward_price = $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : null;
-
-                    $tickets[] = $ticket;
-                }
-            }
-        }
+        $tickets = (new CreateTicketsFromTerminal($current))->execute($data, $status_id);
 
         if (count($tickets) === 0) {
             return APIResponse::error('Нельзя оформить заказ без билетов.');
         }
 
         try {
-            DB::transaction(static function () use (&$order, $tickets, $status_id, $partnerId, $position, $terminal, $current, $data) {
+
+            DB::transaction(static function () use (&$order, $tickets, $current, $data, $partnerId) {
                 // create order
-                $order = Order::make(
-                    $partnerId === null ? OrderType::terminal : OrderType::terminal_partner,
-                    $tickets,
-                    $status_id,
-                    $partnerId,
-                    null,
-                    $terminal->id,
-                    $position->id,
-                    $data['email'] ?? null,
-                    $data['name'] ?? null,
-                    $data['phone'] ?? null
-                );
+
+                $order = (new CreateOrderFromTerminal($current))->execute($tickets, $data, $partnerId);
 
                 // clear cart
-                PositionOrderingTicket::query()->where(['position_id' => $position->id, 'terminal_id' => $terminal->id])->delete();
+                PositionOrderingTicket::query()->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])->delete();
 
                 NewNevaTravelOrderEvent::dispatch($order);
 
@@ -175,7 +129,7 @@ class TerminalMakeOrderController extends ApiEditController
 
                 // send order to POS
                 if (app()->environment('production')) {
-                    LifePosSales::send($order, $terminal, $current->position());
+                    LifePosSales::send($order, $current->terminal(), $current->position());
                 } else {
                     MockLifePos::send($order);
                 }

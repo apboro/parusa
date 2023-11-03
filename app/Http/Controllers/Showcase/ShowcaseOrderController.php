@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Showcase;
 
+use App\Actions\CreateOrderFromShowcase;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
@@ -20,7 +21,6 @@ use App\Models\Partner\Partner;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
-use App\Services\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,9 +29,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use JsonException;
-use RuntimeException;
 
 class ShowcaseOrderController extends ApiEditController
 {
@@ -187,21 +185,8 @@ class ShowcaseOrderController extends ApiEditController
 
         DB::transaction(static function () use ($data, $orderType, $tickets, $partnerId, $isPartnerSite, $flat, &$order, $backwardTickets) {
             // create order
-            $order = Order::make(
-                $orderType,
-                $tickets,
-                OrderStatus::showcase_creating,
-                $partnerId,
-                null,
-                null,
-                null,
-                $data['email'],
-                $data['name'],
-                $data['phone'],
-                $isPartnerSite === true, // strict price checking only for partner site
-                $flat['promocode'] ?? null,
-                $backwardTickets,
-            );
+
+            $order = (new CreateOrderFromShowcase())->execute($data, $orderType, $tickets, $partnerId, $isPartnerSite === true, $flat['promocode'], $backwardTickets);
 
             NewNevaTravelOrderEvent::dispatch($order);
             NewCityTourOrderEvent::dispatch($order);
