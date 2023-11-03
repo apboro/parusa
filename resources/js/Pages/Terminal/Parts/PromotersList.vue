@@ -32,12 +32,12 @@
                 <ListTableCell :class="'w-20'" v-if="!partner['open_shift']"></ListTableCell>
                 <ListTableCell :class="'w-20'" v-if="partner['open_shift']">
                     <div style="font-weight: bold;">
-                        {{ commissionPercent(partner) }}%
+                        {{ commissionPercent(partner) }}% - сейчас
                     </div>
                     <div v-if="partner['open_shift']['commission_delta'] !== 0">
                         {{
-                            partner['open_shift']['tariff']['commission'] + '% ' + (partner['open_shift']['commission_delta'] > 0 ? ' + ' : ' - ') + Math.abs(partner['open_shift']['commission_delta']) + '%'
-                        }}
+                            partner['open_shift']['tariff']['commission'] + '% '
+                        }} - при открытии смены
                     </div>
                 </ListTableCell>
                 <ListTableCell :class="'w-15'">
