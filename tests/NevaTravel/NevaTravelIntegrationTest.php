@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\NevaTravel;
 
 use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\TicketGrade;
@@ -17,24 +17,23 @@ use App\Services\CityTourBus\CityTourRepository;
 use Str;
 use Tests\TestCase;
 
-class CityTourIntegrationTest extends TestCase
+class NevaTravelIntegrationTest extends TestCase
 {
     private PositionOrderingTicket $positionOrderingTicket;
-
     public function setUp(): void
     {
         parent::setUp();
         $position = Position::factory()->create(['is_staff' => 1, 'partner_id' => null]);
         $terminal = Terminal::factory()->create();
-        $ticketGrade = TicketGrade::factory()->create(['id'=>178,'provider_id' => 20]);
-        $excursion = Excursion::create(['name'=>'city_tour', 'provider_id' => 20]);
+        $ticketGrade = TicketGrade::factory()->create(['id'=>50,'provider_id' => 10]);
+        $excursion = Excursion::create(['name'=>'neva_travel', 'provider_id' => 10]);
         AdditionalDataExcursion::create([
-            'provider_id' => 20,
+            'provider_id' => 10,
             'excursion_id' => $excursion->id,
-            'provider_excursion_id' => 1]);
+            'provider_excursion_uuid' => 'eff95dfb-0f41-11ed-9697-0242c0a8a005']);
         $ticketsRateList = TicketsRatesList::factory()->create(['excursion_id' => $excursion->id]);
         TicketRate::factory()->create(['rate_id' => $ticketsRateList->id, 'grade_id' => $ticketGrade->id]);
-        $trip = Trip::factory()->create(['excursion_id' => $excursion->id, 'provider_id' => 20]);
+        $trip = Trip::factory()->create(['excursion_id' => $excursion->id, 'provider_id' => 10]);
 
         $this->positionOrderingTicket = PositionOrderingTicket::create([
             'position_id' => $position->id,
@@ -46,9 +45,9 @@ class CityTourIntegrationTest extends TestCase
         $terminal->staff()->save($position);
     }
 
-    public function test_make_city_tour_order_from_terminal()
+    public function test_make_neva_travel_order_from_terminal()
     {
-        $customerEmail = Str::random(5).'@citytour.ru';
+        $customerEmail = Str::random(5).'@neva.travel';
         $this->disableCookieEncryption();
 
         $cartOrderId = $this->positionOrderingTicket->id;

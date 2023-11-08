@@ -34,18 +34,17 @@ class WorkShift extends Model
 
     public function getPayForTime(): int
     {
-        return $this->getWorkingHours() * $this->tariff->pay_per_hour;
+        if ($this->tariff->pay_per_hour) {
+            return $this->getWorkingHours() * $this->tariff->pay_per_hour;
+        } else {
+            return 0;
+        }
     }
 
     public function getWorkingHours(): float
     {
-        if ($this->tariff->pay_per_hour) {
-            $interval = Carbon::parse($this->start_at)->diff($this->end_at ? Carbon::parse($this->end_at) : now());
-
-            return round(($interval->days * 24 + $interval->h + $interval->i / 60), 1);
-        } else {
-            return 0;
-        }
+        $interval = Carbon::parse($this->start_at)->diff($this->end_at ? Carbon::parse($this->end_at) : now());
+        return round(($interval->days * 24 + $interval->h + $interval->i / 60), 1);
     }
 
     public function getShiftTotalPay()
