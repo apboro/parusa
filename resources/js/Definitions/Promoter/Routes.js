@@ -1,6 +1,4 @@
 import TripsSelectPage from '@/Pages/Partner/TripsSelectPage';
-import ReturnPage from "@/Pages/Partner/ReturnPage";
-import SettingsPage from '@/Pages/Partner/SettingsPage';
 import OrdersRegistryPage from "@/Pages/Partner/Registries/OrdersRegistryPage";
 import ReservesRegistryPage from "@/Pages/Partner/Registries/ReservesRegistryPage";
 import TicketsRegistryPage from "@/Pages/Partner/Registries/TicketsRegistryPage";
@@ -11,13 +9,14 @@ import AccountPage from "@/Pages/Partner/AccountPage";
 import Rates from "@/Pages/Partner/Rates";
 import OrderMakePage from "@/Pages/Partner/OrderMakePage";
 import NotFound from '@/Pages/NotFound';
-import QrCodesPage from "@/Pages/Partner/QrCodesPage.vue";
 import TripViewPage from "@/Pages/Admin/Trips/TripViewPage.vue";
 import PromoterAccountPage from "@/Pages/Promoter/PromoterAccountPage.vue";
 import PromotersInventoryPage from "@/Pages/Promoter/PromotersInventoryPage.vue";
 
+
 export default [
-    {path: '/', name: 'home', component: PromoterAccountPage, meta: {title: 'Аккаунт промоутера'}},
+    {path: '/', name: 'home', component: TripsSelectPage, meta: {title: 'Подбор билетов'}},
+    {path: '/account', name: 'promoter-account', component: PromoterAccountPage, meta: {title: 'Аккаунт промоутера'}},
     {path: '/registry/orders', name: 'orders-registry', component: OrdersRegistryPage, meta: {title: 'Реестр заказов'}},
     {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней'}},
     {path: '/registry/tickets', name: 'tickets-registry', component: TicketsRegistryPage, meta: {title: 'Реестр билетов'}},

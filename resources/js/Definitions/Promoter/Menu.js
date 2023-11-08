@@ -7,6 +7,9 @@ export default [
         // ]
     // },
     {
+        'title': 'ПОДБОР БИЛЕТОВ', 'route': 'home',
+    },
+    {
         'title': 'СЧЁТ', 'route': 'company-account',
     },
     {
