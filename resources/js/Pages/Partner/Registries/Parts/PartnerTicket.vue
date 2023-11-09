@@ -29,9 +29,9 @@
 
         <template v-if="info.is_loaded && !isReserve && info.data['is_printable']">
             <GuiContainer>
-                <GuiButton @clicked="downloadTicket">Скачать билет в PDF</GuiButton>
+                <GuiButton v-if="!info.data['opened_by_promoter']" @clicked="downloadTicket">Скачать билет в PDF</GuiButton>
                 <GuiButton @clicked="emailTicket" :disabled="!info.data['email']">Отправить клиенту на почту</GuiButton>
-                <GuiButton @clicked="printTicket">Распечатать</GuiButton>
+                <GuiButton v-if="!info.data['opened_by_promoter']" @clicked="printTicket">Распечатать</GuiButton>
             </GuiContainer>
         </template>
     </LayoutPage>
