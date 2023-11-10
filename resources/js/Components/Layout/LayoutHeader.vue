@@ -93,7 +93,7 @@ $base_white_color: #ffffff !default;
 
         &-text {
             box-sizing: border-box;
-            padding-left: 11px;
+            padding-left: 10px;
             font-family: $project_font;
             font-weight: bold;
             font-size: 14px;
