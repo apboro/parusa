@@ -210,7 +210,7 @@ class ShowcaseOrderController extends ApiEditController
         return response()->json([
             'payload' => [
                 'order_id' => $order->id,
-                'payment_page' => env('SHOWCASE_PAYMENT_PAGE') . '?order=' . $secret,
+                'payment_page' => config('showcase.showcase_payment_page') . '?order=' . $secret,
                 'order_secret' => $secret,
             ],
         ], 200, [ExternalProtect::HEADER_NAME => Crypt::encrypt(json_encode($originalKey, JSON_THROW_ON_ERROR))]);

@@ -235,6 +235,4 @@ return [
 
     ],
 
-    'showcase_ap_page' => env('SHOWCASE_AP_PAGE', env('APP_URL') . '/showcase.html'),
-    'showcase_ap_page2' => env('SHOWCASE2_AP_PAGE', env('APP_URL') . '/showcase2.html'),
 ];

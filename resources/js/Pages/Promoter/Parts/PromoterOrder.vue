@@ -1,19 +1,29 @@
 <template>
     <LayoutPage :title="title" :loading="processing" :breadcrumbs="breadcrumbs">
         <GuiContainer w-70>
-            <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
+            <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{
+                    info.data['valid_until']
+                }}</b></GuiValue>
             <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}</GuiValue>
-            <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
-            <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
-            <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }}<span v-if="info.data['cashier']">, {{ info.data['cashier'] }}</span></GuiValue>
+            <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }}<span
+                v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
+            <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">
+                {{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span>
+            </GuiValue>
+            <GuiValue :title="'Касса'" v-if="info.data['terminal']">{{ info.data['terminal'] }}<span
+                v-if="info.data['cashier']">, {{ info.data['cashier'] }}</span></GuiValue>
         </GuiContainer>
 
         <GuiHeading mt-30 mb-30>{{ isReserve ? 'Состав брони' : 'Состав заказа' }}</GuiHeading>
 
-        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']" :has-action="isReserve || is_returning">
+        <ListTable :titles="['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус']"
+                   :has-action="isReserve || is_returning">
             <ListTableRow v-for="ticket in info.data['tickets']">
                 <ListTableCell>
-                    <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{ ticket['id'] }}</router-link>
+                    <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}">{{
+                            ticket['id']
+                        }}
+                    </router-link>
                     <div style="color: red;" v-if="ticket.isBackward">обратный</div>
                 </ListTableCell>
                 <ListTableCell>
@@ -30,7 +40,8 @@
                 <ListTableCell>{{ ticket['status'] }}</ListTableCell>
                 <ListTableCell v-if="isReserve" class="va-middle">
                     <div>
-                        <GuiIconButton :title="'Удалить из брони'" :border="false" :color="'red'" @click="removeTicketFromReserve(ticket)">
+                        <GuiIconButton :title="'Удалить из брони'" :border="false" :color="'red'"
+                                       @click="removeTicketFromReserve(ticket)">
                             <IconCross/>
                         </GuiIconButton>
                     </div>
@@ -62,17 +73,12 @@
         </GuiContainer>
 
         <template v-if="info.is_loaded">
-            <template v-if="!isReserve">
-                <GuiContainer>
-                    <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning" @clicked="emailOrder">Отправить на почту</GuiButton>
-                </GuiContainer>
-            </template>
-            <template v-else>
-                <GuiContainer text-right>
-                    <GuiButton @clicked="order" :color="'green'" v-if="info.data['can_buy']">Выкупить бронь</GuiButton>
-                    <GuiButton @clicked="discardReserve" :color="'red'">Аннулировать бронь</GuiButton>
-                </GuiContainer>
-            </template>
+            <GuiContainer>
+                <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning"
+                           @clicked="emailOrder">Отправить на почту
+                </GuiButton>
+                <GuiButton @click="showQR">QR-код на оплату</GuiButton>
+            </GuiContainer>
         </template>
 
         <FormPopUp :title="'Информация о плательщике'" :form="form" ref="popup">
@@ -80,6 +86,11 @@
             <FormString :form="form" :name="'email'"/>
             <FormPhone :form="form" :name="'phone'"/>
         </FormPopUp>
+
+        <PopUp :close-on-overlay="true" :title="'QR-код для оплаты заказа'" ref="qrpopup">
+            <img :src="qr_image" alt="qr" style="width: 300px"/>
+        </PopUp>
+
     </LayoutPage>
 </template>
 
@@ -105,9 +116,11 @@ import FormString from "@/Components/Form/FormString";
 import FormPhone from "@/Components/Form/FormPhone";
 import IconEdit from "@/Components/Icons/IconEdit";
 import {saveAs} from "file-saver";
+import PopUp from "@/Components/PopUp.vue";
 
 export default {
     components: {
+        PopUp,
         IconEdit,
         FormPhone,
         FormString,
@@ -139,6 +152,7 @@ export default {
         reason_text: null,
         returning_progress: false,
         ordering: false,
+        qr_image: null,
         form: form(null, '/api/registries/order/buyer'),
     }),
 
@@ -169,6 +183,17 @@ export default {
     },
 
     methods: {
+        showQR(){
+                axios.post('/api/order/generate_payment_code', {orderId: this.orderId})
+                    .then(response => {
+                        this.qr_image = response.data.data['qr'];
+                        this.$refs.qrpopup.show();
+                    })
+                    .catch(error => {
+                        this.$toast.error(error.response.data.message);
+                    })
+            },
+
         sendSMS() {
             axios.post('/api/order/send_sms', {orderId: this.orderId})
                 .then((response) => {
@@ -236,7 +261,10 @@ export default {
                 return;
             }
 
-            this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {id: this.orderId, ticket_id: ticket['id']})
+            this.deleteEntry(`Удалить билет №${ticket['id']} из брони?`, '/api/order/reserve/remove', {
+                id: this.orderId,
+                ticket_id: ticket['id']
+            })
                 .then(response => {
                     if (response.data.payload['reserve_cancelled']) {
                         this.$router.push({name: 'reserves-registry'});

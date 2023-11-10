@@ -28,6 +28,8 @@ class OrderStatus extends AbstractDictionary
     public const partner_returned = 21;
     public const partner_partial_returned = 22;
     public const partner_reserve_canceled = 23;
+    public const promoter_wait_for_pay = 26;
+    public const promoter_paid = 27;
 
     public const terminal_creating = 31;
     public const terminal_creating_from_reserve = 32;
@@ -67,6 +69,7 @@ class OrderStatus extends AbstractDictionary
         self::terminal_partial_returned,
         self::showcase_paid,
         self::showcase_partial_returned,
+        self::promoter_paid
     ];
 
     public const partner_commission_pay_statuses = [
@@ -93,6 +96,7 @@ class OrderStatus extends AbstractDictionary
         self::showcase_paid,
         self::showcase_returned,
         self::showcase_partial_returned,
+        self::promoter_paid,
     ];
 
     public const order_reserved_statuses = [

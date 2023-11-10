@@ -12,6 +12,7 @@
             </template>
         </layout-header>
         <container mt-20 mb-20>
+            <PartnerHeaderWidget/>
         </container>
         <router-view/>
     </div>

@@ -140,7 +140,7 @@ class ShowcaseOrderInfoController extends ApiEditController
         }
 
         $now = Carbon::now();
-        $expires = Carbon::parse($orderSecret['ts'])->setTimezone($now->timezone)->addMinutes(env('SHOWCASE_ORDER_LIFETIME'));
+        $expires = Carbon::parse($orderSecret['ts'])->setTimezone($now->timezone)->addMinutes(config('showcase.showcase_order_lifetime'));
 
         return response()->json([
             'order' => [
@@ -151,7 +151,7 @@ class ShowcaseOrderInfoController extends ApiEditController
                 'is_confirmed' => $order->hasStatus(OrderStatus::showcase_confirmed),
                 'is_payed' => $order->hasStatus(OrderStatus::showcase_paid),
                 'is_actual' => $expires > $now,
-                'payment_page' => env('SHOWCASE_PAYMENT_PAGE') . '?order=' . $secret,
+                'payment_page' => config('showcase.showcase_payment_page') . '?order=' . $secret,
                 'lifetime' => $expires > $now ? $expires->diffInSeconds($now) : null,
             ],
         ]);

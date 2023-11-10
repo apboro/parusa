@@ -64,7 +64,7 @@ class CheckoutInitPayController extends ApiController
 
         // create order
         $orderId = $order->id . ' (' . Carbon::now()->format('d.m.Y H:i:s') . ')';
-        $finishedUrl = env('SHOWCASE_PAYMENT_PAGE') . '?order=' . $secret . '&status=finished';
+        $finishedUrl = config('showcase.showcase_payment_page') . '?order=' . $secret . '&status=finished';
         $phone = preg_replace('/[^\d+]/', '', $order->phone);
         // Нет документации по частичному возврату с корзиной заказов, без неё работает
         // $count = 1;
@@ -109,20 +109,20 @@ class CheckoutInitPayController extends ApiController
             //     'cartItems' => ['items' => $items->toArray()],
             // ],
         ];
-        if (env('SBER_ACQUIRING_CALLBACK_ENABLE')) {
+        if (config('sber.sber_acquiring_callback_enable')) {
             $data['dynamicCallbackUrl'] = route('sberNotification');
         }
 
-        $isProduction = env('SBER_ACQUIRING_PRODUCTION');
+        $isProduction = config('sber.sber_acquiring_production');
         $connection = new Connection([
-            'token' => env('SBER_ACQUIRING_TOKEN'),
-            'userName' => env('SBER_ACQUIRING_USER'),
-            'password' => env('SBER_ACQUIRING_PASSWORD'),
+            'token' => config('sber.sber_acquiring_token'),
+            'userName' => config('sber.sber_acquiring_user'),
+            'password' => config('sber.sber_acquiring_password'),
         ], new CurlClient(), $isProduction);
         $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
         $sber = new Sber($connection, $options);
         try {
-            $response = $sber->registerOrder($orderId, $order->total() * 100, env('SHOWCASE_ORDER_LIFETIME', 0) * 60, $finishedUrl, $data);
+            $response = $sber->registerOrder($orderId, $order->total() * 100, config('showcase.showcase_order_lifetime') * 60, $finishedUrl, $data);
         } catch (Exception $exception) {
             Log::channel('sber_payments')->error(sprintf('Order [%s] registration client error: %s', $orderId, $exception->getMessage()));
             return APIResponse::error($exception->getMessage());
@@ -134,14 +134,18 @@ class CheckoutInitPayController extends ApiController
         }
 
         $order->external_id = $response['orderId'];
-        $order->setStatus(OrderStatus::showcase_wait_for_pay, false);
+        if ($order->status_id != OrderStatus::promoter_wait_for_pay) {
+            $order->setStatus(OrderStatus::showcase_wait_for_pay, false);
+        }
         $order->save();
 
         Log::channel('sber_payments')->info(sprintf('Order [%s] registered [ID:%s]', $orderId, $order->external_id));
 
         $order->tickets->map(function (Ticket $ticket) {
             // P.S. All tickets are valid for now
-            $ticket->setStatus(TicketStatus::showcase_wait_for_pay);
+            if ($ticket->status_id != TicketStatus::promoter_wait_for_pay) {
+                $ticket->setStatus(TicketStatus::showcase_wait_for_pay);
+            }
         });
 
         return APIResponse::success('Перенаправление на оплату...', [
@@ -164,8 +168,8 @@ class CheckoutInitPayController extends ApiController
                 ['status', 'tickets', 'tickets.grade', 'tickets.trip', 'tickets.trip.startPier', 'tickets.trip.startPier.info', 'tickets.trip.excursion', 'tickets.trip.excursion.info']
             )
             ->where('id', $id)
-            ->whereIn('status_id', [OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::showcase_paid, OrderStatus::showcase_canceled])
-            ->whereIn('type_id', [OrderType::qr_code, OrderType::partner_site, OrderType::site])
+            ->whereIn('status_id', [OrderStatus::promoter_wait_for_pay, OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::showcase_paid, OrderStatus::showcase_canceled])
+            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site])
             ->first();
 
         return $order;

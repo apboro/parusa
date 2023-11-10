@@ -28,7 +28,8 @@ class TicketStatus extends AbstractDictionary
     public const partner_returned = 21;
     public const partner_reserve_canceled = 22;
     public const partner_paid_single = 25;
-
+    public const promoter_wait_for_pay = 26;
+    public const promoter_paid = 27;
 
     public const terminal_creating = 31;
     public const terminal_creating_from_reserve = 32;
@@ -48,7 +49,6 @@ class TicketStatus extends AbstractDictionary
     public const showcase_canceled = 90;
     public const showcase_paid_single = 95;
 
-
     public const used = 254;
     public const expired = 255;
 
@@ -64,6 +64,7 @@ class TicketStatus extends AbstractDictionary
         self::showcase_wait_for_pay,
         self::showcase_paid,
         self::used,
+        self::promoter_wait_for_pay,
     ];
 
     public const ticket_printable_statuses = [
@@ -74,6 +75,7 @@ class TicketStatus extends AbstractDictionary
         self::showcase_paid_single,
         self::terminal_paid_single,
         self::partner_paid_single,
+        self::promoter_paid,
     ];
 
     public const ticket_paid_statuses = [
@@ -83,6 +85,7 @@ class TicketStatus extends AbstractDictionary
         self::showcase_paid_single,
         self::terminal_paid_single,
         self::partner_paid_single,
+        self::promoter_paid,
     ];
 
     public const ticket_had_paid_statuses = [

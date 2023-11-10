@@ -22,6 +22,7 @@ class OrderTypesSeeder extends GenericSeeder
             OrderType::terminal_partner => ['name' => 'Мобильная касса (промоутер)'],
             OrderType::qr_code => ['name' => 'QR-код'],
             OrderType::referral_link => ['name' => 'Реферальная ссылка'],
+            OrderType::promoter_sale => ['name' => 'Личный кабинет промоутера'],
         ],
     ];
 }
