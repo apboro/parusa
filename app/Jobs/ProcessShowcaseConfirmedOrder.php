@@ -7,6 +7,7 @@ use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\LifePay\CloudPrint;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
@@ -61,18 +62,23 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             ->where('id', $this->orderId)
             ->first();
 
-        if ($order === null || !$order->hasStatus(OrderStatus::showcase_confirmed) || !$order->hasStatus(OrderStatus::promoter_wait_for_pay)) {
+        if ($order === null || !in_array($order->status_id, [OrderStatus::showcase_confirmed, OrderStatus::promoter_confirmed])) {
             return;
         }
 
         $tickets = [];
 
         // update order status
-        $newOrderStatus = $order->status_id === OrderStatus::showcase_confirmed ? OrderStatus::showcase_paid : OrderStatus::promoter_paid;
+        if ($order->type_id === OrderType::promoter_sale){
+            $newOrderStatus = OrderStatus::promoter_paid;
+            $newTicketStatus = TicketStatus::promoter_paid;
+        } else {
+            $newOrderStatus = OrderStatus::showcase_paid;
+            $newTicketStatus = TicketStatus::showcase_paid;
+        }
         $order->setStatus($newOrderStatus);
-        $order->tickets->map(function (Ticket $ticket) use (&$tickets) {
-            $ticketStatus = $ticket->trip->excursion->is_single_ticket ? TicketStatus::showcase_paid_single : TicketStatus::showcase_paid;
-            $ticket->setStatus($ticketStatus);
+        $order->tickets->map(function (Ticket $ticket) use (&$tickets, $newTicketStatus) {
+            $ticket->setStatus($newTicketStatus);
             $tickets[] = $ticket;
         });
 
@@ -83,7 +89,7 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             Log::error('ProcessShowcaseConfirmedOrder', [$exception]);
         }
 
-        if (env('SBER_ACQUIRING_PRODUCTION')) {
+        if (config('sber.sber_acquiring_production')) {
             CloudPrint::createReceipt($order, $tickets, CloudPrint::payment, $order->payments->first());
         }
 
