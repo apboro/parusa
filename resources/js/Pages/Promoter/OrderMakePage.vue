@@ -229,7 +229,7 @@ export default {
         },
 
         back() {
-            this.$router.push({name: 'tickets-select'});
+            this.$router.push({name: 'home'});
         },
 
         quantityChange(id, value) {

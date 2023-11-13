@@ -1,9 +1,8 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use App\Models\Partner\Partner;
-use App\Models\Positions\Position;
 use App\Models\User\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Testing\Fluent\AssertableJson;
