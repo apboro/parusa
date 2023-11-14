@@ -14,7 +14,7 @@ class ImportPrograms
     {
         $nevaApiData = new NevaTravelRepository();
         $nevaPrograms = $nevaApiData->getProgramsInfo();
-        $excursions = Excursion::with('additionalData')->where('provider_id', 10)->get();
+        $excursions = Excursion::with('additionalData')->where('provider_id', Provider::neva_travel)->get();
         foreach ($nevaPrograms['body'] as $nevaProgram) {
             $foundExcursion = null;
             foreach ($excursions as $excursion) {

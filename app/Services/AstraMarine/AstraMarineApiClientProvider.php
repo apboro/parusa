@@ -15,7 +15,8 @@ class AstraMarineApiClientProvider
 
     public function get(string $uri, array $query = []): array
     {
-        $response = Http::get($this->baseUrl . $uri, $query);
+        $response = Http::withBasicAuth(config('astra-marine.username'), config('astra-marine.password'))
+        ->timeout(10)->get($this->baseUrl . $uri, $query);
 
         return [
             'status' => $response->status(),
@@ -27,7 +28,8 @@ class AstraMarineApiClientProvider
     public function post(string $uri, array $data = []): array
     {
         $data['email'] = 'info@parus-a.ru';
-        $response = Http::post($this->baseUrl . $uri, $data);
+        $response = Http::withBasicAuth(config('astra-marine.username'), config('astra-marine.password'))
+            ->timeout(10)->post($this->baseUrl . $uri, $data);
 
         return [
             'status' => $response->status(),

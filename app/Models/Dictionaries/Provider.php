@@ -11,6 +11,8 @@ class Provider extends Model
 
     public const city_tour = 20;
 
+    public const astra_marine = 30;
+
     protected $fillable = [
         'name',
         'status',

@@ -13,6 +13,7 @@ class ProviderTypesSeeder extends GenericSeeder
             Provider::scarlet_sails => ['name' => 'Алые Паруса', 'service' => 'ships'],
             Provider::neva_travel => ['name' => 'Neva Travel', 'service' => 'ships'],
             Provider::city_tour => ['name' => 'City Tour', 'service' => 'buses'],
+            Provider::astra_marine => ['name' => 'Astra Marine', 'service' => 'ships'],
         ]
     ];
 }
