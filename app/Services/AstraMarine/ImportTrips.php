@@ -11,7 +11,6 @@ use Carbon\Carbon;
 
 class ImportTrips
 {
-
     public function run(): void
     {
         $astraApiData = new AstraMarineRepository();
@@ -24,17 +23,14 @@ class ImportTrips
             ->with('additionalData')
             ->where('provider_id', Provider::astra_marine)
             ->where('status_id', 1)->get();
-        $piers = Pier::query()
-            ->where('provider_id', Provider::astra_marine)
-            ->get();
-        $ships = Ship::query()
-            ->where('provider_id', Provider::astra_marine)
-            ->get();
 
         if ($excursions->isEmpty())
             return;
 
-        $astraTrips = $astraApiData->getEvents(["dateFrom" => now()->toIso8601String()]);
+        $astraTrips = $astraApiData->getEvents([
+            "dateFrom" => now()->toIso8601String(),
+            "dateTo" => now()->addDays(60)->toIso8601String()
+        ]);
 
         foreach ($astraTrips['body']['events'] as $astraTrip) {
             $findExcursion = $excursions->first(function (Excursion $excursion) use ($astraTrip) {
@@ -48,9 +44,9 @@ class ImportTrips
                     $trip->start_at = Carbon::parse($astraTrip['eventDateTime']);
                     $trip->end_at = Carbon::parse($astraTrip['eventDateTime'])->addMinutes($astraTrip['eventDuration']);
                     $trip->excursion_id = $findExcursion->id;
-                    $trip->start_pier_id = $piers->firstWhere('external_id', $astraTrip['pierID'])->id ?? $this->importPier($astraTrip);
-                    $trip->end_pier_id = $piers->firstWhere('external_id', $astraTrip['endPointID'])->id ?? $this->importPier($astraTrip);
-                    $trip->ship_id = $ships->firstWhere('external_id', $astraTrip['venueID'])->id ?? $this->importShip($astraTrip);
+                    $trip->start_pier_id = Pier::where('external_id', $astraTrip['pierID'])->first()->id ?? $this->importPier($astraTrip);
+                    $trip->end_pier_id = Pier::where('external_id', $astraTrip['endPointID'])->first()->id ?? $this->importPier($astraTrip);
+                    $trip->ship_id = Ship::where('external_id', $astraTrip['venueID'])->first()->id ?? $this->importShip($astraTrip);
                     $trip->cancellation_time = 60;
                     $trip->provider_id = Provider::astra_marine;
                 }
@@ -66,8 +62,8 @@ class ImportTrips
     function importPier(array $data): int
     {
         $pier = Pier::create([
-            'name' => $data['pierName'],
-            'external_id' => $data['pierId'],
+            'name' => explode('|', $data['pierName'])[0] ?? $data['pierName'],
+            'external_id' => $data['pierID'],
             'provider_id' => Provider::astra_marine,
         ]);
 
