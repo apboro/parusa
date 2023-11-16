@@ -22,6 +22,7 @@ export default [
         'roles': ['admin', 'office_manager', 'accountant'],
         'items': [
             {'title': 'Сотрудники', 'route': 'staff-list', 'roles': ['admin', 'office_manager', 'accountant']},
+            {'title': 'Теплоходы', 'route': 'ship-list', 'roles': ['admin', 'office_manager', 'accountant']},
             {'title': 'Каталог экскурсий', 'route': 'excursion-list', 'roles': ['admin', 'office_manager', 'accountant']},
             {'title': 'Промокоды', 'route': 'promo-code-list', 'roles': ['admin', 'office_manager', 'accountant']},
             {'title': 'Настройки', 'route': 'settings', 'roles': ['admin', 'office_manager', 'accountant']},
