@@ -16,18 +16,6 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
-            <LayoutFiltersItem :title="'Способ продажи'">
-                <DictionaryDropDown
-                    :dictionary="'partner_order_types'"
-                    v-model="list.filters['order_type_id']"
-                    :original="list.filters_original['order_type_id']"
-                    :placeholder="'Все'"
-                    :has-null="true"
-                    :small="true"
-                    :disabled="!!list.search"
-                    @change="list.load()"
-                />
-            </LayoutFiltersItem>
             <LayoutFiltersItem :title="'Поиск по номеру телефона'">
                 <InputPhone
                     v-model="list.filters['search_phone']"

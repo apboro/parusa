@@ -41,7 +41,6 @@ class PromotersRegistryController extends ApiController
 
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
         $query = Partner::query()
-            ->with(['workShifts'])
             ->where('type_id', PartnerType::promoter);
 
         if ($terminalId) {
@@ -65,24 +64,37 @@ class PromotersRegistryController extends ApiController
 
         $partners = $query->paginate($request->perPage(25, $this->rememberKey));
 
-        $partners->transform(function (Partner $partner) {
+        $partners->transform(function (Partner $partner) use ($filters) {
+
+            $filteredWorkshifts = $partner->workShifts->filter(function ($shift) use ($filters) {
+                if (!empty($filters['date_to']))
+                    if (Carbon::parse($shift->start_at) > Carbon::parse($filters['date_to'])->endOfDay())
+                        return false;
+                if (!empty($filters['date_from']))
+                    if (Carbon::parse($shift->start_at) < Carbon::parse($filters['date_from']))
+                        return false;
+                if (!empty($filters['terminal_id']))
+                    if ($shift->terminal_id != $filters['terminal_id'])
+                        return false;
+                return true;
+            });
 
             return [
                 'id' => $partner->id,
                 'name' => $partner->name,
-                'pay_for_out' => $partner->workShifts->sum('pay_for_out'),
-                'total_hours' => $partner->workShifts->sum(function ($shift) {
+                'pay_for_out' => $filteredWorkshifts->sum('pay_for_out'),
+                'total_hours' => $filteredWorkshifts->sum(function ($shift) {
                     return $shift->getWorkingHours();
                 }),
-                'pay_for_time' => $partner->workShifts->sum(function ($shift) {
+                'pay_for_time' => $filteredWorkshifts->sum(function ($shift) {
                     return $shift->getPayForTime();
                 }),
-                'sales_total' => $partner->workShifts->sum('sales_total'),
-                'commission' => $partner->workShifts->sum('pay_commission'),
-                'total_to_pay_out' => $partner->workShifts->sum(function ($shift) {
+                'sales_total' => $filteredWorkshifts->sum('sales_total'),
+                'commission' => $filteredWorkshifts->sum('pay_commission'),
+                'total_to_pay_out' => $filteredWorkshifts->sum(function ($shift) {
                     return $shift->getShiftTotalPay();
                 }),
-                'total_paid_out' => $partner->workShifts->sum('paid_out')
+                'total_paid_out' => $filteredWorkshifts->sum('paid_out')
             ];
         });
 

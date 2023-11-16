@@ -65,7 +65,7 @@ class CheckoutController extends ApiController
         }
 
         return APIResponse::error('Нет заказов, находящихся в оформлении.', [
-            'back_link' => $backLink ?? env('SHOWCASE_AP_PAGE'),
+            'back_link' => $backLink ?? config('showcase.showcase_ap_page'),
         ]);
     }
 
@@ -99,10 +99,12 @@ class CheckoutController extends ApiController
 
         // check timestamp against order states
         $ts = Carbon::parse($container['ts']);
-        $validThrough = $ts->clone()->addMinutes(env('SHOWCASE_ORDER_LIFETIME'));
+        $validThrough = $ts->clone()->addMinutes(config('showcase.showcase_order_lifetime'));
         $now = Carbon::now();
 
-        if ($order->hasStatus(OrderStatus::showcase_creating) || $order->hasStatus(OrderStatus::showcase_wait_for_pay)) {
+        if ($order->hasStatus(OrderStatus::showcase_creating)
+            || $order->hasStatus(OrderStatus::showcase_wait_for_pay)
+            || $order->hasStatus(OrderStatus::promoter_wait_for_pay)) {
             if ($validThrough < $now) {
                 return APIResponse::error('Время, отведенное на оплату заказа, закончилось. Заказ расформирован.', [
                     'back_link' => $container['ref'] ?? null,
@@ -192,11 +194,11 @@ class CheckoutController extends ApiController
         }
 
         // check order status
-        $isProduction = env('SBER_ACQUIRING_PRODUCTION');
+        $isProduction = config('sber.sber_acquiring_production');
         $connection = new Connection([
-            'token' => env('SBER_ACQUIRING_TOKEN'),
-            'userName' => env('SBER_ACQUIRING_USER'),
-            'password' => env('SBER_ACQUIRING_PASSWORD'),
+            'token' => config('sber.sber_acquiring_token'),
+            'userName' => config('sber.sber_acquiring_user'),
+            'password' => config('sber.sber_acquiring_password'),
         ], new CurlClient(), $isProduction);
         $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
         $sber = new Sber($connection, $options);
@@ -222,8 +224,9 @@ class CheckoutController extends ApiController
         }
 
         // set order status
-        if ($order->status_id === OrderStatus::showcase_wait_for_pay) {
-            $order->setStatus(OrderStatus::showcase_confirmed);
+        if ($order->status_id === OrderStatus::showcase_wait_for_pay || $order->status_id === OrderStatus::promoter_wait_for_pay) {
+            $newOrderStatus = $order->type_id === OrderType::promoter_sale ? OrderStatus::promoter_confirmed : OrderStatus::showcase_confirmed;
+            $order->setStatus($newOrderStatus);
             Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
             // add payment
@@ -280,13 +283,22 @@ class CheckoutController extends ApiController
 
         }
 
+        $orderSecret = json_encode([
+            'id' => $order->id,
+            'ts' => Carbon::now(),
+            'ip' => $request->ip(),
+            'ref' => $request->input('ref'),
+        ], JSON_THROW_ON_ERROR);
+
+        $secret = Crypt::encrypt($orderSecret);
+
         // response OK
-        $backLink = $container['ref'] ?? env('SHOWCASE_AP_PAGE');
+        $backLink = $container['ref'] ?? config('showcase.showcase_ap_page');
         $query = parse_url($backLink, PHP_URL_QUERY);
         if ($query) {
-            $backLink .= '&status=finished';
+            $backLink .= '&status=finished&secret='.$secret;
         } else {
-            $backLink .= '?status=finished';
+            $backLink .= '?status=finished&secret='.$secret;
         }
 
         return APIResponse::success('Заказ оплачен. Высылаем чек и билеты на электронную почту.', [
@@ -336,8 +348,8 @@ class CheckoutController extends ApiController
                 ]
             )
             ->where('id', $id)
-            ->whereIn('status_id', [OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::showcase_paid, OrderStatus::showcase_canceled])
-            ->whereIn('type_id', [OrderType::qr_code, OrderType::partner_site, OrderType::site])
+            ->whereIn('status_id', array_merge(OrderStatus::sberpay_statuses, [OrderStatus::showcase_canceled]))
+            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site])
             ->first();
 
         return $order;

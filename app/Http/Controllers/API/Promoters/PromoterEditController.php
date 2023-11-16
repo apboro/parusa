@@ -127,6 +127,7 @@ class PromoterEditController extends ApiEditController
         $profile = $partner->profile;
 
         $profile->tickets_for_guides = 0;
+        $profile->can_reserve_tickets = 0;
         $profile->save();
 
         return APIResponse::success('Данные промоутера обновлены', [

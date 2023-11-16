@@ -15,7 +15,7 @@ class ReferralLinkRedirectController extends Controller
         $partner = Partner::query()->where('id', $id)->first();
 
         if ($request->has('showcase')) {
-            $showcaseUrl = config('app.showcase_ap_page');
+            $showcaseUrl = config('showcase.showcase_ap_page');
             $parts = explode('?', $showcaseUrl);
             $link = $parts[0];
             if (isset($parts[1])) {

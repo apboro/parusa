@@ -32,7 +32,7 @@ class PartnerSettingsController extends ApiController
         $showcaseUrl = config('app.showcase_ap_page');
 
         $code = "<!-- Загрузка скрипта -->\n";
-        $code .= "<script src=\"" . env('APP_URL') . "/js/showcase.js\"></script>\n";
+        $code .= "<script src=\"" . config('app.url') . "/js/showcase.js\"></script>\n";
         $code .= "<!-- Настройки -->\n";
         $code .= "<script id=\"ap-showcase-config\" type=\"application/json\">{\"partner\": " . $current->partnerId() . "}</script>";
         $code .= "\n<!-- Вставить в то место, где нужно разместить приложение -->\n";

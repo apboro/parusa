@@ -158,7 +158,7 @@ export default {
         }
 
         // get order secret if set
-        this.order_secret = localStorage.getItem('ap-showcase-order-secret');
+        this.order_secret = localStorage.getItem('ap-showcase-order-secret') ?? urlParams.get('secret');
 
         // get trip id if set
         this.trip_id = this.getTripId();

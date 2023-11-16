@@ -28,6 +28,9 @@ class OrderStatus extends AbstractDictionary
     public const partner_returned = 21;
     public const partner_partial_returned = 22;
     public const partner_reserve_canceled = 23;
+    public const promoter_wait_for_pay = 26;
+    public const promoter_confirmed = 27;
+    public const promoter_paid = 28;
 
     public const terminal_creating = 31;
     public const terminal_creating_from_reserve = 32;
@@ -67,12 +70,14 @@ class OrderStatus extends AbstractDictionary
         self::terminal_partial_returned,
         self::showcase_paid,
         self::showcase_partial_returned,
+        self::promoter_paid
     ];
 
     public const partner_commission_pay_statuses = [
         self::partner_paid,
         self::terminal_paid,
         self::showcase_paid,
+        self::promoter_paid
     ];
 
     public const partial_returned_statuses = [
@@ -93,6 +98,7 @@ class OrderStatus extends AbstractDictionary
         self::showcase_paid,
         self::showcase_returned,
         self::showcase_partial_returned,
+        self::promoter_paid,
     ];
 
     public const order_reserved_statuses = [
@@ -105,5 +111,15 @@ class OrderStatus extends AbstractDictionary
         self::terminal_wait_for_pay,
         self::terminal_wait_for_pay_from_reserve,
         self::terminal_finishing,
+    ];
+
+    public const sberpay_statuses = [
+        self::showcase_creating,
+        self::showcase_paid,
+        self::showcase_confirmed,
+        self::showcase_wait_for_pay,
+        self::promoter_wait_for_pay,
+        self::promoter_confirmed,
+        self::promoter_paid,
     ];
 }

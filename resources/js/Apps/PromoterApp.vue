@@ -12,6 +12,7 @@
             </template>
         </layout-header>
         <container mt-20 mb-20>
+            <PromoterHeaderWidget/>
         </container>
         <router-view/>
     </div>
@@ -23,9 +24,9 @@
 import LayoutHeader from "@/Components/Layout/LayoutHeader";
 import LayoutMenu from "@/Components/Layout/LayoutMenu";
 import LayoutUserMenu from "@/Components/Layout/LayoutUserMenu";
-import PartnerHeaderWidget from "@/Apps/PartnerHeaderWidget";
 import Container from "@/Components/GUI/GuiContainer";
 import PopUp from "@/Components/PopUp";
+import PromoterHeaderWidget from "@/Apps/PromoterHeaderWidget.vue";
 
 export default {
     props: {
@@ -34,8 +35,8 @@ export default {
     },
 
     components: {
+        PromoterHeaderWidget,
         Container,
-        PartnerHeaderWidget,
         LayoutUserMenu,
         LayoutHeader,
         LayoutMenu,

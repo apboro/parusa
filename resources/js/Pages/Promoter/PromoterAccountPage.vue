@@ -1,7 +1,6 @@
 <template>
     <LayoutPage :title="$route.meta['title']">
         <PromoterAccount/>
-        <AdminOrderRegistry/>
     </LayoutPage>
 </template>
 

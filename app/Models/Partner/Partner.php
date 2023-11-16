@@ -47,6 +47,7 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
 {
     use HasApiTokens, HasStatus, HasType, HasFactory, PartnerAsDictionary;
 
+    protected $guarded = [];
     /** @var array Default attributes. */
     protected $attributes = [
         'status_id' => PartnerStatus::default,

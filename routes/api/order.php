@@ -6,11 +6,15 @@ use App\Http\Controllers\API\Order\OrderReturnController;
 use App\Http\Controllers\API\Order\OrderSMSController;
 use App\Http\Controllers\API\Order\OrderTicketReplacementController;
 use App\Http\Controllers\API\Order\PartnerMakeOrderController;
+use App\Http\Controllers\API\Order\PromoterMakeOrderController;
 use App\Http\Controllers\API\Order\TerminalCurrentOrderController;
 use App\Http\Controllers\API\Order\TerminalMakeOrderController;
+use App\Http\Controllers\QrCode\QrCodeGenerateController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/order/partner/make', [PartnerMakeOrderController::class, 'make'])->middleware(['allow:partner']);
+
+Route::post('/order/promoter/make', [PromoterMakeOrderController::class, 'make'])->middleware(['allow:partner']);
 
 Route::post('/order/terminal/make', [TerminalMakeOrderController::class, 'make'])->middleware(['allow:staff_terminal']);
 
@@ -38,4 +42,6 @@ Route::post('/order/replacement/make', [OrderTicketReplacementController::class,
 Route::post('/order/backward/get_backward_trips', [OrderBackwardTicketsController::class, 'getBackwardTrips'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_terminal,partner']);
 Route::post('/order/backward/add_backward_tickets', [OrderBackwardTicketsController::class, 'addBackwardTickets'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_terminal,partner']);
 Route::post('/order/backward/add_backward_tickets_showcase', [OrderBackwardTicketsController::class, 'addBackwardTicketsShowcase'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_terminal,partner']);
+
+Route::post('/order/generate_payment_code', [QrCodeGenerateController::class, 'generateOrderPaymentQr'])->middleware(['allow:staff_admin,partner']);
 

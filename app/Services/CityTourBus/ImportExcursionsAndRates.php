@@ -18,8 +18,7 @@ class ImportExcursionsAndRates
 {
     public function run()
     {
-        $apiClient = new CityTourApiClientProvider();
-        $cityTourRepo = new CityTourRepository($apiClient);
+        $cityTourRepo = new CityTourRepository();
 
         $cityTourExcursions = $cityTourRepo->getExcursions()['body'];
 

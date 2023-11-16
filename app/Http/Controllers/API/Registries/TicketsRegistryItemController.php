@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Registries;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
@@ -50,7 +51,7 @@ class TicketsRegistryItemController extends ApiController
             'trip_start_time' => $ticket->trip->start_at->format('H:i'),
             'grade' => $ticket->grade->name,
             'base_price' => $ticket->base_price,
-
+            'opened_by_promoter' => $current->partner()?->type_id === PartnerType::promoter,
             'name' => $ticket->order->name,
             'email' => $ticket->order->email,
             'phone' => $ticket->order->phone,

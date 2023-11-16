@@ -1,13 +1,13 @@
 <template>
-    <PartnerOrder :order-id="orderId"/>
+    <PromoterOrder :order-id="orderId"/>
 </template>
 
 <script>
-import PartnerOrder from "@/Pages/Partner/Registries/Parts/PartnerOrder";
+import PromoterOrder from "@/Pages/Promoter/Parts/PromoterOrder.vue";
 
 export default {
     components: {
-        PartnerOrder,
+        PromoterOrder,
     },
 
     computed: {

@@ -10,6 +10,7 @@ use App\Http\Controllers\API\Partners\PartnerRepresentativeStatusController;
 use App\Http\Controllers\API\Partners\PartnerViewController;
 use App\Http\Controllers\API\Promoters\PromoterDeleteController;
 use App\Http\Controllers\API\Promoters\PromoterEditController;
+use App\Http\Controllers\API\Promoters\PromoterInfoController;
 use App\Http\Controllers\API\Promoters\PromoterInventoryController;
 use App\Http\Controllers\API\Promoters\PromotersListController;
 use App\Http\Controllers\API\Promoters\PromoterViewController;
@@ -27,3 +28,4 @@ Route::post('/promoters/update', [PromoterEditController::class, 'update'])->mid
 
 Route::post('/promoters/delete', [PromoterDeleteController::class, 'delete'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_promoter_manager');
 
+Route::post('/promoters/promoter/info', [PromoterInfoController::class, 'get'])->middleware(['allow:partner']);

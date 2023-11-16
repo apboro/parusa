@@ -13,6 +13,7 @@ class OrderType extends AbstractDictionary
 {
     /** @var int Личный кабинет партнёра */
     public const partner_sale = 1;
+    public const promoter_sale = 20;
 
     /** @var int Витрина на сайте партнера */
     public const partner_site = 2;
