@@ -10,9 +10,10 @@
             </GuiActionsMenu>
         </template>
 
-        <LayoutRoutedTabs :tabs="{info: 'Информация', seats: 'Схема рассадки'}" @change="tab = $event"/>
+        <LayoutRoutedTabs :tabs="{info: 'Информация', seats_scheme: 'Схема рассадки'}" @change="tab = $event"/>
 
         <ShipInfo v-if="tab === 'info'" :data="data.data" :ship-id="shipId" :editable="accepted" @update="update"/>
+        <SeatPlacement v-if="tab === 'seats_scheme'" :data="data.data" :ship-id="shipId" :editable="accepted" @update="update"/>
 
     </LayoutPage>
 </template>
@@ -25,9 +26,11 @@ import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu";
 import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 import ShipInfo from "@/Pages/Admin/Ships/Parts/ShipInfo.vue";
 import roles from "@/Mixins/roles.vue";
+import SeatPlacement from "@/Pages/Admin/Ships/Parts/SeatPlacement.vue";
 
 export default {
     components: {
+        SeatPlacement,
         ShipInfo,
         LayoutPage,
         GuiActionsMenu,
@@ -40,7 +43,6 @@ export default {
     data: () => ({
         data: data('/api/ship/view'),
         tab: null,
-        trips_title: null,
     }),
 
     computed: {

@@ -21,7 +21,7 @@ class NevaTravelApiClientProvider
     public function get(string $uri, array $query = []): array
     {
         $response = Http::withHeaders($this->headers)
-            ->get($this->baseUrl . $uri, $query);
+            ->timeout(7)->get($this->baseUrl . $uri, $query);
 
         return [
             'status' => $response->status(),
@@ -33,7 +33,7 @@ class NevaTravelApiClientProvider
     public function post(string $uri, array $data = []): array
     {
         $response = Http::withHeaders($this->headers)
-            ->post($this->baseUrl . $uri, $data);
+            ->timeout(7)->post($this->baseUrl . $uri, $data);
 
         return [
             'status' => $response->status(),

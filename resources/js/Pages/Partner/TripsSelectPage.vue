@@ -146,6 +146,7 @@
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
         <TicketsSelect ref="select_popup"/>
+        <TicketsSelectWithScheme ref="select_scheme_popup"/>
         <ExcursionInfo ref="excursion_info"/>
         <PierInfo ref="pier_info"/>
     </LayoutPage>
@@ -171,9 +172,11 @@
     import ExcursionInfo from "@/Pages/Partner/Parts/ExcursionInfo";
     import PierInfo from "@/Pages/Partner/Parts/PierInfo";
     import InputDropDown from "@/Components/Inputs/InputDropDown.vue";
+    import TicketsSelectWithScheme from "@/Pages/Partner/Parts/TicketsSelectWithScheme.vue";
 
     export default {
         components: {
+            TicketsSelectWithScheme,
             InputDropDown,
             PierInfo,
             ExcursionInfo,
@@ -219,7 +222,11 @@
                 this.$refs.date.addDays(increment);
             },
             addToOrder(trip) {
-                this.$refs.select_popup.handle(trip);
+                if (trip['seats'].length > 0) {
+                    this.$refs.select_scheme_popup.handle(trip);
+                } else {
+                    this.$refs.select_popup.handle(trip);
+                }
             },
             excursionInfo(excursion_id) {
                 this.$refs.excursion_info.show(excursion_id);

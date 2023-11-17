@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Ships\Seats\SeatCategoriesEditController;
 use App\Http\Controllers\API\Ships\ShipDeleteController;
 use App\Http\Controllers\API\Ships\ShipEditController;
 use App\Http\Controllers\API\Ships\ShipListController;
@@ -16,3 +17,7 @@ Route::post('/ship/get', [ShipEditController::class, 'get'])->middleware(['allow
 Route::post('/ship/update', [ShipEditController::class, 'update'])->middleware(['allow:staff_admin']);
 
 Route::post('/ship/delete', [ShipDeleteController::class, 'delete'])->middleware(['allow:staff_admin']);
+
+Route::post('/ship/seat_categories/get', [SeatCategoriesEditController::class, 'get'])->middleware(['allow:staff_admin']);
+Route::post('/ship/seat_categories/update', [SeatCategoriesEditController::class, 'update'])->middleware(['allow:staff_admin']);
+

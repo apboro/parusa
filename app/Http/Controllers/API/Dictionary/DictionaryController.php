@@ -40,6 +40,7 @@ use App\Models\Partner\Partner;
 use App\Models\Piers\Pier;
 use App\Models\POS\Terminal;
 use App\Models\POS\TerminalPositions;
+use App\Models\Ships\Seats\SeatCategory;
 use App\Models\Ships\Ship;
 use App\Models\User\Helpers\Currents;
 use App\Models\User\User;
@@ -84,7 +85,8 @@ class DictionaryController extends ApiController
         'providers' => ['class' => Provider::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
         'tariffs' => ['class' => Tariff::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
         'work_shift_statuses' => ['class' => WorkShiftStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
-        'inventory' => ['class' => Inventory::class, 'allow' => 'staff_admin,staff_office_manager,staff_terminal']
+        'inventory' => ['class' => Inventory::class, 'allow' => 'staff_admin,staff_office_manager,staff_terminal'],
+        'seat_categories' => ['class' => SeatCategory::class, 'allow' => 'staff_admin,staff_office_manager']
     ];
 
     /**
@@ -138,6 +140,10 @@ class DictionaryController extends ApiController
 
         if ($requested >= $actual) {
             return APIResponse::notModified();
+        }
+
+        if ($name === 'ticket_grades') {
+            $query->where('provider_id', Provider::scarlet_sails);
         }
 
         $dictionary = $query->orderBy('order')->orderBy('name')->get();
