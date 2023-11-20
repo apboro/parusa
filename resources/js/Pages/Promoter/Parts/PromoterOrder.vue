@@ -77,7 +77,7 @@
                 <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning"
                            @clicked="emailOrder">Отправить на почту
                 </GuiButton>
-                <GuiButton @click="showQR">QR-код на оплату</GuiButton>
+                <GuiButton v-if="!info.data['is_printable']" @click="showQR">QR-код на оплату</GuiButton>
             </GuiContainer>
         </template>
 

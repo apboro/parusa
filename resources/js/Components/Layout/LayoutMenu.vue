@@ -44,75 +44,75 @@ export default {
 </script>
 
 <style lang="scss">
-    @media (max-width: 767px) {
-        .application__menu-wrapper {
-            .application__menu {
-                flex-direction: column;
-                height: auto;
-                row-gap: 20px;
-                padding-top: 20px;
-                display: none;
+@media (max-width: 767px) {
+    .application__menu-wrapper {
+        .application__menu {
+            flex-direction: column;
+            height: auto;
+            row-gap: 20px;
+            padding-top: 20px;
+            display: none;
 
-                &-submenu-0 {
-                    bottom: -5px;
-                }
+            &-submenu-0 {
+                bottom: -5px;
+            }
 
-                &-burger {
-                    transition: all 0.3s ease;
+            &-burger {
+                transition: all 0.3s ease;
 
-                    span {
+                span {
+                    width: 20px;
+                    height: 2px;
+                    display: inline-block;
+                    background: #0B68C2;
+                    position: relative;
+
+                    &::before {
+                        position: absolute;
+                        content: '';
+                        top: -7px;
+                        left: 0;
                         width: 20px;
                         height: 2px;
                         display: inline-block;
                         background: #0B68C2;
-                        position: relative;
-
-                        &::before {
-                            position: absolute;
-                            content: '';
-                            top: -7px;
-                            left: 0;
-                            width: 20px;
-                            height: 2px;
-                            display: inline-block;
-                            background: #0B68C2;
-                        }
-
-                        &::after {
-                            position: absolute;
-                            content: '';
-                            bottom: -7px;
-                            left: 0;
-                            width: 20px;
-                            height: 2px;
-                            display: inline-block;
-                            background: #0B68C2;
-                        }
-                    }
-                }
-            }
-        }
-
-        .application__menu-wrapper-active {
-
-            .application__menu-burger {
-                span {
-                    transform: rotate(135deg);
-
-                    &::before {
-                        transform: rotate(90deg);
-                        top: 0;
                     }
 
                     &::after {
-                        display: none;
+                        position: absolute;
+                        content: '';
+                        bottom: -7px;
+                        left: 0;
+                        width: 20px;
+                        height: 2px;
+                        display: inline-block;
+                        background: #0B68C2;
                     }
                 }
             }
-
-            .application__menu {
-                display: flex;
-            }
         }
     }
+
+    .application__menu-wrapper-active {
+
+        .application__menu-burger {
+            span {
+                transform: rotate(135deg);
+
+                &::before {
+                    transform: rotate(90deg);
+                    top: 0;
+                }
+
+                &::after {
+                    display: none;
+                }
+            }
+        }
+
+        .application__menu {
+            display: flex;
+        }
+    }
+}
 </style>

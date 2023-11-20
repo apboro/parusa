@@ -6,7 +6,7 @@
                     <span class="balance-widget__item-title">Ваш заказ</span>
                     <span class="balance-widget__item-value">{{ loaded ? order_amount + ' руб.' : '—' }}</span>
                 </div>
-                <icon-shopping-cart :class="'balance-widget__item-icon'"/>
+                <icon-sh1opping-cart :class="'balance-widget__item-icon'"/>
             </router-link>
 
             <router-link :to="{name: 'reserves-registry'}" class="balance-widget__item" v-if="can_reserve">
@@ -410,7 +410,7 @@ $widget_base: 90px;
     }
 
     .filters-count {
-        border-radius: 50px;
+        border-radius: 60px;
         background: #0B68C2;
         color: #fff;
         display: flex !important;

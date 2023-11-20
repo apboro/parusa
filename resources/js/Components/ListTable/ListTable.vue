@@ -4,7 +4,7 @@
             <slot name="header" v-if="$slots.header"/>
             <ListTableHeader v-else :titles="titles" :has-action="hasAction"/>
             <tbody class="list-table__body">
-                <slot/>
+            <slot/>
             </tbody>
         </table>
     </div>

@@ -52,4 +52,9 @@ class WorkShift extends Model
         return $this->tariff->pay_for_out + $this->getPayForTime() + $this->pay_commission;
     }
 
+    public function getCurrentCommission()
+    {
+        return $this->tariff->commission + $this->commission_delta;
+    }
+
 }

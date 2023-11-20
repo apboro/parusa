@@ -9,6 +9,7 @@ export default {
         amount: 0,
         limit: 0,
         total: 0,
+        partner_type: 0,
         reserves: 0,
         can_reserve: false,
         order_amount: 0,
@@ -36,6 +37,9 @@ export default {
         setOrderAmount(state, value) {
             state.order_amount = value;
         },
+        setPartnerType(state, value) {
+            state.partner_type = value;
+        },
     },
 
     actions: {
@@ -51,6 +55,7 @@ export default {
                         commit('setReserves', response.data.data.reserves);
                         commit('setOrderAmount', response.data.data.order_amount);
                         commit('setTotal', response.data.data.total);
+                        commit('setPartnerType', response.data.data.partner_type);
                         resolve();
                     })
                     .catch(error => {

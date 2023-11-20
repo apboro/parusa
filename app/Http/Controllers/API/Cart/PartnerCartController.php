@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Hit\Hit;
@@ -87,6 +88,7 @@ class PartnerCartController extends ApiEditController
         return APIResponse::response([
             'ticketTrip' => $ticketTrip,
             'hasProviderTickets' => $hasProviderTicket,
+            'openshift' => $current->partner()?->type_id === PartnerType::promoter ? $current->partner()->getOpenedShift() : null,
             'tickets' => $tickets,
             'limits' => $limits,
             'can_reserve' => $current->partner() ? ($current->partner()->profile->can_reserve_tickets && !$hasProviderTicket) : null,

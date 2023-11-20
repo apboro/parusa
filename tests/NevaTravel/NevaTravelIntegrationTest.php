@@ -13,7 +13,11 @@ use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
-use App\Services\CityTourBus\CityTourRepository;
+use App\Services\NevaTravel\ImportPiers;
+use App\Services\NevaTravel\ImportPrograms;
+use App\Services\NevaTravel\ImportProgramsPrices;
+use App\Services\NevaTravel\ImportShips;
+use App\Services\NevaTravel\ImportTrips;
 use Str;
 use Tests\TestCase;
 
@@ -25,16 +29,20 @@ class NevaTravelIntegrationTest extends TestCase
         parent::setUp();
         $position = Position::factory()->create(['is_staff' => 1, 'partner_id' => null]);
         $terminal = Terminal::factory()->create();
-        $ticketGrade = TicketGrade::factory()->create(['id'=>50,'provider_id' => 10]);
+        $ticketGrade = TicketGrade::firstOrCreate(['id'=>50,'provider_id' => 10]);
         $excursion = Excursion::create(['name'=>'neva_travel', 'provider_id' => 10]);
         AdditionalDataExcursion::create([
             'provider_id' => 10,
             'excursion_id' => $excursion->id,
-            'provider_excursion_uuid' => 'eff95dfb-0f41-11ed-9697-0242c0a8a005']);
+            'provider_excursion_id' => '0f89959b-0dbc-11ed-b337-0242c0a85004']);
         $ticketsRateList = TicketsRatesList::factory()->create(['excursion_id' => $excursion->id]);
         TicketRate::factory()->create(['rate_id' => $ticketsRateList->id, 'grade_id' => $ticketGrade->id]);
-        $trip = Trip::factory()->create(['excursion_id' => $excursion->id, 'provider_id' => 10]);
-
+        (new ImportShips())->run();
+        (new ImportPiers())->run();
+        (new ImportPrograms())->run();
+        (new ImportProgramsPrices())->run();
+        (new ImportTrips(now()->addDays()))->run();
+        $trip = Trip::where('start_at', '>', now())->where('provider_id', 10)->first();
         $this->positionOrderingTicket = PositionOrderingTicket::create([
             'position_id' => $position->id,
             'trip_id' => $trip->id,
@@ -78,7 +86,7 @@ class NevaTravelIntegrationTest extends TestCase
         $orderAdditionalData = $order->additionalData;
         $this->assertNotNull($order);
         $this->assertNotNull($orderAdditionalData);
-        $this->assertNotNull($orderAdditionalData->provider_order_id);
+        $this->assertNotNull($orderAdditionalData->provider_order_uuid);
 
     }
 }

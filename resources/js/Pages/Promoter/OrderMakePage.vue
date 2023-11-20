@@ -95,7 +95,7 @@
 
             <GuiContainer w-70 mt-30 inline text-right>
                 <GuiButton @click="clear" :color="'red'" :disabled="!canOrder">Очистить</GuiButton>
-                <GuiButton @click="order" :color="'green'" :disabled="!canOrder">Оформить</GuiButton>
+                <GuiButton @clicked="order" :color="'green'" :disabled="!canOrder || !data.data['openshift']">{{data.data['openshift'] ? 'Оформить' : 'Не открыта смена'}}</GuiButton>
             </GuiContainer>
         </template>
         <template v-else>
@@ -124,9 +124,11 @@ import FormPhone from "@/Components/Form/FormPhone";
 import FormNumber from "@/Components/Form/FormNumber";
 import BackwardTicketSelect from "@/Components/BackwardTicketSelect";
 import GuiActionsMenu from "../../Components/GUI/GuiActionsMenu.vue";
+import GuiText from "@/Components/GUI/GuiText.vue";
 
 export default {
     components: {
+        GuiText,
         GuiActionsMenu,
         BackwardTicketSelect,
         FormNumber,
@@ -229,7 +231,7 @@ export default {
         },
 
         back() {
-            this.$router.push({name: 'tickets-select'});
+            this.$router.push({name: 'home'});
         },
 
         quantityChange(id, value) {
