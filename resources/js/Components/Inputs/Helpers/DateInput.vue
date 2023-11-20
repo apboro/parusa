@@ -13,6 +13,9 @@
                @blur="blur"
                ref="input"
         />
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" class="svg-calendar">
+            <path d="M7.9 3V4.4H12.1V3H13.5V4.4H16.3C16.6866 4.4 17 4.7134 17 5.1V16.3C17 16.6866 16.6866 17 16.3 17H3.7C3.3134 17 3 16.6866 3 16.3V5.1C3 4.7134 3.3134 4.4 3.7 4.4H6.5V3H7.9ZM15.6 10H4.4V15.6H15.6V10ZM9.3 11.4V14.2H5.8V11.4H9.3ZM6.5 5.8H4.4V8.6H15.6V5.8H13.5V7.2H12.1V5.8H7.9V7.2H6.5V5.8Z" fill="#1E96F4"/>
+        </svg>
         <span class="input-date__clear" v-if="isClearable"
               :class="{'input-date__clear-enabled': clearable && !disabled}"
               @click="clear"
@@ -317,5 +320,9 @@ $input_background_color: #ffffff !default;
             visibility: visible;
         }
     }
+}
+
+.svg-calendar {
+    display: none;
 }
 </style>

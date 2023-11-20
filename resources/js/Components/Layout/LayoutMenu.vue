@@ -5,6 +5,12 @@
         </div>
 
         <nav class="application__menu">
+            <div class="application__header-title" style="display: none;">
+                <a href="/" class="router-link-active router-link-exact-active application__header-title-link" aria-current="page">
+                    <img src="/storage/images/excurr.svg" class="application__header-title-link-icon">
+                </a>
+            </div>
+
             <layout-menu-item v-for="(item, key) in menu"
                               :key="key"
                               :item="item"

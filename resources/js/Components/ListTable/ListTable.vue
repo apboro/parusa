@@ -1,11 +1,13 @@
 <template>
-    <table class="list-table">
-        <slot name="header" v-if="$slots.header"/>
-        <ListTableHeader v-else :titles="titles" :has-action="hasAction"/>
-        <tbody class="list-table__body">
-            <slot/>
-        </tbody>
-    </table>
+    <div class="list-table__wrapper">
+        <table class="list-table">
+            <slot name="header" v-if="$slots.header"/>
+            <ListTableHeader v-else :titles="titles" :has-action="hasAction"/>
+            <tbody class="list-table__body">
+                <slot/>
+            </tbody>
+        </table>
+    </div>
 </template>
 
 <script>
