@@ -424,11 +424,4 @@ $widget_base: 90px;
         display: none !important;
     }
 }
-
-@media (max-width: 385px) {
-    .list-table__header-cell {
-        padding-left: 25px !important;
-        padding-right: 25px !important;
-    }
-}
 </style>

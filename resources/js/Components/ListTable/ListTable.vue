@@ -27,4 +27,32 @@ export default {
     border-collapse: collapse;
     min-width: 100%;
 }
+
+@media (max-width: 767px) {
+    .list-table__header-row th:nth-child(1) {
+        position: sticky;
+        left: 0;
+        background: #e3ecf7;
+        width: 36%;
+    }
+
+    .list-table__header-row th:nth-child(2) {
+        position: sticky;
+        left: 36%;
+        background: #e3ecf7;
+    }
+
+    .list-table__row > td:nth-child(1) {
+        position: sticky;
+        left: 0;
+        background: #fff;
+        width: 36%;
+    }
+
+    .list-table__row > td:nth-child(2) {
+        position: sticky;
+        left: 36%;
+        background: #fff;
+    }
+}
 </style>
