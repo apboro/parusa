@@ -20,12 +20,22 @@
             </thead>
             <tbody>
             <tr v-for="key in iterator">
-                <td class="pr-10 pt-15">{{ form.values['tickets.' + key + '.grade_name'] }}</td>
-                <td class="pr-10 pt-15">{{ form.values['tickets.' + key + '.base_price'] }} руб.</td>
+                <td class="pr-10 pt-15">
+                    <span class="tickets-select-table__mobile-title">Тип</span>
+                    {{ form.values['tickets.' + key + '.grade_name'] }}
+                </td>
+                <td class="pr-10 pt-15">
+                    <span class="tickets-select-table__mobile-title">Цена</span>
+                    {{ form.values['tickets.' + key + '.base_price'] }} руб.
+                </td>
                 <td>
+                    <span class="tickets-select-table__mobile-title">Количество</span>
                     <FormNumber :form="form" :name="'tickets.' + key + '.quantity'" :quantity="true" :hide-title="true" :min="0"/>
                 </td>
-                <td class="pl-10 pt-15">{{ multiply(form.values['tickets.' + key + '.base_price'], form.values['tickets.' + key + '.quantity']) }} руб.</td>
+                <td class="pl-10 pt-15">
+                    <span class="tickets-select-table__mobile-title">Стоимость</span>
+                    {{ multiply(form.values['tickets.' + key + '.base_price'], form.values['tickets.' + key + '.quantity']) }} руб.
+                </td>
             </tr>
             <tr>
                 <td colspan="2" class="tickets-select-table__notes">
@@ -181,6 +191,39 @@ $base_black_color: #1e1e1e !default;
 
     & .input-field__errors-error {
         font-size: 12px;
+    }
+
+    &__mobile-title {
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+    .tickets-select-table {
+        thead {
+            display: none;
+        }
+
+        > tbody > tr {
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            row-gap: 20px;
+        }
+
+        > tbody > tr:not(:first-of-type) {
+            border-top: 1px solid #333;
+        }
+
+        &__mobile-title {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        &__total {
+            text-align: left;
+        }
     }
 }
 </style>
