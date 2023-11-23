@@ -50,6 +50,7 @@ class Ship extends Model implements Statusable, Typeable, AsDictionary
         'enabled' => 'bool',
         'order' => 'int',
         'capacity' => 'int',
+        'ship_has_seats_scheme' => 'bool',
     ];
 
     /** @var bool Type can be null */

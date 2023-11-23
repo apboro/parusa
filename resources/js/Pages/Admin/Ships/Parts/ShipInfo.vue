@@ -9,6 +9,7 @@
                 <span class="link" v-if="editable" @click="statusChange"><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
                 <span v-else><GuiActivityIndicator :active="data.active"/>{{ data['status'] }}</span>
             </GuiValue>
+            <GuiValue :title="'Схема рассадки'">{{data['ship_has_seats_scheme'] ? 'Есть' : 'Нет' }}</GuiValue>
         </GuiContainer>
 
         <GuiContainer mt-20 t-15 v-if="editable">

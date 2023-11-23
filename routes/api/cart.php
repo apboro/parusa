@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\Cart\PartnerCartController;
 use App\Http\Controllers\API\Cart\TerminalCartController;
+use App\Http\Controllers\SchemeCartController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/cart/partner', [PartnerCartController::class, 'get'])->middleware(['allow:partner']);
@@ -15,3 +16,5 @@ Route::post('/cart/terminal/add', [TerminalCartController::class, 'add'])->middl
 Route::post('/cart/terminal/quantity', [TerminalCartController::class, 'quantity'])->middleware(['allow:staff_terminal']);
 Route::post('/cart/terminal/remove', [TerminalCartController::class, 'remove'])->middleware(['allow:staff_terminal']);
 Route::post('/cart/terminal/clear', [TerminalCartController::class, 'clear'])->middleware(['allow:staff_terminal']);
+
+Route::post('/cart/scheme/add', [SchemeCartController::class, 'add'])->middleware(['allow:staff_terminal,partner']);

@@ -9,6 +9,7 @@
             <FormString :form="form" :name="'capacity'"/>
             <FormString :form="form" :name="'owner'"/>
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'ships_statuses'"/>
+            <FormCheckBox :form="form" :name="'ship_has_seats_scheme'" :hide-title="true"/>
         </GuiContainer>
 
         <GuiContainer mt-30>
@@ -34,9 +35,11 @@ import FormDropdown from "@/Components/Form/FormDropdown";
 import FormPhone from "@/Components/Form/FormPhone";
 import FormText from "@/Components/Form/FormText";
 import GuiButton from "@/Components/GUI/GuiButton";
+import FormCheckBox from "@/Components/Form/FormCheckBox.vue";
 
 export default {
     components: {
+        FormCheckBox,
         GuiButton,
         FormText,
         FormPhone,

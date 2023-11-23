@@ -26,6 +26,21 @@ class ShipViewController extends ApiController
         }
         $seats = Seat::query()->with('category')->where('ship_id', $request->id)->get();
 
+        if ($seats->count() < $ship->capacity)
+            for ($i = 1; $i <= $ship->capacity; $i++)
+                Seat::query()->firstOrCreate([
+                    'ship_id' => $ship->id,
+                    'seat_number' => $i,
+            ]);
+
+
+        $categories = $ship->seats()->whereNotNull('seat_category_id')->groupBy('seat_category_id')->get();
+            if ($categories->isNotEmpty()) {
+                $categories->transform(fn($e) => ['name' => $e->category?->name, 'id' => $e->category?->id]);
+                } else {
+                $categories = [];
+            }
+
         // fill data
         $values = [
             'active' => $ship->hasStatus(ShipStatus::active),
@@ -36,10 +51,10 @@ class ShipViewController extends ApiController
             'owner' => $ship->owner,
             'status' => $ship->status->name,
             'status_id' => $ship->status_id,
-            'categories' => $ship->seats()->groupBy('seat_category_id')->get()
-                ->transform(fn ($e) =>['name' => $e->category->name, 'id' => $e->category->id]),
-            'seats' => $seats->transform(fn($seat) => ['seat_number' => $seat->seat_number, 'category' => $seat->category]),
+            'categories' => $categories,
+            'seats' => $seats->transform(fn($seat) => ['seat_number' => $seat->seat_number, 'category' => $seat->category, 'status' => null]),
             'seat_tickets_grades' => $ship->seat_categories_ticket_grades()->with('grade')->get(),
+            'ship_has_seats_scheme' => $ship->ship_has_seats_scheme,
         ];
 
         // send response

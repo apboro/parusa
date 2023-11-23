@@ -10,10 +10,12 @@
             </GuiActionsMenu>
         </template>
 
-        <LayoutRoutedTabs :tabs="{info: 'Информация', seats_scheme: 'Схема рассадки'}" @change="tab = $event"/>
+
+        <LayoutRoutedTabs :tabs="tabs" @change="tab = $event"/>
 
         <ShipInfo v-if="tab === 'info'" :data="data.data" :ship-id="shipId" :editable="accepted" @update="update"/>
-        <SeatPlacement v-if="tab === 'seats_scheme'" :data="data.data" :ship-id="shipId" :editable="accepted" @update="update"/>
+        <SeatPlacement v-if="tab === 'seats_scheme'" :data="data.data" :ship-id="shipId" :editable="accepted"
+                       @update="update"/>
 
     </LayoutPage>
 </template>
@@ -57,6 +59,12 @@ export default {
         },
         accepted() {
             return this.hasRole(['admin']);
+        },
+        tabs() {
+            if (this.data.data.ship_has_seats_scheme)
+                return {info: 'Информация', seats_scheme: 'Схема рассадки'};
+            else
+                return {info: 'Информация'};
         }
     },
 

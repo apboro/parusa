@@ -1,11 +1,10 @@
 <template>
     <GuiContainer w-50>
-        <MarcelScheme :seats="data.seats"
-                      :shipId="shipId"
-                      :editing="editing"
-                      :categories="data.categories"
-                      :grades="data.seat_tickets_grades"
-                      @update="handleUpdate"/>
+        <DynamicSchemeContainer
+            :data="data"
+            :shipId="shipId"
+            :editing="editing"
+            @selectSeat="handleSelectSeat"/>
         <GuiContainer mt-20 t-15 v-if="editable">
             <GuiButton v-if="!editing" @click="edit">Редактировать</GuiButton>
             <div v-else>
@@ -31,11 +30,11 @@
 <script>
 import GuiContainer from "@/Components/GUI/GuiContainer.vue";
 import GuiButton from "@/Components/GUI/GuiButton.vue";
-import MarcelScheme from "@/Pages/Admin/Ships/SeatsSchemes/MarcelScheme.vue";
 import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown.vue";
+import DynamicSchemeContainer from "@/Pages/Admin/Ships/SeatsSchemes/DynamicSchemeContainer.vue";
 
 export default {
-    components: {DictionaryDropDown, MarcelScheme, GuiButton, GuiContainer},
+    components: {DynamicSchemeContainer, DictionaryDropDown, GuiButton, GuiContainer},
     props: {
         shipId: {type: Number, required: true},
         data: {type: Object, required: true},
@@ -51,7 +50,7 @@ export default {
         seatGrades: []
     }),
     methods: {
-        handleUpdate(data) {
+        handleSelectSeat(data) {
             this.selectedSeats = data.selectedSeats;
         },
         edit() {

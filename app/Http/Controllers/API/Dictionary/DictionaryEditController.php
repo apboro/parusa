@@ -132,6 +132,9 @@ class DictionaryEditController extends ApiEditController
 
         foreach ($data as $key => $value) {
             $item->setAttribute($key, $value);
+            if ($name === 'ticket_grades') {
+                $item->setAttribute('provider_id', 5);
+            }
         }
 
 

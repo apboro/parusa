@@ -36,7 +36,7 @@ class PositionOrderingTicket extends Model
     ];
 
     /** @var string[] Fillable attributes. */
-    protected $fillable = ['trip_id', 'grade_id', 'terminal_id', 'parent_ticket_id', 'quantity', 'position_id'];
+    protected $guarded = [];
 
     /**
      * Trip relation.

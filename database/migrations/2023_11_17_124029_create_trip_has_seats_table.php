@@ -10,15 +10,15 @@ return new class extends Migration {
         Schema::create('trip_has_seats', function (Blueprint $table) {
             $table->unsignedSmallInteger('id', true);
             $table->unsignedInteger('trip_id');
-            $table->unsignedSmallInteger('seat_id');
+            $table->unsignedSmallInteger('seat_number');
             $table->unsignedTinyInteger('status_id');
+            $table->timestamps();
 
-            $table->foreign('seat_id')->on('seats')
-                ->references('id')->cascadeOnDelete();
             $table->foreign('trip_id')->on('trips')
                 ->references('id')->cascadeOnDelete();
             $table->foreign('status_id')->on('dictionary_seat_statuses')
                 ->references('id');
+
         });
     }
 

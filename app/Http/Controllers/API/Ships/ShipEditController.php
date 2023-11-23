@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\Provider;
+use App\Models\Dictionaries\ShipStatus;
 use App\Models\Hit\Hit;
 use App\Models\Ships\Ship;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +25,7 @@ class ShipEditController extends ApiEditController
         'description' => 'Описание',
         'capacity' => 'Вместимость',
         'owner' => 'Владелец',
+        'ship_has_seats_scheme' => 'Схема рассадки',
         'status_id' => 'Статус'
     ];
 
@@ -42,8 +44,9 @@ class ShipEditController extends ApiEditController
             [
                 'name' => $ship->name,
                 'description' => $ship->description,
-                'capacity' => $ship->capacity,
+                'capacity' => (string)$ship->capacity,
                 'owner' => $ship->owner,
+                'ship_has_seats_scheme' => $ship->ship_has_seats_scheme,
                 'status_id' => $ship->status_id
             ],
             $this->rules,
@@ -76,13 +79,21 @@ class ShipEditController extends ApiEditController
         $ship->owner = $data['owner'];
         $ship->status_id = $data['status_id'];
         $ship->description = $data['description'];
+        $ship->ship_has_seats_scheme = $data['ship_has_seats_scheme'];
         $ship->save();
 
         return APIResponse::success(
             $ship->wasRecentlyCreated ? 'Теплоход добавлен' : 'Данные теплохода обновлены',
             [
+                'active' => $ship->hasStatus(ShipStatus::active),
                 'id' => $ship->id,
                 'name' => $ship->name,
+                'description' => $ship->description,
+                'capacity' => $ship->capacity,
+                'owner' => $ship->owner,
+                'status' => $ship->status->name,
+                'status_id' => $ship->status_id,
+                'ship_has_seats_scheme' => $ship->ship_has_seats_scheme,
             ]
         );
     }

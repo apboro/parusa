@@ -3,55 +3,32 @@
            :manual="true"
            :resolving="resolved"
            :buttons="[
-               {result: 'add_and_redirect', caption: 'Добавить и оформить', color: 'green', disabled: count < 1},
-               {result: 'add', caption: 'Добавить', color: 'green', disabled: count < 1},
+               {result: 'add_and_redirect', caption: 'Добавить и оформить', color: 'green', disabled: tickets.length < 1},
+               {result: 'add', caption: 'Добавить', color: 'green', disabled: tickets.length < 1},
                {result: 'cancel', caption: 'Отмена'},
            ]"
            ref="popup"
     >
-        <MarcelScheme :seats="trip['seats']"
+        <DynamicSchemeContainer
+                      :data="trip"
                       :shipId="trip['shipId']"
-                      :categories="trip['categories']"
-                      :grades="trip['seat_tickets_grades']"
-                      :selecting="true" @update="handleUpdate"/>
+                      :selecting="true"
+                      @selectSeat="handleSelectSeat"/>
 
-        <table class="tickets-select-table">
-            <thead>
-            <tr>
-                <th class="p-10 w-140px">Тип</th>
-                <th class="p-10 w-70px">Цена</th>
-                <th class="p-10 w-100px">Количество</th>
-                <th class="p-10 w-100px">Стоимость</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="key in iterator">
-                <td class="pr-10 pt-15">{{ form.values['tickets.' + key + '.grade_name'] }}</td>
-                <td class="pr-10 pt-15">{{ form.values['tickets.' + key + '.base_price'] }} руб.</td>
-                <td>
-                    <FormNumber :form="form" :name="'tickets.' + key + '.quantity'" :quantity="true" :hide-title="true"
-                                :min="0"/>
-                </td>
-                <td class="pl-10 pt-15">{{
-                        multiply(form.values['tickets.' + key + '.base_price'], form.values['tickets.' + key + '.quantity'])
-                    }} руб.
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" class="tickets-select-table__notes">
-                    * К льготной категории относятся – школьники, студенты,
-                    инвалиды, пенсионеры при предъявлении соответствующих
-                    документов
-                </td>
-                <td class="tickets-select-table__total text-right">Итого</td>
-                <td class="tickets-select-table__total">{{ total }} руб.</td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="tickets-box">
+            <span>Выбранные билеты:</span>
+            <div v-for="ticket in tickets" class="tickets-box">
+                <span>Место: {{ ticket.seatNumber }}</span>
+                <span>Билет: {{ ticket.grade.name }}</span>
+                <span>Цена: {{ ticket.price }}</span>
+            </div>
+            <span style="margin-top: 15px;">Итого: {{total}}</span>
+        </div>
 
         <PopUp ref="category">
-            <label v-for="(option, index) in seatGrades" :key="index" >
-                <input style="margin-top: 10px" type="radio" v-model="selectedGrade" :value="option.grade.id" :name="'grade-select'"> {{ option.grade.name }}
+            <label v-for="(option, index) in seatGrades" :key="index">
+                <input style="margin-top: 10px" type="radio" v-model="selectedGrade" :value="option.grade"
+                       :name="'grade-select'"> {{ option.grade.name }} - {{ getGradePrice(option.grade.id) }} руб.
             </label>
         </PopUp>
 
@@ -59,17 +36,16 @@
 </template>
 
 <script>
-import form from "@/Core/Form";
 import FormNumber from "@/Components/Form/FormNumber";
 import PopUp from "@/Components/PopUp";
-import MarcelScheme from "@/Pages/Admin/Ships/SeatsSchemes/MarcelScheme.vue";
 import InputCheckbox from "@/Components/Inputs/InputCheckbox.vue";
+import DynamicSchemeContainer from "@/Pages/Admin/Ships/SeatsSchemes/DynamicSchemeContainer.vue";
 
 
 export default {
     components: {
+        DynamicSchemeContainer,
         InputCheckbox,
-        MarcelScheme,
         PopUp,
         FormNumber,
     },
@@ -77,9 +53,6 @@ export default {
     props: {},
 
     data: () => ({
-        form: form(null, '/api/cart/partner/add'),
-        tripId: null,
-        iterator: [],
         trip: null,
         selectedSeats: [],
         seatGrades: null,
@@ -89,35 +62,25 @@ export default {
 
     computed: {
         total() {
-            let total = 0;
-            this.iterator.map(key => {
-                total += this.multiply(this.form.values['tickets.' + key + '.base_price'], this.form.values['tickets.' + key + '.quantity']);
-            });
-            return this.multiply(total, 1);
+            return this.tickets.reduce((total, ticket) => total + ticket.price, 0);
         },
-        count() {
-            let count = 0;
-            this.iterator.map(key => {
-                count += this.form.values['tickets.' + key + '.quantity'];
-            });
-            return count;
-        }
-    },
-
-    created() {
-        this.form.toaster = this.$toast;
     },
 
     methods: {
-        handleUpdate(data) {
+        handleSelectSeat(data) {
             let categoryId = this.trip['seats'].find(el => el.seat_number === data.seatNumber).category.id;
             this.seatGrades = this.getFilteredGrades(categoryId);
-            this.$refs.category.show().then().finally(
-                this.tickets.push({seatNumber: data.seatNumber, gradeId: this.selectedGrade})
-            );
+            this.$refs.category.show().then(() => this.tickets.push({
+                seatNumber: data.seatNumber,
+                grade: this.selectedGrade,
+                price: this.getGradePrice(this.selectedGrade.id)
+            }))
             this.selectedSeats = data.selectedSeats;
         },
-        getFilteredGrades(categoryId){
+        getGradePrice(gradeId) {
+                return this.trip['rates'].find(e => e.id === gradeId).value;
+        },
+        getFilteredGrades(categoryId) {
             return this.trip['seat_tickets_grades'].filter(el => el.seat_category_id === categoryId)
         },
         multiply(a, b) {
@@ -125,20 +88,7 @@ export default {
         },
 
         handle(trip) {
-            this.form.reset();
-            this.tripId = trip['id'];
             this.trip = trip;
-            this.iterator = [];
-            let index = 0;
-            trip['rates'].map(grade => {
-                this.form.set('tickets.' + index + '.grade_id', grade['id'], null);
-                this.form.set('tickets.' + index + '.grade_name', grade['name'] + (grade['preferential'] ? '  *' : ''), null);
-                this.form.set('tickets.' + index + '.base_price', Number(grade['value']), null);
-                this.form.set('tickets.' + index + '.quantity', 0, 'integer|min:0', 'Количество');
-                this.iterator.push(index);
-                index++;
-            })
-            this.form.load();
             this.$refs.popup.show();
         },
 
@@ -147,11 +97,11 @@ export default {
                 this.$refs.popup.hide();
                 return true;
             }
-            if (!this.form.validate()) {
-                return false;
-            }
             this.$refs.popup.process(true);
-            this.form.save({trip_id: this.tripId})
+            axios.post('/api/cart/scheme/add', {
+                trip_id: this.trip['id'],
+                tickets: this.tickets
+            })
                 .then(() => {
                     this.$store.dispatch('partner/refresh');
                     this.$refs.popup.hide();
@@ -224,4 +174,12 @@ $base_black_color: #1e1e1e !default;
         font-size: 12px;
     }
 }
+
+.tickets-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+
 </style>
