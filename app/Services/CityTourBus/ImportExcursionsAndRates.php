@@ -89,7 +89,7 @@ class ImportExcursionsAndRates
             'owner' => 'CityTour',
             'capacity' => 40,
             'label' => 'CTB',
-            'source' => 'CityTour'
+            'provider_id' => Provider::city_tour
         ]);
 
     }

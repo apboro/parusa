@@ -6,8 +6,10 @@ use App\Exceptions\Tickets\WrongOrderStatusException;
 use App\Exceptions\Tickets\WrongTicketCreatorException;
 use App\Http\APIResponse;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\SeatStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Positions\PositionOrderingTicket;
+use App\Models\Ships\Seats\TripSeat;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 
@@ -23,6 +25,7 @@ class CreateTicketsFromPartner
         foreach ($data['tickets'] as $id => $quantity) {
             if ($quantity['quantity'] > 0) {
                 $ordering = PositionOrderingTicket::query()
+                    ->with(['trip', 'trip.excursion'])
                     ->where(['id' => $id, 'position_id' => $this->current->positionId(), 'terminal_id' => null])
                     ->first();
                 if (!$ordering)
@@ -33,13 +36,19 @@ class CreateTicketsFromPartner
                     OrderStatus::partner_paid => $ordering->trip->excursion->is_single_ticket ? TicketStatus::partner_paid_single : TicketStatus::partner_paid,
                     default => throw new WrongOrderStatusException(),
                 };
+
+                TripSeat::query()
+                    ->where(['trip_id'=> $ordering->trip->id, 'seat_number' => $ordering->seat_number])
+                    ->update(['status_id' => SeatStatus::occupied]);
+
                 for ($i = 1; $i <= $quantity['quantity']; $i++) {
                     /** @var PositionOrderingTicket $ordering */
                     $ticket = new Ticket([
                         'trip_id' => $ordering->trip_id,
                         'grade_id' => $ordering->grade_id,
                         'status_id' => $ticketStatus,
-                        'provider_id' => $ordering->trip->provider_id
+                        'provider_id' => $ordering->trip->provider_id,
+                        'seat_number' => $ordering->seat_number,
                     ]);
 
                     $ticket->base_price = $ordering->getPartnerPrice() ?? $ordering->getPrice();

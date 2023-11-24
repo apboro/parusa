@@ -57,7 +57,7 @@ class Ticket extends Model implements Statusable
     use HasStatus;
 
     /** @var string[] Fillable attributes. */
-    protected $fillable = ['trip_id', 'grade_id', 'status_id', 'base_price', 'neva_travel_ticket', 'provider_id'];
+    protected $guarded = [];
 
     /**
      * User's status.
@@ -238,7 +238,7 @@ class Ticket extends Model implements Statusable
     {
         $promoterCommission = ($this->provider_id === Provider::scarlet_sails || $this->provider_id === null)
             ? $shift->tariff->commission + $shift->commission_delta
-            : Settings::get('promoters_commission_integrated_excursions', null, Settings::int);
+            : Settings::get('promoters_commission_integrated_excursions', 10, Settings::int);
         $promoterAmount = $promoterCommission * $this->base_price / 100;
 
         return [

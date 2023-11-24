@@ -7,34 +7,29 @@ use App\Models\Dictionaries\Inventory;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\Tariff;
 use App\Models\Dictionaries\TicketGrade;
-use App\Models\Ships\Ship;
+use App\Models\Ships\Seats\SeatCategory;
 
 trait EditableDictionaries
 {
     protected array $dictionaries = [
-        'ships' => [
-            'name' => 'Теплоходы',
-            'class' => Ship::class,
-            'item_name' => 'теплоход',
-            'titles' => [
-                'name' => 'Название теплохода',
-                'capacity' => 'Вместимость',
-                'owner' => 'Владелец',
-                'description' => 'Описание',
-            ],
+        'seat_categories' => [
+            'name' => 'Категории мест',
+            'class' => SeatCategory::class,
+            'item_name' => 'категорию места',
             'validation' => [
                 'name' => 'required',
-                'capacity' => 'required|integer|min:0',
-                'owner' => 'required',
+                'table_seats_quantity' => 'integer|nullable'
+            ],
+            'titles' => [
+                'name' => 'Название категории',
+                'table_seat' => 'Столик',
+                'table_seats_quantity' => 'Количество мест за столом'
             ],
             'fields' => [
                 'name' => 'string',
-                'capacity' => 'number',
-                'owner' => 'string',
-                'description' => 'text',
+                'table_seat' => 'bool',
+                'table_seats_quantity' => 'integer'
             ],
-            // 'hide' => ['description'],
-            'auto' => 'description',
         ],
         'ticket_grades' => [
             'name' => 'Типы билетов',

@@ -26,11 +26,11 @@
                         </div>
                     </td>
                     <td>{{ ticket['pier'] }}</td>
-                    <td>{{ ticket['grade'] }}</td>
+                    <td>{{ ticket['grade'] }}<br><span v-if="ticket['seat_number']">Место: {{ticket['seat_number']}}</span></td>
                     <template v-if="ticket['available']">
                         <td class="bold no-wrap">{{ ticket['backward_price'] ?? ticket['base_price'] }} руб.</td>
                         <td>
-                            <FormNumber :disabled="(ticket['backward_price'] !== null && ticket['ticket_provider_id'] !== null)" :form="form"
+                            <FormNumber :disabled="(ticket['backward_price'] !== null && ticket['ticket_provider_id'] !== null || ticket['seat_number'])" :form="form"
                                         :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true"
                                         :min="0" :hide-title="true" :model-value="ticket['quantity']"
                                         @change="(value) => quantityChange(ticket['id'], value)"

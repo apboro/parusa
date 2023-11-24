@@ -2,7 +2,6 @@ import TripsSelectPage from '@/Pages/Partner/TripsSelectPage';
 import OrdersRegistryPage from "@/Pages/Partner/Registries/OrdersRegistryPage";
 import ReservesRegistryPage from "@/Pages/Partner/Registries/ReservesRegistryPage";
 import TicketsRegistryPage from "@/Pages/Partner/Registries/TicketsRegistryPage";
-import OrderPage from "@/Pages/Partner/Registries/OrderPage";
 import TicketPage from "@/Pages/Partner/Registries/TicketPage";
 import PartnerPage from '@/Pages/Partner/PartnerPage';
 import AccountPage from "@/Pages/Partner/AccountPage";
@@ -12,6 +11,7 @@ import NotFound from '@/Pages/NotFound';
 import TripViewPage from "@/Pages/Admin/Trips/TripViewPage.vue";
 import PromoterAccountPage from "@/Pages/Promoter/PromoterAccountPage.vue";
 import PromotersInventoryPage from "@/Pages/Promoter/PromotersInventoryPage.vue";
+import OrderPage from "@/Pages/Promoter/OrderPage.vue";
 
 
 export default [

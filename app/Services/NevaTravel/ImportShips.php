@@ -3,6 +3,7 @@
 namespace App\Services\NevaTravel;
 
 
+use App\Models\Dictionaries\Provider;
 use App\Models\Ships\Ship;
 
 class ImportShips
@@ -21,7 +22,7 @@ class ImportShips
                     'owner' => 'Нева Трэвэл',
                     'capacity' => $nevaShip['capacity'],
                     'label' => $nevaShip['label'],
-                    'source' => 'NevaTravelApi,'
+                    'provider_id' => Provider::neva_travel
                 ]);
         }
     }

@@ -147,7 +147,7 @@ export default {
             this.$store.getters['dictionary/dictionary']('ticket_grades').filter(grade => grade.provider_id === this.providerId).map(item => {
                 let grade = null;
                 if (rate === null && item['enabled'] || rate !== null && rate['rates'].some(rate => (rate['grade_id'] === item['id']) && (grade = rate))) {
-                    let isDefault = index > 2;
+                    let isDefault = true;//index > 2;
 
                     this.form.set('rates.' + index + '.grade_id', item['id'], null, '', true);
                     this.form.set('rates.' + index + '.grade_name', item['name'], null, '', true);

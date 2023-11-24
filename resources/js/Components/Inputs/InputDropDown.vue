@@ -297,6 +297,7 @@ $input_remove_color: #FF1E00 !default;
 
     &__value {
         background-color: transparent;
+        min-height: 33px;
         color: inherit;
         cursor: inherit;
         display: flex;

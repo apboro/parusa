@@ -28,7 +28,7 @@ class ImportTrips
         $ships = Ship::all();
         $excursions = Excursion::query()
             ->with('additionalData')
-            ->where('provider_id', 10)
+            ->where('provider_id', Provider::neva_travel)
             ->where('status_id', 1)->get();
 
         $excursionsArray = $excursions->pluck('additionalData.provider_excursion_id')->toArray();

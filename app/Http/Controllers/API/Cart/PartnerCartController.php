@@ -13,6 +13,7 @@ use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Sails\Trip;
+use App\Models\Ships\Seats\TripSeat;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Exception;
@@ -76,6 +77,7 @@ class PartnerCartController extends ApiEditController
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
                 'pier' => $trip->startPier->name,
                 'grade' => $ticket->grade->name,
+                'seat_number' => $ticket->seat_number,
                 'base_price' => $price = $ticket->getPartnerPrice() ?? $ticket->getPrice(),
                 'min_price' => $ticket->getMinPrice(),
                 'max_price' => $ticket->getMaxPrice(),
@@ -118,16 +120,16 @@ class PartnerCartController extends ApiEditController
             return APIResponse::notFound('Рейс не найден');
         }
 
-        if ($trip->provider_id !== null && $current->position()->ordering()->exists()){
+        if ($trip->provider_id !== null && $current->position()->ordering()->exists()) {
             return APIResponse::error('Заказы данного поставщика должны оформляться отдельно, очистите корзину.');
         }
 
         $existingTickets = $current->position()->ordering()->get();
-        $hasExternalTickets = $existingTickets->filter(function ($ticket){
-           return $ticket->trip->provider_id !== null;
+        $hasExternalTickets = $existingTickets->filter(function ($ticket) {
+            return $ticket->trip->provider_id !== null;
         })->isNotEmpty();
 
-        if ($hasExternalTickets){
+        if ($hasExternalTickets) {
             return APIResponse::error('В корзине содержатся билеты другого поставщика, очистите корзину.');
         }
 
@@ -135,7 +137,7 @@ class PartnerCartController extends ApiEditController
 
         /** @var Trip $trip */
 
-        if (($trip->start_at < $now && $trip->excursion->is_single_ticket=0) || ($rate = $trip->getRate()) === null) {
+        if (($trip->start_at < $now && $trip->excursion->is_single_ticket = 0) || ($rate = $trip->getRate()) === null) {
             return APIResponse::error('Продажа билетов на этот рейс не осуществляется');
         }
 
@@ -225,9 +227,9 @@ class PartnerCartController extends ApiEditController
 
         $quantity = $request->input('value');
 
-        if ($ticket->parent_ticket_id){
+        if ($ticket->parent_ticket_id) {
             $parentTicket = $current->position()->ordering()->where('id', $ticket->parent_ticket_id)->first();
-            if ($quantity > $parentTicket->quantity){
+            if ($quantity > $parentTicket->quantity) {
                 return APIResponse::error('Обратных билетов не может быть больше, чем прямых.');
             }
         }
@@ -235,7 +237,7 @@ class PartnerCartController extends ApiEditController
         if ($ticket === null) {
             return APIResponse::error('Билет не найден.');
         }
-        /* @var PositionOrderingTicket $backwardTicket **/
+        /* @var PositionOrderingTicket $backwardTicket * */
         $backwardTicket = $ticket->backwardTicket;
         if ($ticket->trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $quantity - $ticket->quantity > $ticket->trip->tickets_total) {
             throw new RuntimeException('Недостаточно свободных мест на теплоходе.');
@@ -273,7 +275,12 @@ class PartnerCartController extends ApiEditController
 
         $id = $request->input('ticket_id');
 
-        PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id, 'terminal_id' => $current->terminalId()])->delete();
+
+        $cartTicketQuery = PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id, 'terminal_id' => $current->terminalId()]);
+        $ticket = $cartTicketQuery->first();
+        TripSeat::query()->where('trip_id', $ticket->trip_id)->where('seat_number', $ticket->seat_number)->delete();
+
+        $cartTicketQuery->delete();
 
         return APIResponse::success('Билет удалён из заказа.');
     }
@@ -291,10 +298,15 @@ class PartnerCartController extends ApiEditController
         $current = Currents::get($request);
 
         if ((null === ($position = $current->position())) || ($current->partner() === null)) {
-            return APIResponse::error('ВЫ не можете оформлять заказы.');
+            return APIResponse::error('Вы не можете оформлять заказы.');
         }
 
-        PositionOrderingTicket::query()->where(['position_id' => $position->id, 'terminal_id' => $current->terminalId()])->delete();
+
+        $cartTickets = PositionOrderingTicket::query()->where(['position_id' => $position->id, 'terminal_id' => $current->terminalId()]);
+        foreach ($cartTickets->get() as $ticket) {
+            TripSeat::query()->where('trip_id', $ticket->trip_id)->delete();
+        }
+        $cartTickets->delete();
 
         return APIResponse::success('Заказ очищен.');
     }

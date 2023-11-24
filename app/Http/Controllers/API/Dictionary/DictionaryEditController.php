@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\Provider;
 use App\Models\Hit\Hit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -46,7 +47,13 @@ class DictionaryEditController extends ApiEditController
         /** @var AbstractDictionary $class */
         $class = $this->dictionaries[$name]['class'];
 
-        $all = $class::query()->orderBy('order')->orderBy('name')->get();
+        $query = $class::query()->orderBy('order')->orderBy('name');
+
+        if ($name === 'ticket_grades') {
+            $query->where('provider_id', Provider::scarlet_sails);
+        }
+
+        $all = $query->get();
 
         return APIResponse::response([
             'items' => $all,
@@ -125,6 +132,9 @@ class DictionaryEditController extends ApiEditController
 
         foreach ($data as $key => $value) {
             $item->setAttribute($key, $value);
+            if ($name === 'ticket_grades') {
+                $item->setAttribute('provider_id', 5);
+            }
         }
 
 

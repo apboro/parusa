@@ -38,6 +38,9 @@ import PromoterEditPage from "@/Pages/Admin/Promoters/PromoterEditPage.vue";
 import PromoterViewPage from "@/Pages/Admin/Promoters/PromoterViewPage.vue";
 import PromotersRegistryPage from "@/Pages/Admin/Registries/PromotersRegistryPage.vue";
 import HomePage from "@/Pages/HomePage.vue";
+import ShipListPage from "@/Pages/Admin/Ships/ShipListPage.vue";
+import ShipViewPage from "@/Pages/Admin/Ships/ShipViewPage.vue";
+import ShipEditPage from "@/Pages/Admin/Ships/ShipEditPage.vue";
 
 export default [
     {path: '/', name: 'home', component: HomePage, meta: {title: 'Главная', roles: ['admin', 'office_manager', 'piers_manager', 'accountant', 'promoter_manager']}},
@@ -53,6 +56,10 @@ export default [
     {path: '/statistics/sales', name: 'statistics-sales', component: StatisticsSalesPage, meta: {title: 'Статистика продаж', roles: ['admin']}},
     {path: '/statistics/sales-today', name: 'statistics-sales-today', component: StatisticsSalesTodayPage, meta: {title: 'Статистика продаж за сегодня', roles: ['admin']}},
     {path: '/statistics/qr_codes', name: 'statistics-qr-codes', component: StatisticsQrCodesPage, meta: {title: 'Статистика QR-коды', roles: ['admin']}},
+
+    {path: '/ships', name: 'ship-list', component: ShipListPage, meta: {title: 'Теплоходы', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/ship/:id', name: 'ship-view', component: ShipViewPage, meta: {title: 'Просмотр теплохода', roles: ['admin', 'office_manager', 'accountant']}},
+    {path: '/ship/:id/edit', name: 'ship-edit', component: ShipEditPage, meta: {title: 'Редактирование теплохода', roles: ['admin']}},
 
     {path: '/staff', name: 'staff-list', component: StaffListPage, meta: {title: 'Сотрудники', roles: ['admin', 'office_manager', 'accountant']}},
     {path: '/staff/:id', name: 'staff-view', component: StaffViewPage, meta: {title: 'Просмотр сотрудника', roles: ['admin', 'office_manager', 'accountant']}},
