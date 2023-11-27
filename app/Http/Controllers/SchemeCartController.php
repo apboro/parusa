@@ -10,7 +10,6 @@ use App\Models\Hit\Hit;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Sails\Trip;
 use App\Models\Ships\Seats\TripSeat;
-use App\Models\TripSeats;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Exception;
@@ -25,7 +24,7 @@ class SchemeCartController extends Controller
         Hit::register(HitSource::partner);
         $current = Currents::get($request);
 
-        if ($current->position() === null || !$current->isRepresentative()) {
+        if ($current->position() === null && !$current->isRepresentative() && $current->partner() === null) {
             return APIResponse::error('Вы не можете оформлять заказы.');
         }
 
@@ -94,5 +93,15 @@ class SchemeCartController extends Controller
         }
 
         return APIResponse::success('Билеты добавлены в заказ');
+    }
+
+    public function reserveSeat(Request $request)
+    {
+        TripSeat::query()
+            ->updateOrCreate(['trip_id' => $request->tripId,
+                'seat_number' => $request->seatNumber],
+                ['status_id' => SeatStatus::reserve]);
+
+        return APIResponse::success('updated');
     }
 }

@@ -99,6 +99,7 @@ class TerminalCartController extends ApiEditController
                 'max_price' => $ticket->getMaxPrice(),
                 'quantity' => $ticket->quantity,
                 'available' => ($price !== null) && $trip->hasStatus(TripSaleStatus::selling, 'sale_status_id') && ($trip->start_at > Carbon::now() || $trip->excursion->is_single_ticket = 1),
+                'seat_number' => $ticket->seat_number,
             ];
         });
 
@@ -112,8 +113,8 @@ class TerminalCartController extends ApiEditController
             'has_order' => $order !== null,
             'order_id' => $order->id ?? null,
             'order_external_id' => $order->external_id ?? null,
-            'order_status' => $order ? $order->status->name : null,
-            'order_total' => $order ? $order->total() : null,
+            'order_status' => $order?->status->name,
+            'order_total' => $order?->total(),
             'order_tickets' => $orderTickets,
             'is_reserve' => $order && ($order->hasStatus(OrderStatus::terminal_creating_from_reserve) || $order->hasStatus(OrderStatus::terminal_wait_for_pay_from_reserve)),
             'actions' => [

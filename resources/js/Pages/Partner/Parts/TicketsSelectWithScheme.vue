@@ -70,13 +70,39 @@ export default {
         handleSelectSeat(data) {
             let categoryId = this.trip['seats'].find(el => el.seat_number === data.seatNumber).category.id;
             this.seatGrades = this.getFilteredGrades(categoryId);
-            this.$refs.category.show().then(() => this.tickets.push({
+            this.$refs.category.show().then(() => {
+                this.tickets.push({
                 seatNumber: data.seatNumber,
                 grade: this.selectedGrade,
                 price: this.getGradePrice(this.selectedGrade.id)
-            }))
+            })
+                // this.reserveSeat(data.seatNumber)
+            })
             this.selectedSeats = data.selectedSeats;
         },
+
+        // reserveSeat(seatNumber){
+        //     axios.post('/api/cart/scheme/seats_reserve', {
+        //         tripId: this.trip.id,
+        //         seatNumber: seatNumber
+        //     }).then(response => {
+        //         // Assuming the response contains the updated status information
+        //         const updatedStatusId = 5;
+        //
+        //         // Find the seat in the array based on seatNumber and update its status
+        //         const seatIndex = this.trip.seats.findIndex(seat => seat.seat_number === seatNumber);
+        //
+        //         if (seatIndex !== -1) {
+        //             this.$set(this.trip.seats, seatIndex, {
+        //                 ...this.trip.seats[seatIndex],
+        //                 status: { id: updatedStatusId }
+        //             });
+        //         }
+        //     }).catch(error => {
+        //         // Handle errors here
+        //         console.error('Error reserving seat:', error);
+        //     });
+        // },
         getGradePrice(gradeId) {
                 return this.trip['rates'].find(e => e.id === gradeId).value;
         },

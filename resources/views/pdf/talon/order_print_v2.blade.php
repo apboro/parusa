@@ -69,7 +69,8 @@ use App\Models\Tickets\Ticket;
                     <div style="position:absolute; left: 95pt; top: 80pt; font-size: 7pt;">Тип билета</div>
                     <div style="position:absolute; left: 90pt; top: 93pt; width: 133pt; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->base_price }} рублей</div>
                     <div style="position:absolute; left: 95pt; top: 105pt; font-size: 7pt;">Стоимость</div>
-
+                    <div style="position:absolute; left: 180pt; top: 91pt; width: 133pt; font-size: 10pt;">{{ $ticket->seat_number }}</div>
+                    <div style="position:absolute; left: 180pt; top: 105pt; font-size: 7pt;">Место</div>
                     <div style="position:absolute; left: 90pt; top: 115pt; width: 133pt;">
                         <div style="font-size: 8pt;text-align: right">N заказа {{ $ticket->order->additionalData?->provider_order_id ?? $ticket->order_id }}, N билета {{ $ticket->id }}</div>
                     </div>

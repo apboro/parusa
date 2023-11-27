@@ -23,7 +23,7 @@ export default {
     },
     emits: ['selectSeat'],
     props: {
-        data: {seats: Object, categories: Object, seat_tickets_grades: Object, capacity: Number},
+        data: Object,
         shipId: Number,
         editing: Boolean,
         selecting: Boolean,

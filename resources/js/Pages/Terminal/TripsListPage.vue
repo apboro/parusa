@@ -145,6 +145,7 @@
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
         <TicketsSelect ref="select_popup"/>
+        <TicketsSelectWithScheme ref="select_scheme_popup"/>
         <ExcursionInfo ref="excursion_info"/>
     </LayoutPage>
 </template>
@@ -169,9 +170,11 @@
     import GuiContainer from "@/Components/GUI/GuiContainer";
     import InputDropDown from "@/Components/Inputs/InputDropDown.vue";
     import ExcursionInfo from "@/Pages/Partner/Parts/ExcursionInfo.vue";
+    import TicketsSelectWithScheme from "@/Pages/Partner/Parts/TicketsSelectWithScheme.vue";
 
     export default {
         components: {
+            TicketsSelectWithScheme,
             ExcursionInfo,
             InputDropDown,
             GuiContainer,
@@ -219,7 +222,11 @@
             },
 
             addToOrder(trip) {
-                this.$refs.select_popup.handle(trip);
+                if (trip['seats'].length > 0) {
+                    this.$refs.select_scheme_popup.handle(trip);
+                } else {
+                    this.$refs.select_popup.handle(trip);
+                }
             },
         }
     }

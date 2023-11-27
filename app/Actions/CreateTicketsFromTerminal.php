@@ -37,7 +37,8 @@ class CreateTicketsFromTerminal
                         'grade_id' => $ordering->grade_id,
                         'status_id' => $ticketStatus,
                         'base_price' => $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : $ticketInfo['price'],
-                        'provider_id' => $ordering->trip->provider_id
+                        'provider_id' => $ordering->trip->provider_id,
+                        'seat_number' => $ordering->seat_number,
                     ]);
 
                     $ticket->cart_ticket_id = $ordering->id;

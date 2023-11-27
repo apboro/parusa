@@ -18,3 +18,4 @@ Route::post('/cart/terminal/remove', [TerminalCartController::class, 'remove'])-
 Route::post('/cart/terminal/clear', [TerminalCartController::class, 'clear'])->middleware(['allow:staff_terminal']);
 
 Route::post('/cart/scheme/add', [SchemeCartController::class, 'add'])->middleware(['allow:staff_terminal,partner']);
+Route::post('/cart/scheme/seats_reserve', [SchemeCartController::class, 'reserveSeat'])->middleware(['allow:staff_terminal,partner']);

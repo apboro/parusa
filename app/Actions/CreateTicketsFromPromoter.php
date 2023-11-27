@@ -31,7 +31,8 @@ class CreateTicketsFromPromoter
                         'trip_id' => $ordering->trip_id,
                         'grade_id' => $ordering->grade_id,
                         'status_id' => TicketStatus::promoter_wait_for_pay,
-                        'provider_id' => $ordering->trip->provider_id
+                        'provider_id' => $ordering->trip->provider_id,
+                        'seat_number' => $ordering->seat_number,
                     ]);
 
                     $ticket->base_price = $ordering->getPartnerPrice() ?? $ordering->getPrice();
