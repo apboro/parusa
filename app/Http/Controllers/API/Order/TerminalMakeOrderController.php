@@ -100,7 +100,7 @@ class TerminalMakeOrderController extends ApiEditController
             $rules["tickets.$i.quantity"] = 'nullable|integer|min:0|bail';
             $rules["tickets.$i.price"] = 'nullable|numeric|bail';
             $titles["tickets.$i.quantity"] = 'Количество';
-            $titles["tickets.$i.price"] = 'Количество';
+            $titles["tickets.$i.price"] = 'Цена';
         }
 
         if ($errors = $this->validate($data, $rules, $titles)) {

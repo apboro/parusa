@@ -17,25 +17,25 @@ class CreateTicketsFromPromoter
     public function execute(array $data): array
     {
         $totalAmount = 0;
-        foreach ($data['tickets'] as $id => $quantity) {
-            if ($quantity['quantity'] > 0) {
+        foreach ($data['tickets'] as $id => $ticketInfo) {
+            if ($ticketInfo['quantity'] > 0) {
                 $ordering = PositionOrderingTicket::query()
                     ->where(['id' => $id, 'position_id' => $this->current->positionId(), 'terminal_id' => null])
                     ->first();
                 if (!$ordering)
                     throw new WrongTicketCreatorException();
 
-                for ($i = 1; $i <= $quantity['quantity']; $i++) {
+                for ($i = 1; $i <= $ticketInfo['quantity']; $i++) {
                     /** @var PositionOrderingTicket $ordering */
                     $ticket = new Ticket([
                         'trip_id' => $ordering->trip_id,
                         'grade_id' => $ordering->grade_id,
+                        'base_price' => $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : $ticketInfo['price'],
                         'status_id' => TicketStatus::promoter_wait_for_pay,
                         'provider_id' => $ordering->trip->provider_id,
                         'seat_number' => $ordering->seat_number,
                     ]);
 
-                    $ticket->base_price = $ordering->getPartnerPrice() ?? $ordering->getPrice();
                     $ticket->cart_ticket_id = $ordering->id;
                     $ticket->cart_parent_ticket_id = $ordering->parent_ticket_id;
                     $ticket->backward_price = $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : null;

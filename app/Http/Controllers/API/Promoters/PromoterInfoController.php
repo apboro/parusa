@@ -45,7 +45,7 @@ class PromoterInfoController extends ApiController
                 ->leftJoin('ticket_rates', function (JoinClause $join) {
                     $join->on('ticket_rates.rate_id', '=', 'tickets_rates_list.id')
                         ->on('ticket_rates.grade_id', '=', 'position_ordering_tickets.grade_id');
-                })->get(['position_ordering_tickets.id as pot_id', 'parent_ticket_id', 'backward_price_value', 'quantity', 'base_price', 'partner_price']);
+                })->get(['position_ordering_tickets.id as pot_id', 'parent_ticket_id', 'backward_price_value', 'quantity', 'base_price']);
 
             $orderAmount = 0;
             $tickets->map(function ($ticket) use ($tickets, &$orderAmount){
@@ -53,7 +53,7 @@ class PromoterInfoController extends ApiController
                     $parent_ticket = $tickets->where('pot_id',$ticket->parent_ticket_id)->first();
                     $orderAmount += $parent_ticket->backward_price_value * $ticket->quantity;
                 } else {
-                    $orderAmount += $ticket->quantity * $ticket->partner_price ?? $ticket->base_price;
+                    $orderAmount += $ticket->quantity * $ticket->base_price;
                 }
             });
         }

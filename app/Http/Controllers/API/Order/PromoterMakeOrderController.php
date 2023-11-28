@@ -72,7 +72,9 @@ class   PromoterMakeOrderController extends ApiEditController
         $titles = ['email' => 'Email', 'phone' => 'Телефон'];
         for ($i = 0; $i < $count; $i++) {
             $rules["tickets.$i.quantity"] = 'nullable|integer|min:0|bail';
+            $rules["tickets.$i.price"] = 'nullable|numeric|bail';
             $titles["tickets.$i.quantity"] = 'Количество';
+            $titles["tickets.$i.price"] = 'Цена';
         }
 
         if ($errors = $this->validate($data, $rules, $titles)) {

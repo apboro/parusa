@@ -122,6 +122,7 @@ $widget_base: 90px;
 
         &:hover &-title{
             color: $base_primary_hover_color;
+            pointer-events: none;
         }
 
         &-value {
@@ -129,6 +130,7 @@ $widget_base: 90px;
             color: $base_black_color;
             height: 30px;
             line-height: 30px;
+            pointer-events: none;
         }
 
         &-icon {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Trips\PromoterTripsSelectListController;
 use App\Http\Controllers\API\Trips\TripChainInfoController;
 use App\Http\Controllers\API\Trips\TripDeleteController;
 use App\Http\Controllers\API\Trips\TripEditController;
@@ -21,3 +22,4 @@ Route::post('/trips/view', [TripViewController::class, 'view'])->middleware(['al
 Route::post('/trips/properties', [TripPropertiesController::class, 'properties'])->middleware(['allow:staff_admin,staff_office_manager']);
 
 Route::post('/trips/select', [TripsSelectListController::class, 'list'])->middleware(['allow:staff_terminal,partner']);
+Route::post('/trips/promoter/select', [PromoterTripsSelectListController::class, 'list'])->middleware(['allow:partner']);

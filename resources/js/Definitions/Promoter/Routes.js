@@ -1,4 +1,4 @@
-import TripsSelectPage from '@/Pages/Partner/TripsSelectPage';
+import TripsSelectPage from '@/Pages/Promoter/TripsSelectPage';
 import OrdersRegistryPage from "@/Pages/Partner/Registries/OrdersRegistryPage";
 import ReservesRegistryPage from "@/Pages/Partner/Registries/ReservesRegistryPage";
 import TicketsRegistryPage from "@/Pages/Partner/Registries/TicketsRegistryPage";

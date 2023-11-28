@@ -10,7 +10,8 @@
                     <th>Экскурсия</th>
                     <th>Причал</th>
                     <th>Тип билета</th>
-                    <th class="w-110px">Цена</th>
+                    <th class="w-90px">Диапазон цен, руб</th>
+                    <th class="w-90px">Цена, руб</th>
                     <th>Количество</th>
                     <th class="w-110px">Стоимость</th>
                     <th></th>
@@ -27,8 +28,17 @@
                     </td>
                     <td>{{ ticket['pier'] }}</td>
                     <td>{{ ticket['grade'] }}<br><span v-if="ticket['seat_number']">Место: {{ticket['seat_number']}}</span></td>
+                    <td>{{ ticket['backward_price'] ?? ticket['min_price'] }} -
+                        {{ ticket['backward_price'] ?? ticket['max_price'] }}
+                    </td>
                     <template v-if="ticket['available']">
-                        <td class="bold no-wrap">{{ ticket['backward_price'] ?? ticket['base_price'] }} руб.</td>
+                        <td>
+                            <FormNumber v-if="ticket['backward_price'] === null" :form="form"
+                                        :name="'tickets.' + ticket['id'] + '.price'" :hide-title="true"/>
+                            <FormNumber v-if="ticket['backward_price'] !== null" :model-value="ticket['backward_price']"
+                                        :disabled="true" :name="'tickets.' + ticket['id'] + '.price'" :form="form"
+                                        :hide-title="true"/>
+                        </td>
                         <td>
                             <FormNumber :disabled="(ticket['backward_price'] !== null && ticket['ticket_provider_id'] !== null  || ticket['seat_number'])" :form="form"
                                         :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true"
@@ -147,7 +157,7 @@ export default {
     mixins: [deleteEntry],
 
     data: () => ({
-        data: data('/api/cart/partner'),
+        data: data('/api/cart/promoter'),
         form: form(null, '/api/order/promoter/make'),
     }),
 
@@ -215,6 +225,7 @@ export default {
                 .then(data => {
                     this.form.reset();
                     data.data['tickets'].map(ticket => {
+                        this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'], `numeric|min:${ticket['min_price']}|max:${ticket['max_price']}`, 'Цена', true);
                         this.form.set('tickets.' + ticket['id'] + '.quantity', ticket['quantity'], 'integer|min:0', 'Количество', true);
                     });
                     this.form.set('name', name, null, 'Имя', true);
@@ -238,10 +249,10 @@ export default {
             if (isNaN(value) || value === null) {
                 return;
             }
-            axios.post('/api/cart/partner/quantity', {id: id, value: value})
+            axios.post('/api/cart/promoter/quantity', {id: id, value: value})
                 .then(() => {
                     this.load(this.form.values['name'], this.form.values['email'], this.form.values['phone']);
-                    this.$store.dispatch('partner/refresh');
+                    this.$store.dispatch('promoter/refresh');
                 })
                 .catch(error => {
                     this.$toast.error(error.response.data['message']);
@@ -252,14 +263,14 @@ export default {
             this.load(this.form.values['name'], this.form.values['email'], this.form.values['phone']);
             this.data.data['tickets'] = [];
             this.$emit('update');
-            this.$store.dispatch('partner/refresh');
+            this.$store.dispatch('promoter/refresh');
         },
 
         remove(ticket_id) {
-            this.deleteEntry('Удалить билеты из заказа?', '/api/cart/partner/remove', {ticket_id: ticket_id})
+            this.deleteEntry('Удалить билеты из заказа?', '/api/cart/promoter/remove', {ticket_id: ticket_id})
                 .then(() => {
                     this.load(this.form.values['name'], this.form.values['email'], this.form.values['phone']);
-                    this.$store.dispatch('partner/refresh');
+                    this.$store.dispatch('promoter/refresh');
                 });
         },
 
@@ -276,7 +287,7 @@ export default {
                         this.form.options['mode'] = 'reserve';
                         this.form.save()
                             .then(() => {
-                                this.$store.dispatch('partner/refresh');
+                                this.$store.dispatch('promoter/refresh');
                                 this.$router.push({name: 'order-info', params: {id: this.form.payload['order_id']}});
                             });
                     }
@@ -296,7 +307,7 @@ export default {
                         this.form.options['mode'] = 'order';
                         this.form.save()
                             .then(() => {
-                                this.$store.dispatch('partner/refresh');
+                                this.$store.dispatch('promoter/refresh');
                                 this.$router.push({name: 'order-info', params: {id: this.form.payload['order_id']}});
                             });
                     }
@@ -310,10 +321,10 @@ export default {
             ], 'center')
                 .then((result) => {
                     if (result === 'ok') {
-                        axios.post('/api/cart/partner/clear', {})
+                        axios.post('/api/cart/promoter/clear', {})
                             .then(() => {
                                 this.load();
-                                this.$store.dispatch('partner/refresh');
+                                this.$store.dispatch('promoter/refresh');
                             })
                             .catch(error => {
                                 this.$toast.error(error.response.data['message']);

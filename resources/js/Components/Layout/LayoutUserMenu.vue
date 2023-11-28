@@ -134,7 +134,7 @@ $base_primary_hover_color: #1e87f0 !default;
     &-actions {
         position: absolute;
         right: 0;
-        left: 0;
+        left: auto;
         bottom: -80px;
         box-sizing: border-box;
         padding: 12px 20px;
