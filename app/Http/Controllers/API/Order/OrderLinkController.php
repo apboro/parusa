@@ -52,7 +52,7 @@ class OrderLinkController extends Controller
 
             $link = config('showcase.showcase_payment_page') . '?order=' . $secret;
 
-            return APIResponse::redirect($link);
+            return redirect($link);
         } else {
 
             return response()->view('order_not_found');

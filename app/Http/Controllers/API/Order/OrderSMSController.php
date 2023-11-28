@@ -35,7 +35,7 @@ class OrderSMSController extends Controller
         $order = Order::find($request->input('orderId'));
 
         if ($order) {
-            $result = RedSms::send($order->phone, 'Оплатить -'. config('app.url') . '/ext/order/payment/' . $order->hash );
+            $result = RedSms::send($order->phone, 'Оплатить - '. config('app.url') . '/ext/order/payment/' . $order->hash );
         } else {
             return APIResponse::error('Заказ не найден');
         }
