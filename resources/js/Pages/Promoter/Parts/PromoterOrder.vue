@@ -77,6 +77,7 @@
                 <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning"
                            @clicked="emailOrder">Отправить на почту
                 </GuiButton>
+                <GuiButton v-if="!info.data['is_printable'] && info.data['can_send_sms']" @clicked="sendPaymentLinkSMS">Ссылка на оплату в СМС</GuiButton>
                 <GuiButton v-if="!info.data['is_printable']" @click="showQR">QR-код на оплату</GuiButton>
             </GuiContainer>
         </template>
@@ -196,6 +197,15 @@ export default {
 
         sendSMS() {
             axios.post('/api/order/send_sms', {orderId: this.orderId})
+                .then((response) => {
+                    this.$toast.success(response.data.message, 2100);
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data.message, 2100);
+                })
+        },
+        sendPaymentLinkSMS() {
+            axios.post('/api/order/send_payment_link_sms', {orderId: this.orderId})
                 .then((response) => {
                     this.$toast.success(response.data.message, 2100);
                 })

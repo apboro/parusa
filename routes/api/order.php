@@ -26,6 +26,7 @@ Route::post('/order/terminal/close', [TerminalCurrentOrderController::class, 'cl
 Route::post('/order/terminal/save_unconfirmed', [TerminalCurrentOrderController::class, 'saveUnconfirmed'])->middleware(['allow:staff_terminal']);
 
 Route::post('/order/send_sms', [OrderSMSController::class, 'sendSMS'])->middleware(['allow:staff_terminal,staff_admin,partner']);
+Route::post('/order/send_payment_link_sms', [OrderSMSController::class, 'sendPaymentLinkSMS'])->middleware(['allow:staff_admin,partner']);
 
 Route::post('/order/return', [OrderReturnController::class, 'return']);
 

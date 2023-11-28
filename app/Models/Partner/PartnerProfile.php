@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PartnerProfile extends Model
 {
+    protected $guarded = [];
     /** @var string The primary key associated with the table. */
     protected $primaryKey = 'partner_id';
 
@@ -24,5 +25,9 @@ class PartnerProfile extends Model
         'tickets_for_guides' => 0,
         'can_reserve_tickets' => true,
         'can_send_sms' =>false,
+    ];
+
+    protected $casts =[
+      'can_send_sms' => 'boolean'
     ];
 }

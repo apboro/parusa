@@ -15,7 +15,7 @@
             <div class="ap-final-message__status">
                 Заказ оплачен. Билеты высланы на электронную почту.
             </div>
-            <div class="ap-final-message__buttons">
+            <div class="ap-final-message__buttons" v-if="!orderData['order_from_promoter']">
                 <ShowcaseButton @click="close">Закрыть</ShowcaseButton>
             </div>
         </template>

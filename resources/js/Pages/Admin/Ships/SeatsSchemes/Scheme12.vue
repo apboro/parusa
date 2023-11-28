@@ -72,14 +72,10 @@
 </template>
 
 <script>
-import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown.vue";
-import GuiButton from "@/Components/GUI/GuiButton.vue";
-import GuiContainer from "@/Components/GUI/GuiContainer.vue";
 import seatMethods from "@/Mixins/seatMethods.vue";
 
 export default {
     name: 'Scheme12',
-    components: {GuiContainer, GuiButton, DictionaryDropDown},
     mixins: [seatMethods],
     emits: ['selectSeat'],
 

@@ -28,6 +28,7 @@ class PromoterEditController extends ApiEditController
         'last_name' => 'Фамилия',
         'first_name' => 'Имя',
         'patronymic' => 'Отчество',
+        'can_send_sms' => 'Отправка СМС',
         'email' => 'Почта',
         'phone' => 'Телефон',
         'notes' => 'Заметки'
@@ -58,6 +59,7 @@ class PromoterEditController extends ApiEditController
                 'last_name' => $promoterUserProfile->lastname ?? null,
                 'first_name' => $promoterUserProfile->firstname ?? null,
                 'patronymic' => $promoterUserProfile->patronymic ?? null,
+                'can_send_sms' => $partner->profile->can_send_sms,
                 'email' => $promoterUserProfile->email ?? null,
                 'phone' => $promoterUserProfile->mobile_phone ?? null,
                 'status_id' => $partner->status_id ?? null,
@@ -115,7 +117,7 @@ class PromoterEditController extends ApiEditController
         $partner->status_id = $data['status_id'];
         $partner->save();
 
-        $promoterUserPosition = new Position();
+        $promoterUserPosition = Position::firstOrNew(['partner_id' => $partner->id]);
         $promoterUserPosition->user_id = $promoterUser->id;
         $promoterUserPosition->status_id = 1;
         $promoterUserPosition->access_status_id = 1;
@@ -126,6 +128,7 @@ class PromoterEditController extends ApiEditController
 
         $profile = $partner->profile;
 
+        $profile->can_send_sms = $data['can_send_sms'];
         $profile->tickets_for_guides = 0;
         $profile->can_reserve_tickets = 0;
         $profile->save();

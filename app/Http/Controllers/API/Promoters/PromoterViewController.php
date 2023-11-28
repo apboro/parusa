@@ -57,6 +57,7 @@ class PromoterViewController extends ApiController
             'phone' => $promoterUserProfile->mobile_phone,
             'email' => $promoterUserProfile->email,
             'has_access' => !empty($promoterUser->login) && !empty($promoterUser->password),
+            'can_send_sms' => $partner->profile->can_send_sms ? 1 : 0,
             'login' => $promoterUser->login,
             'full_name' => $promoterUserProfile->fullName,
             'open_shift' => $partner->getOpenedShift(),

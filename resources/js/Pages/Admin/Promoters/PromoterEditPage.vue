@@ -10,6 +10,7 @@
             <FormString :form="form" :name="'patronymic'" :autocomplete="'nope'"/>
             <FormString :form="form" :name="'email'"/>
             <FormPhone :form="form" :name="'phone'"/>
+            <FormCheckBox :form="form" :name="'can_send_sms'" :hide-title="true" :small="true"/>
         </GuiContainer>
 
         <GuiContainer mt-30>
@@ -35,9 +36,11 @@ import FormText from "@/Components/Form/FormText";
 import FormFiles from "@/Components/Form/FormFiles";
 import form from "@/Core/Form";
 import FormPhone from "@/Components/Form/FormPhone.vue";
+import FormCheckBox from "@/Components/Form/FormCheckBox.vue";
 
 export default {
     components: {
+        FormCheckBox,
         FormPhone,
         FormFiles,
         FormText,

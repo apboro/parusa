@@ -6,6 +6,7 @@
             <GuiValue :title="'Дата заведения'" v-if="editable">{{ data['created_at'] }}</GuiValue>
             <GuiValue :title="'Телефон'" v-if="editable">{{ data['phone'] }}</GuiValue>
             <GuiValue :title="'Почта'" v-if="editable">{{ data['email'] }}</GuiValue>
+            <GuiValue :title="'Отправка СМС'">{{ data['can_send_sms'] === 1? 'Разрешена' : 'Запрещена' }}</GuiValue>
         </GuiContainer>
 
         <GuiContainer w-100 mt-20 v-if="editable">

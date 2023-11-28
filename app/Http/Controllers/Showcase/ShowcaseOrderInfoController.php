@@ -9,6 +9,7 @@ use App\Jobs\ProcessShowcaseConfirmedOrder;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Hit\Hit;
 use App\Models\Order\Order;
@@ -144,6 +145,7 @@ class ShowcaseOrderInfoController extends ApiEditController
 
         return response()->json([
             'order' => [
+                'order_from_promoter' => $order->partner?->type_id === PartnerType::promoter,
                 'order_id' => $order->id,
                 'order_status' => $order->status->name,
                 'is_created' => $order->hasStatus(OrderStatus::showcase_creating) || $order->hasStatus(OrderStatus::promoter_wait_for_pay),

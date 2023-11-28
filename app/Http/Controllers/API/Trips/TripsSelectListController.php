@@ -81,9 +81,6 @@ class TripsSelectListController extends ApiController
             ->where('excursions.status_id', 1)
             ->where('sale_status_id', TripSaleStatus::selling)
             ->whereDate('start_at', $date)
-            ->when(env('REMOVE_NEVA_TRIPS'), function (Builder $query) {
-                $query->where('source', null);
-            })
             ->where(function (Builder $trip) use ($now) {
                 $trip->where('start_at', '>', $now)
                     ->orWhere(function (Builder $trip) use ($now) {
@@ -148,6 +145,14 @@ class TripsSelectListController extends ApiController
                 $categories = [];
             }
 
+            $seats = $trip->ship->seats;
+            foreach ($seats as $seat) {
+                $seatsAr[] = [
+                    'seat_number' => $seat->seat_number,
+                    'category' => $seat->category,
+                    'status' => $seat->status($trip->id)
+                ];
+            }
 
             return [
                 'id' => $trip->id,
@@ -163,13 +168,10 @@ class TripsSelectListController extends ApiController
                 'pier' => $trip->startPier->name,
                 'ship' => $trip->ship->name,
                 'capacity' => $trip->ship->capacity,
-                'ship_has_scheme' =>$trip->ship->ship_has_seats_scheme,
+                'ship_has_scheme' => $trip->ship->ship_has_seats_scheme,
                 'shipId' => $trip->ship->id,
                 'categories' => $categories,
-                'seats' => $trip->ship->seats->transform(fn($seat) =>
-                    ['seat_number' => $seat->seat_number,
-                    'category' => $seat->category,
-                    'status'=>$seat->status($trip->id)]),
+                'seats' => $seatsAr ?? [],
                 'seat_tickets_grades' => $trip->ship->seat_categories_ticket_grades()->with('grade')->get(),
                 'tickets_count' => $trip->getAttribute('tickets_count'),
                 'tickets_total' => $trip->tickets_total,
