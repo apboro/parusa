@@ -356,6 +356,10 @@ $base_black_color: #1e1e1e !default;
     width: 100%;
     color: $base_black_color;
 
+    &__mobile-subtitle {
+        display: none;
+    }
+
     &__first {
         border-top: 1px solid #999999;
     }
@@ -414,6 +418,11 @@ $base_black_color: #1e1e1e !default;
             display: flex;
             flex-direction: column;
             row-gap: 10px;
+        }
+
+        >tr:not(:first-of-type) {
+            border-top: 1px solid #888;
+            padding-top: 10px;
         }
 
         &__mobile-total {
