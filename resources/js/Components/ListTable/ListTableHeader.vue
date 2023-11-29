@@ -53,4 +53,13 @@ $list_table_header_background_color: #e3ecf7 !default;
         }
     }
 }
+
+@media (max-width: 767px) {
+    .list-table__header {
+        &-cell {
+            padding: 10px 6px;
+            font-size: 12px;
+        }
+    }
+}
 </style>

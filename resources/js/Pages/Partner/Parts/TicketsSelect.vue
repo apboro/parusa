@@ -207,8 +207,8 @@ $base_black_color: #1e1e1e !default;
         > tbody > tr {
             display: flex;
             flex-direction: column;
-            padding: 20px 0;
-            row-gap: 20px;
+            padding: 12px 0;
+            row-gap: 10px;
         }
 
         > tbody > tr:not(:first-of-type) {
@@ -218,7 +218,7 @@ $base_black_color: #1e1e1e !default;
         &__mobile-title {
             display: block;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 0;
         }
 
         &__total {

@@ -50,4 +50,11 @@ $list_table_cell_color: #1e1e1e;
         }
     }
 }
+
+@media (max-width: 767px) {
+    .list-table__cell {
+        padding: 10px 6px;
+        font-size: 12px;
+    }
+}
 </style>

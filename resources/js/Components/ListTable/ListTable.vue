@@ -33,12 +33,12 @@ export default {
         position: sticky;
         left: 0;
         background: #e3ecf7;
-        width: 36%;
+        width: 26%;
     }
 
     .list-table__header-row th:nth-child(2) {
         position: sticky;
-        left: 36%;
+        left: 26%;
         background: #e3ecf7;
     }
 
@@ -46,12 +46,12 @@ export default {
         position: sticky;
         left: 0;
         background: #fff;
-        width: 36%;
+        width: 26%;
     }
 
     .list-table__row > td:nth-child(2) {
         position: sticky;
-        left: 36%;
+        left: 26%;
         background: #fff;
     }
 }

@@ -38,7 +38,7 @@ $field_error_color: #FF1E00 !default;
     flex-direction: row;
     width: 100%;
     box-sizing: border-box;
-    padding: 5px 0;
+    padding: 5px 0 0 0;
 
     &__title {
         font-family: $project_font;
@@ -69,7 +69,6 @@ $field_error_color: #FF1E00 !default;
     &__errors {
         display: flex;
         flex-direction: column;
-        min-height: 8px;
 
         &-error {
             font-family: $project_font;

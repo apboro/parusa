@@ -244,4 +244,14 @@ $base_light_gray_color: #e5e5e5 !default;
         }
     }
 }
+
+@media (max-width: 767px) {
+    .dialogs__dialog-wrapper {
+        padding: 0;
+    }
+
+    .dialogs__dialog-title {
+        margin-bottom: 0;
+    }
+}
 </style>
