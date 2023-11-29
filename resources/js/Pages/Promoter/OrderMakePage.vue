@@ -19,20 +19,22 @@
                 </thead>
                 <tr v-for="ticket in tickets"
                     :class="{'order-table__first' : ticket['first_in_date'], 'order-table__highlight' : ticket['trip_flag']}">
-                    <td>{{ ticket['trip_start_date'] }}</td>
-                    <td>{{ ticket['trip_start_time'] }}</td>
+                    <td><span class="order-table__mobile-subtitle">Дата</span>{{ ticket['trip_start_date'] }}</td>
+                    <td><span class="order-table__mobile-subtitle">Время</span>{{ ticket['trip_start_time'] }}</td>
                     <td>
+                        <span class="order-table__mobile-subtitle">Экскурсия</span>
                         <div>{{ ticket['excursion'] }}
                             <div style="color: red;" v-if="ticket['backward_price']">обратный</div>
                         </div>
                     </td>
-                    <td>{{ ticket['pier'] }}</td>
-                    <td>{{ ticket['grade'] }}<br><span v-if="ticket['seat_number']">Место: {{ticket['seat_number']}}</span></td>
-                    <td>{{ ticket['backward_price'] ?? ticket['min_price'] }} -
+                    <td><span class="order-table__mobile-subtitle">Причал</span>{{ ticket['pier'] }}</td>
+                    <td><span class="order-table__mobile-subtitle">Тип билета</span>{{ ticket['grade'] }}<br><span v-if="ticket['seat_number']">Место: {{ticket['seat_number']}}</span></td>
+                    <td><span class="order-table__mobile-subtitle">Диапазон цен, руб</span>{{ ticket['backward_price'] ?? ticket['min_price'] }} -
                         {{ ticket['backward_price'] ?? ticket['max_price'] }}
                     </td>
                     <template v-if="ticket['available']">
                         <td>
+                            <span class="order-table__mobile-subtitle">Цена, руб</span>
                             <FormNumber v-if="ticket['backward_price'] === null" :form="form"
                                         :name="'tickets.' + ticket['id'] + '.price'" :hide-title="true"/>
                             <FormNumber v-if="ticket['backward_price'] !== null" :model-value="ticket['backward_price']"
@@ -40,6 +42,7 @@
                                         :hide-title="true"/>
                         </td>
                         <td>
+                            <span class="order-table__mobile-subtitle">Количество</span>
                             <FormNumber :disabled="(ticket['backward_price'] !== null && ticket['ticket_provider_id'] !== null  || ticket['seat_number'])" :form="form"
                                         :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true"
                                         :min="0" :hide-title="true" :model-value="ticket['quantity']"
@@ -47,6 +50,7 @@
                             />
                         </td>
                         <td class="bold no-wrap">
+                            <span class="order-table__mobile-subtitle">Стоимость</span>
                             {{
                                 multiply(ticket['backward_price'] ?? ticket['base_price'], form.values['tickets.' + ticket['id'] + '.quantity'])
                             }}
@@ -76,7 +80,7 @@
             </table>
 
 
-            <GuiContainer mt-20 mb-10 bold right>
+            <GuiContainer mt-20 mb-10 bold right order-table__mobile-total>
                 <GuiHeading mb-5 >Итого к оплате: {{ total }}</GuiHeading>
                 <GuiButton v-if="tickets.filter(ticket => ticket.ticket_provider_id !== null && ticket.reverse_excursion_id !== null).length > 0"
                            @click="callGetBackwardTrips(data.data.ticketTrip, null, tickets)">Оформить
@@ -88,7 +92,7 @@
                                   @update="backwardTicketsUpdate"/>
 
 
-            <GuiContainer mt-20 mb-20 w-50>
+            <GuiContainer mt-20 mb-20 w-50 mobile-partner__info>
                 <GuiHeading mb-30 bold>Информация о плательщике</GuiHeading>
                 <GuiHint mb-30>Информация предоставляется на случай, если покупателя нужно будет уведомить об отмене
                     рейса или иных непредвиденных обстоятельствах. Не является
@@ -99,11 +103,11 @@
                 <FormPhone :form="form" :name="'phone'" required/>
             </GuiContainer>
 
-            <GuiContainer w-30 mt-30 inline>
+            <GuiContainer w-30 mt-30 inline mobile-partner__button-top>
                 <GuiButton @click="back">Вернуться к подбору билетов</GuiButton>
             </GuiContainer>
 
-            <GuiContainer w-70 mt-30 inline text-right>
+            <GuiContainer w-70 mt-30 inline text-right mobile-partner__button-bottom>
                 <GuiButton @click="clear" :color="'red'" :disabled="!canOrder">Очистить</GuiButton>
                 <GuiButton @clicked="order" :color="'green'" :disabled="!canOrder || !data.data['openshift']">{{data.data['openshift'] ? 'Оформить' : 'Не открыта смена'}}</GuiButton>
             </GuiContainer>
@@ -392,5 +396,44 @@ $base_black_color: #1e1e1e !default;
         font-size: 12px;
     }
 
+}
+
+@media (max-width: 767px) {
+    .order-table {
+        thead {
+            display: none;
+        }
+
+        &__mobile-subtitle {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        >tr {
+            display: flex;
+            flex-direction: column;
+            row-gap: 10px;
+        }
+
+        &__mobile-total {
+            margin-top: 0;
+            margin-bottom: 40px;
+        }
+    }
+
+    .mobile-partner__info {
+        width: 100%;
+    }
+
+    .mobile-partner__button-top {
+        width: 100%;
+        margin-top: 40px;
+    }
+
+    .mobile-partner__button-bottom {
+        width: 100%;
+        margin-top: 0;
+    }
 }
 </style>

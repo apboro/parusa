@@ -79,4 +79,11 @@ $field_error_color: #FF1E00 !default;
         }
     }
 }
+
+@media (max-width: 767px) {
+    .input-field__title {
+        width: 90px;
+    }
+}
+
 </style>
