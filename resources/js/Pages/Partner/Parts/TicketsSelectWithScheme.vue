@@ -20,9 +20,9 @@
             <div v-for="ticket in tickets" class="tickets-box">
                 <span>Место: {{ ticket.seatNumber }}</span>
                 <span>Билет: {{ ticket.grade.name }}</span>
-                <span>Цена: {{ ticket.price }}</span>
+                <span>Цена: {{ ticket.price }} руб.</span>
             </div>
-            <span style="margin-top: 15px;">Итого: {{total}}</span>
+            <span style="margin-top: 15px;">Итого: {{total}} руб.</span>
         </div>
 
         <PopUp ref="category">

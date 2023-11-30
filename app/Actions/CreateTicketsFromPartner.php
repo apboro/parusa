@@ -38,8 +38,8 @@ class CreateTicketsFromPartner
                 };
 
                 TripSeat::query()
-                    ->where(['trip_id'=> $ordering->trip->id, 'seat_number' => $ordering->seat_number])
-                    ->update(['status_id' => SeatStatus::occupied]);
+                    ->updateOrCreate(['trip_id'=> $ordering->trip->id, 'seat_number' => $ordering->seat_number],
+                        ['status_id' => SeatStatus::occupied]);
 
                 for ($i = 1; $i <= $quantity['quantity']; $i++) {
                     /** @var PositionOrderingTicket $ordering */

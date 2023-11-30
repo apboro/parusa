@@ -219,6 +219,22 @@ class ShowcaseTripsController extends ApiController
         $ticketsCountable = $trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count();
         $ticketsReserved = $trip->tickets()->whereIn('status_id', TicketStatus::ticket_reserved_statuses)->count();
 
+        $categories = $trip->ship->seats()->whereNotNull('seat_category_id')->groupBy('seat_category_id')->get();
+        if ($categories->isNotEmpty()) {
+            $categories->transform(fn($e) => ['name' => $e->category?->name, 'id' => $e->category?->id]);
+        } else {
+            $categories = [];
+        }
+
+        $seats = $trip->ship->seats;
+        foreach ($seats as $seat) {
+            $seatsAr[] = [
+                'seat_number' => $seat->seat_number,
+                'category' => $seat->category,
+                'status' => $seat->status($trip->id)
+            ];
+        }
+
         return response()->json([
             'trip' => [
                 'id' => $trip->id,
@@ -226,6 +242,12 @@ class ShowcaseTripsController extends ApiController
                 'pier_id' => $trip->start_pier_id,
                 'start_date' => $trip->start_at->translatedFormat('j F Y') . ' г.',
                 'start_time' => $trip->start_at->format('H:i'),
+                'ship_has_scheme' => $trip->ship->ship_has_seats_scheme,
+                'capacity' => $trip->ship->capacity,
+                'shipId' => $trip->ship->id,
+                'categories' => $categories,
+                'seats' => $seatsAr ?? [],
+                'seat_tickets_grades' => $trip->ship->seat_categories_ticket_grades()->with('grade')->get(),
                 'excursion' => $trip->excursion->name,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,

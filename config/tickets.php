@@ -6,7 +6,7 @@ return [
     'ticket_template_city_tour' => 'pdf/ticket/ticket_a4_city_tour',
     'ticket_template_single' => 'pdf/ticket/ticket_a4_edin',
 
-    'order_template' => env('PDF_ORDER_A4', 'pdf/order/order_a4'),
+    'order_template' => env('PDF_ORDER_A4', 'pdf/order/order_a4_v3'),
     'order_template_single' => 'pdf/order/order_a4_edin',
     'order_template_city_tour' => 'pdf/order/order_a4_city_tour',
     'order_template_neva' => 'pdf/order/order_a4_neva',

@@ -9,8 +9,10 @@ use App\LifePay\CloudPrint;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\Provider;
+use App\Models\Dictionaries\SeatStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
+use App\Models\Ships\Seats\TripSeat;
 use App\Models\Tickets\Ticket;
 use App\Notifications\OrderNotification;
 use App\Services\NevaTravel\NevaOrder;
@@ -79,6 +81,9 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
         $order->setStatus($newOrderStatus);
         $order->tickets->map(function (Ticket $ticket) use (&$tickets, $newTicketStatus) {
             $ticket->setStatus($newTicketStatus);
+            TripSeat::query()
+            ->updateOrCreate(['trip_id'=> $ticket->trip->id, 'seat_number' => $ticket->seat_number],
+                ['status_id' => SeatStatus::occupied]);
             $tickets[] = $ticket;
         });
 

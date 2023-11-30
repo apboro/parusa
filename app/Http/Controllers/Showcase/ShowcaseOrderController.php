@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Showcase;
 use App\Actions\CreateOrderFromShowcase;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
+use App\Exceptions\Tickets\NoTicketsForTripException;
+use App\Exceptions\Tickets\TicketsValidationException;
+use App\Exceptions\Tickets\WrongTicketsQuantityException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Http\Middleware\ExternalProtect;
@@ -94,86 +97,20 @@ class ShowcaseOrderController extends ApiEditController
         $trip = $tripQuery->clone()->where('id', $request->input('trip'))
             ->first();
 
-
         $backwardTrip = $tripQuery->clone()->where('id', $request->input('backwardTripId'))
             ->first();
-
 
         if ($trip === null) {
             return APIResponse::error('Нет продажи билетов на этот рейс.');
         }
 
-
         $flat = $request->input('data');
         $data = Arr::undot($flat);
-        $count = count($data['rate'] ?? []);
-
-        if ($count === 0) {
-            return APIResponse::error('Нельзя оформить заказ без билетов.');
+        if (!$trip->ship->ship_has_seats_scheme) {
+            $tickets = $this->createTickets($data, $trip, $backwardTrip, $isPartnerSite);
+        } else {
+            $tickets = $this->createTicketsWithScheme($data, $request, $trip);
         }
-
-        $grades = array_keys($data['rate']);
-        $count = 0;
-
-        $rules = ['name' => 'required', 'email' => 'required|email|bail', 'phone' => 'required'];
-        $titles = ['name' => 'Имя', 'email' => 'Email', 'phone' => 'Телефон'];
-
-        foreach ($grades as $grade) {
-            $count += $data['rate'][$grade]['quantity'];
-            $rules["rate.$grade.quantity"] = 'nullable|integer|min:0|bail';
-            $titles["rate.$grade.quantity"] = 'Количество';
-        }
-
-        if ($errors = $this->validate($data, $rules, $titles)) {
-            return APIResponse::validationError($errors);
-        }
-
-        if ($count === 0) {
-            $errors = [];
-            foreach ($grades as $grade) {
-                $errors["rate.$grade.quantity"] = ['Не выбрано количество'];
-            }
-            return APIResponse::validationError($errors);
-        }
-
-        $rates = $trip->excursion->rateForDate($trip->start_at);
-        if ($rates === null) {
-            return APIResponse::error('Нет продажи билетов на этот рейс.');
-        }
-
-        $tickets = [];
-        $backwardTickets = [];
-        foreach ($data['rate'] as $gradeId => $grade) {
-            if ($grade['quantity'] > 0) {
-                // get rate
-                /** @var TicketRate $rate */
-                $rate = $rates->rates->where('grade_id', $gradeId)->first();
-                if ($rate === null) {
-                    return APIResponse::error('Нет продажи билетов на этот рейс.');
-                }
-                for ($i = 1; $i <= $grade['quantity']; $i++) {
-                    $ticket = new Ticket([
-                        'trip_id' => $trip->id,
-                        'grade_id' => $gradeId,
-                        'status_id' => TicketStatus::showcase_creating,
-                        'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
-                        'provider_id' => $trip->provider_id,
-                    ]);
-                    if ($backwardTrip) {
-                        $backwardTicket = new Ticket([
-                            'trip_id' => $backwardTrip->id,
-                            'grade_id' => $gradeId,
-                            'status_id' => TicketStatus::showcase_creating,
-                            'base_price' => $rate->backward_price_type === 'fixed' ? $rate->backward_price_value : $rate->base_price * ($rate->backward_price_value / 100),
-                            'provider_id' => $trip->provider_id,
-                        ]);
-                        $backwardTickets[] = $backwardTicket;
-                    }
-                    $tickets[] = $ticket;
-                }
-            }
-        }
-
 
         if ($media === 'qr') {
             $orderType = OrderType::qr_code;
@@ -183,10 +120,10 @@ class ShowcaseOrderController extends ApiEditController
             $orderType = OrderType::site;
         }
 
-        DB::transaction(static function () use ($data, $orderType, $tickets, $partnerId, $isPartnerSite, $flat, &$order, $backwardTickets) {
+        DB::transaction(static function () use ($data, $orderType, $tickets, $flat, $partnerId, $isPartnerSite, &$order) {
             // create order
 
-            $order = (new CreateOrderFromShowcase())->execute($data, $orderType, $tickets, $partnerId, $isPartnerSite === true, $flat['promocode'], $backwardTickets);
+            $order = (new CreateOrderFromShowcase())->execute($data, $orderType, $tickets['tickets'], $partnerId, $isPartnerSite === true, $flat['promocode'], $tickets['backwardTickets']);
 
             NewNevaTravelOrderEvent::dispatch($order);
             NewCityTourOrderEvent::dispatch($order);
@@ -246,7 +183,8 @@ class ShowcaseOrderController extends ApiEditController
         }
 
         $now = Carbon::now();
-        $expires = Carbon::parse($orderSecret['ts'])->setTimezone($now->timezone)->addMinutes(env('SHOWCASE_ORDER_LIFETIME'));
+        $expires = Carbon::parse($orderSecret['ts'])->setTimezone($now->timezone)
+            ->addMinutes(config('showcase.showcase_order_lifetime'));
 
         if ($expires < $now) {
             return APIResponse::success('Время, отведенное на оплату заказа истекло, заказ расформирован.');
@@ -265,4 +203,103 @@ class ShowcaseOrderController extends ApiEditController
 
         return APIResponse::success('Заказ расформирован.');
     }
+
+    private function createTickets(array $data, Trip $trip, ?Trip $backwardTrip, bool $isPartnerSite)
+    {
+        $count = count($data['rate'] ?? []);
+        if ($count === 0) {
+            throw new WrongTicketsQuantityException();
+        }
+        $grades = array_keys($data['rate']);
+        $count = 0;
+
+        $rules = ['name' => 'required', 'email' => 'required|email|bail', 'phone' => 'required'];
+        $titles = ['name' => 'Имя', 'email' => 'Email', 'phone' => 'Телефон'];
+
+        foreach ($grades as $grade) {
+            $count += $data['rate'][$grade]['quantity'];
+            $rules["rate.$grade.quantity"] = 'nullable|integer|min:0|bail';
+            $titles["rate.$grade.quantity"] = 'Количество';
+        }
+
+        if ($errors = $this->validate($data, $rules, $titles)) {
+            throw new TicketsValidationException($errors);
+        }
+
+        if ($count === 0) {
+            $errors = [];
+            foreach ($grades as $grade) {
+                $errors["rate.$grade.quantity"] = ['Не выбрано количество'];
+            }
+            throw new TicketsValidationException($errors);
+        }
+
+        $rates = $trip->excursion->rateForDate($trip->start_at);
+        if ($rates === null) {
+            throw new NoTicketsForTripException();
+        }
+
+        $tickets = [];
+        $backwardTickets = [];
+        foreach ($data['rate'] as $gradeId => $grade) {
+            if ($grade['quantity'] > 0) {
+                // get rate
+                /** @var TicketRate $rate */
+                $rate = $rates->rates->where('grade_id', $gradeId)->first();
+                if ($rate === null) {
+                    throw new NoTicketsForTripException();
+                }
+                for ($i = 1; $i <= $grade['quantity']; $i++) {
+                    $ticket = new Ticket([
+                        'trip_id' => $trip->id,
+                        'grade_id' => $gradeId,
+                        'status_id' => TicketStatus::showcase_creating,
+                        'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
+                        'provider_id' => $trip->provider_id,
+                    ]);
+                    if ($backwardTrip) {
+                        $backwardTicket = new Ticket([
+                            'trip_id' => $backwardTrip->id,
+                            'grade_id' => $gradeId,
+                            'status_id' => TicketStatus::showcase_creating,
+                            'base_price' => $rate->backward_price_type === 'fixed' ? $rate->backward_price_value : $rate->base_price * ($rate->backward_price_value / 100),
+                            'provider_id' => $trip->provider_id,
+                        ]);
+                        $backwardTickets[] = $backwardTicket;
+                    }
+                    $tickets[] = $ticket;
+                }
+            }
+        }
+        return ['tickets' => $tickets, 'backwardTickets' => $backwardTickets];
+    }
+
+    private function createTicketsWithScheme(array $data, Request $request, Trip $trip)
+    {
+        $rules = ['name' => 'required', 'email' => 'required|email|bail', 'phone' => 'required'];
+        $titles = ['name' => 'Имя', 'email' => 'Email', 'phone' => 'Телефон'];
+
+        if ($errors = $this->validate($data, $rules, $titles)) {
+            throw new TicketsValidationException($errors);
+        }
+
+        $rates = $trip->excursion->rateForDate($trip->start_at);
+        if ($rates === null) {
+            throw new NoTicketsForTripException();
+        }
+
+        foreach ($request->tickets as $ticket) {
+            $ticket = new Ticket([
+                'trip_id' => $trip->id,
+                'grade_id' => $ticket['grade']['id'],
+                'status_id' => TicketStatus::showcase_creating,
+                'base_price' => $ticket['price'],
+                'seat_number' => $ticket['seatNumber'],
+                'provider_id' => $trip->provider_id,
+            ]);
+            $tickets[] = $ticket;
+        }
+        return ['tickets' => $tickets ?? [], 'backwardTickets' => []];
+    }
+
 }
