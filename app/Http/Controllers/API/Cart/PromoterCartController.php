@@ -301,7 +301,6 @@ class PromoterCartController extends ApiEditController
             return APIResponse::error('Вы не можете оформлять заказы.');
         }
 
-
         $cartTickets = PositionOrderingTicket::query()->where(['position_id' => $position->id, 'terminal_id' => $current->terminalId()]);
         foreach ($cartTickets->get() as $ticket) {
             TripSeat::query()->where('trip_id', $ticket->trip_id)->delete();

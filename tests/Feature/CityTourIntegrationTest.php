@@ -69,7 +69,7 @@ class CityTourIntegrationTest extends TestCase
                         "phone" => "+7 (666) 666-66-66"
                     ]
                 ]);
-//        $response->dump();
+        $response->dump();
         $response->assertStatus(200);
         $response->assertJson([
             'message' => 'Заказ отправлен в оплату.',

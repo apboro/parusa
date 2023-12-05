@@ -14,7 +14,8 @@ export default {
         getCategoryName(categoryId) {
             return this.categories.find(el => el.id === categoryId).name;
         },
-        getColor(seat) {
+        getColor(seatNumber) {
+            let seat = this.seats.find(el => el.seat_number == seatNumber);
             let color = 'gray';
             if (!seat.category)
                 return color;
@@ -30,7 +31,7 @@ export default {
                 4: "#8f80ed",
                 5: "#b58850",
                 6: "#b39583",
-                7: "#adc162",
+                7: "#6fb9ee",
                 8: "#ad77d5",
                 9: "#e470ba",
                 10: "#9d9978",
@@ -38,7 +39,9 @@ export default {
 
             return colorMap[id] || 'gray';
         },
-        handleClick(seat) {
+        handleClick(seatNumber) {
+            let seat = this.seats.find(el => el.seat_number == seatNumber);
+            // console.log(seat)
             if (this.seats.length > 0) {
                 if (seat.status && [5, 10].includes(seat.status.id)) {
                     return;

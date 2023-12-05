@@ -10,10 +10,10 @@
            ref="popup"
     >
         <DynamicSchemeContainer
-                      :data="trip"
-                      :shipId="trip['shipId']"
-                      :selecting="true"
-                      @selectSeat="handleSelectSeat"/>
+            :data="trip"
+            :shipId="trip['shipId']"
+            :selecting="true"
+            @selectSeat="handleSelectSeat"/>
 
         <div class="tickets-box">
             <span>Выбранные билеты:</span>
@@ -22,7 +22,7 @@
                 <span>Билет: {{ ticket.grade.name }}</span>
                 <span>Цена: {{ ticket.price }} руб.</span>
             </div>
-            <span style="margin-top: 15px;">Итого: {{total}} руб.</span>
+            <span style="margin-top: 15px;">Итого: {{ total }} руб.</span>
         </div>
 
         <PopUp ref="category">
@@ -72,39 +72,16 @@ export default {
             this.seatGrades = this.getFilteredGrades(categoryId);
             this.$refs.category.show().then(() => {
                 this.tickets.push({
-                seatNumber: data.seatNumber,
-                grade: this.selectedGrade,
-                price: this.getGradePrice(this.selectedGrade.id)
-            })
-                // this.reserveSeat(data.seatNumber)
+                    seatNumber: data.seatNumber,
+                    grade: this.selectedGrade,
+                    price: this.getGradePrice(this.selectedGrade.id)
+                })
             })
             this.selectedSeats = data.selectedSeats;
         },
 
-        // reserveSeat(seatNumber){
-        //     axios.post('/api/cart/scheme/seats_reserve', {
-        //         tripId: this.trip.id,
-        //         seatNumber: seatNumber
-        //     }).then(response => {
-        //         // Assuming the response contains the updated status information
-        //         const updatedStatusId = 5;
-        //
-        //         // Find the seat in the array based on seatNumber and update its status
-        //         const seatIndex = this.trip.seats.findIndex(seat => seat.seat_number === seatNumber);
-        //
-        //         if (seatIndex !== -1) {
-        //             this.$set(this.trip.seats, seatIndex, {
-        //                 ...this.trip.seats[seatIndex],
-        //                 status: { id: updatedStatusId }
-        //             });
-        //         }
-        //     }).catch(error => {
-        //         // Handle errors here
-        //         console.error('Error reserving seat:', error);
-        //     });
-        // },
         getGradePrice(gradeId) {
-                return this.trip['rates'].find(e => e.id === gradeId).value;
+            return this.trip['rates'].find(e => e.id === gradeId).value;
         },
         getFilteredGrades(categoryId) {
             return this.trip['seat_tickets_grades'].filter(el => el.seat_category_id === categoryId)

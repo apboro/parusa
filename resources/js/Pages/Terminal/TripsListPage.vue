@@ -170,7 +170,7 @@
     import GuiContainer from "@/Components/GUI/GuiContainer";
     import InputDropDown from "@/Components/Inputs/InputDropDown.vue";
     import ExcursionInfo from "@/Pages/Partner/Parts/ExcursionInfo.vue";
-    import TicketsSelectWithScheme from "@/Pages/Partner/Parts/TicketsSelectWithScheme.vue";
+    import TicketsSelectWithScheme from "@/Pages/Terminal/Parts/TicketsSelectWithScheme.vue";
 
     export default {
         components: {

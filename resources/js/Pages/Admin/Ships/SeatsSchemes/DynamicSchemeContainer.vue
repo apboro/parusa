@@ -16,12 +16,14 @@
 import scheme12 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme12.vue";
 import scheme3 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme3.vue";
 import scheme58 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme58.vue";
+import scheme132 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme132.vue";
 
 export default {
     components: {
         scheme12: scheme12,
         scheme3: scheme3,
         scheme58: scheme58,
+        scheme132: scheme132,
     },
     emits: ['selectSeat'],
     props: {
@@ -39,6 +41,8 @@ export default {
                     return scheme3
                 case 58:
                     return scheme58
+                case 132:
+                    return scheme132
             }
 
             return 'default-scheme';

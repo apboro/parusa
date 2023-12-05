@@ -5,7 +5,7 @@
             :shipId="shipId"
             :editing="editing"
             @selectSeat="handleSelectSeat"/>
-        <GuiContainer mt-20 t-15 v-if="editable">
+        <GuiContainer mt-20 t-15 v-if="editable && data['owner'] === 'АЛЫЕ ПАРУСА'">
             <GuiButton v-if="!editing" @click="edit">Редактировать</GuiButton>
             <div v-else>
                 Категория мест:

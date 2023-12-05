@@ -12,6 +12,7 @@ use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Sails\Trip;
+use App\Models\Ships\Seats\TripSeat;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
@@ -320,8 +321,11 @@ class TerminalCartController extends ApiEditController
 
         $id = $request->input('ticket_id');
 
-        PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])->delete();
+        $cartTicketQuery = PositionOrderingTicket::query()->where(['id' => $id, 'terminal_id' => $current->terminalId()]);
+        $ticket = $cartTicketQuery->first();
+        TripSeat::query()->where('trip_id', $ticket->trip_id)->where('seat_number', $ticket->seat_number)->delete();
 
+        $cartTicketQuery->delete();
         return APIResponse::success('Билет удалён из заказа.');
     }
 
@@ -338,10 +342,14 @@ class TerminalCartController extends ApiEditController
         $current = Currents::get($request);
 
         if (!$current->isStaffTerminal()) {
-            return APIResponse::error('ВЫ не можете оформлять заказы.');
+            return APIResponse::error('Вы не можете оформлять заказы.');
         }
 
-        PositionOrderingTicket::query()->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])->delete();
+        $cartTickets = PositionOrderingTicket::query()->where(['terminal_id' => $current->terminalId()]);
+        foreach ($cartTickets->get() as $ticket) {
+            TripSeat::query()->where('trip_id', $ticket->trip_id)->delete();
+        }
+        $cartTickets->delete();
 
         return APIResponse::success('Заказ очищен.');
     }

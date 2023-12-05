@@ -3,17 +3,28 @@
 namespace App\Services\AstraMarine;
 
 use App\Models\Dictionaries\Provider;
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Excursions\Excursion;
 use App\Models\Piers\Pier;
 use App\Models\Sails\Trip;
+use App\Models\Ships\Seats\Seat;
+use App\Models\Ships\Seats\SeatCategory;
+use App\Models\Ships\Seats\ShipSeatCategoryTicketGrade;
 use App\Models\Ships\Ship;
+use App\Models\Tickets\TicketRate;
+use App\Models\Tickets\TicketsRatesList;
 use Carbon\Carbon;
+use Database\Factories\Tickets\TicketsRatesListFactory;
 
 class ImportTrips
 {
+
+    public function __construct(private $astraApiData = new AstraMarineRepository())
+    {
+    }
+
     public function run(): void
     {
-        $astraApiData = new AstraMarineRepository();
         $trips = Trip::query()
             ->with(['additionalData'])
             ->where('start_at', '>=', now())
@@ -27,7 +38,9 @@ class ImportTrips
         if ($excursions->isEmpty())
             return;
 
-        $astraTrips = $astraApiData->getEvents([
+        $astraTrips = $this->astraApiData->getEvents([
+            "getTicketType" => true,
+            "seatsByGroups" => true,
             "dateFrom" => now()->toIso8601String(),
             "dateTo" => now()->addDays(60)->toIso8601String()
         ]);
@@ -54,6 +67,14 @@ class ImportTrips
                 $trip->sale_status_id = $astraTrip['availableSeats'] > 0 ? 1 : 3;
                 $trip->tickets_total = $astraTrip['availableSeats'];
                 $trip->save();
+
+                $trip->additionalData()
+                    ->firstOrCreate(['provider_trip_id' => $astraTrip['eventID'], 'provider_id' => Provider::astra_marine]);
+
+                if ($trip->wasRecentlyCreated) {
+                    $this->importSeatCategories($astraTrip, $trip->ship);
+                }
+                $this->importGrades($astraTrip, $trip);
             }
         }
     }
@@ -62,7 +83,7 @@ class ImportTrips
     function importPier(array $data): int
     {
         $pier = Pier::create([
-            'name' => explode('|', $data['pierName'])[0] ?? $data['pierName'],
+            'name' => rtrim(explode('|', $data['pierName'])[0] ?? $data['pierName']),
             'external_id' => $data['pierID'],
             'provider_id' => Provider::astra_marine,
         ]);
@@ -81,11 +102,116 @@ class ImportTrips
             'name' => ucfirst($data['venueName']),
             'status_id' => 1,
             'owner' => 'Astra Marine',
-            'capacity' => 110,
+            'capacity' => $data['availableSeats'],
             'external_id' => $data['venueID'],
-            'provider_id' => Provider::neva_travel
+            'provider_id' => Provider::astra_marine,
+            'ship_has_seats_scheme' => $data['eventFreeSeating'] == false,
         ]);
 
         return $ship->id;
     }
+
+    public function importSeatCategories(array $astraTrip, Ship $ship): void
+    {
+        foreach ($astraTrip['seatCategories'][0] as $seatCategory) {
+            $categoryDetails = $this->astraApiData->getSeatsOnEvent([
+                'seatCategoryId' => $seatCategory['seatCategoryID'],
+                'eventID' => $astraTrip['eventID'],
+            ])['body'];
+
+            SeatCategory::updateOrCreate([
+                'name' => $categoryDetails['seats'][0]['seatCategoryName'],
+                'table_seat' => $categoryDetails['seats'][0]['numberOfTicketsPerSeat'] > 1,
+                'table_seats_quantity' => $categoryDetails['seats'][0]['numberOfTicketsPerSeat'],
+                'provider_id' => Provider::astra_marine,
+                'provider_category_id' => $categoryDetails['seats'][0]['seatCategoryID'],
+            ]);
+            $this->importSeats($categoryDetails['seats'], $ship);
+        }
+    }
+
+    public function importSeats(array $seats, Ship $ship): void
+    {
+        foreach ($seats as $seat) {
+            Seat::updateOrCreate([
+                'ship_id' => $ship->id,
+                'seat_number' => $seat['aliasSeat']],
+
+                ['seat_category_id' => SeatCategory::where('provider_category_id', $seat['seatCategoryID'])->first()?->id,
+                'provider_seat_id' => $seat['seatID'],
+            ]);
+        }
+    }
+
+    public function importGrades(array $astraTrip, Trip $trip): void
+    {
+        foreach ($astraTrip['seatCategories'][0] as $category) {
+            foreach ($astraTrip['ticketTypes'][0] as $type) {
+                $seatsPrices = $this->astraApiData->getSeatPrices([
+                    'eventID' => $astraTrip['eventID'],
+                    'seatCategoryID' => $category['seatCategoryID'],
+                    'ticketTypeID' => $type['ticketTypeID'],
+                    "paymentTypeID" => "000000001",
+                ])['body'];
+
+                foreach ($seatsPrices['seatPrices'] as $price) {
+                    $grade = TicketGrade::updateOrCreate([
+                        'name' => explode('|', $price['seatCategoryName'])[0] . ' ' . rtrim(explode('|', $price['priceTypeName'])[0]),
+                        'provider_id' => Provider::astra_marine,
+                        'provider_ticket_type_id' => $type['ticketTypeID'],
+                        'provider_category_id' => $category['seatCategoryID'],
+                        'provider_price_type_id' => $price['priceTypeID']
+                    ]);
+                    $this->importPrice($trip, $price, $category);
+                    $this->connectShipSeatAndGrade($grade, $category['seatCategoryID'], $trip);
+                }
+            }
+        }
+    }
+
+    public function importPrice(Trip $trip, array $price, array $category): void
+    {
+        $rateList = $this->createOrUpdateRateList($trip);
+        TicketRate::updateOrCreate([
+            'rate_id' => $rateList->id,
+            'grade_id' => TicketGrade::where('provider_price_type_id', $price['priceTypeID'])
+                ->where('provider_category_id', $category['seatCategoryID'])
+                ->first()->id
+        ],
+            [
+                'base_price' => $price['priceTypeValueBoxOffice'],
+                'min_price' => $price['priceTypeValueBoxOffice'] + $price['priceTypeValueBoxOffice'] * 1.2,
+                'max_price' => $price['priceTypeValueBoxOffice'] + $price['priceTypeValueBoxOffice'] * 1.2,
+                'commission_type' => 'percents',
+                'commission_value' => 10,
+                'site_price' => $price['priceTypeValueBoxOffice'],
+                'partner_price' => $price['priceTypeValueBoxOffice']
+            ]);
+    }
+
+    public function createOrUpdateRateList($trip): TicketsRatesList
+    {
+        if ($ticketsRatesList = $trip->getRate()) {
+            $ticketsRatesList->update(['end_at' => now()->addDays(60)->format('Y-m-d')]);
+            $ticketsRatesList->save();
+        } else {
+            $ticketsRatesList = TicketsRatesList::create(
+                [
+                    'excursion_id' => $trip->excursion->id,
+                    'start_at' => now()->format('Y-m-d'),
+                    'end_at' => now()->addDays(60)->format('Y-m-d')
+                ]);
+        }
+        return $ticketsRatesList;
+    }
+
+    public function connectShipSeatAndGrade(TicketGrade $grade, string $providerCategoryId, Trip $trip): void
+    {
+        ShipSeatCategoryTicketGrade::updateOrCreate([
+            'seat_category_id' => SeatCategory::where('provider_category_id', $providerCategoryId)->first()?->id,
+            'ticket_grade_id' => $grade->id,
+            'ship_id' => $trip->ship->id,
+        ]);
+    }
+
 }
