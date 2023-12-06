@@ -67,7 +67,7 @@ class SchemeCartController extends Controller
                     'position_id' => $current->positionId(),
                     'trip_id' => $trip->id,
                     'quantity' => 1,
-                    'seat_number' => $ticket['seatNumber'],
+                    'seat_id' => $ticket['seatId'],
                     'grade_id' => $ticket['grade']['id'],
                     'terminal_id' => $current->terminalId()]);
 
@@ -84,7 +84,7 @@ class SchemeCartController extends Controller
                     $ticket->save();
                     TripSeat::query()->updateOrCreate([
                         'trip_id' => $trip->id,
-                        'seat_number' => $ticket->seat_number],
+                        'seat_id' => $ticket->seat->id],
                         ['status_id' => SeatStatus::reserve]);
                 }
             });
@@ -99,7 +99,7 @@ class SchemeCartController extends Controller
     {
         TripSeat::query()
             ->updateOrCreate(['trip_id' => $request->tripId,
-                'seat_number' => $request->seatNumber],
+                'seat_id' => $request->seatId],
                 ['status_id' => SeatStatus::reserve]);
 
         return APIResponse::success('updated');

@@ -5,6 +5,7 @@ namespace App\Models\Positions;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Model;
 use App\Models\Sails\Trip;
+use App\Models\Ships\Seats\Seat;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -128,5 +129,10 @@ class PositionOrderingTicket extends Model
     public function position()
     {
         return $this->belongsTo(Position::class);
+    }
+
+    public function seat()
+    {
+        return $this->hasOne(Seat::class);
     }
 }

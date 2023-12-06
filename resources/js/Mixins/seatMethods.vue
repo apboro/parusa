@@ -4,6 +4,7 @@ export default {
     data: () => ({
         selectedSeats: [],
         seatCategory: null,
+        categoryColors: {'Standard': '#ACD08F', 'VIP-8': '#318F82'},
     }),
 
     methods: {
@@ -14,53 +15,44 @@ export default {
         getCategoryName(categoryId) {
             return this.categories.find(el => el.id === categoryId).name;
         },
-        getColor(seatNumber) {
-            let seat = this.seats.find(el => el.seat_number == seatNumber);
-            let color = 'gray';
-            if (!seat.category)
-                return color;
-            if (seat.status && [5, 10].includes(seat.status.id))
-                return color;
-            return this.colors(seat.category.id)
-        },
-        colors(id) {
-            const colorMap = {
-                1: "pink",
-                2: "#8FCBF1FF",
-                3: "#94F18FFF",
-                4: "#8f80ed",
-                5: "#b58850",
-                6: "#b39583",
-                7: "#6fb9ee",
-                8: "#ad77d5",
-                9: "#e470ba",
-                10: "#9d9978",
-            };
 
-            return colorMap[id] || 'gray';
-        },
         handleClick(seatNumber) {
             let seat = this.seats.find(el => el.seat_number == seatNumber);
-            // console.log(seat)
-            if (this.seats.length > 0) {
-                if (seat.status && [5, 10].includes(seat.status.id)) {
-                    return;
-                }
+            if (seat.status && [5, 10].includes(seat.status.id)) {
+                return;
             }
+
             if (this.editing === false && this.selecting === false) {
                 return;
             }
-            if (this.selectedSeats.includes(seat.seat_number)) {
-                this.selectedSeats = this.selectedSeats.filter(s => s !== seat.seat_number);
-                this.$emit('selectSeat', {seatNumber: seat.seat_number, selectedSeats: this.selectedSeats})
+            if (this.selectedSeats.includes(seat.seat_id)) {
+                this.selectedSeats = this.selectedSeats.filter(s => s !== seat.seat_id);
+                this.$emit('selectSeat', {
+                    seatId: seat.seat_id,
+                    selectedSeats: this.selectedSeats,
+                    deselect: true
+                })
                 return;
             }
-            this.selectedSeats.push(seat.seat_number)
-            this.$emit('selectSeat', {seatNumber: seat.seat_number, selectedSeats: this.selectedSeats})
+
+            this.selectedSeats.push(seat.seat_id)
+            this.$emit('selectSeat', {seatNumber: seatNumber, seatId: seat.seat_id, selectedSeats: this.selectedSeats})
         },
 
-        selected(seat_number) {
-            return this.selectedSeats.includes(seat_number)
+        selected(seatNumber) {
+            let seat = this.seats.find(el => el.seat_number == seatNumber);
+
+            if (seat.status && [5, 10].includes(seat.status.id)) {
+                return 'ap-occupied';
+            }
+            if (this.selectedSeats.includes(seatNumber.toString())) {
+                return 'ap-selected';
+            }
+            if (seat.category.name === 'Standard')
+                return 'st22';
+
+            if (seat.category.name === 'VIP-8')
+                return 'st30';
         },
 
     }

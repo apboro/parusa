@@ -357,9 +357,14 @@ class AstraMarineRepository
      * }
      *
      */
-    public function getCustomerOrders(array $query = [])
+    public function getCustomerOrders(array $query = []): array
     {
         return $this->apiClient->post('getCustomerOrders', $query);
+    }
+
+    public function bookingSeat(array $query = [])
+    {
+        return $this->apiClient->post('bookingSeat', $query);
     }
 
 

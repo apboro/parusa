@@ -14,4 +14,9 @@ class TripSeat extends Model
     {
         return $this->hasOne(SeatStatus::class, 'id', 'status_id');
     }
+
+    public function seat()
+    {
+        return $this->hasOne(Seat::class);
+    }
 }

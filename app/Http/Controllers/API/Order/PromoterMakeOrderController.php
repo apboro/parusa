@@ -6,6 +6,7 @@ use App\Actions\CreateOrderFromPartner;
 use App\Actions\CreateOrderFromPromoter;
 use App\Actions\CreateTicketsFromPartner;
 use App\Actions\CreateTicketsFromPromoter;
+use App\Events\AstraMarineNewOrderEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Events\NewCityTourOrderEvent;
@@ -91,8 +92,16 @@ class   PromoterMakeOrderController extends ApiEditController
             DB::transaction(static function () use ($current, $tickets, &$order, $data) {
                 $order = (new CreateOrderFromPromoter($current))->execute($tickets['tickets'], $data);
 
+                NewNevaTravelOrderEvent::dispatch($order);
+
+                NewCityTourOrderEvent::dispatch($order);
+
+                AstraMarineNewOrderEvent::dispatch($order);
+
                 PositionOrderingTicket::query()->where('position_id', $current->positionId())->delete();
             });
+
+
         } catch (Exception $exception) {
 
             return APIResponse::error($exception->getMessage());

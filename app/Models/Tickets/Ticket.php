@@ -19,6 +19,7 @@ use App\Models\Model;
 use App\Models\Order\Order;
 use App\Models\Positions\Position;
 use App\Models\Sails\Trip;
+use App\Models\Ships\Seats\Seat;
 use App\Models\WorkShift\WorkShift;
 use App\Settings;
 use App\Traits\HasStatus;
@@ -379,7 +380,7 @@ class Ticket extends Model implements Statusable
         return $this->hasOne(BackwardTicket::class, 'backward_ticket_id', 'id')->exists();
     }
 
-    public function backwardTicket()
+    public function backwardTicket(): ?Ticket
     {
         return Ticket::find(BackwardTicket::where('main_ticket_id', $this->id)->first()?->backward_ticket_id);
     }
@@ -389,9 +390,14 @@ class Ticket extends Model implements Statusable
         return Ticket::find(BackwardTicket::where('backward_ticket_id', $this->id)->first()?->main_ticket_id);
     }
 
-    public function additionalData()
+    public function additionalData(): HasOne
     {
         return $this->hasOne(AdditionalDataTicket::class, 'ticket_id', 'id');
+    }
+
+    public function seat(): HasOne
+    {
+        return $this->hasOne(Seat::class);
     }
 
 }

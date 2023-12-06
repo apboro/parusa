@@ -49,7 +49,7 @@ class DictionaryEditController extends ApiEditController
 
         $query = $class::query()->orderBy('order')->orderBy('name');
 
-        if ($name === 'ticket_grades') {
+        if ($name === 'ticket_grades' || $name === 'seat_categories') {
             $query->where('provider_id', Provider::scarlet_sails);
         }
 
@@ -132,7 +132,7 @@ class DictionaryEditController extends ApiEditController
 
         foreach ($data as $key => $value) {
             $item->setAttribute($key, $value);
-            if ($name === 'ticket_grades') {
+            if ($name === 'ticket_grades' || $name === 'seat_categories') {
                 $item->setAttribute('provider_id', 5);
             }
         }

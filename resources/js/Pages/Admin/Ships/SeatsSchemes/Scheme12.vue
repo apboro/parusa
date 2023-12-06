@@ -1,23 +1,24 @@
 <template>
     <div v-if="seats && seats.length >= capacity">
         <svg viewBox="-20 70 500 200" xmlns="http://www.w3.org/2000/svg">
-            <rect :style="selected(1) ? null : {'fill': getColor(seats[0])}"
-                  @click="handleClick(seats[0])"
+            <rect :style="selected(1) ? null : {'fill': getColor(1)}"
+                  @click="handleClick(1)"
                   :class="{'rect_selected': selected(1)}"
+
                   x="66.461" y="95.07" width="21.127" height="22.007"/>
-            <rect :style="selected(2) ? null : {'fill': getColor(seats[1])}"
-                  @click="handleClick(seats[1])"
+            <rect :style="selected(2) ? null : {'fill': getColor(2)}"
+                  @click="handleClick(2)"
                   :class="{'rect_selected': selected(2)}"
                   x="66.461" y="132.042" width="22.007" height="22.007"/>
-            <rect :style="selected(3) ? null : {'fill': getColor(seats[2])}" @click="handleClick(seats[2])"
+            <rect :style="selected(3) ? null : {'fill': getColor(3)}" @click="handleClick(3)"
                   :class="{'rect_selected': selected(3)}" x="65.589" y="169.894" width="23.768" height="20.246"/>
-            <rect :style="selected(4) ? null : {'fill': getColor(seats[3])}" @click="handleClick(seats[3])"
+            <rect :style="selected(4) ? null : {'fill': getColor(4)}" @click="handleClick(4)"
                   :class="{'rect_selected': selected(4)}" x="174.736" y="94.19" width="25.528" height="20.246"/>
-            <rect :style="selected(5) ? null : {'fill': getColor(seats[4])}" @click="handleClick(seats[4])"
+            <rect :style="selected(5) ? null : {'fill': getColor(5)}" @click="handleClick(5)"
                   :class="{'rect_selected': selected(5)}" x="172.975" y="129.401" width="27.289" height="21.127"/>
-            <rect :style="selected(6) ? null : {'fill': getColor(seats[5])}" @click="handleClick(seats[5])"
+            <rect :style="selected(6) ? null : {'fill': getColor(6)}" @click="handleClick(6)"
                   :class="{'rect_selected': selected(6)}" x="256.602" y="93.31" width="29.049" height="22.007"/>
-            <rect :style="selected(7) ? null : {'fill': getColor(seats[6])}" @click="handleClick(seats[6])"
+            <rect :style="selected(7) ? null : {'fill': getColor(7)}" @click="handleClick(7)"
                   :class="{'rect_selected': selected(7)}" x="254.842" y="126.761" width="31.69" height="23.768"/>
             <ellipse cx="228.433" cy="123.239" rx="15.845" ry="15.845" style="fill: #999999FF;"/>
             <text
@@ -60,7 +61,7 @@
         <div v-if="categories && categories.length > 0" class="categories-container">
             <div v-for="category in categories" class="category-box">
                 <div class="seats-box">
-                    <div class="color-square" :style="{ backgroundColor: colors(category.id) }"></div>
+                    <div class="color-square" :style="{ backgroundColor: colorMap[category.id] }"></div>
                     <div> - {{ getCategoryName(category.id) }}</div>
                 </div>
                 <div class="grades_box">

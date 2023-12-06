@@ -142,7 +142,7 @@ class DictionaryController extends ApiController
             return APIResponse::notModified();
         }
 
-        if ($name === 'ticket_grades') {
+        if ($name === 'ticket_grades' || $name === 'seat_categories') {
             $query->where('provider_id', Provider::scarlet_sails);
         }
 

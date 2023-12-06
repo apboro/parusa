@@ -13,7 +13,7 @@
         </GuiContainer>
 
         <GuiContainer mt-20 t-15 v-if="editable">
-            <GuiButton v-if="data['owner'] === 'АЛЫЕ ПАРУСА'" @clicked ="edit">Редактировать</GuiButton>
+            <GuiButton v-if="data['provider_id'] === 5" @clicked ="edit">Редактировать</GuiButton>
         </GuiContainer>
 
         <FormPopUp :title="'Статус теплохода'"

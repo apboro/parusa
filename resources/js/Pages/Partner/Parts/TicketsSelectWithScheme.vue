@@ -68,15 +68,19 @@ export default {
 
     methods: {
         handleSelectSeat(data) {
-            let categoryId = this.trip['seats'].find(el => el.seat_number === data.seatNumber).category.id;
-            this.seatGrades = this.getFilteredGrades(categoryId);
-            this.$refs.category.show().then(() => {
-                this.tickets.push({
-                    seatNumber: data.seatNumber,
-                    grade: this.selectedGrade,
-                    price: this.getGradePrice(this.selectedGrade.id)
+            if (!data.deselect) {
+                let categoryId = this.trip['seats'].find(el => el.seat_number === data.seatNumber).category.id;
+                this.seatGrades = this.getFilteredGrades(categoryId);
+                this.$refs.category.show().then(() => {
+                    this.tickets.push({
+                        seatNumber: data.seatNumber,
+                        grade: this.selectedGrade,
+                        price: this.getGradePrice(this.selectedGrade.id)
+                    })
                 })
-            })
+            } else {
+                this.tickets = this.tickets.filter(ticket => ticket.seatNumber !== data.seatNumber);
+            }
             this.selectedSeats = data.selectedSeats;
         },
 

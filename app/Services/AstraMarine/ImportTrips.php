@@ -69,7 +69,9 @@ class ImportTrips
                 $trip->save();
 
                 $trip->additionalData()
-                    ->firstOrCreate(['provider_trip_id' => $astraTrip['eventID'], 'provider_id' => Provider::astra_marine]);
+                    ->firstOrCreate([
+                        'provider_trip_id' => $astraTrip['eventID'],
+                        'provider_id' => Provider::astra_marine]);
 
                 if ($trip->wasRecentlyCreated) {
                     $this->importSeatCategories($astraTrip, $trip->ship);
@@ -180,8 +182,8 @@ class ImportTrips
         ],
             [
                 'base_price' => $price['priceTypeValueBoxOffice'],
-                'min_price' => $price['priceTypeValueBoxOffice'] + $price['priceTypeValueBoxOffice'] * 1.2,
-                'max_price' => $price['priceTypeValueBoxOffice'] + $price['priceTypeValueBoxOffice'] * 1.2,
+                'min_price' => $price['priceTypeValueBoxOffice'],
+                'max_price' => $price['priceTypeValueBoxOffice'],
                 'commission_type' => 'percents',
                 'commission_value' => 10,
                 'site_price' => $price['priceTypeValueBoxOffice'],

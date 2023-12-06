@@ -57,40 +57,7 @@ export default {
 </script>
 
 <style lang="scss">
-rect {
-    fill: #6acce4;
-}
-
-.rect_selected {
-    fill: #FCD327FF;
-}
-
-.categories-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-}
-
-.category-box {
-    display: flex;
-    flex-direction: column;
-
-}
-.seats-box {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-.color-square {
-    width: 20px;
-    height: 20px;
-    margin: 5px;
-}
-
-.grades_box {
-    display: flex;
-    flex-direction: column;
-}
-
+ .ap-selected {
+     fill: orange;
+ }
 </style>

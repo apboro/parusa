@@ -16,6 +16,6 @@ class Seat extends Model
 
     public function status(int $tripId)
     {
-        return TripSeat::query()->where('trip_id', $tripId)->where('seat_number', $this->seat_number)->first()?->status;
+        return TripSeat::query()->where('trip_id', $tripId)->where('seat_id', $this->seat_id)->first()?->status;
     }
 }

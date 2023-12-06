@@ -8,14 +8,18 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('position_ordering_tickets', function (Blueprint $table) {
-            $table->unsignedTinyInteger('seat_number')->nullable();
+            $table->unsignedSmallInteger('seat_id')->nullable();
+            $table->foreign('seat_id')
+                ->on('seats')
+                ->references('id')
+                ->nullOnDelete();
         });
     }
 
     public function down(): void
     {
         Schema::table('position_ordering_tickets', function (Blueprint $table) {
-            $table->dropColumn('seat_number');
+            $table->dropColumn('seat_id');
         });
     }
 };

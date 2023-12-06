@@ -49,10 +49,11 @@ class ShipViewController extends ApiController
             'description' => $ship->description,
             'capacity' => $ship->capacity,
             'owner' => $ship->owner,
+            'provider_id' => $ship->provider_id,
             'status' => $ship->status->name,
             'status_id' => $ship->status_id,
             'categories' => $categories,
-            'seats' => $seats->transform(fn($seat) => ['seat_number' => $seat->seat_number, 'category' => $seat->category, 'status' => null]),
+            'seats' => $seats->transform(fn($seat) => ['seat_id' => $seat->id, 'seat_number' => $seat->seat_number, 'category' => $seat->category, 'status' => null]),
             'seat_tickets_grades' => $ship->seat_categories_ticket_grades()->with('grade')->get(),
             'ship_has_seats_scheme' => $ship->ship_has_seats_scheme,
         ];

@@ -229,6 +229,7 @@ class ShowcaseTripsController extends ApiController
         $seats = $trip->ship->seats;
         foreach ($seats as $seat) {
             $seatsAr[] = [
+                'seat_id' => $seat->id,
                 'seat_number' => $seat->seat_number,
                 'category' => $seat->category,
                 'status' => $seat->status($trip->id)
