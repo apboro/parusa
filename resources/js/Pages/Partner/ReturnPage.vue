@@ -39,7 +39,7 @@
                             <table class="details-table">
                                 <thead>
                                 <tr>
-                                    <td v-for="(cell, key) in ['№ билета', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус билета']" :key="key"
+                                    <td v-for="(cell, key) in ['№ билета!', 'Отправление', 'Экскурсия, причал', 'Тип билета', 'Стоимость', 'Статус билета']" :key="key"
                                     >{{ cell }}
                                     </td>
                                 </tr>
@@ -158,3 +158,45 @@ export default {
     }
 }
 </script>
+
+<style lang="scss">
+@media (max-width: 767px) {
+    .list-table__header-row th:nth-child(1) {
+        position: sticky;
+        left: 0;
+        background: #e3ecf7;
+        width: 26%;
+    }
+
+    .list-table__header-row th:nth-child(2) {
+        position: inherit !important;
+    }
+
+    .list-table__row > td:nth-child(1) {
+        position: sticky;
+        left: 0;
+        background: #fff;
+        width: 26%;
+    }
+
+    .list-table__row > td:nth-child(2) {
+        position: inherit !important;
+    }
+
+    .details-table {
+        margin-left: 0 !important;
+
+        >thead >tr >th:nth-child(1) {
+            position: sticky;
+            left: 0;
+            background: #fff;
+        }
+
+        >tr >td:nth-child(1) {
+            position: sticky;
+            left: 0;
+            background: #fff;
+        }
+    }
+}
+</style>
