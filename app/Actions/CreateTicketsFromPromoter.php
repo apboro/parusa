@@ -33,12 +33,13 @@ class CreateTicketsFromPromoter
                         'base_price' => $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : $ticketInfo['price'],
                         'status_id' => TicketStatus::promoter_wait_for_pay,
                         'provider_id' => $ordering->trip->provider_id,
-                        'seat_number' => $ordering->seat_number,
+                        'seat_id' => $ordering->seat_id,
                     ]);
 
                     $ticket->cart_ticket_id = $ordering->id;
                     $ticket->cart_parent_ticket_id = $ordering->parent_ticket_id;
                     $ticket->backward_price = $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : null;
+                    $ticket->menu_id = $ordering->menu_id ?? null;
 
                     $totalAmount += $ordering->parent_ticket_id !== null ? $ordering->getBackwardPrice() : $ordering->getPartnerPrice() ?? $ordering->getPrice();
                     $tickets[] = $ticket;

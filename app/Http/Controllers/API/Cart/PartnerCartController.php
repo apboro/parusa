@@ -77,7 +77,7 @@ class PartnerCartController extends ApiEditController
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
                 'pier' => $trip->startPier->name,
                 'grade' => $ticket->grade->name,
-                'seat_number' => $ticket->seat_number,
+                'seat' => $ticket->seat,
                 'base_price' => $price = $ticket->getPartnerPrice() ?? $ticket->getPrice(),
                 'min_price' => $ticket->getMinPrice(),
                 'max_price' => $ticket->getMaxPrice(),
@@ -278,7 +278,7 @@ class PartnerCartController extends ApiEditController
 
         $cartTicketQuery = PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id, 'terminal_id' => $current->terminalId()]);
         $ticket = $cartTicketQuery->first();
-        TripSeat::query()->where('trip_id', $ticket->trip_id)->where('seat_number', $ticket->seat_number)->delete();
+        TripSeat::query()->where('trip_id', $ticket->trip_id)->where('seat_id', $ticket->seat_id)->delete();
 
         $cartTicketQuery->delete();
 

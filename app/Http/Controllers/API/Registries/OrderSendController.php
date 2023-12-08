@@ -38,8 +38,6 @@ class OrderSendController extends ApiController
             return APIResponse::error('Не задан адрес получателя');
         }
 
-        Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
-
         try {
             Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
         } catch (Exception $exception) {

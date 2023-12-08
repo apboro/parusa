@@ -3,6 +3,7 @@
 namespace App\Services\AstraMarine;
 
 use App\Exceptions\AstraMarine\AstraMarineNoTicketException;
+use App\Models\Dictionaries\Provider;
 use App\Models\Order\Order;
 use App\Models\Ships\Seats\Seat;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,7 +23,7 @@ class AstraMarineOrder
         $this->astraMarineRepository = new AstraMarineRepository();
     }
 
-    public function bookSeats()
+    public function bookSeats(): void
     {
         foreach ($this->tickets as $ticket) {
             $response = $this->astraMarineRepository->bookingSeat([
@@ -37,35 +38,63 @@ class AstraMarineOrder
         }
     }
 
-    public function registerOrder()
+    public function registerOrder(): void
     {
-        foreach ($this->getTickets() as $ticket) {
-            $order[] = [
+        $orders = $this->getOrdersQueryData();
+
+        $response = $this->astraMarineRepository->registerOrder([
+            "sessionID" => md5($this->order->phone),
+            "orderID" => $this->order->id,
+            "paymentTypeID" => "000000002",
+            "email" => "info@parus-a.ru",
+            'order' => $orders,
+        ]);
+
+        $this->saveTicketsBarcodes($response['body']);
+    }
+
+    public function getTickets(): Collection|array
+    {
+        return $this->order->tickets()
+            ->with(['trip', 'trip.ship', 'trip.additionalData', 'seat'])
+            ->get();
+    }
+
+    public function getOrdersQueryData(): array
+    {
+        foreach ($this->tickets as $ticket) {
+            $orders[] = [
                 "eventID" => $ticket->trip->additionalData->provider_trip_id,
                 "seatID" => $ticket->seat->provider_seat_id,
                 "priceTypeID" => $ticket->grade->provider_price_type_id,
                 "seatCategoryID" => $ticket->seat->category->provider_category_id,
                 "ticketTypeID" => $ticket->grade->provider_ticket_type_id,
-                "menuID" => "",
+                "menuID" => $ticket->additionalData?->menu?->provider_menu_id,
                 "quantityOfTickets" => 1,
                 "resident" => ""
             ];
         }
 
-        $this->astraMarineRepository->registerOrder([
-            "sessionID" => md5($this->order->phone),
-            "orderID" => $this->order->id,
-            "paymentTypeID" => "000000002",
-            "email" => "info@parus-a.ru",
-            'order' => $order ?? [],
-        ]);
+        return $orders ?? [];
     }
 
-    public function getTickets()
+    public function saveTicketsBarcodes(array $orderedTickets): void
     {
-        return $this->order->tickets()
-            ->with(['trip', 'trip.ship', 'trip.additionalData', 'seat'])
-            ->get();
+        foreach ($orderedTickets['orderedSeats'] as $orderedTicket){
+            $ticket = $this->tickets->first(fn($ticket) => $ticket->seat->provider_seat_id === $orderedTicket['seatID']);
+            if ($ticket){
+                $ticket->additionalData()->updateOrCreate(['provider_id' => Provider::astra_marine],
+                    ['provider_qr_code' => $orderedTicket['barCodes'][0]]);
+            }
+        }
+    }
+
+    public function confirmOrder()
+    {
+        $this->astraMarineRepository->confirmPayment([
+           'orderID' => $this->order->id,
+            'orderConfirm' => true,
+        ]);
     }
 
 }

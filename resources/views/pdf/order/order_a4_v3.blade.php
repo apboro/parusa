@@ -84,10 +84,10 @@ use App\Models\Common\Image;
                                     <div
                                         style="margin: 0 0 5pt;font-family: 'Proxima Nova',serif;font-size: 8pt;line-height: 7pt;">
                                         № билета {{ $ticket->id }}</div>
-                                    @if ($ticket->seat_number)
+                                    @if ($ticket->seat)
                                         <div
                                             style="margin: 0;font-family: 'Proxima Nova',serif;font-size: 8pt;line-height: 7pt;">
-                                            № места {{ $ticket->seat_number }}</div>
+                                            № места {{ $ticket->seat->seat_number }}</div>
                                     @endif
                                 </td>
                                 <td style="vertical-align: top; padding-top: 5pt;">

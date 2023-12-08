@@ -2,6 +2,7 @@
 
 namespace App\Models\Dictionaries;
 
+use App\Models\Menu;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -44,4 +45,9 @@ class TicketGrade extends AbstractDictionary
         'preferential' => 'boolean',
         'order' => 'int',
     ];
+
+    public function menus()
+    {
+        return $this->belongsToMany(Menu::class, 'grade_has_menus', 'grade_id', 'menu_id');
+    }
 }

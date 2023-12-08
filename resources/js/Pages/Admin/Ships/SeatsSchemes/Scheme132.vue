@@ -24,7 +24,7 @@ export default {
 
 <template>
     <div v-if="seats && seats.length >= capacity">
-        <svg version="1.1" id="Слой_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        <svg id="Слой_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
              x="0px" y="0px"
              viewBox="0 0 1060 300.8648071" style="height: 300px">
             <g>
@@ -7076,91 +7076,16 @@ export default {
             </g>
         </svg>
 
-        <CategoriesBox :categories="categories" :grades="grades" :categoryColors="categoryColors"/>
+        <CategoriesBox :categories="categories" :grades="grades"/>
 
     </div>
 
 </template>
 
 <style scoped>
-.st0 {
-    fill: #EDEDED;
-    stroke: #1D1D1B;
-    stroke-width: 0.5411787;
-    stroke-miterlimit: 10;
-}
-
-.st1 {
-    fill: #FFFFFF;
-    stroke: #1D1D1B;
-    stroke-width: 0.5411787;
-    stroke-miterlimit: 10;
-}
-
-.st2 {
-    fill: none;
-    stroke: #1D1D1B;
-    stroke-width: 0.5411787;
-    stroke-miterlimit: 10;
-}
-
-.st3 {
-    fill: #1D1D1B;
-}
-
-.st4 {
-    fill: none;
-    stroke: #1D1D1B;
-    stroke-width: 0.536;
-    stroke-miterlimit: 10;
-}
-
-.st5 {
-    fill: #ECECEC;
-}
-
-.st6 {
-    fill: #ADD18F;
-}
 
 .st7 {
     fill: #FFFFFF;
-}
-
-.st8 {
-    fill: #EDEDED;
-}
-
-.st9 {
-    fill: none;
-    stroke: #1D1D1B;
-    stroke-width: 0.7502325;
-    stroke-miterlimit: 10;
-}
-
-.st10 {
-    fill: #2E9084;
-}
-
-.st11 {
-    fill: #B3D1DE;
-    stroke: #1D1D1B;
-    stroke-width: 0.536;
-    stroke-miterlimit: 10;
-}
-
-.st12 {
-    fill: none;
-    stroke: #1D1D1B;
-    stroke-width: 0.6831605;
-    stroke-miterlimit: 10;
-}
-
-.st13 {
-    fill: none;
-    stroke: #1D1D1B;
-    stroke-width: 0.4095025;
-    stroke-miterlimit: 10;
 }
 
 .st14 {
@@ -7296,7 +7221,4 @@ export default {
     stroke-miterlimit: 10;
 }
 
-.ap-occupied {
-    fill: #a1a7ae;
-}
 </style>

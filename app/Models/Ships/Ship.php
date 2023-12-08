@@ -12,9 +12,7 @@ use App\Models\Dictionaries\ShipType;
 use App\Models\Model;
 use App\Models\Sails\Trip;
 use App\Models\Ships\Seats\Seat;
-use App\Models\Ships\Seats\SeatCategory;
 use App\Models\Ships\Seats\ShipSeatCategoryTicketGrade;
-use App\Models\Ships\Seats\ShipSeatCategory;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use Carbon\Carbon;
@@ -135,6 +133,4 @@ class Ship extends Model implements Statusable, Typeable, AsDictionary
     {
         return $this->hasMany(ShipSeatCategoryTicketGrade::class, 'ship_id', 'id');
     }
-
-
 }

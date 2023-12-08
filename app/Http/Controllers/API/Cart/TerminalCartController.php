@@ -100,7 +100,7 @@ class TerminalCartController extends ApiEditController
                 'max_price' => $ticket->getMaxPrice(),
                 'quantity' => $ticket->quantity,
                 'available' => ($price !== null) && $trip->hasStatus(TripSaleStatus::selling, 'sale_status_id') && ($trip->start_at > Carbon::now() || $trip->excursion->is_single_ticket = 1),
-                'seat_number' => $ticket->seat_number,
+                'seat_id' => $ticket->seat_id,
             ];
         });
 
@@ -323,7 +323,7 @@ class TerminalCartController extends ApiEditController
 
         $cartTicketQuery = PositionOrderingTicket::query()->where(['id' => $id, 'terminal_id' => $current->terminalId()]);
         $ticket = $cartTicketQuery->first();
-        TripSeat::query()->where('trip_id', $ticket->trip_id)->where('seat_number', $ticket->seat_number)->delete();
+        TripSeat::query()->where('trip_id', $ticket->trip_id)->where('seat_id', $ticket->seat_id)->delete();
 
         $cartTicketQuery->delete();
         return APIResponse::success('Билет удалён из заказа.');

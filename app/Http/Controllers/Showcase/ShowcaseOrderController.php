@@ -294,7 +294,7 @@ class ShowcaseOrderController extends ApiEditController
                 'grade_id' => $ticket['grade']['id'],
                 'status_id' => TicketStatus::showcase_creating,
                 'base_price' => $ticket['price'],
-                'seat_number' => $ticket['seatNumber'],
+                'seat_id' => $ticket['seatId'],
                 'provider_id' => $trip->provider_id,
             ]);
             $tickets[] = $ticket;

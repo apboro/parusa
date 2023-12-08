@@ -7,7 +7,6 @@ export default {
     props: {
         grades: Array,
         categories: Array,
-        categoryColors: Object,
     }
 
 

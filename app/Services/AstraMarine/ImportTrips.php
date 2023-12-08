@@ -5,6 +5,7 @@ namespace App\Services\AstraMarine;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Excursions\Excursion;
+use App\Models\Menu;
 use App\Models\Piers\Pier;
 use App\Models\Sails\Trip;
 use App\Models\Ships\Seats\Seat;
@@ -140,8 +141,8 @@ class ImportTrips
                 'seat_number' => $seat['aliasSeat']],
 
                 ['seat_category_id' => SeatCategory::where('provider_category_id', $seat['seatCategoryID'])->first()?->id,
-                'provider_seat_id' => $seat['seatID'],
-            ]);
+                    'provider_seat_id' => $seat['seatID'],
+                ]);
         }
     }
 
@@ -162,10 +163,12 @@ class ImportTrips
                         'provider_id' => Provider::astra_marine,
                         'provider_ticket_type_id' => $type['ticketTypeID'],
                         'provider_category_id' => $category['seatCategoryID'],
-                        'provider_price_type_id' => $price['priceTypeID']
+                        'provider_price_type_id' => $price['priceTypeID'],
+                        'has_menu' => $price['hasMenu'],
                     ]);
                     $this->importPrice($trip, $price, $category);
                     $this->connectShipSeatAndGrade($grade, $category['seatCategoryID'], $trip);
+                    $this->importMenus($price, $trip, $grade);
                 }
             }
         }
@@ -214,6 +217,20 @@ class ImportTrips
             'ticket_grade_id' => $grade->id,
             'ship_id' => $trip->ship->id,
         ]);
+    }
+
+    public function importMenus(array $price, Trip $trip, TicketGrade $grade)
+    {
+        foreach ($price['menus'] as $menu) {
+            $menu = Menu::updateOrCreate([
+                'provider_id' => Provider::astra_marine,
+                'provider_price_type_id' => $price['priceTypeID'],
+                'provider_menu_id' => $menu['menuID'],
+                'ship_id' => $trip->ship->id,
+            ],['name' => $menu['menuName']]);
+
+            $menu->grades()->syncWithoutDetaching([$grade->id]);
+        }
     }
 
 }

@@ -62,15 +62,15 @@ class SchemeCartController extends Controller
                 return APIResponse::error('Ошибка. Неверные тарифы.');
             }
             $ticket = $current->position()->ordering()
-                ->where(['trip_id' => $trip->id, 'grade_id' => $ticket['grade']['id'], 'terminal_id' => $current->terminalId()])
                 ->firstOrNew([
                     'position_id' => $current->positionId(),
                     'trip_id' => $trip->id,
                     'quantity' => 1,
                     'seat_id' => $ticket['seatId'],
                     'grade_id' => $ticket['grade']['id'],
-                    'terminal_id' => $current->terminalId()]);
-
+                    'terminal_id' => $current->terminalId(),
+                    'menu_id' => $ticket['menu']['id'] ?? null
+            ]);
             $ordering[] = $ticket;
         }
         try {

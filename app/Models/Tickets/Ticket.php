@@ -397,7 +397,7 @@ class Ticket extends Model implements Statusable
 
     public function seat(): HasOne
     {
-        return $this->hasOne(Seat::class);
+        return $this->hasOne(Seat::class, 'id', 'seat_id');
     }
 
 }

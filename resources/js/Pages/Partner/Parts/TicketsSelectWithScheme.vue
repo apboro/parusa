@@ -15,23 +15,36 @@
             :selecting="true"
             @selectSeat="handleSelectSeat"/>
 
-        <div class="tickets-box">
+        <div v-if="tickets.length > 0" class="tickets-box">
             <span>Выбранные билеты:</span>
             <div v-for="ticket in tickets" class="tickets-box">
-                <span>Место: {{ ticket.seatNumber }}</span>
-                <span>Билет: {{ ticket.grade.name }}</span>
-                <span>Цена: {{ ticket.price }} руб.</span>
+                <span><b>Место:</b> {{ ticket.seatNumber }}</span>
+                <span><b>Билет:</b> {{ ticket.grade.name }}</span>
+                <span v-if="ticket.menu !== null"><b>Меню:</b> {{ ticket.menu.name }}</span>
+                <span><b>Цена:</b> {{ ticket.price }} руб.</span>
             </div>
-            <span style="margin-top: 15px;">Итого: {{ total }} руб.</span>
+            <span style="margin-top: 15px;"><b>Итого:</b> {{ total }} руб.</span>
         </div>
 
-        <PopUp ref="category">
-            <label v-for="(option, index) in seatGrades" :key="index">
-                <input style="margin-top: 10px" type="radio" v-model="selectedGrade" :value="option.grade"
-                       :name="'grade-select'"> {{ option.grade.name }} - {{ getGradePrice(option.grade.id) }} руб.
+        <PopUp ref="category"
+               :buttons="[
+               {result: 'ok', caption: 'OK', color: 'green', disabled: !selectedGrade || (selectedGrade.menus.length > 0 ? !selectedMenu : false)},
+               {result: 'cancel', caption: 'Отмена'},
+           ]"
+        >
+            <label v-for="(grade, index) in seatGrades" :key="index">
+                <input @click="selectedMenu = null" style="margin-top: 10px" type="radio" v-model="selectedGrade" :value="grade.grade"
+                       :name="'grade-select'"> {{ grade.grade.name }} - {{ getGradePrice(grade.grade.id) }} руб.
             </label>
+            <div style="display: flex; flex-direction: column; align-items: center"
+                 v-if="selectedGrade && selectedGrade.menus.length > 0">
+                <span style="margin-top: 20px;">Выберите меню</span>
+                <label v-for="(menu, index) in selectedGrade.menus" :key="index">
+                    <input style="margin-top: 10px;" type="radio" v-model="selectedMenu" :value="menu"
+                           :name="'menu-select'"> {{ menu.name }}
+                </label>
+            </div>
         </PopUp>
-
     </PopUp>
 </template>
 
@@ -57,6 +70,7 @@ export default {
         selectedSeats: [],
         seatGrades: null,
         selectedGrade: null,
+        selectedMenu: null,
         tickets: [],
     }),
 
@@ -69,17 +83,19 @@ export default {
     methods: {
         handleSelectSeat(data) {
             if (!data.deselect) {
-                let categoryId = this.trip['seats'].find(el => el.seat_number === data.seatNumber).category.id;
+                let categoryId = this.trip['seats'].find(el => el.seat_id === data.seatId).category.id;
                 this.seatGrades = this.getFilteredGrades(categoryId);
                 this.$refs.category.show().then(() => {
                     this.tickets.push({
+                        seatId: data.seatId,
                         seatNumber: data.seatNumber,
+                        menu: this.selectedMenu,
                         grade: this.selectedGrade,
                         price: this.getGradePrice(this.selectedGrade.id)
                     })
                 })
             } else {
-                this.tickets = this.tickets.filter(ticket => ticket.seatNumber !== data.seatNumber);
+                this.tickets = this.tickets.filter(ticket => ticket.seatId !== data.seatId);
             }
             this.selectedSeats = data.selectedSeats;
         },
@@ -101,6 +117,10 @@ export default {
 
         resolved(result) {
             if (['add', 'add_and_redirect'].indexOf(result) === -1 || this.count === 0) {
+                this.selectedGrade = null;
+                this.selectedSeats = null;
+                this.selectedMenu = null;
+                this.tickets = [];
                 this.$refs.popup.hide();
                 return true;
             }
@@ -187,6 +207,12 @@ $base_black_color: #1e1e1e !default;
     flex-direction: column;
     align-items: center;
     margin-top: 10px;
+    border: 1px solid #ddd; /* Add a border */
+    border-radius: 8px; /* Add rounded corners */
+    padding: 16px; /* Add padding */
+    margin-bottom: 16px; /* Add margin between cards */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+    background-color: #fff; /* Set background color */
 }
 
 </style>

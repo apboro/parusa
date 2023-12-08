@@ -155,6 +155,17 @@ class TripsSelectListController extends ApiController
                 ];
             }
 
+            $currentDateTime = Carbon::now();
+            $isAfterNoon = $currentDateTime->format('H:i') > '12:00';
+
+            $seatsGradesQuery = $trip->ship->seat_categories_ticket_grades()->with(['grade', 'grade.menus']);
+            if ($isAfterNoon && Carbon::parse($trip->start_at)->isToday()) {
+              $seatsGradesQuery->whereHas('grade', function ($subQuery) {
+                  $subQuery->where('has_menu', 0);
+              });
+            }
+            $seatsGrades = $seatsGradesQuery->get();
+
             return [
                 'id' => $trip->id,
                 'start_date' => $trip->start_at->format('d.m.Y'),
@@ -173,7 +184,7 @@ class TripsSelectListController extends ApiController
                 'shipId' => $trip->ship->id,
                 'categories' => $categories,
                 'seats' => $seatsAr ?? [],
-                'seat_tickets_grades' => $trip->ship->seat_categories_ticket_grades()->with('grade')->get(),
+                'seat_tickets_grades' => $seatsGrades,
                 'tickets_count' => $trip->getAttribute('tickets_count'),
                 'tickets_total' => $trip->tickets_total,
                 'rates' => array_values($rates),

@@ -27,7 +27,7 @@
                         </div>
                     </td>
                     <td><span class="order-table__mobile-subtitle">Причал</span>{{ ticket['pier'] }}</td>
-                    <td><span class="order-table__mobile-subtitle">Тип билета</span>{{ ticket['grade'] }}<br><span v-if="ticket['seat_number']">Место: {{ticket['seat_number']}}</span></td>
+                    <td><span class="order-table__mobile-subtitle">Тип билета</span>{{ ticket['grade'] }}<br><span v-if="ticket['seat']">Место: {{ticket['seat']['seat_number']}}</span></td>
                     <template v-if="ticket['available']">
                         <td>
                         <span class="order-table__mobile-subtitle">Цена</span>
@@ -35,7 +35,7 @@
                         </td>
                         <td>
                             <span class="order-table__mobile-subtitle">Количество</span>
-                            <FormNumber :disabled="(ticket['backward_price'] !== null && ticket['ticket_provider_id'] !== null || ticket['seat_number'])" :form="form"
+                            <FormNumber :disabled="(ticket['backward_price'] !== null && ticket['ticket_provider_id'] !== null || ticket['seat'] !== null)" :form="form"
                                         :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true"
                                         :min="0" :hide-title="true" :model-value="ticket['quantity']"
                                         @change="(value) => quantityChange(ticket['id'], value)"

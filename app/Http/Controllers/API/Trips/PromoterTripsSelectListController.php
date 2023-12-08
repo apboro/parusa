@@ -180,7 +180,7 @@ class PromoterTripsSelectListController extends ApiController
                 'shipId' => $trip->ship->id,
                 'categories' => $categories,
                 'seats' => $seatsAr ?? [],
-                'seat_tickets_grades' => $trip->ship->seat_categories_ticket_grades()->with('grade')->get(),
+                'seat_tickets_grades' => $trip->ship->seat_categories_ticket_grades()->with(['grade', 'grade.menus'])->get(),
                 'tickets_count' => $trip->getAttribute('tickets_count'),
                 'tickets_total' => $trip->tickets_total,
                 'rates' => array_values($rates),

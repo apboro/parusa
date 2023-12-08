@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Order;
 use App\Actions\CreateOrderFromPartner;
 use App\Actions\CreateTicketsFromPartner;
 use App\Events\AstraMarineNewOrderEvent;
+use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Events\NewCityTourOrderEvent;
@@ -125,6 +126,7 @@ class   PartnerMakeOrderController extends ApiEditController
                 CityTourOrderPaidEvent::dispatch($order);
 
                 AstraMarineNewOrderEvent::dispatch($order);
+                AstraMarineOrderPaidEvent::dispatch($order);
 
                 // attach order_id to transaction
                 if ($status_id === OrderStatus::partner_paid) {

@@ -10,14 +10,15 @@ return new class extends Migration {
         Schema::table('dictionary_ticket_grades', function (Blueprint $table) {
             $table->string('provider_ticket_type_id',20)->nullable();
             $table->string('provider_category_id',20)->nullable();
-            $table->string('provider_price_type_id', 20)->nullable();
+            $table->string('provider_price_type_id', 20)->index()->nullable();
+            $table->boolean('has_menu')->default(false);
         });
     }
 
     public function down(): void
     {
         Schema::table('dictionary_ticket_grades', function (Blueprint $table) {
-            $table->dropColumn(['provider_ticket_type_id','provider_category_id', 'provider_price_type_id']);
+            $table->dropColumn(['provider_ticket_type_id','provider_category_id', 'provider_price_type_id', 'has_menu']);
         });
     }
 };

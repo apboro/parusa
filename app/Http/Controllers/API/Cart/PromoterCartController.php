@@ -77,7 +77,7 @@ class PromoterCartController extends ApiEditController
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
                 'pier' => $trip->startPier->name,
                 'grade' => $ticket->grade->name,
-                'seat_number' => $ticket->seat_number,
+                'seat' => $ticket->seat,
                 'base_price' => $price = $ticket->getPrice(),
                 'min_price' => $ticket->getMinPrice(),
                 'max_price' => $ticket->getMaxPrice(),

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Ships;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\ShipStatus;
 use App\Models\Hit\Hit;
 use App\Models\Ships\Seats\Seat;
@@ -26,7 +27,7 @@ class ShipViewController extends ApiController
         }
         $seats = Seat::query()->with('category')->where('ship_id', $request->id)->get();
 
-        if ($seats->count() < $ship->capacity)
+        if ($seats->count() < $ship->capacity && $ship->provider_id === Provider::scarlet_sails)
             for ($i = 1; $i <= $ship->capacity; $i++)
                 Seat::query()->firstOrCreate([
                     'ship_id' => $ship->id,

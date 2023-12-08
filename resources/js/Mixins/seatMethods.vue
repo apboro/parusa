@@ -29,6 +29,7 @@ export default {
                 this.selectedSeats = this.selectedSeats.filter(s => s !== seat.seat_id);
                 this.$emit('selectSeat', {
                     seatId: seat.seat_id,
+                    seatNumber: seatNumber,
                     selectedSeats: this.selectedSeats,
                     deselect: true
                 })
@@ -45,7 +46,7 @@ export default {
             if (seat.status && [5, 10].includes(seat.status.id)) {
                 return 'ap-occupied';
             }
-            if (this.selectedSeats.includes(seatNumber.toString())) {
+            if (this.selectedSeats.includes(seat.seat_id)) {
                 return 'ap-selected';
             }
             if (seat.category.name === 'Standard')
