@@ -13,15 +13,19 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->unsignedSmallInteger('provider_id')->nullable();
             $table->string('provider_menu_id')->nullable();
+            $table->unsignedSmallInteger('ticket_grade_id')->nullable();
             $table->string('provider_price_type_id')->nullable();
             $table->unsignedSmallInteger('ship_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('provider_id')->on('dictionary_providers')
+            $table->foreign('provider_id')
+                ->on('dictionary_providers')
                 ->references('id')->nullOnDelete();
-            $table->foreign('provider_price_type_id')->on('dictionary_ticket_grades')
-                ->references('provider_price_type_id')->nullOnDelete();
-            $table->foreign('ship_id')->on('ships')
+            $table->foreign('ticket_grade_id')
+                ->on('dictionary_ticket_grades')
+                ->references('id')->nullOnDelete();
+            $table->foreign('ship_id')
+                ->on('ships')
                 ->references('id')->nullOnDelete();
         });
     }
