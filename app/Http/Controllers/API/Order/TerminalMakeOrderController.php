@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Order;
 
 use App\Actions\CreateOrderFromTerminal;
 use App\Actions\CreateTicketsFromTerminal;
+use App\Events\AstraMarineNewOrderEvent;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
@@ -126,6 +127,8 @@ class TerminalMakeOrderController extends ApiEditController
                 NewNevaTravelOrderEvent::dispatch($order);
 
                 NewCityTourOrderEvent::dispatch($order);
+
+                AstraMarineNewOrderEvent::dispatch($order);
 
                 // send order to POS
                 if (app()->environment('production')) {

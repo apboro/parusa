@@ -80,9 +80,9 @@ class AstraMarineOrder
 
     public function saveTicketsBarcodes(array $orderedTickets): void
     {
-        foreach ($orderedTickets['orderedSeats'] as $orderedTicket){
+        foreach ($orderedTickets['orderedSeats'] as $orderedTicket) {
             $ticket = $this->tickets->first(fn($ticket) => $ticket->seat->provider_seat_id === $orderedTicket['seatID']);
-            if ($ticket){
+            if ($ticket) {
                 $ticket->additionalData()->updateOrCreate(['provider_id' => Provider::astra_marine],
                     ['provider_qr_code' => $orderedTicket['barCodes'][0]]);
             }
@@ -92,9 +92,25 @@ class AstraMarineOrder
     public function confirmOrder()
     {
         $this->astraMarineRepository->confirmPayment([
-           'orderID' => $this->order->id,
+            'orderID' => $this->order->id,
             'orderConfirm' => true,
         ]);
+    }
+
+    public function cancel()
+    {
+        $order_id_formatted = number_format($this->order->id, 0, '', ' ');
+        $order = explode(' ', $order_id_formatted);
+        $dataOrder = $order[0]."\xC2\xA0".$order[1];
+        $this->astraMarineRepository->returnOrder(["orderID" => $dataOrder]);
+    }
+
+    public function getOrder()
+    {
+        $order_id_formatted = number_format($this->order->id, 0, '', ' ');
+        $order = explode(' ', $order_id_formatted);
+        $dataOrder = $order[0]."\xC2\xA0".$order[1];
+        return $this->astraMarineRepository->getOrder(["orderID" => $dataOrder]);
     }
 
 }

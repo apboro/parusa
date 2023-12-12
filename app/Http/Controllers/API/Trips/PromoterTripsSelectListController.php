@@ -142,26 +142,6 @@ class PromoterTripsSelectListController extends ApiController
                     ];
                 })->toArray();
 
-            $categories = $trip->ship->seats()
-                ->whereNotNull('seat_category_id')
-                ->groupBy('seat_category_id')
-                ->get();
-            if ($categories->isNotEmpty()) {
-                $categories->transform(fn($e) => ['name' => $e->category?->name, 'id' => $e->category?->id]);
-            } else {
-                $categories = [];
-            }
-
-            $seats = $trip->ship->seats;
-            foreach ($seats as $seat) {
-                $seatsAr[] = [
-                    'seat_id' => $seat->id,
-                    'seat_number' => $seat->seat_number,
-                    'category' => $seat->category,
-                    'status' => $seat->status($trip->id)
-                ];
-            }
-
             return [
                 'id' => $trip->id,
                 'start_date' => $trip->start_at->format('d.m.Y'),
@@ -178,9 +158,9 @@ class PromoterTripsSelectListController extends ApiController
                 'capacity' => $trip->ship->capacity,
                 'ship_has_scheme' => $trip->ship->ship_has_seats_scheme,
                 'shipId' => $trip->ship->id,
-                'categories' => $categories,
-                'seats' => $seatsAr ?? [],
-                'seat_tickets_grades' => $trip->ship->seat_categories_ticket_grades()->with(['grade', 'grade.menus'])->get(),
+                'categories' => $trip->getSeatCategories(),
+                'seats' => $trip->getSeats(),
+                'seat_tickets_grades' => $trip->getSeatGrades(),
                 'tickets_count' => $trip->getAttribute('tickets_count'),
                 'tickets_total' => $trip->tickets_total,
                 'rates' => array_values($rates),
@@ -211,6 +191,8 @@ class PromoterTripsSelectListController extends ApiController
                 'piers_filter' => $this->piersFilter($filters),
 
                 'programs_filter' => $this->programsFilter($filters),
+                'partner' => $current->partner(),
+                'terminal' => $current->terminal(),
 
             ]
         )->withCookie(cookie($this->rememberKey, $request->getToRemember()));

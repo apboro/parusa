@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Classes\EmailReceiver;
+use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\LifePay\CloudPrint;
@@ -90,6 +91,7 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
         try {
             NevaTravelOrderPaidEvent::dispatch($order);
             CityTourOrderPaidEvent::dispatch($order);
+            AstraMarineOrderPaidEvent::dispatch($order);
         } catch (Exception $exception) {
             Log::error('ProcessShowcaseConfirmedOrder', [$exception]);
         }

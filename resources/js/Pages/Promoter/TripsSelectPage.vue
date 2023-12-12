@@ -146,7 +146,7 @@
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
         <TicketsSelect ref="select_popup"/>
-        <TicketsSelectWithScheme ref="select_scheme_popup"/>
+        <TicketsSelectWithScheme ref="select_scheme_popup" :payload="list.payload"/>
         <ExcursionInfo ref="excursion_info"/>
         <PierInfo ref="pier_info"/>
     </LayoutPage>
@@ -172,7 +172,7 @@
     import ExcursionInfo from "@/Pages/Partner/Parts/ExcursionInfo";
     import PierInfo from "@/Pages/Partner/Parts/PierInfo";
     import InputDropDown from "@/Components/Inputs/InputDropDown.vue";
-    import TicketsSelectWithScheme from "@/Pages/Partner/Parts/TicketsSelectWithScheme.vue";
+    import TicketsSelectWithScheme from "@/Pages/Parts/Seats/TicketsSelectWithScheme.vue";
 
     export default {
         components: {

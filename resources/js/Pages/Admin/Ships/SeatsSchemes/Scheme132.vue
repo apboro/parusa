@@ -1,28 +1,41 @@
 <script>
 import seatMethods from "@/Mixins/seatMethods.vue";
-import CategoriesBox from "@/Pages/Admin/Ships/SeatsSchemes/CategoriesBox.vue";
+import CategoriesBox from "@/Pages/Parts/Seats/CategoriesBox.vue";
+import LoadingProgress from "@/Components/LoadingProgress.vue";
 
 export default {
     name: "Scheme132",
-    components: {CategoriesBox},
+    components: {LoadingProgress, CategoriesBox},
     mixins: [seatMethods],
-    emits: ['selectSeat'],
 
     props: {
+        tripId: Number,
         capacity: Number,
         grades: Array,
         categories: Array,
         shipId: Number,
-        seats: Array,
         editing: Boolean,
         selecting: Boolean,
     },
 
+    data: () => ({
+       seats: null,
+       loading: true,
+    }),
+
+    beforeCreate() {
+      axios.post("/api/trip/seats", {tripId: this.tripId})
+          .then(response => this.seats = response.data.data.seats)
+          .finally(() => {
+              this.loading = false;
+          })
+    }
 
 }
 </script>
 
 <template>
+    <loading-progress :loading="loading">
     <div v-if="seats && seats.length >= capacity">
         <svg id="Слой_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
              x="0px" y="0px"
@@ -7077,9 +7090,8 @@ export default {
         </svg>
 
         <CategoriesBox :categories="categories" :grades="grades"/>
-
     </div>
-
+    </loading-progress>
 </template>
 
 <style scoped>

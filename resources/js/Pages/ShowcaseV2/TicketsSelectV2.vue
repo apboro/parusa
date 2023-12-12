@@ -63,17 +63,8 @@
                     :selecting="true"
                     @selectSeat="handleSelectSeat"/>
 
-                <div class="ap-tickets-box">
-                    <span>Выбранные билеты:</span>
-                    <div v-for="ticket in tickets" class="ap-tickets-box">
-                        <span>Место: {{ ticket.seatNumber }}</span>
-                        <span>Билет: {{ ticket.grade.name }}</span>
-                        <span>Цена: {{ ticket.price }} руб.</span>
-                    </div>
-                    <span style="margin-top: 15px;">Итого: {{ schemeTotal }} руб.</span>
-                </div>
+            <SelectedTickets v-if="tickets.length > 0" :tickets="tickets"/>
             </div>
-
 
             <div v-else class="ap-showcase__tickets">
                 <table v-if="trip" class="ap-showcase__tickets-table">
@@ -233,11 +224,24 @@
         </template>
     </div>
 
-    <PopUp ref="category">
-        <label v-for="(option, index) in seatGrades" :key="index">
-            <input style="margin-top: 10px" type="radio" v-model="selectedGrade" :value="option.grade"
-                   :name="'grade-select'"> {{ option.grade.name }} - {{ getGradePrice(option.grade.id) }} руб.
+    <PopUp ref="category"
+           :buttons="[
+               {result: 'ok', caption: 'OK', color: 'green', disabled: !selectedGrade || (selectedGrade.menus.length > 0 ? !selectedMenu : false)},
+               {result: 'cancel', caption: 'Отмена'},
+           ]"
+    >
+        <label v-for="(grade, index) in seatGrades" :key="index">
+            <input @click="selectedMenu = null" style="margin-top: 10px" type="radio" v-model="selectedGrade" :value="grade.grade"
+                   :name="'grade-select'"> {{ grade.grade.name }} - {{ getGradePrice(grade.grade.id) }} руб.
         </label>
+        <div style="display: flex; flex-direction: column; align-items: center"
+             v-if="selectedGrade && selectedGrade.menus.length > 0">
+            <span style="margin-top: 20px;">Выберите меню</span>
+            <label v-for="(menu, index) in selectedGrade.menus" :key="index">
+                <input style="margin-top: 10px;" type="radio" v-model="selectedMenu" :value="menu"
+                       :name="'menu-select'"> {{ menu.name }}
+            </label>
+        </div>
     </PopUp>
 </template>
 
@@ -259,9 +263,14 @@ import PersonalDataInfo from "@/Pages/Showcase/Parts/PersonalDataInfo.vue";
 import BackwardTicketSelectShowcase from "../../Components/BackwardTicketSelectShowcase.vue";
 import DynamicSchemeContainer from "@/Pages/Admin/Ships/SeatsSchemes/DynamicSchemeContainer.vue";
 import PopUp from "@/Components/PopUp.vue";
+import seatMethods from "@/Mixins/seatMethods.vue";
+import CategoriesBox from "@/Pages/Parts/Seats/CategoriesBox.vue";
+import SelectedTickets from "@/Pages/Parts/Seats/SelectedTickets.vue";
 
 export default {
     components: {
+        SelectedTickets,
+        CategoriesBox,
         PopUp,
         DynamicSchemeContainer,
         BackwardTicketSelectShowcase,
@@ -290,6 +299,7 @@ export default {
     },
 
     emits: ['select', 'order'],
+    mixins: [seatMethods],
 
     computed: {
         total() {
@@ -305,9 +315,6 @@ export default {
             });
 
             return this.multiply(total, 1) + ' руб.';
-        },
-        schemeTotal() {
-            return this.tickets.reduce((total, ticket) => total + ticket.price, 0);
         },
 
         count() {
@@ -373,6 +380,7 @@ export default {
         backwardTripId: null,
         selectedSeats: [],
         seatGrades: null,
+        selectedMenu: null,
         selectedGrade: null,
         tickets: [],
     }),
@@ -388,20 +396,6 @@ export default {
     },
 
     methods: {
-        handleSelectSeat(data) {
-            let categoryId = this.trip['seats'].find(el => el.seat_number === data.seatNumber).category.id;
-            this.seatGrades = this.getFilteredGrades(categoryId);
-            this.$refs.category.show().then(() => {
-                this.tickets.push({
-                    seatNumber: data.seatNumber,
-                    grade: this.selectedGrade,
-                    price: this.getGradePrice(this.selectedGrade.id)
-                })
-                // this.reserveSeat(data.seatNumber)
-            })
-            this.selectedSeats = data.selectedSeats;
-
-        },
         getGradePrice(gradeId) {
             return this.trip['rates'].find(e => e.grade_id === gradeId).base_price;
         },
@@ -1013,10 +1007,4 @@ export default {
 
 }
 
-.ap-tickets-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 10px;
-}
 </style>

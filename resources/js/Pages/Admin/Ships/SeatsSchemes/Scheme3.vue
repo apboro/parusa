@@ -83,7 +83,7 @@ import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown.vue";
 import GuiButton from "@/Components/GUI/GuiButton.vue";
 import GuiContainer from "@/Components/GUI/GuiContainer.vue";
 import seatMethods from "@/Mixins/seatMethods.vue";
-import CategoriesBox from "@/Pages/Admin/Ships/SeatsSchemes/CategoriesBox.vue";
+import CategoriesBox from "@/Pages/Parts/Seats/CategoriesBox.vue";
 
 export default {
     name: 'Scheme3',

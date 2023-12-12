@@ -36,7 +36,7 @@
                     </div>
                 </ListTableCell>
                 <ListTableCell v-if="is_returning" class="va-middle">
-                    <InputCheckbox v-model="to_return" :value="ticket['id']" :disabled="!ticket['returnable']"/>
+                    <InputCheckbox v-model="to_return" :value="ticket['id']" :disabled="!ticket['returnable'] || ticket['provider_id'] === 30"/>
                 </ListTableCell>
             </ListTableRow>
             <ListTableRow :no-highlight="true">
@@ -186,7 +186,7 @@ export default {
         },
         makeReturn() {
             if (this.is_returning === false) {
-                this.to_return = [];
+                this.to_return = this.info.data.tickets.map(ticket => ticket.id);
                 this.is_returning = true;
                 return;
             }

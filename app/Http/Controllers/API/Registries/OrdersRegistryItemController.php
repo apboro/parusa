@@ -85,6 +85,7 @@ class OrdersRegistryItemController extends ApiController
             'tickets' => $order->tickets->map(function (Ticket $ticket) {
                 return [
                     'id' => $ticket->id,
+                    'provider_id' => $ticket->provider_id,
                     'base_price' => $ticket->base_price,
                     'trip_id' => $ticket->trip_id,
                     'trip_start_date' => $ticket->trip->start_at->format('d.m.Y'),

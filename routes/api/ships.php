@@ -21,3 +21,5 @@ Route::post('/ship/delete', [ShipDeleteController::class, 'delete'])->middleware
 Route::post('/ship/seat_categories/get', [SeatCategoriesEditController::class, 'get'])->middleware(['allow:staff_admin']);
 Route::post('/ship/seat_categories/update', [SeatCategoriesEditController::class, 'update'])->middleware(['allow:staff_admin']);
 
+
+

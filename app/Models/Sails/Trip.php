@@ -344,5 +344,46 @@ class Trip extends Model implements Statusable
         return $this->hasOne(AdditionalDataTrip::class, 'trip_id', 'id');
     }
 
+    public function getSeatCategories()
+    {
+        $categories = $this->ship->seats()->whereNotNull('seat_category_id')->groupBy('seat_category_id')->get();
+        if ($categories->isNotEmpty()) {
+            $categories->transform(fn($e) => ['name' => $e->category?->name, 'id' => $e->category?->id]);
+        } else {
+            $categories = [];
+        }
+
+        return $categories;
+    }
+
+    public function getSeats()
+    {
+        $seats = $this->ship->seats;
+        foreach ($seats as $seat) {
+            $seatsAr[] = [
+                'seat_id' => $seat->id,
+                'seat_number' => $seat->seat_number,
+                'category' => $seat->category,
+                'status' => $seat->status($this->id)
+            ];
+        }
+
+        return $seatsAr ?? [];
+    }
+
+    public function getSeatGrades()
+    {
+        $currentDateTime = Carbon::now();
+        $isAfterNoon = $currentDateTime->format('H:i') > '12:00';
+
+        $seatsGradesQuery = $this->ship->seat_categories_ticket_grades()->with(['grade', 'grade.menus']);
+        if ($isAfterNoon && Carbon::parse($this->start_at)->isToday()) {
+            $seatsGradesQuery->whereHas('grade', function ($subQuery) {
+                $subQuery->where('has_menu', 0);
+            });
+        }
+        return $seatsGradesQuery->get();
+    }
+
 
 }

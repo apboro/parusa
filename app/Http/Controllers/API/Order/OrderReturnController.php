@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\API\Order;
 
 use App\Classes\EmailReceiver;
+use App\Events\AstraMarineCancelOrderEvent;
+use App\Events\AstraMarineNewOrderEvent;
+use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourCancelOrderEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelCancelOrderEvent;
@@ -110,10 +113,14 @@ class OrderReturnController extends ApiController
 
                     NevaTravelCancelOrderEvent::dispatch($order);
                     CityTourCancelOrderEvent::dispatch($order);
+                    AstraMarineCancelOrderEvent::dispatch($order);
 
                     if ($order->status_id == OrderStatus::partial_returned_statuses) {
+
                         NewNevaTravelOrderEvent::dispatch($order);
                         NevaTravelOrderPaidEvent::dispatch($order);
+
+                        AstraMarineNewOrderEvent::dispatch($order);
                         try {
                             Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
                         } catch (Exception $exception) {

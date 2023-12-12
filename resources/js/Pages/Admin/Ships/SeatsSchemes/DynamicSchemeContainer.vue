@@ -1,14 +1,14 @@
 <template>
     <div>
         <component :is="getComponentName()"
+                   :tripId="data.id"
                    :capacity="data.capacity"
-                   :seats="data.seats"
                    :shipId="shipId"
                    :editing="editing"
                    :selecting="selecting"
                    :categories="data.categories"
                    :grades="data.seat_tickets_grades"
-                   @selectSeat="handleSelectSeat" />
+                   @selectSeat="handleSelectSeat"/>
     </div>
 </template>
 
@@ -17,6 +17,7 @@ import scheme12 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme12.vue";
 import scheme3 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme3.vue";
 import scheme58 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme58.vue";
 import scheme132 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme132.vue";
+import LoadingProgress from "@/Components/LoadingProgress.vue";
 
 export default {
     components: {
@@ -52,12 +53,15 @@ export default {
         },
     },
 
-
 };
 </script>
 
 <style lang="scss">
- .ap-selected {
-     fill: orange;
- }
+.ap-selected {
+    fill: orange;
+}
+
+.ap-occupied {
+    fill: #afacac;
+}
 </style>

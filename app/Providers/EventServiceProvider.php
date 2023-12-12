@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Events\AstraMarineCancelOrderEvent;
 use App\Events\AstraMarineNewOrderEvent;
 use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourCancelOrderEvent;
@@ -10,6 +11,7 @@ use App\Events\NevaTravelCancelOrderEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
+use App\Listeners\AstraMarineCancelOrderListener;
 use App\Listeners\AstraMarineNewOrderListener;
 use App\Listeners\AstraMarineOrderPaidListener;
 use App\Listeners\CityTourCancelOrderListener;
@@ -56,6 +58,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         AstraMarineOrderPaidEvent::class => [
             AstraMarineOrderPaidListener::class,
+        ],
+        AstraMarineCancelOrderEvent::class => [
+            AstraMarineCancelOrderListener::class,
         ],
     ];
 

@@ -1,4 +1,5 @@
 <script>
+
 export default {
     name: "seatMethods",
     data: () => ({
@@ -8,6 +9,9 @@ export default {
     }),
 
     methods: {
+        schemeTotal() {
+            return this.tickets.reduce((total, ticket) => total + ticket.price, 0);
+        },
         getGrades(categoryId) {
             let sort = this.grades.filter(el => el.seat_category_id === categoryId)
             return sort.map(el => el.grade.name);
@@ -55,13 +59,51 @@ export default {
             if (seat.category.name === 'VIP-8')
                 return 'st30';
         },
-
+        handleSelectSeat(data) {
+            if (!data.deselect) {
+                let categoryId = this.trip['seats'].find(el => el.seat_id === data.seatId).category.id;
+                this.seatGrades = this.getFilteredGrades(categoryId);
+                this.$refs.category.show().then(() => {
+                    this.tickets.push({
+                        seatId: data.seatId,
+                        seatNumber: data.seatNumber,
+                        menu: this.selectedMenu,
+                        grade: this.selectedGrade,
+                        price: this.getGradePrice(this.selectedGrade.id)
+                    })
+                })
+            } else {
+                this.tickets = this.tickets.filter(ticket => ticket.seatId !== data.seatId);
+            }
+            this.selectedSeats = data.selectedSeats;
+        },
     }
-
-
 }
 
 
 </script>
+
+<style>
+.ap-tickets-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+.ap-tickets-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+</style>
 
 

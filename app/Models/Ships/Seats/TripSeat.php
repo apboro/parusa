@@ -3,6 +3,7 @@
 namespace App\Models\Ships\Seats;
 
 use App\Models\Dictionaries\SeatStatus;
+use App\Models\Sails\Trip;
 use Illuminate\Database\Eloquent\Model;
 
 class TripSeat extends Model
@@ -19,4 +20,10 @@ class TripSeat extends Model
     {
         return $this->hasOne(Seat::class, 'id', 'seat_id');
     }
+
+    public function trip()
+    {
+        return $this->hasOne(Trip::class, 'id', 'trip_id');
+    }
+
 }
