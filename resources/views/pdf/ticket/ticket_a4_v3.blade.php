@@ -62,7 +62,8 @@ $image = $ticket->trip->startPier->mapImages[0] ?? null;
                     <table style="width: 410pt; margin: 0 0 0 10pt;">
                         <tr>
                             <td style="width: 80pt; vertical-align: top;padding-top: 10pt;">
-                                <img src="{{ $ticket->qr() }}" alt="qr-link" style="width: 75pt; height: 75pt;">
+                                <img src="{{ $ticket->provider_id === \App\Models\Dictionaries\Provider::astra_marine ?
+                        $ticket->provider_qr() : $ticket->qr() }}" alt="qr-link" style="width: 75pt; height: 75pt;">
                             </td>
                             <td style="width: 80pt; vertical-align: top; padding-left: 5pt;padding-top: 10pt;">
                                 <div style="margin: 0 0 5pt;font-family: 'Proxima Nova',serif;font-size: 8pt;line-height: 7pt;">№ заказа {{ $ticket->order->additionalData?->provider_order_id ?? $ticket->order_id }}</div>

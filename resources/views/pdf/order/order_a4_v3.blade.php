@@ -74,7 +74,8 @@ use App\Models\Common\Image;
                         <table style="width: 410pt; margin: 0 0 0 10pt;">
                             <tr>
                                 <td style="width: 80pt; vertical-align: top;padding-top: 10pt;">
-                                    <img src="{{ $ticket->qr() }}" alt="qr-link" style="width: 75pt; height: 75pt;">
+                                    <img src="{{ $ticket->provider_id === \App\Models\Dictionaries\Provider::astra_marine ?
+                        $ticket->provider_qr() : $ticket->qr() }}" alt="qr-link" style="width: 75pt; height: 75pt;">
                                 </td>
                                 <td style="width: 80pt; vertical-align: top; padding-left: 5pt;padding-top: 10pt;">
                                     <div

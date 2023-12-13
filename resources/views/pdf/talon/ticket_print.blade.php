@@ -40,7 +40,7 @@ use App\Models\Tickets\Ticket;
 
     <div style="width: 315pt; margin: 0 auto; font-size: 0">
         <div style="width: 100pt; display:inline-block; vertical-align: top;padding-top: 10pt;">
-            <img src="{{ $ticket->qr() }}" alt="qr-link" style="width: 75pt; height: 75pt;">
+            <img src="{{ $ticket->provider_id === \App\Models\Dictionaries\Provider::astra_marine ? $ticket->provider_qr() : $ticket->qr() }}" alt="qr-link" style="width: 75pt; height: 75pt;">
             <div style="margin: 5pt 0 3pt;font-family: 'Proxima Nova',serif;font-size: 8pt;line-height: 7pt;">№ заказа {{ $ticket->order_id }}</div>
             <div style="margin: 0;font-family: 'Proxima Nova',serif;font-size: 8pt;line-height: 7pt;">№ билета {{ $ticket->id }}</div>
         </div>
@@ -71,6 +71,11 @@ use App\Models\Tickets\Ticket;
                     <div style="display: inline-block; vertical-align: top; width: 145pt; white-space: normal; border-bottom: 1px solid #5e5e5e;">{{ $ticket->base_price }}
                         рублей
                     </div>
+                    @if ($ticket->seat)
+                        <div
+                            style="position:absolute; left: 180pt; top: 91pt; width: 133pt; font-size: 10pt;">{{ $ticket->seat->seat_number }}</div>
+                        <div style="position:absolute; left: 180pt; top: 105pt; font-size: 7pt;">Место</div>
+                    @endif
                 </div>
             </div>
         </div>
