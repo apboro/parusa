@@ -65,7 +65,7 @@ class PartnerInfoController extends ApiController
 
         $fromDate = Carbon::now()->startOfYear();
         $toDate = Carbon::now()->endOfYear();
-        $total = $account->calcAmount($toDate, $fromDate, [100]) - $account->calcAmount($toDate, $fromDate, [101]);
+        $total = $account->calcAmount($toDate, $fromDate, [100]) + $account->calcAmount($toDate, $fromDate, [101]);
 
         return APIResponse::response([
             'amount' => $partner->account->amount,
