@@ -18,9 +18,11 @@ use App\LifePay\CloudPrint;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\Role;
+use App\Models\Dictionaries\SeatStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\Payments\Payment;
+use App\Models\Ships\Seats\TripSeat;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketReturn;
 use App\Models\User\Helpers\Currents;
@@ -102,6 +104,14 @@ class OrderReturnController extends ApiController
                             $ticket->setStatus(TicketStatus::partner_returned, false);
                             $ticket->save();
                             $ticket->return()->save(new TicketReturn(['reason' => $reasonOfReturn]));
+                        }
+                    }
+
+                    foreach ($order->tickets as $ticket) {
+                        if ($ticket->seat) {
+                            TripSeat::query()
+                                ->updateOrCreate(['trip_id' => $ticket->trip->id, 'seat_id' => $ticket->seat->id],
+                                    ['status_id' => SeatStatus::vacant]);
                         }
                     }
 

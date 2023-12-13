@@ -37,9 +37,11 @@ class CreateTicketsFromPartner
                     default => throw new WrongOrderStatusException(),
                 };
 
-                TripSeat::query()
-                    ->updateOrCreate(['trip_id'=> $ordering->trip->id, 'seat_id' => $ordering->seat->id],
-                        ['status_id' => SeatStatus::occupied]);
+                if ($ordering->seat) {
+                    TripSeat::query()
+                        ->updateOrCreate(['trip_id' => $ordering->trip->id, 'seat_id' => $ordering->seat->id],
+                            ['status_id' => SeatStatus::occupied]);
+                }
 
                 for ($i = 1; $i <= $quantity['quantity']; $i++) {
                     /** @var PositionOrderingTicket $ordering */

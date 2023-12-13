@@ -5,8 +5,10 @@ namespace App\Actions;
 use App\Exceptions\Tickets\WrongOrderStatusException;
 use App\Exceptions\Tickets\WrongTicketCreatorException;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\SeatStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Positions\PositionOrderingTicket;
+use App\Models\Ships\Seats\TripSeat;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 
@@ -30,6 +32,13 @@ class CreateTicketsFromTerminal
                     OrderStatus::terminal_creating => TicketStatus::terminal_creating,
                     default => throw new WrongOrderStatusException(),
                 };
+
+                if ($ordering->seat) {
+                    TripSeat::query()
+                        ->updateOrCreate(['trip_id' => $ordering->trip->id, 'seat_id' => $ordering->seat->id],
+                            ['status_id' => SeatStatus::occupied]);
+                }
+
                 for ($i = 1; $i <= $ticketInfo['quantity']; $i++) {
                     /** @var PositionOrderingTicket $ordering */
                     $ticket = new Ticket([

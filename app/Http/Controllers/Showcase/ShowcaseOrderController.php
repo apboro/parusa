@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Showcase;
 
 use App\Actions\CreateOrderFromShowcase;
+use App\Events\AstraMarineNewOrderEvent;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
 use App\Exceptions\Tickets\NoTicketsForTripException;
@@ -14,6 +15,7 @@ use App\Http\Middleware\ExternalProtect;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\SeatStatus;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
@@ -22,6 +24,7 @@ use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Partner\Partner;
 use App\Models\Sails\Trip;
+use App\Models\Ships\Seats\TripSeat;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
 use Carbon\Carbon;
@@ -127,6 +130,7 @@ class ShowcaseOrderController extends ApiEditController
 
             NewNevaTravelOrderEvent::dispatch($order);
             NewCityTourOrderEvent::dispatch($order);
+            AstraMarineNewOrderEvent::dispatch($order);
 
         });
 
@@ -289,6 +293,11 @@ class ShowcaseOrderController extends ApiEditController
         }
 
         foreach ($request->tickets as $ticket) {
+
+            TripSeat::query()
+                ->updateOrCreate(['trip_id' => $trip->id, 'seat_id' => $ticket['seatId']],
+                    ['status_id' => SeatStatus::occupied]);
+
             $ticket = new Ticket([
                 'trip_id' => $trip->id,
                 'grade_id' => $ticket['grade']['id'],
