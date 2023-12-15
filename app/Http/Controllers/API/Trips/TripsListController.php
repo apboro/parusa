@@ -109,6 +109,7 @@ class TripsListController extends ApiController
                 'excursion_type_id' => $trip->excursion->type_id,
                 'pier' => $trip->startPier->name,
                 'ship' => $trip->ship->name,
+                'loading' => false,
                 'tickets_count' => $trip->getAttribute('tickets_count'),
                 'tickets_total' => $trip->tickets_total,
                 'status' => $trip->status->name,

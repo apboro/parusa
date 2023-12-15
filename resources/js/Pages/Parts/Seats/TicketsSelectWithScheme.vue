@@ -96,6 +96,7 @@ export default {
                 this.selectedGrade = null;
                 this.selectedSeats = null;
                 this.selectedMenu = null;
+                this.trip.loading = true;
                 this.tickets = [];
                 this.$refs.popup.hide();
                 return true;

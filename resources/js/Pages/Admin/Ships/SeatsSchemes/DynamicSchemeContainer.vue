@@ -1,17 +1,16 @@
 <template>
-    <loading-progress :loading="loading">
-    <div>
-        <component :is="getComponentName()"
-                   :tripId="data.id"
-                   :capacity="data.capacity"
-                   :shipId="shipId"
-                   :seats="seats"
-                   :editing="editing"
-                   :selecting="selecting"
-                   :categories="data.categories"
-                   :grades="data.seat_tickets_grades"
-                   @selectSeat="handleSelectSeat"/>
-    </div>
+    <loading-progress :loading="data.loading">
+        <div v-if="data.seats && data.seats.length >= data.capacity">
+            <component :is="getComponentName()"
+                       :tripId="data.id"
+                       :shipId="shipId"
+                       :seats="data.seats"
+                       :editing="editing"
+                       :selecting="selecting"
+                       :categories="data.categories"
+                       :grades="data.seat_tickets_grades"
+                       @selectSeat="handleSelectSeat"/>
+        </div>
     </loading-progress>
 </template>
 
@@ -39,20 +38,20 @@ export default {
         editing: Boolean,
         selecting: Boolean,
     },
-    data: () => ({
-        seats: null,
-        loading: true,
-    }),
+
     beforeCreate() {
-        axios.post("/api/trip/seats", {tripId: this.data.id})
-            .then(response => this.seats = response.data.data.seats)
-            .catch(error => {
-                this.$toast.error(error.response.data.message, 5000);
-            })
-            .finally(() => {
-                this.loading = false;
-            })
+        if (this.data.loading) {
+            axios.post("/api/trip/seats", {tripId: this.data.id})
+                .then(response => this.data.seats = response.data.data.seats)
+                .catch(error => {
+                    this.$toast.error(error.response.data.message, 5000);
+                })
+                .finally(() => {
+                    this.data.loading = false;
+                })
+        }
     },
+
     methods: {
         getComponentName() {
             switch (this.shipId) {

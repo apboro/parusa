@@ -155,6 +155,7 @@ class PromoterTripsSelectListController extends ApiController
                 'pier_id' => $trip->start_pier_id,
                 'pier' => $trip->startPier->name,
                 'ship' => $trip->ship->name,
+                'loading' => true,
                 'capacity' => $trip->ship->capacity,
                 'ship_has_scheme' => $trip->ship->ship_has_seats_scheme,
                 'shipId' => $trip->ship->id,

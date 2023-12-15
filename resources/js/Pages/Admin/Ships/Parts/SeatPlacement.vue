@@ -1,5 +1,5 @@
 <template>
-    <GuiContainer w-50>
+    <GuiContainer w-100>
         <DynamicSchemeContainer
             :data="data"
             :shipId="shipId"
