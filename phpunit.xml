@@ -17,6 +17,12 @@
         <testsuite name="NevaTravel">
             <directory suffix="Test.php">./tests/NevaTravel</directory>
         </testsuite>
+        <testsuite name="AstraMarine">
+            <directory suffix="Test.php">./tests/AstraMarine</directory>
+        </testsuite>
+        <testsuite name="CityTour">
+            <directory suffix="Test.php">./tests/CityTour</directory>
+        </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>

@@ -28,6 +28,8 @@ class TerminalInfoController extends ApiController
             return APIResponse::notFound('Неверные параметры.');
         }
 
+        $current->position()->ordering()->whereHas('trip', fn($trip) => $trip->where('start_at', '<', now()))->delete();
+
         /** @var Order $processing */
         $processing = Order::query()->with(['status'])
             ->where(['position_id' => $current->positionId(), 'terminal_id' => $terminalId])

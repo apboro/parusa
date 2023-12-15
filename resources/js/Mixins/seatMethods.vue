@@ -5,7 +5,7 @@ export default {
     data: () => ({
         selectedSeats: [],
         seatCategory: null,
-        categoryColors: {'Standard': '#ACD08F', 'VIP-8': '#318F82'},
+        categoryColors: {'Standard': '#ACD08F', 'VIP-8': '#318F82', 'VIP-5': '#318F82'},
     }),
 
     methods: {
@@ -21,6 +21,7 @@ export default {
         },
 
         handleClick(seatNumber) {
+            console.log(seatNumber)
             let seat = this.seats.find(el => el.seat_number == seatNumber);
             if (seat.status && [5, 10].includes(seat.status.id)) {
                 return;

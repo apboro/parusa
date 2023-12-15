@@ -14,7 +14,6 @@
             :type="'number'"
             :disabled="disabled"
             :placeholder="placeholder"
-            :readonly="'readonly'"
             @input="update"
             ref="input"
         />

@@ -53,6 +53,7 @@ class CreateTicketsFromTerminal
                     $ticket->cart_ticket_id = $ordering->id;
                     $ticket->cart_parent_ticket_id = $ordering->parent_ticket_id;
                     $ticket->backward_price = $ordering->parent_ticket_id ? $ordering->getBackwardPrice() : null;
+                    $ticket->menu_id = $ordering->menu_id ?? null;
 
                     $tickets[] = $ticket;
                 }

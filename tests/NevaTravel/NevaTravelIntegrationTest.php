@@ -34,14 +34,12 @@ class NevaTravelIntegrationTest extends TestCase
         AdditionalDataExcursion::create([
             'provider_id' => 10,
             'excursion_id' => $excursion->id,
-            'provider_excursion_id' => '0f89959b-0dbc-11ed-b337-0242c0a85004']);
-        $ticketsRateList = TicketsRatesList::factory()->create(['excursion_id' => $excursion->id]);
-        TicketRate::factory()->create(['rate_id' => $ticketsRateList->id, 'grade_id' => $ticketGrade->id]);
+            'provider_excursion_id' => '951f7459-98c6-11ed-af63-0242ac1a0002']);
         (new ImportShips())->run();
         (new ImportPiers())->run();
         (new ImportPrograms())->run();
         (new ImportProgramsPrices())->run();
-        (new ImportTrips(now()->addDays()))->run();
+        (new ImportTrips(now()->addDays(25)))->run();
         $trip = Trip::where('start_at', '>', now())->where('provider_id', 10)->first();
         $this->positionOrderingTicket = PositionOrderingTicket::create([
             'position_id' => $position->id,
@@ -68,7 +66,7 @@ class NevaTravelIntegrationTest extends TestCase
                 [
                     'mode' => 'order',
                     "data" => [
-                        "tickets.$cartOrderId.price" => 1000,
+                        "tickets.$cartOrderId.price" => 1450,
                         "tickets.$cartOrderId.quantity" => 1,
                         "partner_id" => null,
                         "without_partner" => true,
@@ -77,7 +75,7 @@ class NevaTravelIntegrationTest extends TestCase
                         "phone" => "+7 (666) 666-66-66"
                     ]
                 ]);
-//        $response->dump();
+        $response->dump();
         $response->assertStatus(200);
         $response->assertJson([
             'message' => 'Заказ отправлен в оплату.',

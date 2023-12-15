@@ -292,20 +292,24 @@ class ShowcaseOrderController extends ApiEditController
             throw new NoTicketsForTripException();
         }
 
-        foreach ($request->tickets as $ticket) {
+        foreach ($request->tickets as $showcaseTicket) {
 
             TripSeat::query()
-                ->updateOrCreate(['trip_id' => $trip->id, 'seat_id' => $ticket['seatId']],
+                ->updateOrCreate(['trip_id' => $trip->id, 'seat_id' => $showcaseTicket['seatId']],
                     ['status_id' => SeatStatus::occupied]);
 
             $ticket = new Ticket([
                 'trip_id' => $trip->id,
-                'grade_id' => $ticket['grade']['id'],
+                'grade_id' => $showcaseTicket['grade']['id'],
                 'status_id' => TicketStatus::showcase_creating,
-                'base_price' => $ticket['price'],
-                'seat_id' => $ticket['seatId'],
+                'base_price' => $showcaseTicket['price'],
+                'seat_id' => $showcaseTicket['seatId'],
                 'provider_id' => $trip->provider_id,
             ]);
+
+            if ($showcaseTicket['menu']) {
+                $ticket->menu_id = $showcaseTicket['menu']['id'] ?? null;
+            }
             $tickets[] = $ticket;
         }
         return ['tickets' => $tickets ?? [], 'backwardTickets' => []];

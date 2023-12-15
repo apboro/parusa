@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Exceptions\Tickets\WrongOrderException;
 use App\Models\BackwardTicket;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
@@ -100,10 +101,17 @@ class CreateOrderFromTerminal
                     $cart_parent_ticket_id = $ticket->cart_parent_ticket_id;
                     $backward_price = $ticket->backward_price;
                     $ticket->order_id = $order->id;
+                    $menu_id = $ticket->menu_id;
 
-                    unset($ticket->cart_ticket_id, $ticket->cart_parent_ticket_id, $ticket->backward_price);
+                    unset($ticket->cart_ticket_id, $ticket->cart_parent_ticket_id, $ticket->backward_price, $ticket->menu_id);
 
                     $ticket->save();
+                    if ($menu_id) {
+                        $ticket->additionalData()->create([
+                            'provider_id' => Provider::astra_marine,
+                            'menu_id' => $menu_id
+                        ]);
+                    }
 
                     $cartData[$ticket->id] = [
                         'id' => $ticket->id,

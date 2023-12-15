@@ -6,6 +6,7 @@ use App\Exceptions\Tickets\WrongOrderException;
 use App\Models\BackwardTicket;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
@@ -98,7 +99,17 @@ class CreateOrderFromShowcase
 
                 foreach ($tickets as $ticket) {
                     $ticket->order_id = $order->id;
+                    $menu_id = $ticket->menu_id;
+
+                    unset($ticket->menu_id);
+
                     $ticket->save();
+                    if ($menu_id) {
+                        $ticket->additionalData()->create([
+                            'provider_id' => Provider::astra_marine,
+                            'menu_id' => $menu_id
+                        ]);
+                    }
                     //making backward tickets for showcase
                     foreach ($backwardTickets as $index => $backwardTicket) {
                         if ($backwardTicket->grade_id === $ticket->grade_id) {

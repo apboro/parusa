@@ -71,6 +71,11 @@ return [
             'path' => storage_path('logs/neva.log'),
             'level' => 'info',
         ],
+        'astra-marine' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/astra-marine.log'),
+            'level' => 'info',
+        ],
         'city_tour' => [
             'driver' => 'single',
             'path' => storage_path('logs/city_tour.log'),

@@ -15,9 +15,9 @@ class TicketRateFactory extends Factory
         return [
             'rate_id' => $this->faker->randomNumber(),
             'grade_id' => $this->faker->randomNumber(),
-            'base_price' => $this->faker->randomNumber(),
-            'min_price' => $this->faker->randomNumber(),
-            'max_price' => $this->faker->randomNumber(),
+            'base_price' => 1000,
+            'min_price' => 800,
+            'max_price' => 1200,
             'commission_type' => $this->faker->word(),
             'commission_value' => $this->faker->randomNumber(),
             'created_at' => Carbon::now(),
