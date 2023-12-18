@@ -1,0 +1,87 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Алые паруса",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/excursions": {
+            "get": {
+                "tags": [
+                    "Экскурсии"
+                ],
+                "summary": "Получить список экскурсий",
+                "operationId": "4f4b70e6ddc64799d3ab36a50e4f4fcf",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Not allowed"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/trips": {
+            "get": {
+                "tags": [
+                    "Рейсы"
+                ],
+                "summary": "Получить список рейсов",
+                "operationId": "9f675998675aab5f78c5da7a9d588770",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Дата рейса, ГГГГ-ММ-ДД",
+                        "example": "2023-12-18"
+                    },
+                    {
+                        "name": "excursion_ids[]",
+                        "in": "query",
+                        "description": "ID экскурсий",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Not allowed"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Рейсы"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    }
+}

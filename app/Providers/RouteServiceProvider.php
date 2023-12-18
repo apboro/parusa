@@ -39,6 +39,9 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::namespace($this->namespace)
+                ->group(base_path('routes/api_v1.php'));
+
+            Route::namespace($this->namespace)
                 ->group(base_path('routes/api.php'));
 
             Route::namespace($this->namespace)
@@ -61,6 +64,7 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
+
         });
     }
 
