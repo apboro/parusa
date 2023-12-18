@@ -82,23 +82,22 @@ class CityTourRepository
     public function makeCityTourOrderFromParusaOrder(Order $order): ?array
     {
         $tickets = $order->tickets()
-            ->where(function ($query) {
-                $query->whereIn('status_id', TicketStatus::ticket_countable_statuses)
-                    ->orWhereIn('status_id', TicketStatus::ticket_paid_statuses);
-            })
+            ->with(['trip', 'grade'])
+            ->whereIn('status_id', array_unique(array_merge(TicketStatus::ticket_countable_statuses,TicketStatus::ticket_paid_statuses)))
             ->where('provider_id', Provider::city_tour)
             ->get();
         $params = [];
         $ticketsList = [];
         if ($tickets->isNotEmpty()) {
             foreach ($tickets as $ticket) {
+                $excursionId = $ticket->trip->excursion->additionalData->provider_excursion_id;
                 $ticketsList[$ticket->grade->id] = isset($ticketsList[$ticket->grade->id]) ? $ticketsList[$ticket->grade->id] + 1 : 1;
             }
             $params = [
                 'customer_name' => $order->name ?? 'Покупатель',
                 'customer_phone' => $order->phone,
                 'customer_email' => $order->email ?? 'noreply@city-tours-spb.ru',
-                'excursion_id' => $order->tickets[0]->trip->excursion->additionalData->provider_excursion_id,
+                'excursion_id' => $excursionId,
                 'excursion_datetime' => $order->tickets[0]->trip->start_at->format('Y-m-d H:i:s'),
                 'payment_status' => 0,
                 'tickets' => json_encode($ticketsList),

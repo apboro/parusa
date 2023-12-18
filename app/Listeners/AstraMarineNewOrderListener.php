@@ -14,6 +14,9 @@ class AstraMarineNewOrderListener
     {
     }
 
+    /**
+     * @throws AstraMarineNoTicketException
+     */
     public function handle(AstraMarineNewOrderEvent $event)
     {
         if ($event->order->tickets()->where('provider_id', Provider::astra_marine)->first()) {

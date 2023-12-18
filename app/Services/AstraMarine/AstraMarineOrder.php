@@ -23,6 +23,9 @@ class AstraMarineOrder
         $this->astraMarineRepository = new AstraMarineRepository();
     }
 
+    /**
+     * @throws AstraMarineNoTicketException
+     */
     public function bookSeats(): void
     {
         foreach ($this->tickets as $ticket) {
@@ -57,6 +60,7 @@ class AstraMarineOrder
     {
         return $this->order->tickets()
             ->with(['trip', 'trip.ship', 'trip.additionalData', 'seat'])
+            ->where('provider_id', Provider::astra_marine)
             ->get();
     }
 

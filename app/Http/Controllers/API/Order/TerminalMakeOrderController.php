@@ -140,7 +140,7 @@ class TerminalMakeOrderController extends ApiEditController
                 $order->setStatus(OrderStatus::terminal_wait_for_pay);
             });
         } catch (Exception $exception) {
-            return APIResponse::error($exception->getMessage());
+            return APIResponse::error($exception->getMessage().' '. $exception->getFile(). ' '. $exception->getLine());
         }
 
         return APIResponse::success($successMessage, ['order_id' => $order->id]);

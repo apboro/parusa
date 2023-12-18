@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Models\Dictionaries\Provider;
@@ -48,6 +49,7 @@ class OrderPdf
 
         NevaTravelOrderPaidEvent::dispatch($order);
         CityTourOrderPaidEvent::dispatch($order);
+        AstraMarineOrderPaidEvent::dispatch($order);
 
         if ($order->additionalData?->provider_id == Provider::city_tour) {
             $view = config('tickets.order_print_city_tour');
