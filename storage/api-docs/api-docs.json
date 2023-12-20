@@ -27,6 +27,28 @@
                 ]
             }
         },
+        "/api/v1/piers": {
+            "get": {
+                "tags": [
+                    "Причалы"
+                ],
+                "summary": "Получить список причалов",
+                "operationId": "1ecd063187a5dd57ac6a21762bfc59b7",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Not allowed"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/v1/trips": {
             "get": {
                 "tags": [
@@ -53,6 +75,28 @@
                         }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Not allowed"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/ships": {
+            "get": {
+                "tags": [
+                    "Теплоходы"
+                ],
+                "summary": "Получить список теплоходов",
+                "operationId": "4e026a8cc145466fc9463a6ab28d173c",
                 "responses": {
                     "200": {
                         "description": "OK"
