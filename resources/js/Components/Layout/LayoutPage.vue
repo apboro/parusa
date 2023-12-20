@@ -202,6 +202,16 @@ $base_primary_hover_color: lighten(#0D74D7, 10%) !default;
     .layout-page {
         padding-left: 15px;
         padding-right: 15px;
+
+        &__body {
+            & .container.w-70 {
+                width: 100%;
+            }
+
+            & .container.w-50 {
+                width: 100%;
+            }
+        }
     }
 }
 </style>
