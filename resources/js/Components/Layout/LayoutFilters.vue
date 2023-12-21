@@ -5,7 +5,9 @@
         </div>
         <div class="layout-filters__filters">
             <slot/>
+            <button class="layout-filters__apply" type="button" v-on:click="filtersClose()">Применить</button>
         </div>
+
         <div class="layout-filters__search" v-if="$slots.search">
             <slot name="search"/>
         </div>
@@ -53,6 +55,10 @@ export default {
             flex-grow: 1;
         }
     }
+
+    &__apply {
+        display: none;
+    }
 }
 
 @media (max-width: 767px) {
@@ -67,6 +73,17 @@ export default {
 
         &-item {
             margin-right: 0;
+        }
+
+        &__apply {
+            display: block;
+            margin-top: 20px;
+            background: #0B68C2;
+            color: #fff;
+            padding: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
         }
     }
 

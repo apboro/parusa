@@ -5,7 +5,7 @@
          @mouseleave="hide"
     >
 
-        <router-link v-if="route" class="application__menu-item-link" :to="{name:route}">
+        <router-link v-if="route" class="application__menu-item-link" :to="{name:route}" @click="menuToggle()">
             <span @click="$emit('hide')">{{ title }}<icon-dropdown class="application__menu-item-link-drop" v-if="children"/></span>
         </router-link>
 
@@ -29,9 +29,7 @@
 import IconDropdown from "../Icons/IconDropdown";
 import roles from "@/Mixins/roles.vue";
 
-
 export default {
-    name: "LayoutMenuItem",
     components: {IconDropdown},
     props: {
         item: Object,
@@ -65,6 +63,10 @@ export default {
         },
         hide() {
             this.hovered = false;
+        },
+        menuToggle() {
+            let burgerActive = document.getElementsByClassName("application__menu-burger");
+            burgerActive[0].click();
         },
     },
 }
