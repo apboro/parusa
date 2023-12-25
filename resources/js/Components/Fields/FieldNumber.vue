@@ -10,6 +10,7 @@
             :quantity="quantity"
             :min="min"
             :max="max"
+            :readonly="readonly"
             :placeholder="placeholder"
             :small="small"
             @change="change"
@@ -29,6 +30,7 @@ export default {
         modelValue: {type: Number, default: null},
         original: {type: Number, default: null},
 
+        readonly: {type: Boolean, default: false},
         title: {type: String, default: null},
         required: {type: Boolean, default: false},
         disabled: {type: Boolean, default: false},

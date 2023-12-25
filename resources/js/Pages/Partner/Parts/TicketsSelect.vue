@@ -30,7 +30,7 @@
                 </td>
                 <td>
                     <span class="tickets-select-table__mobile-title">Количество</span>
-                    <FormNumber :form="form" :name="'tickets.' + key + '.quantity'" :quantity="true" :hide-title="true" :min="0"/>
+                    <FormNumber :form="form" :name="'tickets.' + key + '.quantity'" :quantity="true" :readonly=true :hide-title="true" :min="0"/>
                 </td>
                 <td class="pl-10 pt-15">
                     <span class="tickets-select-table__mobile-title">Стоимость</span>

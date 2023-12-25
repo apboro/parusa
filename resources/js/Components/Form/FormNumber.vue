@@ -12,6 +12,7 @@
         :placeholder="title"
         :step="step"
         :quantity="quantity"
+        :readonly="readonly"
         :min="min"
         :max="max"
         :small="small"
@@ -27,6 +28,7 @@ import FormMixin from "@/Components/Form/Helpers/FormMixin";
 export default {
     components: {FieldNumber},
     props: {
+        readonly: {type: Boolean, default: false},
         disabled: {type: Boolean, default: false},
         small: {type: Boolean, default: false},
         step: {type: Number, default: 1},

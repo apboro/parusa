@@ -13,6 +13,7 @@
             :value="modelValue"
             :type="'number'"
             :disabled="disabled"
+            :readonly="readonly"
             :placeholder="placeholder"
             @input="update"
             ref="input"
@@ -36,6 +37,7 @@ export default {
     components: {InputWrapper, IconPlus, IconMinus},
     props: {
         name: String,
+        readonly: {type: Boolean, default: false},
         modelValue: {type: Number, default: null},
         original: {type: Number, default: null},
         valid: {type: Boolean, default: true},
