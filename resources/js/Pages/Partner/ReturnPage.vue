@@ -1,7 +1,7 @@
 <template>
     <LayoutPage :title="$route.meta['title']">
         <GuiText mt-20 mb-10>Поиск</GuiText>
-        <GuiContainer w-500px flex mb-20>
+        <GuiContainer w-500px flex mb-20 return-search>
             <div class="inline grow">
                 <InputSearch v-model="list.search"
                              :placeholder="'Введите номер заказа или билета'"
@@ -161,27 +161,6 @@ export default {
 
 <style lang="scss">
 @media (max-width: 767px) {
-    .list-table__header-row th:nth-child(1) {
-        position: sticky;
-        left: 0;
-        background: #e3ecf7;
-        width: 26%;
-    }
-
-    .list-table__header-row th:nth-child(2) {
-        position: inherit !important;
-    }
-
-    .list-table__row > td:nth-child(1) {
-        position: sticky;
-        left: 0;
-        background: #fff;
-        width: 26%;
-    }
-
-    .list-table__row > td:nth-child(2) {
-        position: inherit !important;
-    }
 
     .details-table {
         margin-left: 0 !important;
@@ -197,6 +176,16 @@ export default {
             left: 0;
             background: #fff;
         }
+    }
+
+    .return-search.w-500px {
+        width: 100%;
+        flex-wrap: wrap;
+        row-gap: 10px;
+    }
+
+    button.ml-15 {
+        margin-left: 0;
     }
 }
 </style>

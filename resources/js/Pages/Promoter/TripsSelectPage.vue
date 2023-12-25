@@ -237,3 +237,19 @@
         }
     }
 </script>
+
+<style scoped lang="scss">
+@media (max-width: 767px) {
+    .list-table__header-row > th:nth-child(2) {
+        position: sticky;
+        left: 24%;
+        background: #e3ecf7;
+    }
+
+    .list-table__row > td:nth-child(2) {
+        position: sticky;
+        left: 24%;
+        background: #fff;
+    }
+}
+</style>
