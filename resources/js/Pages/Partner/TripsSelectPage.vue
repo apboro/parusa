@@ -128,7 +128,7 @@
                     {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})
                 </ListTableCell>
                 <ListTableCell>
-                    <table v-if="trip['rates'] && trip['rates'].length > 0" :style="{fontSize: '13px'}">
+                    <table v-if="trip['rates'] && trip['rates'].length > 0" class="inner-table">
                         <tr v-for="rate in trip['rates']">
                             <td class="pr-15 no-wrap">{{ rate['name'] }}</td>
                             <td class="no-wrap">{{ rate['value'] }} руб.</td>
@@ -239,17 +239,16 @@
 </script>
 
 <style scoped lang="scss">
-@media (max-width: 767px) {
-    .list-table__header-row > th:nth-child(2) {
-        position: sticky;
-        left: 24%;
-        background: #e3ecf7;
-    }
-
-    .list-table__row > td:nth-child(2) {
-        position: sticky;
-        left: 24%;
-        background: #fff;
-    }
+.inner-table {
+    font-size: 13px;
+    width: 100%;
 }
+
+.inner-table td.no-wrap {
+    text-align: right;
+}
+.inner-table td.pr-15 {
+    text-align: left;
+}
+
 </style>
