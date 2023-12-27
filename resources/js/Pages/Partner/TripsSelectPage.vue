@@ -110,7 +110,7 @@
             </LayoutFiltersItem>
         </LayoutFilters>
 
-        <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true">
+        <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true" :stickySecondCol="true">
             <ListTableRow v-for="(trip, key) in list.list" :key="key" :bus_tours="trip.excursion_type_id === 20">
                 <ListTableCell>
                     <div v-if="!trip.is_single_ticket"><b class="text-lg">{{ trip['start_time'] }}</b></div>
