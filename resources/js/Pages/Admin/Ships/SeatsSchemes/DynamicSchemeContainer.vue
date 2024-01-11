@@ -1,6 +1,6 @@
 <template>
     <loading-progress :loading="data.loading">
-        <div v-if="data.seats && data.seats.length >= data.capacity">
+        <div v-if="data.seats">
             <component :is="getComponentName()"
                        :tripId="data.id"
                        :shipId="shipId"

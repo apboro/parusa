@@ -22,7 +22,8 @@ export default {
 
         handleClick(seatNumber) {
             let seat = this.seats.find(el => el.seat_number == seatNumber);
-            if (seat.status && [5, 10].includes(seat.status.id)) {
+
+            if (!seat || (seat.status && [5, 10].includes(seat.status.id))) {
                 return;
             }
 
@@ -47,6 +48,9 @@ export default {
         selected(seatNumber) {
             let seat = this.seats.find(el => el.seat_number == seatNumber);
 
+            if (!seat) {
+                return 'ap-occupied';
+            }
             if (seat.status && [5, 10].includes(seat.status.id)) {
                 return 'ap-occupied';
             }
@@ -58,8 +62,12 @@ export default {
 
             if (seat.category.name === 'VIP-8')
                 return 'st30';
+
+            if (seat.category.name === 'VIP-5')
+                return 'st17';
         },
         handleSelectSeat(data) {
+            console.log(data.seatNumber)
             if (!data.deselect) {
                 let categoryId = this.trip['seats'].find(el => el.seat_id === data.seatId).category.id;
                 this.seatGrades = this.getFilteredGrades(categoryId);
@@ -79,8 +87,6 @@ export default {
         },
     }
 }
-
-
 </script>
 
 <style>
