@@ -12,9 +12,9 @@ class ApiTicketRateResource extends JsonResource
     {
         $this->loadMissing('grade');
         return [
-            'type_id' => $this->grade->id,
-            'type_name' => $this->grade->name,
-            'price' => $this->base_price,
+            'grade_id' => $this->grade->id,
+            'grade_name' => $this->grade->name,
+            'price' => $this->partner_price,
         ];
     }
 }

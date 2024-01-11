@@ -69,6 +69,7 @@ class ProcessOrders extends Command
         // OrderStatus::showcase_creating:
         // OrderStatus::showcase_wait_for_pay:
         $this->cancelShowcaseDelayed($now->addHours(-1));
+        $this->cancelApiDelayed($now->subMinutes(15));
 
         return 0;
     }
@@ -132,6 +133,29 @@ class ProcessOrders extends Command
             $order->setStatus(OrderStatus::showcase_canceled);
             $order->tickets->map(function (Ticket $ticket) {
                 $ticket->setStatus(TicketStatus::showcase_canceled);
+            });
+        }
+    }
+    /**
+     * Cancel API long delayed orders.
+     *
+     * @param Carbon $before
+     *
+     * @return void
+     */
+    protected function cancelApiDelayed(Carbon $before): void
+    {
+        $orders = Order::query()
+            ->with('tickets')
+            ->whereIn('status_id', [OrderStatus::api_reserved])
+            ->where('created_at', '<=', $before)
+            ->get();
+
+        foreach ($orders as $order) {
+            /** @var Order $order */
+            $order->setStatus(OrderStatus::api_canceled);
+            $order->tickets->map(function (Ticket $ticket) {
+                $ticket->setStatus(TicketStatus::api_canceled);
             });
         }
     }

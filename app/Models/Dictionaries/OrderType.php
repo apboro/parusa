@@ -33,6 +33,10 @@ class OrderType extends AbstractDictionary
     /** @var int Реферальная ссылка */
     public const referral_link = 12;
 
+    /** @var int Api */
+    public const api_sale = 13;
+
+
     /** @var string Referenced table name. */
     protected $table = 'dictionary_order_types';
 }

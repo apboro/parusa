@@ -360,6 +360,16 @@ class Ticket extends Model implements Statusable
             ->getDataUri();
     }
 
+    public function qrData(): string
+    {
+        $payload = "1|t|$this->id";
+
+        $signature = md5(config('app.key') . '|' . $payload);
+        $payload .= '|' . $signature;
+
+        return $payload;
+    }
+
     public function provider_qr()
     {
         $this->loadMissing('additionalData');

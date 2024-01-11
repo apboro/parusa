@@ -52,6 +52,11 @@ class OrderStatus extends AbstractDictionary
     public const showcase_canceled = 90;
 
     public const done = 100;
+    public const api_reserved = 101;
+    public const api_confirmed = 105;
+    public const api_canceled = 110;
+    public const api_returned = 115;
+
 
     public const order_returnable_statuses = [
         self::partner_paid,
@@ -61,6 +66,7 @@ class OrderStatus extends AbstractDictionary
         self::terminal_wait_for_return,
         self::showcase_paid,
         self::showcase_partial_returned,
+        self::api_confirmed
     ];
 
     public const order_printable_statuses = [
@@ -70,7 +76,8 @@ class OrderStatus extends AbstractDictionary
         self::terminal_partial_returned,
         self::showcase_paid,
         self::showcase_partial_returned,
-        self::promoter_paid
+        self::promoter_paid,
+        self::api_confirmed
     ];
 
     public const partner_commission_pay_statuses = [
@@ -99,6 +106,7 @@ class OrderStatus extends AbstractDictionary
         self::showcase_returned,
         self::showcase_partial_returned,
         self::promoter_paid,
+        self::api_confirmed
     ];
 
     public const order_reserved_statuses = [

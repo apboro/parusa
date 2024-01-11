@@ -41,6 +41,10 @@ class TicketStatus extends AbstractDictionary
     public const terminal_returned = 52;
     public const terminal_canceled = 51;
     public const terminal_paid_single = 55;
+    public const api_reserved = 100;
+    public const api_confirmed = 105;
+    public const api_canceled = 110;
+    public const api_returned = 115;
 
     public const showcase_creating = 61;
     public const showcase_wait_for_pay = 62;
@@ -67,6 +71,8 @@ class TicketStatus extends AbstractDictionary
         self::promoter_wait_for_pay,
         self::promoter_paid,
         self::promoter_confirmed,
+        self::api_reserved,
+        self::api_confirmed
     ];
 
     public const ticket_printable_statuses = [

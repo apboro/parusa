@@ -34,9 +34,12 @@ class ApiTripsController extends Controller
                 $query->whereNull('provider_id')
                     ->orWhere('provider_id', Provider::scarlet_sails);
                 })
+            ->where('start_at', '>=', now())
             ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
-            ->whereHas('excursion', fn ($excursion) => $excursion->where('status_id', ExcursionStatus::active))
+            ->whereHas('excursion', fn ($excursion) => $excursion
+                ->where('status_id', ExcursionStatus::active)
+                ->where('only_site', 0))
             ->whereHas('excursion.ratesLists', function (Builder $query) {
                 $query->whereDate('start_at', '<=', now())->whereDate('end_at', '>=', now());
             })

@@ -2,40 +2,25 @@
 
 namespace App\Http\Controllers\API\Order;
 
-use App\Actions\CreateOrderFromPartner;
 use App\Actions\CreateOrderFromPromoter;
-use App\Actions\CreateTicketsFromPartner;
 use App\Actions\CreateTicketsFromPromoter;
 use App\Events\AstraMarineNewOrderEvent;
-use App\Events\CityTourOrderPaidEvent;
-use App\Events\NevaTravelOrderPaidEvent;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
 use App\Exceptions\Account\AccountException;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
-use App\Models\Account\AccountTransaction;
-use App\Models\Dictionaries\AccountTransactionStatus;
-use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\HitSource;
-use App\Models\Dictionaries\OrderStatus;
-use App\Models\Dictionaries\OrderType;
-use App\Models\Dictionaries\TicketStatus;
 use App\Models\Hit\Hit;
-use App\Models\Order\Order;
 use App\Models\Positions\PositionOrderingTicket;
-use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
-use App\Services\NevaTravel\NevaOrder;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class   PromoterMakeOrderController extends ApiEditController
+class PromoterMakeOrderController extends ApiEditController
 {
     /**
      * Make order.

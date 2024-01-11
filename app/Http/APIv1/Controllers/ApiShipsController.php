@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\APIv1\Controllers;
 
-use App\Http\Requests\ApiGetShipsRequest;
-use App\Http\Resources\ApiShipsResource;
+use App\Http\APIv1\Requests\ApiGetShipsRequest;
+use App\Http\APIv1\Resources\ApiShipsResource;
+use App\Http\Controllers\Controller;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\ShipStatus;
 use App\Models\Ships\Ship;

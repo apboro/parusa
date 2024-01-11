@@ -94,15 +94,21 @@ class APIResponse
      *
      * @return  JsonResponse
      */
-    public static function response($data, $payload = null, ?string $message = 'Успешно', ?Carbon $lastModified = null): JsonResponse
+    public static function response($data, $payload = null, ?string $message = 'Успешно', ?Carbon $lastModified = null, bool $unsetPayload = false): JsonResponse
     {
-        return response()->json([
+        $responseData = [
             'message' => $message,
             'status' => 'OK',
             'code' => 200,
             'data' => $data,
             'payload' => $payload,
-        ], 200, self::lastModHeaders($lastModified));
+        ];
+
+        if ($unsetPayload) {
+            unset($responseData['payload']);
+        }
+
+        return response()->json($responseData, 200, self::lastModHeaders($lastModified));
     }
 
     /**
@@ -119,11 +125,11 @@ class APIResponse
      */
     public static function list(
         LengthAwarePaginator $list,
-        ?array $titles = null,
-        ?array $filters = null,
-        ?array $filtersOriginal = null,
-        ?array $payload = null,
-        ?Carbon $lastModified = null): JsonResponse
+        ?array               $titles = null,
+        ?array               $filters = null,
+        ?array               $filtersOriginal = null,
+        ?array               $payload = null,
+        ?Carbon              $lastModified = null): JsonResponse
     {
         return response()->json([
             'message' => 'OK',
@@ -174,14 +180,19 @@ class APIResponse
      *
      * @return  JsonResponse
      */
-    public static function success(string $message, array $payload = []): JsonResponse
+    public static function success(string $message, array $payload = [], bool $unsetPayload = false): JsonResponse
     {
-        return response()->json([
+        $responseData = [
             'status' => 'OK',
             'message' => $message,
             'code' => 200,
             'payload' => $payload,
-        ], 200);
+        ];
+
+        if ($unsetPayload) {
+            unset($responseData['payload']);
+        }
+        return response()->json($responseData, 200);
     }
 
     /**
@@ -221,5 +232,15 @@ class APIResponse
         return array_merge($headers, [
             'Last-Modified' => $lastMod->clone()->format('D, d M Y H:i:s') . ' GMT',
         ]);
+    }
+
+    public static function badRequest(string $message = 'Некорректный запрос')
+    {
+        return response()->json([
+            'message' => $message,
+            'status' => 'Bad Request',
+            'code' => 400,
+        ], 400);
+
     }
 }

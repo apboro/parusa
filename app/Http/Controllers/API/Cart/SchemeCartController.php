@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\Cart;
 
 use App\Http\APIResponse;
+use App\Http\Controllers\Controller;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\SeatStatus;
 use App\Models\Dictionaries\TicketStatus;

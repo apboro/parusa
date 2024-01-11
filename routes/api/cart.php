@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\API\Cart\PartnerCartController;
 use App\Http\Controllers\API\Cart\PromoterCartController;
+use App\Http\Controllers\API\Cart\SchemeCartController;
 use App\Http\Controllers\API\Cart\TerminalCartController;
-use App\Http\Controllers\SchemeCartController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/cart/partner', [PartnerCartController::class, 'get'])->middleware(['allow:partner']);

@@ -100,6 +100,11 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::showcase_paid_single => ['name' => 'ЕдБ оплачен витрина'],
             TicketStatus::partner_paid_single => ['name' => 'ЕдБ оплачен партнер'],
             TicketStatus::terminal_paid_single => ['name' => 'ЕдБ оплачен терминал'],
+            TicketStatus::api_reserved => ['name' => 'Зарезервирован по Api'],
+            TicketStatus::api_confirmed => ['name' => 'Подтвержден по Api'],
+            TicketStatus::api_canceled => ['name' => 'Отменён'],
+            TicketStatus::api_returned => ['name' => 'Возвращён по Api'],
+
             // использован после просрочки
         ],
 
@@ -130,6 +135,10 @@ class StatusesSeeder extends GenericSeeder
             OrderStatus::showcase_partial_returned => ['name' => 'Оформлен частичный возврат'],
             OrderStatus::showcase_canceled => ['name' => 'Отменён'],
             OrderStatus::done => ['name' => 'Выполнен'],
+            OrderStatus::api_reserved => ['name' => 'Зарезервирован по Api'],
+            OrderStatus::api_confirmed => ['name' => 'Подтвержден по Api'],
+            OrderStatus::api_canceled => ['name' => 'Отменён'],
+            OrderStatus::api_returned => ['name' => 'Возвращён по Api'],
         ],
 
         TerminalStatus::class => [

@@ -7,11 +7,11 @@ use OpenApi\Attributes as OA;
 
 #[OA\Get(
     path: '/api/v1/trips',
-    summary: 'Получить список рейсов',
+    summary: 'Получить список рейсов на день',
     security: [["sanctum" => []]],
     tags: ['Рейсы'],
     parameters: [
-        new OA\Parameter(name: 'date', description: 'Дата рейса, ГГГГ-ММ-ДД', in: 'query', example: '2023-12-18'),
+        new OA\Parameter(name: 'date', description: 'Дата рейса, ГГГГ-ММ-ДД', in: 'query', example: '2024-03-20'),
         new OA\Parameter(name: 'excursion_ids[]', description: 'ID экскурсий', in: 'query',
             schema: new OA\Schema(type: "array", items: new OA\Items(type: "integer")))
     ],

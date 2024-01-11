@@ -6,6 +6,7 @@ use App\Http\Middleware\Allow;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\HandleShowcaseCors;
+use App\Http\Middleware\PartnerStatusMiddleware;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\ExternalProtect;
@@ -99,8 +100,8 @@ class Kernel extends HttpKernel
         'signed' => ValidateSignature::class,
         'throttle' => ThrottleRequests::class,
         'verified' => EnsureEmailIsVerified::class,
-
         'allow' => Allow::class,
         'external.protect' => ExternalProtect::class,
+        'partnerStatus' => PartnerStatusMiddleware::class
     ];
 }
