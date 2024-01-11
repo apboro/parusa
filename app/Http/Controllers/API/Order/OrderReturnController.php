@@ -130,7 +130,6 @@ class OrderReturnController extends ApiController
                         NewNevaTravelOrderEvent::dispatch($order);
                         NevaTravelOrderPaidEvent::dispatch($order);
 
-                        AstraMarineNewOrderEvent::dispatch($order);
                         try {
                             Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
                         } catch (Exception $exception) {

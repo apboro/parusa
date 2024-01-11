@@ -7,8 +7,8 @@ use OpenApi\Attributes as OA;
 
 #[OA\Get(
     path: '/api/v1/piers',
+    description: 'Запрос служит для получения списка всех активных причалов системы',
     summary: 'Получить список причалов',
-    security: [["sanctum" => []]],
     tags: ['Причалы'],
     responses: [
         new OA\Response(response: 200, description: 'OK'),

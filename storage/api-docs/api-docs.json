@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "API Алые паруса",
-        "description": "Резерв на билеты действует 15 минут.",
+        "title": "API системы продаж компании \"Алые паруса\"",
+        "description": "<h2>Основные принципы системы:</h2>\n<ul>\n    <li>Заказ оформляется в 2 этапа:</li>\n        <p> - Отправляем запрос на резерв заказа /api/v1/order </p>\n        <p> - Отправляем запрос на подтверждение заказа /api/v1/order/confirm </p>\n    <li>Резерв на билеты действует 15 минут.</li>\n    <li>В ответе на запрос подтверждения заказа придут qr_коды билетов, которые нужно будет показать на причале.</li>\n    <li>Электронные продажи на любое отправление могут быть закрыты вручную в одностороннем порядке и без уведомления.</li>\n    <li>Ограничений на количество заказов на отправление или количество заказов в день нет.</li>\n    </ul>\n    ",
         "version": "1.0.0"
     },
     "paths": {
@@ -12,6 +12,7 @@
                     "Экскурсии"
                 ],
                 "summary": "Получить список экскурсий",
+                "description": "Список всех экскурсий",
                 "operationId": "4f4b70e6ddc64799d3ab36a50e4f4fcf",
                 "responses": {
                     "200": {
@@ -20,12 +21,7 @@
                     "401": {
                         "description": "Not allowed"
                     }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
+                }
             }
         },
         "/api/v1/piers": {
@@ -42,12 +38,7 @@
                     "401": {
                         "description": "Not allowed"
                     }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
+                }
             }
         },
         "/api/v1/ships": {
@@ -64,12 +55,7 @@
                     "401": {
                         "description": "Not allowed"
                     }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
+                }
             }
         },
         "/api/v1/trips": {
@@ -105,12 +91,7 @@
                     "401": {
                         "description": "Not allowed"
                     }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
+                }
             }
         },
         "/api/v1/order/confirm": {
@@ -142,12 +123,7 @@
                     "401": {
                         "description": "Not allowed"
                     }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
+                }
             }
         },
         "/api/v1/orders": {
@@ -184,12 +160,7 @@
                     "401": {
                         "description": "Not allowed"
                     }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
+                }
             }
         },
         "/api/v1/order/return": {
@@ -221,12 +192,7 @@
                     "401": {
                         "description": "Not allowed"
                     }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
+                }
             }
         },
         "/api/v1/order": {
@@ -287,15 +253,15 @@
                     "401": {
                         "description": "Not allowed"
                     }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
+                }
             }
         }
     },
+    "security": [
+        {
+            "sanctum": []
+        }
+    ],
     "tags": [
         {
             "name": "Рейсы"

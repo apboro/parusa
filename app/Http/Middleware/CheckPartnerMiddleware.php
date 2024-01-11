@@ -7,7 +7,7 @@ use App\Models\Dictionaries\PartnerStatus;
 use Closure;
 use Illuminate\Http\Request;
 
-class PartnerStatusMiddleware
+class CheckPartnerMiddleware
 {
     public function handle(Request $request, Closure $next)
     {

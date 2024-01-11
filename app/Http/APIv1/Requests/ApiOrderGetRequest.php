@@ -8,7 +8,6 @@ use OpenApi\Attributes as OA;
 #[OA\Get(
     path: '/api/v1/orders',
     summary: 'Получить список заказов',
-    security: [["sanctum" => []]],
     tags: ['Заказы'],
     parameters: [
         new OA\Parameter(name: 'order_id', description: 'ID заказа', in: 'query', example: '128561'),

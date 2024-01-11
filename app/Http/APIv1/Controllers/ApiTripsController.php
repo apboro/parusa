@@ -26,6 +26,7 @@ class ApiTripsController extends Controller
             }])
             //filter by date
             ->when($request->date, fn ($query) => $query->whereDate('start_at', Carbon::parse($request->date)))
+            ->when(!$request->date, fn ($query) => $query->whereDate('start_at', today()))
             //filter by excursion
             ->when(!empty($request->excursion_ids), fn ($query) => $query
                 ->whereHas('excursion', fn ($excursion) => $excursion->whereIn('id',$request->excursion_ids)))

@@ -84,7 +84,8 @@ class OrderStatus extends AbstractDictionary
         self::partner_paid,
         self::terminal_paid,
         self::showcase_paid,
-        self::promoter_paid
+        self::promoter_paid,
+        self::api_confirmed
     ];
 
     public const partial_returned_statuses = [

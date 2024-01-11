@@ -16,7 +16,7 @@ class ApiOrderResource extends JsonResource
             'client_name' => $this->name,
             'client_email' => $this->email,
             'client_phone' => $this->phone,
-            'created_at' => $this->created_at->format('Y-m-d'),
+            'created_at' => $this->created_at->format('Y-m-d H:i'),
             'tickets' => TicketResource::collection($this->tickets),
         ];
     }

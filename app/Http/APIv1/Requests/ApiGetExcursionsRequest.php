@@ -7,8 +7,8 @@ use OpenApi\Attributes as OA;
 
 #[OA\Get(
     path: '/api/v1/excursions',
+    description: 'Запрос служит для получения списка всех активных экскурсий системы',
     summary: 'Получить список экскурсий',
-    security: [["sanctum" => []]],
     tags: ['Экскурсии'],
     responses: [
         new OA\Response(response: 200, description: 'OK'),

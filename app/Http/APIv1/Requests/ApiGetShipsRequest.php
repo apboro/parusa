@@ -7,8 +7,8 @@ use OpenApi\Attributes as OA;
 
 #[OA\Get(
     path: '/api/v1/ships',
+    description: 'Запрос служит для получения списка всех активных теплоходов системы',
     summary: 'Получить список теплоходов',
-    security: [["sanctum" => []]],
     tags: ['Теплоходы'],
     responses: [
         new OA\Response(response: 200, description: 'OK'),

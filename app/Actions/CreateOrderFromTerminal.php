@@ -48,7 +48,7 @@ class CreateOrderFromTerminal
 
             $rateList = $trip ? $trip->getRate() : null;
             /** @var TicketRate $rate */
-            $rate = $rateList ? $rateList->rates()->where('grade_id', $ticket->grade_id)->first() : null;
+            $rate = $rateList?->rates()->where('grade_id', $ticket->grade_id)->first();
 
             if (
                 $trip === null

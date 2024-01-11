@@ -8,7 +8,6 @@ use OpenApi\Attributes as OA;
 #[OA\Post(
     path: '/api/v1/order',
     summary: 'Запрос заказа',
-    security: [["sanctum" => []]],
     tags: ['Заказы']
 )]
 #[OA\RequestBody(

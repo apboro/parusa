@@ -8,7 +8,6 @@ use OpenApi\Attributes as OA;
 #[OA\Patch(
     path: '/api/v1/order/return',
     summary: 'Возврат заказа',
-    security: [["sanctum" => []]],
     tags: ['Заказы']
 )]
 #[OA\RequestBody(

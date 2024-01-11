@@ -9,7 +9,7 @@ use App\Http\APIv1\Controllers\ApiPiersController;
 use App\Http\APIv1\Controllers\ApiShipsController;
 use App\Http\APIv1\Controllers\ApiTripsController;
 
-Route::middleware(['auth:sanctum', 'partnerStatus'])->group(function (){
+Route::middleware(['auth:sanctum', 'checkPartner'])->group(function (){
     Route::get('api/v1/excursions', ApiExcursionsController::class);
     Route::get('api/v1/trips', ApiTripsController::class);
     Route::get('api/v1/piers', ApiPiersController::class);
