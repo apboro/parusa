@@ -3,6 +3,7 @@
 namespace Database\Factories\Excursions;
 
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\Provider;
 use App\Models\Excursions\Excursion;
 use App\Models\Tickets\TicketsRatesList;
 use Database\Factories\Tickets\TicketsRatesListFactory;
@@ -17,7 +18,8 @@ class ExcursionFactory extends Factory
     {
         return [
             'name' => $this->faker->word,
-            'status_id' => ExcursionStatus::default,
+            'status_id' => ExcursionStatus::active,
+            'provider_id' => Provider::scarlet_sails
         ];
     }
 

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
-    use RefreshDatabase;
+//    use RefreshDatabase;
 
     protected User $admin;
 
@@ -22,7 +22,7 @@ abstract class TestCase extends BaseTestCase
 
         $this->admin = User::where('login', 'admin')->first() ?? User::factory()->create(['login' => 'admin', 'password' => Hash::make('admin')])->first();
         if ($this->admin->wasRecentlyCreated) {
-            $this->admin->staffPosition()->create(['title' => 'Админинстратор', 'is_staff' => 1]);
+            $this->admin->staffPosition()->create(['title' => 'Администратор', 'is_staff' => 1]);
             $this->admin->profile()->create(['lastname' => 'Администратор', 'firstname' => 'Администратор', 'gender' => 'male']);
             $this->admin->staffPosition->roles()->attach(Role::admin);
         }

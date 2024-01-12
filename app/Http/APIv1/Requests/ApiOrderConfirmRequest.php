@@ -7,6 +7,7 @@ use OpenApi\Attributes as OA;
 
 #[OA\Patch(
     path: '/api/v1/order/confirm',
+    description: 'Запрос служит для подтверждения ранее зарезервированного заказа',
     summary: 'Подтверждение заказа',
     tags: ['Заказы']
 )]

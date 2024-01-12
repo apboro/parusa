@@ -7,6 +7,18 @@ use OpenApi\Attributes as OA;
 
 #[OA\Post(
     path: '/api/v1/order',
+    description: 'Запрос служит для создания резерва заказа.
+<br>Входные параметры:
+<ul>
+ <li>trip_id - id рейса, integer</li>
+ <li>tickets - массив объектов:<br>
+  grade_id - категория билета, integer<br>
+  seat_id - id места, integer (может отсутствовать в запросе, если на рейсе не предусмотрена рассадка)
+  </li>
+
+</ul>
+',
+
     summary: 'Запрос заказа',
     tags: ['Заказы']
 )]

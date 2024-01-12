@@ -7,7 +7,8 @@ use OpenApi\Attributes as OA;
 
 #[OA\Get(
     path: '/api/v1/trips',
-    description: 'Запрос служит для получения списка всех актуальных на запрошенный день экскурсий системы',
+    description: 'Запрос служит для получения списка всех актуальных на запрошенный день экскурсий системы.
+<br> Если не задана дата, ответ будет содержать актуальные рейсы на сегодняшний день',
     summary: 'Получить список рейсов на день',
     tags: ['Рейсы'],
     parameters: [
@@ -25,23 +26,9 @@ class ApiGetTripsRequest extends FormRequest
     public function rules(): array
     {
         return [
-//            'start_at' => ['required', 'date'],
-//            'end_at' => ['required', 'date'],
-//            'start_pier_id' => ['required', 'integer'],
-//            'end_pier_id' => ['required', 'integer'],
-//            'ship_id' => ['required', 'integer'],
-//            'excursion_id' => ['required', 'integer'],
-//            'status_id' => ['required', 'integer'],
-//            'sale_status_id' => ['required', 'integer'],
-//            'tickets_total' => ['required', 'integer'],
-//            'discount_status_id' => ['required', 'integer'],
-//            'cancellation_time' => ['required', 'integer'],
-//            'provider_id' => ['nullable', 'integer'],
-//            'name' => ['nullable'],
-//            'is_single_ticket' => ['required', 'integer'],
-//            'reverse_excursion_id' => ['required', 'integer'],
-//            'external_id' => ['nullable'],
-//            'getTripStarts' => ['nullable'],
+            'date' => 'string|nullable',
+            'excursion_ids' => 'array',
+            'excursion_ids.*' => 'integer'
         ];
     }
 
