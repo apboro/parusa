@@ -2,7 +2,7 @@
 import seatMethods from "@/Mixins/seatMethods.vue";
 import CategoriesBox from "@/Pages/Parts/Seats/CategoriesBox.vue";
 import LoadingProgress from "@/Components/LoadingProgress.vue";
-
+//КОРЮШКА
 export default {
     name: "Scheme132",
     components: {LoadingProgress, CategoriesBox},

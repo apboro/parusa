@@ -31,6 +31,7 @@ class ApiOrderStoreController extends Controller
         }
 
         $rateList = $trip?->getRate();
+
         if (($trip->start_at < now() && $trip->excursion->is_single_ticket == 0)
             || ($trip->excursion->is_single_ticket != 0 && $trip->start_at < now() && !$trip->start_at->isCurrentDay())
             || !$rateList

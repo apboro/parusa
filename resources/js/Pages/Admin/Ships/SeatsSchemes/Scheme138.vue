@@ -2,7 +2,7 @@
 import seatMethods from "@/Mixins/seatMethods.vue";
 import CategoriesBox from "@/Pages/Parts/Seats/CategoriesBox.vue";
 import LoadingProgress from "@/Components/LoadingProgress.vue";
-
+//АСТРА
 export default {
     name: "Scheme138",
     components: {LoadingProgress, CategoriesBox},
@@ -7452,7 +7452,6 @@ export default {
 .st17{fill:#349184;}
 .st18{fill:none;}
 .st22{fill: #ACD08F;}
-.seat_number{pointer-events: none}
 
 #ship {
     width: 100%;

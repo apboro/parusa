@@ -45,7 +45,6 @@ class ShipEditController extends ApiEditController
                 'name' => $ship->name,
                 'description' => $ship->description,
                 'capacity' => (string)$ship->capacity,
-                'owner' => $ship->owner,
                 'ship_has_seats_scheme' => $ship->ship_has_seats_scheme,
                 'status_id' => $ship->status_id
             ],
@@ -76,7 +75,7 @@ class ShipEditController extends ApiEditController
         $ship->provider_id = Provider::scarlet_sails;
         $ship->name = $data['name'];
         $ship->capacity = $data['capacity'];
-        $ship->owner = $data['owner'];
+        $ship->owner = 'Алые Паруса';
         $ship->status_id = $data['status_id'];
         $ship->description = $data['description'];
         $ship->ship_has_seats_scheme = $data['ship_has_seats_scheme'];

@@ -2,9 +2,12 @@
 
 namespace Tests\Unit\Api;
 
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Excursions\Excursion;
 use App\Models\Partner\Partner;
 use App\Models\Sails\Trip;
+use App\Models\Tickets\TicketRate;
+use App\Models\Tickets\TicketsRatesList;
 use Tests\TestCase;
 
 class StoreOrderTest extends TestCase
@@ -12,13 +15,21 @@ class StoreOrderTest extends TestCase
 
     private string $token;
     private Trip $trip;
+    private int $gradeId;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        Excursion::factory()->count(5)->create();
-        $this->trip = Trip::factory()->create();
+        $excursion = Excursion::factory()->create();
+        $ticketRateList = TicketsRatesList::create([
+            'excursion_id' => $excursion->id,
+            'start_at' => now()->addMinutes(10),
+            'end_at' => now()->addDays(10)
+        ]);
+        $this->gradeId = TicketGrade::factory()->create()->id;
+        TicketRate::factory()->create(['rate_id' => $ticketRateList->id, 'grade_id' => $this->gradeId]);
+        $this->trip = Trip::factory()->create(['excursion_id' => $excursion->id]);
         $partner = Partner::firstOrCreate([
             'name' => 'test_api_partner'],
             [
@@ -31,17 +42,19 @@ class StoreOrderTest extends TestCase
 
     public function test_store_order_request()
     {
-//        $response = $this->withToken($this->token)->post('/api/v1/order',
-//            [
-//                'client_name' => 'test_api_client',
-//                'client_email' => 'testapiemail@mail.ru',
-//                'client_phone' => '78944588745',
-//                'trip_id' => $this->trip->id,
-//                'tickets' => [
-//                    ['grade_id' => 1003], ['grade_id' => 1030]
-//                ]
-//            ]);
-//        $response->assertStatus(404);
+        $phone = rand(10000,5000000);
+        $response = $this->withToken($this->token)->post('/api/v1/order',
+            [
+                'client_name' => 'test_api_client',
+                'client_email' => 'testapiEmail@mail.ru',
+                'client_phone' => $phone,
+                'trip_id' => $this->trip->id,
+                'tickets' => [
+                    ['grade_id' => $this->gradeId]
+                ]
+            ]);
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('orders', ['phone' => $phone]);
     }
 
 

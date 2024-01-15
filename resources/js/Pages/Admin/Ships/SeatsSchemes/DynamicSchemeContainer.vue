@@ -20,6 +20,7 @@ import scheme3 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme3.vue";
 import scheme58 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme58.vue";
 import scheme132 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme132.vue";
 import scheme138 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme138.vue";
+import scheme139 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme139.vue";
 import LoadingProgress from "@/Components/LoadingProgress.vue";
 
 export default {
@@ -30,6 +31,7 @@ export default {
         scheme58: scheme58,
         scheme132: scheme132,
         scheme138: scheme138,
+        scheme139: scheme139,
     },
     emits: ['selectSeat'],
     props: {
@@ -65,6 +67,8 @@ export default {
                     return scheme132
                 case 138:
                     return scheme138
+                case 139:
+                    return scheme139
             }
 
             return 'default-scheme';
@@ -86,4 +90,15 @@ export default {
 .ap-occupied {
     fill: #afacac;
 }
+.seat_number{pointer-events: none}
+.class_standard{fill: #ACD08F;}
+.class_vip5{fill:#349184;}
+.class_vip8
+{
+    fill: #318F82;
+    stroke: #1D1E1C;
+    stroke-width: 0.5416149;
+    stroke-miterlimit: 10;
+}
+
 </style>

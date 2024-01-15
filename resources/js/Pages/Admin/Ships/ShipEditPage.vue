@@ -7,7 +7,6 @@
         <GuiContainer mt-30>
             <FormString :form="form" :name="'name'"/>
             <FormString :form="form" :name="'capacity'"/>
-            <FormString :form="form" :name="'owner'"/>
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'ships_statuses'"/>
             <FormCheckBox :form="form" :name="'ship_has_seats_scheme'" :hide-title="true"/>
         </GuiContainer>

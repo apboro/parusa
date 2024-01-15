@@ -43,7 +43,7 @@ class NevaTravelIntegrationTest extends TestCase
         (new ImportPiers())->run();
         (new ImportPrograms())->run();
         (new ImportProgramsPrices())->run();
-        (new ImportTrips(now()->addDays(1)))->run();
+        (new ImportTrips(now()->addDays(5)))->run();
         $trip = Trip::where('start_at', '>', now())->where('provider_id', 10)->first();
         $this->positionOrderingTicket = PositionOrderingTicket::create([
             'position_id' => $position->id,

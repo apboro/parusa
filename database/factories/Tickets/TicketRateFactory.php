@@ -24,7 +24,7 @@ class TicketRateFactory extends Factory
             'updated_at' => Carbon::now(),
             'backward_price_type' => $this->faker->word(),
             'backward_price_value' => $this->faker->randomNumber(),
-            'partner_price' => $this->faker->randomNumber(),
+            'partner_price' => $this->faker->randomNumber(3),
         ];
     }
 }

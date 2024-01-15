@@ -58,13 +58,13 @@ export default {
                 return 'ap-selected';
             }
             if (seat.category.name === 'Standard')
-                return 'st22';
+                return 'class_standard';
 
             if (seat.category.name === 'VIP-8')
-                return 'st30';
+                return 'class_vip8';
 
             if (seat.category.name === 'VIP-5')
-                return 'st17';
+                return 'class_vip5';
         },
         handleSelectSeat(data) {
             console.log(data.seatNumber)
