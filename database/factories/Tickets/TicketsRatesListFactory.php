@@ -16,10 +16,10 @@ class TicketsRatesListFactory extends Factory
         return [
             'start_at' => Carbon::now()->addMinutes(5),
             'end_at' => Carbon::now()->addHours(2),
+            'excursion_id' => Excursion::factory()->create()->id,
             'caption' => $this->faker->word(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-
         ];
     }
 }

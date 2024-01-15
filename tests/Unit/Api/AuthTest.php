@@ -9,18 +9,20 @@ use Tests\TestCase;
 class AuthTest extends TestCase
 {
 
-    private Partner $partner;
+    private string $token;
 
     public function setUp(): void
     {
         parent::setUp();
         Excursion::factory()->count(5)->create();
-        $this->partner = Partner::firstOrCreate([
+        $partner = Partner::firstOrCreate([
             'name' => 'test_api_partner'],
             [
                 'type_id' => 1001,
                 'status_id' => 1,
             ]);
+        $this->token = $partner->createToken('test_token')
+            ->plainTextToken;
     }
 
     public function test_error_when_no_token_in_request()
@@ -31,8 +33,7 @@ class AuthTest extends TestCase
 
     public function test_get_excursions_success()
     {
-        $response = $this->withToken($this->partner->createToken('test_token')
-            ->plainTextToken)->get('/api/v1/excursions');
+        $response = $this->withToken($this->token)->get('/api/v1/excursions');
 
         $response->assertStatus(200);
     }
