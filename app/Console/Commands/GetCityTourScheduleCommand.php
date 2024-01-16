@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManagerStatic as Image;
+use Intervention\Image\ImageManager;
 use Str;
 
 class GetCityTourScheduleCommand extends Command
@@ -44,9 +44,11 @@ class GetCityTourScheduleCommand extends Command
         $imageUrl = $this->findScheduleImgUrl();
         $response = Http::get($imageUrl);
         if ($response->successful()) {
-            $image = Image::make($response->body());
-            $image->rectangle(0, 0, 330, 180, function ($draw) {
-                $draw->background('#e7443e');
+            $manager = ImageManager::imagick();
+            $image = $manager->read($response->body());
+            $image->drawRectangle(0, 0, function ($rectangle) {
+                $rectangle->size(350, 200);
+                $rectangle->background('#f04e47');
             });
 
             Storage::disk('public_images')->put('city_tour-schedule.png', $image->encode());
