@@ -44,7 +44,7 @@ class GetCityTourScheduleCommand extends Command
         $imageUrl = $this->findScheduleImgUrl();
         $response = Http::get($imageUrl);
         if ($response->successful()) {
-            $manager = ImageManager::imagick();
+            $manager = ImageManager::gd();
             $image = $manager->read($response->body());
             $image->drawRectangle(0, 0, function ($rectangle) {
                 $rectangle->size(350, 200);
