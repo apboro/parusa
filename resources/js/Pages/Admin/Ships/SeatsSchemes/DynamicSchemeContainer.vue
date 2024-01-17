@@ -22,6 +22,7 @@ import scheme132 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme132.vue";
 import scheme138 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme138.vue";
 import scheme139 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme139.vue";
 import LoadingProgress from "@/Components/LoadingProgress.vue";
+import scheme140 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme140.vue";
 
 export default {
     components: {
@@ -32,6 +33,7 @@ export default {
         scheme132: scheme132,
         scheme138: scheme138,
         scheme139: scheme139,
+        scheme140: scheme140,
     },
     emits: ['selectSeat'],
     props: {
@@ -69,6 +71,8 @@ export default {
                     return scheme138
                 case 139:
                     return scheme139
+                case 140:
+                    return scheme140
             }
 
             return 'default-scheme';
