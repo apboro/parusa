@@ -90,6 +90,9 @@ export default {
 .ap-occupied {
     fill: #afacac;
 }
+.not-set {
+    fill: cyan;
+}
 .seat_number{pointer-events: none}
 .class_standard{fill: #ACD08F;}
 .class_vip5{fill:#349184;}

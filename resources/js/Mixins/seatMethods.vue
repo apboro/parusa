@@ -57,6 +57,9 @@ export default {
             if (this.selectedSeats.includes(seat.seat_id)) {
                 return 'ap-selected';
             }
+            if (!seat.category){
+                return 'not-set';
+            }
             if (seat.category.name === 'Standard')
                 return 'class_standard';
 

@@ -1,28 +1,35 @@
 <template>
-    <div v-if="seats && seats.length >= capacity">
         <svg viewBox="-20 70 500 200" xmlns="http://www.w3.org/2000/svg">
-            <rect :style="selected(1) ? {'fill': 'orange'} : {'fill': getColor(1)}"
-                  @click="handleClick(1)"
+            <rect @click="handleClick(1)"
+                  :class="selected(1)"
                   x="66.461" y="95.07" width="21.127" height="22.007"/>
-            <rect :style="selected(2) ? {'fill': 'orange'} : {'fill': getColor(2)}"
-                  @click="handleClick(2)"
+            <rect @click="handleClick(2)"
+                  :class="selected(2)"
                   x="66.461" y="132.042" width="22.007" height="22.007"/>
-            <rect :style="selected(3) ? {'fillZ': 'orange'} : {'fill': getColor(3)}" @click="handleClick(3)"
+            <rect @click="handleClick(3)"
+                  :class="selected(3)"
                    x="65.589" y="169.894" width="23.768" height="20.246"/>
-            <rect :style="selected(4) ? {'fill': 'orange'} : {'fill': getColor(4)}" @click="handleClick(4)"
+            <rect @click="handleClick(4)"
+                  :class="selected(4)"
                    x="174.736" y="94.19" width="25.528" height="20.246"/>
-            <rect :style="selected(5) ? {'fill': 'orange'} : {'fill': getColor(5)}" @click="handleClick(5)"
+            <rect @click="handleClick(5)"
+                  :class="selected(5)"
                    x="172.975" y="129.401" width="27.289" height="21.127"/>
-            <rect :style="selected(6) ? {'fill': 'orange'} : {'fill': getColor(6)}" @click="handleClick(6)"
+            <rect @click="handleClick(6)"
+                  :class="selected(6)"
                    x="256.602" y="93.31" width="29.049" height="22.007"/>
-            <rect :style="selected(7) ? {'fill': 'orange'} : {'fill': getColor(7)}" @click="handleClick(7)"
+            <rect @click="handleClick(7)"
+                  :class="selected(7)"
                    x="254.842" y="126.761" width="31.69" height="23.768"/>
             <ellipse cx="228.433" cy="123.239" rx="15.845" ry="15.845" style="fill: #999999FF;"/>
-            <rect :style="selected(8) ? {'fill': 'orange'} : {'fill': getColor(8)}" @click="handleClick(8)"
+            <rect @click="handleClick(8)"
+                  :class="selected(8)"
                    x="347.271" y="92.43" width="24.648" height="24.648"/>
-            <rect :style="selected(9) ? {'fill': 'orange'} : {'fill': getColor(9)}" @click="handleClick(9)"
+            <rect @click="handleClick(9)"
+                  :class="selected(9)"
                    x="346.391" y="132.042" width="25.528" height="23.768"/>
-            <rect :style="selected(10) ? {'fill': 'orange'} : {'fill': getColor(10)}" @click="handleClick(10)"
+            <rect @click="handleClick(10)"
+                  :class="selected(10)"
                    x="347.271" y="169.014" width="24.648" height="21.127"/>
             <text
                 style="user-select: none; pointer-events: none; white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 20.6px;"
@@ -74,40 +81,36 @@
         </svg>
 
         <CategoriesBox :categories="categories" :grades="grades"/>
-
-    </div>
 </template>
 
 <script>
-import DictionaryDropDown from "@/Components/Inputs/DictionaryDropDown.vue";
-import GuiButton from "@/Components/GUI/GuiButton.vue";
-import GuiContainer from "@/Components/GUI/GuiContainer.vue";
+//МАРСЕЛЬ
 import seatMethods from "@/Mixins/seatMethods.vue";
 import CategoriesBox from "@/Pages/Parts/Seats/CategoriesBox.vue";
+import LoadingProgress from "@/Components/LoadingProgress.vue";
 
 export default {
-    name: 'Scheme3',
-    components: {CategoriesBox, GuiContainer, GuiButton, DictionaryDropDown},
+    name: "Scheme3",
+    components: {LoadingProgress, CategoriesBox},
     mixins: [seatMethods],
-    emits: ['selectSeat'],
+    emits:['selectSeat'],
 
     props: {
+        tripId: Number,
         capacity: Number,
         grades: Array,
         categories: Array,
         shipId: Number,
-        seats: Array,
         editing: Boolean,
         selecting: Boolean,
+        seats: Array,
     },
 
 }
 </script>
 
 <style scoped>
-.st22 {
-    fill: #ACD08F;
-}
+
 </style>
 
 
