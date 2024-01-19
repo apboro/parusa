@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('sync:showcase_pay_waiting')->everyMinute();
         $schedule->command('city_tour:import')->weekly();
         $schedule->command('get:city-tour-schedule')->hourly();
+        $schedule->command('telescope:prune --hours=96')->daily();
         $schedule->command('close:work-shifts')->dailyAt('1:05');
         if (config('app.env') === 'production') {
             $schedule->command('city_tour:refresh')->everyFifteenMinutes();

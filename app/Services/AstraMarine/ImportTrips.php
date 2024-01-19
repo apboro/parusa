@@ -43,7 +43,7 @@ class ImportTrips
             "getTicketType" => true,
             "seatsByGroups" => true,
             "dateFrom" => now()->toIso8601String(),
-            "dateTo" => now()->addDays(60)->toIso8601String()
+            "dateTo" => now()->addDays(7)->toIso8601String()
         ]);
 
         foreach ($astraTrips['body']['events'] as $astraTrip) {
