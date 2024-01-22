@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $description
  * @property int $status_id
  * @property int $type_id
+ * @property string|null $scheme_name
  *
  * @property ShipStatus $status
  * @property ShipType $type

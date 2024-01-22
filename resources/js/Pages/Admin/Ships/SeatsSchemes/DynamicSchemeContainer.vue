@@ -19,10 +19,10 @@ import scheme12 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme12.vue";
 import scheme3 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme3.vue";
 import scheme58 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme58.vue";
 import scheme132 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme132.vue";
-import scheme138 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme138.vue";
 import scheme139 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme139.vue";
 import LoadingProgress from "@/Components/LoadingProgress.vue";
 import scheme140 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme140.vue";
+import schemeAstra from "@/Pages/Admin/Ships/SeatsSchemes/SchemeAstra.vue";
 
 export default {
     components: {
@@ -31,7 +31,7 @@ export default {
         scheme3: scheme3,
         scheme58: scheme58,
         scheme132: scheme132,
-        scheme138: scheme138,
+        schemeAstra: schemeAstra,
         scheme139: scheme139,
         scheme140: scheme140,
     },
@@ -39,6 +39,7 @@ export default {
     props: {
         data: Object,
         shipId: Number,
+        scheme_name: String,
         editing: Boolean,
         selecting: Boolean,
     },
@@ -58,17 +59,15 @@ export default {
 
     methods: {
         getComponentName() {
-            switch (this.shipId) {
-                case 12:
-                    return scheme12
+            switch (this.scheme_name) {
+                case 'astra':
+                    return schemeAstra
                 case 3:
                     return scheme3
                 case 58:
                     return scheme58
                 case 132:
                     return scheme132
-                case 138:
-                    return scheme138
                 case 139:
                     return scheme139
                 case 140:

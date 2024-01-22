@@ -229,6 +229,7 @@ class ShowcaseTripsController extends ApiController
                 'ship_has_scheme' => $trip->ship->ship_has_seats_scheme,
                 'capacity' => $trip->ship->capacity,
                 'shipId' => $trip->ship->id,
+                'scheme_name' => $trip->ship->scheme_name,
                 'categories' => $trip->getSeatCategories(),
                 'seats' => $trip->getSeats(),
                 'seat_tickets_grades' => $trip->getSeatGrades(),

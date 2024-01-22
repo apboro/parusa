@@ -12,6 +12,7 @@
         <DynamicSchemeContainer
             :data="trip"
             :shipId="trip['shipId']"
+            :scheme_name="trip['scheme_name']"
             :selecting="true"
             @selectSeat="handleSelectSeat"/>
 
@@ -23,10 +24,14 @@
                {result: 'cancel', caption: 'Отмена'},
            ]"
         >
-            <label v-for="(grade, index) in seatGrades" :key="index">
-                <input @click="selectedMenu = null" style="margin-top: 10px" type="radio" v-model="selectedGrade" :value="grade.grade"
-                       :name="'grade-select'"> {{ grade.grade.name }} - {{ getGradePrice(grade.grade.id) }} руб.
-            </label>
+            <div v-for="(grade, index) in seatGrades" :key="index">
+                <label v-if="getGradePrice(grade.grade.id)">
+                    <input @click="selectedMenu = null" style="margin-top: 10px" type="radio" v-model="selectedGrade"
+                           :value="grade.grade"
+                           v-if="getGradePrice(grade.grade.id)"
+                           :name="'grade-select'"> {{ grade.grade.name }} - {{ getGradePrice(grade.grade.id) }} руб.
+                </label>
+            </div>
             <div style="display: flex; flex-direction: column; align-items: center"
                  v-if="selectedGrade && selectedGrade.menus.length > 0">
                 <span style="margin-top: 20px;">Выберите меню</span>
@@ -77,7 +82,7 @@ export default {
 
     methods: {
         getGradePrice(gradeId) {
-            return this.trip['rates'].find(e => e.id === gradeId).value;
+            return this.trip['rates'].find(e => e.id === gradeId)?.value;
         },
         getFilteredGrades(categoryId) {
             return this.trip['seat_tickets_grades'].filter(el => el.seat_category_id === categoryId)

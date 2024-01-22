@@ -70,10 +70,11 @@ export default {
                 return 'class_vip5';
         },
         handleSelectSeat(data) {
-            console.log(data.seatNumber)
+            // console.log(data)
             if (!data.deselect) {
                 let categoryId = this.trip['seats'].find(el => el.seat_id === data.seatId).category.id;
                 this.seatGrades = this.getFilteredGrades(categoryId);
+
                 this.$refs.category.show().then(() => {
                     this.tickets.push({
                         seatId: data.seatId,

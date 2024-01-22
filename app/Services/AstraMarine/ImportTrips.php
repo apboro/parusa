@@ -168,7 +168,9 @@ class ImportTrips
                     ]);
                     $this->importPrice($trip, $price, $category);
                     $this->connectShipSeatAndGrade($grade, $category['seatCategoryID'], $trip);
-                    $this->importMenus($price, $trip, $grade);
+                    if ($price['hasMenu']) {
+                        $this->importMenus($price, $trip, $grade);
+                    }
                 }
             }
         }
@@ -219,7 +221,7 @@ class ImportTrips
         ]);
     }
 
-    public function importMenus(array $price, Trip $trip, TicketGrade $grade)
+    public function importMenus(array $price, Trip $trip, TicketGrade $grade): void
     {
         foreach ($price['menus'] as $menu) {
             $menu = Menu::updateOrCreate([

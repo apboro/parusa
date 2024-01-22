@@ -2,7 +2,7 @@
     <GuiContainer w-100>
         <DynamicSchemeContainer
             :data="data"
-            :shipId="shipId"
+            :scheme_name="scheme_name"
             :editing="editing"
             @selectSeat="handleSelectSeat"/>
         <GuiContainer mt-20 t-15 v-if="editable && data['provider_id'] === 5">
@@ -36,6 +36,7 @@ import DynamicSchemeContainer from "@/Pages/Admin/Ships/SeatsSchemes/DynamicSche
 export default {
     components: {DynamicSchemeContainer, DictionaryDropDown, GuiButton, GuiContainer},
     props: {
+        scheme_name: {type: String, required: true},
         shipId: {type: Number, required: true},
         data: {type: Object, required: true},
         editable: {type: Boolean, default: false},
