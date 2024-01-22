@@ -29,7 +29,7 @@ class PartnerSettingsController extends ApiController
     {
         Hit::register(HitSource::partner);
         $current = Currents::get($request);
-        $showcaseUrl = config('app.showcase_ap_page');
+        $showcaseUrl = config('showcase.showcase_ap_page');
 
         $code = "<!-- Загрузка скрипта -->\n";
         $code .= "<script src=\"" . config('app.url') . "/js/showcase.js\"></script>\n";
