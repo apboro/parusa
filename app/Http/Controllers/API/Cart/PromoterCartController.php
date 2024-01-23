@@ -278,7 +278,7 @@ class PromoterCartController extends ApiEditController
 
         $cartTicketQuery = PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id, 'terminal_id' => $current->terminalId()]);
         $ticket = $cartTicketQuery->first();
-        TripSeat::query()->where('trip_id', $ticket->trip_id)->where('seat_number', $ticket->seat_number)->delete();
+        TripSeat::query()->where('trip_id', $ticket->trip_id)->where('seat_number', $ticket->seat->seat_number)->delete();
 
         $cartTicketQuery->delete();
 
