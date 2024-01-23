@@ -74,9 +74,7 @@ class ImportTrips
                         'provider_trip_id' => $astraTrip['eventID'],
                         'provider_id' => Provider::astra_marine]);
 
-                if ($trip->wasRecentlyCreated) {
-                    $this->importSeatCategories($astraTrip, $trip->ship);
-                }
+                $this->importSeatCategories($astraTrip, $trip->ship);
                 $this->importGrades($astraTrip, $trip);
             }
         }
