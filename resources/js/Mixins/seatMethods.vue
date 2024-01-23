@@ -21,6 +21,7 @@ export default {
         },
 
         handleClick(seatNumber) {
+            console.log(seatNumber)
             let seat = this.seats.find(el => el.seat_number == seatNumber);
 
             if (!seat || (seat.status && [5, 10].includes(seat.status.id))) {
@@ -57,17 +58,21 @@ export default {
             if (this.selectedSeats.includes(seat.seat_id)) {
                 return 'ap-selected';
             }
-            if (!seat.category){
+            if (!seat.category) {
                 return 'not-set';
             }
-            if (seat.category.name === 'Standard')
-                return 'class_standard';
-
-            if (seat.category.name === 'VIP-8')
-                return 'class_vip8';
-
-            if (seat.category.name === 'VIP-5')
-                return 'class_vip5';
+            switch (seat.category.name) {
+                case 'Standard':
+                    return 'class_standard';
+                case 'VIP-8':
+                    return 'class_vip8';
+                case 'VIP-5':
+                    return 'class_vip5';
+                case 'Business Class':
+                    return 'class_business';
+                case 'Comfort':
+                    return 'class_comfort';
+            }
         },
         handleSelectSeat(data) {
             // console.log(data)
@@ -106,6 +111,7 @@ export default {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #fff;
 }
+
 .ap-tickets-container {
     display: flex;
     flex-direction: column;

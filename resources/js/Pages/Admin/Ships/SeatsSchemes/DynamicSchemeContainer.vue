@@ -23,6 +23,7 @@ import scheme139 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme139.vue";
 import LoadingProgress from "@/Components/LoadingProgress.vue";
 import scheme140 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme140.vue";
 import schemeAstra from "@/Pages/Admin/Ships/SeatsSchemes/SchemeAstra.vue";
+import schemeAstraMeteor from "@/Pages/Admin/Ships/SeatsSchemes/SchemeAstraMeteor.vue";
 
 export default {
     components: {
@@ -34,6 +35,7 @@ export default {
         schemeAstra: schemeAstra,
         scheme139: scheme139,
         scheme140: scheme140,
+        schemeAstraMeteor: schemeAstraMeteor
     },
     emits: ['selectSeat'],
     props: {
@@ -62,6 +64,8 @@ export default {
             switch (this.scheme_name) {
                 case 'astra':
                     return schemeAstra
+                case 'astra_meteor':
+                    return schemeAstraMeteor
                 case 3:
                     return scheme3
                 case 58:
@@ -99,6 +103,8 @@ export default {
 .seat_number{pointer-events: none}
 .class_standard{fill: #ACD08F;}
 .class_vip5{fill:#349184;}
+.class_business{fill: #f6a68c;}
+.class_comfort{fill: #759fd6;}
 .class_vip8
 {
     fill: #318F82;
