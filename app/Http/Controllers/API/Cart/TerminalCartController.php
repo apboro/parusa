@@ -21,6 +21,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Log;
 use RuntimeException;
 
 class TerminalCartController extends ApiEditController
@@ -165,19 +166,6 @@ class TerminalCartController extends ApiEditController
             return APIResponse::notFound('Рейс не найден');
         }
 
-        if ($trip->provider_id !== null && $current->position()->ordering()->exists()){
-            return APIResponse::error('Заказы данного поставщика должны оформляться отдельно, очистите корзину.');
-        }
-
-        $existingTickets = $current->position()->ordering()->get();
-        $hasExternalTickets = $existingTickets->filter(function ($ticket){
-            return $ticket->trip->provider_id !== null;
-        })->isNotEmpty();
-
-        if ($hasExternalTickets){
-            return APIResponse::error('В корзине содержатся билеты другого поставщика, очистите корзину.');
-        }
-
         $now = Carbon::now();
 
         /** @var Trip $trip */
@@ -215,8 +203,15 @@ class TerminalCartController extends ApiEditController
                 }
                 /** @var PositionOrderingTicket $ticket */
                 $ticket = $current->position()->ordering()
-                    ->where(['trip_id' => $trip->id, 'grade_id' => $grade_id, 'terminal_id' => $current->terminalId()])
-                    ->firstOrNew(['position_id' => $current->positionId(), 'trip_id' => $trip->id, 'grade_id' => $grade_id, 'terminal_id' => $current->terminalId()]);
+                    ->where([
+                        'trip_id' => $trip->id,
+                        'grade_id' => $grade_id,
+                        'terminal_id' => $current->terminalId()])
+                    ->firstOrNew([
+                        'position_id' => $current->positionId(),
+                        'trip_id' => $trip->id,
+                        'grade_id' => $grade_id,
+                        'terminal_id' => $current->terminalId()]);
 
                 $ticket->quantity += $quantity;
                 $count += $quantity;

@@ -28,7 +28,9 @@ class TerminalInfoController extends ApiController
             return APIResponse::notFound('Неверные параметры.');
         }
 
-        $current->position()->ordering()->whereHas('trip', fn($trip) => $trip->where('start_at', '<', now()))->delete();
+        $current->position()->ordering()
+            ->whereHas('trip', fn($trip) => $trip->where('end_at', '<', now()))
+            ->delete();
 
         /** @var Order $processing */
         $processing = Order::query()->with(['status'])
@@ -42,7 +44,7 @@ class TerminalInfoController extends ApiController
             $tickets = $current->position()->ordering()
                 ->where('terminal_id', $terminalId)
                 ->leftJoin('trips', 'trips.id', '=', 'position_ordering_tickets.trip_id')
-                ->where('trips.start_at', '>', Carbon::now())
+                ->where('trips.end_at', '>', Carbon::now())
                 ->leftJoin('excursions', 'excursions.id', '=', 'trips.excursion_id')
                 ->leftJoin('tickets_rates_list', function (JoinClause $join) {
                     $join

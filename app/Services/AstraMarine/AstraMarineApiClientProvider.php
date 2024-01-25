@@ -44,7 +44,7 @@ class AstraMarineApiClientProvider
         $data['email'] = 'info@parus-a.ru';
 
         try {
-            $timeout = $this->getTimeoutForBaseUrl($this->baseUrl);
+            $timeout = $this->getTimeoutForBaseUrl($uri);
             $response = Http::withBasicAuth(config('astra-marine.username'), config('astra-marine.password'))
                 ->timeout($timeout)->post($this->baseUrl . $uri, $data);
         } catch (ConnectionException $e) {
