@@ -142,10 +142,6 @@ class DictionaryController extends ApiController
             return APIResponse::notModified();
         }
 
-        if ($name === 'ticket_grades' || $name === 'seat_categories' || $name === 'ships') {
-            $query->where('provider_id', Provider::scarlet_sails);
-        }
-
         $dictionary = $query->orderBy('order')->orderBy('name')->get();
 
         return APIResponse::response($dictionary, null, null, $actual);
