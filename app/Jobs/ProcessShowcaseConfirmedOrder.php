@@ -86,8 +86,8 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
                 TripSeat::query()
                     ->updateOrCreate(['trip_id' => $ticket->trip->id, 'seat_id' => $ticket->seat_id],
                         ['status_id' => SeatStatus::occupied]);
-                $tickets[] = $ticket;
             }
+            $tickets[] = $ticket;
         });
 
         try {

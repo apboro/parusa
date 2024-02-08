@@ -45,14 +45,13 @@ class CloudPrint
             ],
             'callback_url' => route('cloudPrintNotification'),
         ];
-
         foreach ($tickets as $ticket) {
             /** @var Ticket $ticket */
-            $ticket->loadMissing(['grade', 'trip.excursion']);
-
+            $ticket->loadMissing(['grade', 'trip.excursion', 'order', 'order.promocode']);
+            $ticketPrice = $ticket->order->promocode ? $order->total()/$order->tickets->count() : $ticket->base_price;
             $item['quantity'] = 1;
-            $item['price'] = $ticket->base_price;
-            $receipt['card_amount'] += $ticket->base_price;
+            $item['price'] = $ticketPrice;
+            $receipt['card_amount'] += $ticketPrice;
             $item['tax'] = 'none'; // НДС не облагается
             $item['unit'] = 'piece'; // штуки
             $item['type'] = 1; // Полная предварительная оплата до момента передачи предмета расчета
