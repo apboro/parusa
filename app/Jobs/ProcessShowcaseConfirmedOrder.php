@@ -82,10 +82,12 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
         $order->setStatus($newOrderStatus);
         $order->tickets->map(function (Ticket $ticket) use (&$tickets, $newTicketStatus) {
             $ticket->setStatus($newTicketStatus);
-            TripSeat::query()
-            ->updateOrCreate(['trip_id'=> $ticket->trip->id, 'seat_id' => $ticket->seat_id],
-                ['status_id' => SeatStatus::occupied]);
-            $tickets[] = $ticket;
+            if ($ticket->seat_id) {
+                TripSeat::query()
+                    ->updateOrCreate(['trip_id' => $ticket->trip->id, 'seat_id' => $ticket->seat_id],
+                        ['status_id' => SeatStatus::occupied]);
+                $tickets[] = $ticket;
+            }
         });
 
         try {
