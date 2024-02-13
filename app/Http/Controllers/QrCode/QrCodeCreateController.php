@@ -2,18 +2,11 @@
 
 namespace App\Http\Controllers\QrCode;
 
-use App\Http\APIResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Hit\Hit;
-use App\Models\QrCode;
+use App\Models\QrCodes\QrCode;
 use App\Models\User\Helpers\Currents;
-use Carbon\Carbon;
-use Endroid\QrCode\Builder\Builder;
-use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
-use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class QrCodeCreateController extends Controller

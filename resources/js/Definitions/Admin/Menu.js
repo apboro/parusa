@@ -27,6 +27,7 @@ export default [
             {'title': 'Промокоды', 'route': 'promo-code-list', 'roles': ['admin', 'office_manager', 'accountant']},
             {'title': 'Настройки', 'route': 'settings', 'roles': ['admin', 'office_manager', 'accountant']},
             {'title': 'Справочники', 'route': 'dictionaries', 'roles': ['admin', 'office_manager', 'accountant']},
+            {'title': 'Новости', 'route': 'news', 'roles': ['admin', 'office_manager']},
         ]
     },
     {

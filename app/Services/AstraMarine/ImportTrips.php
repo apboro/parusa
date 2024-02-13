@@ -5,9 +5,9 @@ namespace App\Services\AstraMarine;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Excursions\Excursion;
-use App\Models\Menu;
 use App\Models\Piers\Pier;
 use App\Models\Sails\Trip;
+use App\Models\Ships\Menu;
 use App\Models\Ships\Seats\Seat;
 use App\Models\Ships\Seats\SeatCategory;
 use App\Models\Ships\Seats\ShipSeatCategoryTicketGrade;
@@ -15,7 +15,6 @@ use App\Models\Ships\Ship;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
 use Carbon\Carbon;
-use Database\Factories\Tickets\TicketsRatesListFactory;
 
 class ImportTrips
 {

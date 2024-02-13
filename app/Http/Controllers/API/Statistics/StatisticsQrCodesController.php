@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Hit\Hit;
-use App\Models\QrCodesStatistic;
+use App\Models\QrCodes\QrCodesStatistic;
 use Carbon\Carbon;
 
 class StatisticsQrCodesController extends Controller

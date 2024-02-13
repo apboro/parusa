@@ -3,7 +3,6 @@
 namespace App\Actions;
 
 use App\Exceptions\Tickets\WrongOrderException;
-use App\Models\BackwardTicket;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\Provider;
@@ -13,6 +12,7 @@ use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Order\Order;
 use App\Models\PromoCode\PromoCode;
+use App\Models\Tickets\BackwardTicket;
 use App\Models\Tickets\TicketRate;
 use Carbon\Carbon;
 use Exception;

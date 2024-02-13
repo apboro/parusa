@@ -2,7 +2,7 @@
 
 namespace App\Models\Integration;
 
-use App\Models\Menu;
+use App\Models\Ships\Menu;
 use Illuminate\Database\Eloquent\Model;
 
 class AdditionalDataTicket extends Model

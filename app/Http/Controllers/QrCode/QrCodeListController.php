@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Hit\Hit;
-use App\Models\QrCode;
+use App\Models\QrCodes\QrCode;
 use App\Models\User\Helpers\Currents;
 use Illuminate\Http\JsonResponse;
 

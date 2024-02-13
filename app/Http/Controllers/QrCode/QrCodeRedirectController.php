@@ -6,9 +6,8 @@ use App\Helpers\StatisticQrCodes;
 use App\Http\Controllers\Controller;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Hit\Hit;
-use App\Models\QrCode;
+use App\Models\QrCodes\QrCode;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class QrCodeRedirectController extends Controller
 {

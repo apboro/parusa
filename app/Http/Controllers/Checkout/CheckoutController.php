@@ -15,7 +15,7 @@ use App\Models\Hit\Hit;
 use App\Models\Order\Order;
 use App\Models\Partner\Partner;
 use App\Models\Payments\Payment;
-use App\Models\QrCode;
+use App\Models\QrCodes\QrCode;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\SberbankAcquiring\Connection;

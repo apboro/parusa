@@ -7,7 +7,6 @@ use App\Exceptions\Tickets\WrongTicketStatusException;
 use App\Helpers\PriceConverter;
 use App\Interfaces\Statusable;
 use App\Models\Account\AccountTransaction;
-use App\Models\BackwardTicket;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\PartnerType;

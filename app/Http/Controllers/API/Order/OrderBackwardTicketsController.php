@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\Order;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
-use App\Models\BackwardTicket;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
@@ -12,16 +11,12 @@ use App\Models\Dictionaries\TripStatus;
 use App\Models\Hit\Hit;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Sails\Trip;
-use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
 class OrderBackwardTicketsController extends ApiController
 {

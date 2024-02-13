@@ -2,7 +2,7 @@
 
 namespace App\Models\Dictionaries;
 
-use App\Models\Menu;
+use App\Models\Ships\Menu;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**

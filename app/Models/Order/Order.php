@@ -3,19 +3,14 @@
 namespace App\Models\Order;
 
 use App\Exceptions\Account\AccountException;
-use App\Exceptions\Tickets\WrongOrderException;
 use App\Exceptions\Tickets\WrongOrderStatusException;
 use App\Exceptions\Tickets\WrongOrderTypeException;
 use App\Interfaces\Statusable;
 use App\Interfaces\Typeable;
-use App\Models\BackwardTicket;
 use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
-use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
-use App\Models\Dictionaries\TripSaleStatus;
-use App\Models\Dictionaries\TripStatus;
 use App\Models\Integration\AdditionalDataOrder;
 use App\Models\Model;
 use App\Models\Partner\Partner;
@@ -23,19 +18,17 @@ use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\Position;
 use App\Models\PromoCode\PromoCode;
+use App\Models\Tickets\BackwardTicket;
 use App\Models\Tickets\Ticket;
-use App\Models\Tickets\TicketRate;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**

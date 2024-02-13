@@ -2,8 +2,8 @@
 
 namespace App\Helpers;
 
-use App\Models\QrCode;
-use App\Models\QrCodesStatistic;
+use App\Models\QrCodes\QrCode;
+use App\Models\QrCodes\QrCodesStatistic;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
