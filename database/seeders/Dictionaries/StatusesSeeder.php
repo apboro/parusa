@@ -4,6 +4,7 @@ namespace Database\Seeders\Dictionaries;
 
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\ExcursionStatus;
+use App\Models\Dictionaries\NewsStatus;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PaymentStatus;
@@ -159,5 +160,9 @@ class StatusesSeeder extends GenericSeeder
             SeatStatus::reserve => ['name' => 'Зарезервировано'],
             SeatStatus::occupied => ['name' => 'Занято'],
         ],
+        NewsStatus::class => [
+            NewsStatus::DRAFT => ['name' => 'Черновик'],
+            NewsStatus::SENT => ['name' => 'Отправлена'],
+        ]
     ];
 }

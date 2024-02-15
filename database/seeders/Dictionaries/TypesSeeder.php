@@ -4,6 +4,7 @@ namespace Database\Seeders\Dictionaries;
 
 use App\Models\Dictionaries\PromoCodeType;
 use App\Models\Dictionaries\Provider;
+use App\Models\NewsRecipients;
 use Database\Seeders\GenericSeeder;
 
 class TypesSeeder extends GenericSeeder
@@ -12,5 +13,9 @@ class TypesSeeder extends GenericSeeder
         PromoCodeType::class => [
             PromoCodeType::fixed => ['name' => 'Фиксированный'],
         ],
+        NewsRecipients::class => [
+            NewsRecipients::PARTNERS => ['name' => 'Все партнеры'],
+            NewsRecipients::CLIENTS => ['name' => 'Клиенты'],
+        ]
     ];
 }

@@ -8,10 +8,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('news_has_image', function (Blueprint $table) {
-            $table->id();
             $table->unsignedInteger('news_id');
             $table->unsignedInteger('image_id');
-            $table->timestamps();
         });
     }
 

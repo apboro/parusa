@@ -13,6 +13,7 @@ use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\ExcursionType;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\Inventory;
+use App\Models\Dictionaries\NewsStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PartnerOrderType;
 use App\Models\Dictionaries\PartnerStatus;
@@ -36,6 +37,7 @@ use App\Models\Dictionaries\UserStatus;
 use App\Models\Dictionaries\WorkShiftStatus;
 use App\Models\Excursions\Excursion;
 use App\Models\Hit\Hit;
+use App\Models\NewsRecipients;
 use App\Models\Partner\Partner;
 use App\Models\Piers\Pier;
 use App\Models\POS\Terminal;
@@ -86,7 +88,9 @@ class DictionaryController extends ApiController
         'tariffs' => ['class' => Tariff::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
         'work_shift_statuses' => ['class' => WorkShiftStatus::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal'],
         'inventory' => ['class' => Inventory::class, 'allow' => 'staff_admin,staff_office_manager,staff_terminal'],
-        'seat_categories' => ['class' => SeatCategory::class, 'allow' => 'staff_admin,staff_office_manager']
+        'seat_categories' => ['class' => SeatCategory::class, 'allow' => 'staff_admin,staff_office_manager'],
+        'news_statuses' => ['class' => NewsStatus::class, 'allow' => 'staff_admin,staff_office_manager'],
+        'news_recipients' => ['class' => NewsRecipients::class, 'allow' => 'staff_admin,staff_office_manager']
     ];
 
     /**
