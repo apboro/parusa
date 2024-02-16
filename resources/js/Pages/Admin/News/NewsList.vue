@@ -28,7 +28,21 @@ export default {
     }),
     methods: {
         copy(news) {
-            console.log()
+            this.$dialog.show('Копировать новость"' + news['title'] + '"?', 'question', 'orange', [
+                this.$dialog.button('yes', 'Продолжить', 'orange'),
+                this.$dialog.button('no', 'Отмена', 'blue'),
+            ]).then(result => {
+                if (result === 'yes') {
+                    axios.post('/api/news/copy', {id: news['id']})
+                        .then(response => {
+                            this.$toast.success(response.data['message']);
+                        })
+                        .catch(error => {
+                            this.$toast.error(error.response.data['message']);
+                        })
+                        .finally(this.list.load());
+                }
+            });
         },
         edit(news) {
             this.$router.push({name: 'news-edit', params: {id: news.id}})

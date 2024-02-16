@@ -18,11 +18,6 @@ class News extends Model
     protected $guarded = [];
     protected $dates = ['send_at'];
 
-    public function images(): BelongsToMany
-    {
-        return $this->belongsToMany(Image::class, 'news_has_image', 'news_id', 'image_id');
-    }
-
     public function status(): HasOne
     {
         return $this->hasOne(NewsStatus::class, 'id', 'status_id');

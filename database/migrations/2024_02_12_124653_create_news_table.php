@@ -11,7 +11,7 @@ return new class extends Migration {
         Schema::create('news', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('description')->nullable();
+            $table->longText('description')->nullable();
             $table->unsignedTinyInteger('status_id')->default(1);
             $table->dateTime('send_at')->nullable();
             $table->unsignedTinyInteger('recipients_id')->nullable();

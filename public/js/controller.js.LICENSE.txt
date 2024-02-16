@@ -1,8 +1,10 @@
 /*!
-  * vue-router v4.0.12
-  * (c) 2021 Eduardo San Martin Morote
+  * vue-router v4.2.5
+  * (c) 2023 Eduardo San Martin Morote
   * @license MIT
   */
+
+/*! #__NO_SIDE_EFFECTS__ */
 
 /*! ./browser */
 
@@ -33,6 +35,8 @@
 /*! exports provided: default */
 
 /*! no static exports found */
+
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
 
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -94,3 +98,9 @@
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  */
+
+/**
+* @vue/shared v3.4.19
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/

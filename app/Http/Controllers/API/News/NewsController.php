@@ -31,7 +31,6 @@ class NewsController extends ApiEditController
     protected array $titles = [
         'title' => 'Название',
         'description' => 'Текст',
-        'images' => 'Изображение',
         'recipients' => 'Получатели'
     ];
     protected array $defaultFilters = [
@@ -85,7 +84,7 @@ class NewsController extends ApiEditController
         Hit::register(HitSource::admin);
 
         /** @var News|null $news */
-        $news = $this->firstOrNew(News::class, $request, ['images']);
+        $news = $this->firstOrNew(News::class, $request, ['status']);
 
         if ($news === null) {
             return APIResponse::notFound('Новость не найдена');
@@ -97,9 +96,6 @@ class NewsController extends ApiEditController
                 'title' => $news->title,
                 'description' => $news->description,
                 'recipients' => NewsRecipients::PARTNERS,
-                'images' => $news->images->map(function (Image $image) {
-                    return ['id' => $image->id, 'url' => $image->url];
-                }),
             ],
             $this->rules,
             $this->titles,
@@ -131,11 +127,6 @@ class NewsController extends ApiEditController
         $news->recipients_id = NewsRecipients::PARTNERS;
         $news->save();
 
-        //images
-        $images = Image::createFromMany($data['images'], 'public_images');
-        $imageIds = $images->pluck('id')->toArray();
-        $news->images()->sync($imageIds);
-
         return APIResponse::success(
             'Черновик новости сохранен',
             [
@@ -151,7 +142,7 @@ class NewsController extends ApiEditController
         $id = $request->input('id');
 
         if ($id === null ||
-            null === ($news = News::query()->with(['status', 'images', 'recipients'])->where('id', $id)->first())) {
+            null === ($news = News::query()->with(['status', 'recipients'])->where('id', $id)->first())) {
             return APIResponse::notFound('Экскурсия не найдена');
         }
 
@@ -162,9 +153,6 @@ class NewsController extends ApiEditController
             'id' => $news->id,
             'title' => $news->title,
             'description' => $news->description,
-            'images' => $news->images->map(function (Image $image) {
-                return $image->url;
-            }),
             'created_at' => $news->created_at->translatedFormat('D, d M Y H:i'),
             'send_at' => $news->send_at?->translatedFormat('D, d M Y H:i'),
             'recipient' => $news->recipients->name,
@@ -196,6 +184,20 @@ class NewsController extends ApiEditController
         }
 
         return APIResponse::response([], [], "Новость \"$title\" удалена");
+    }
+
+    public function copy(Request $request)
+    {
+        $news = News::findOrFail($request->get('id'));
+
+        News::create([
+            'title' => $news->title . '(копия)',
+            'description' => $news->description,
+            'recipients_id' => $news->recipients_id,
+            'status_id' => NewsStatus::DRAFT,
+        ]);
+
+        return APIResponse::success('Копия успешно создана');
     }
 
 

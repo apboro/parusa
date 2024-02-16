@@ -1,47 +1,49 @@
 /*!
-  * vue-router v4.0.12
-  * (c) 2021 Eduardo San Martin Morote
+  * vue-router v4.2.5
+  * (c) 2023 Eduardo San Martin Morote
   * @license MIT
   */
 
 /*!
- * XRegExp 5.1.0
+ * XRegExp 5.1.1
  * <xregexp.com>
  * Steven Levithan (c) 2007-present MIT License
  */
 
 /*!
- * XRegExp Unicode Base 5.1.0
+ * XRegExp Unicode Base 5.1.1
  * <xregexp.com>
  * Steven Levithan (c) 2008-present MIT License
  */
 
 /*!
- * XRegExp Unicode Categories 5.1.0
+ * XRegExp Unicode Categories 5.1.1
  * <xregexp.com>
  * Steven Levithan (c) 2010-present MIT License
  * Unicode data by Mathias Bynens <mathiasbynens.be>
  */
 
 /*!
- * XRegExp Unicode Properties 5.1.0
+ * XRegExp Unicode Properties 5.1.1
  * <xregexp.com>
  * Steven Levithan (c) 2012-present MIT License
  * Unicode data by Mathias Bynens <mathiasbynens.be>
  */
 
 /*!
- * XRegExp Unicode Scripts 5.1.0
+ * XRegExp Unicode Scripts 5.1.1
  * <xregexp.com>
  * Steven Levithan (c) 2010-present MIT License
  * Unicode data by Mathias Bynens <mathiasbynens.be>
  */
 
 /*!
- * vuex v4.0.2
- * (c) 2021 Evan You
+ * vuex v4.1.0
+ * (c) 2022 Evan You
  * @license MIT
  */
+
+/*! #__NO_SIDE_EFFECTS__ */
 
 /*! ./browser */
 
@@ -72,6 +74,8 @@
 /*! exports provided: default */
 
 /*! no static exports found */
+
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
 
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -133,6 +137,12 @@
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  */
+
+/**
+* @vue/shared v3.4.19
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/
 
 //! moment.js
 

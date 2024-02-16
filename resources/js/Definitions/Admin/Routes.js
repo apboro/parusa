@@ -41,6 +41,9 @@ import HomePage from "@/Pages/HomePage.vue";
 import ShipListPage from "@/Pages/Admin/Ships/ShipListPage.vue";
 import ShipViewPage from "@/Pages/Admin/Ships/ShipViewPage.vue";
 import ShipEditPage from "@/Pages/Admin/Ships/ShipEditPage.vue";
+import NewsList from "@/Pages/Admin/News/NewsList.vue";
+import NewsEditPage from "@/Pages/Admin/News/NewsEditPage.vue";
+import NewsViewPage from "@/Pages/Admin/News/NewsViewPage.vue";
 
 export default [
     {path: '/', name: 'home', component: HomePage, meta: {title: 'Главная', roles: ['admin', 'office_manager', 'piers_manager', 'accountant', 'promoter_manager']}},
@@ -97,6 +100,11 @@ export default [
     {path: '/trips/:id/edit', name: 'trip-edit', component: TripEditPage, meta: {title: 'Редактирование рейса', roles: ['admin', 'office_manager']}},
 
     {path: '/dictionaries', name: 'dictionaries', component: DictionariesPage, meta: {title: 'Справочники', roles: ['admin', 'office_manager', 'piers_manager', 'accountant', 'promoter_manager']}},
+
+    {path: '/news', name: 'news-list', component: NewsList, meta: {title: 'Новости', roles: ['admin', 'office_manager']}},
+    {path: '/news/:id', name: 'news-view', component: NewsViewPage, meta: {title: 'Просмотр новости', roles: ['admin', 'office_manager']}},
+    {path: '/news/:id/edit', name: 'news-edit', component: NewsEditPage, meta: {title: 'Редактирование новости', roles: ['admin', 'office_manager']}},
+
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
 
 ];

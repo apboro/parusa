@@ -16,7 +16,8 @@ export default {
     components: {
         GuiButton,
         GuiContainer,
-        GuiFilesList, GuiValue, LayoutRoutedTabs, GuiHeading, TripsList, LayoutPage, GuiActionsMenu},
+        GuiFilesList, GuiValue, LayoutRoutedTabs, GuiHeading, TripsList, LayoutPage, GuiActionsMenu
+    },
     mixins: [DeleteEntry],
 
     data: () => ({
@@ -38,7 +39,7 @@ export default {
     },
 
     methods: {
-        edit(){
+        edit() {
             this.$router.push({name: 'news-edit', params: {id: this.newsId}});
         },
         deleteNews() {
@@ -52,7 +53,7 @@ export default {
                 this.data.data[key] = payload[key];
             })
         },
-        send(){
+        send() {
             this.$dialog.show('Отправить новость"' + this.data.data['title'] + '"?', 'question', 'orange', [
                 this.$dialog.button('yes', 'Продолжить', 'orange'),
                 this.$dialog.button('no', 'Отмена', 'blue'),
@@ -84,42 +85,25 @@ export default {
                 <span class="link" @click="deleteNews">Удалить новость</span>
             </GuiActionsMenu>
         </template>
-        <GuiValue :title="'Заголовок'">{{data.data['title']}}</GuiValue>
-        <GuiValue :title="'Дата создания'">{{data.data['created_at']}}</GuiValue>
-        <GuiValue :title="'Дата отправки'" v-if="data.data['send_at']">{{data.data['send_at']}}</GuiValue>
-        <GuiValue :title="'Получатели'">{{data.data['recipient']}}</GuiValue>
-        <GuiValue :title="'Статус'">{{data.data['status']}}</GuiValue>
+        <GuiValue :title="'Заголовок'">{{ data.data['title'] }}</GuiValue>
+        <GuiValue :title="'Дата создания'">{{ data.data['created_at'] }}</GuiValue>
+        <GuiValue :title="'Дата отправки'" v-if="data.data['send_at']">{{ data.data['send_at'] }}</GuiValue>
+        <GuiValue :title="'Получатели'">{{ data.data['recipient'] }}</GuiValue>
+        <GuiValue :title="'Статус'">{{ data.data['status'] }}</GuiValue>
         <p>Шаблон письма</p>
-        <GuiContainer w-150 mt-30 inline pl-20 v-if="data.data['images'] && data.data['images'][0]">
-            {{ data.data['description'] }}
-            <div class="excursion-image-view">
-                <img class="excursion-image-view__image" :src="data.data['images'][0]" :alt="data.data['title']"/>
-            </div>
-        </GuiContainer>
+        <div id="description-container" v-html="data.data['description']"></div>
 
-        <div class="button-container">
+        <div style="margin-top: 30px;text-align: right;">
             <GuiButton color="green" @clicked="edit">Редактировать</GuiButton>
             <GuiButton @clicked="send">Отправить</GuiButton>
         </div>
     </LayoutPage>
 </template>
 
-<style scoped lang="scss">
-.excursion-image-view {
-    margin-top: 20px;
-    height: 370px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+<style lang="scss">
 
-    &__image {
-        max-width: 100%;
-        max-height: 100%;
-    }
-}
-
-.button-container {
-    margin-top: 30px;
-    text-align: right;
+#description-container img {
+    max-width: 100%;
+    height: auto;
 }
 </style>

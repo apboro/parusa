@@ -34,6 +34,9 @@
         "xregexp": "^5.1.0"
     },
     "dependencies": {
+        "@ckeditor/ckeditor5-upload": "^41.1.0",
+        "@ckeditor/ckeditor5-vue": "^5.1.0",
+        "ckeditor5-custom-build": "file:resources/ckeditor5",
         "file-saver": "^2.0.5",
         "mdb-vue-ui-kit": "^3.2.0",
         "print-js": "^1.6.0",

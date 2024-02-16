@@ -13,6 +13,7 @@ import RolesStore from "@/Stores/roles-store";
 import Toast from "@/Plugins/Toast/toaster";
 import Dialog from "@/Plugins/Dialog/dialog";
 import Highlight from "@/Plugins/Highlight/highlight";
+import CKEditor from "@ckeditor/ckeditor5-vue";
 
 // add router
 const router = createRouter({
@@ -51,5 +52,6 @@ app.use(adminStore);
 app.use(Toast);
 app.use(Dialog);
 app.use(Highlight);
+app.use(CKEditor)
 
 app.mount('#app');
