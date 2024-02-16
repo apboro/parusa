@@ -10,4 +10,5 @@ Route::post('/news/update',[NewsController::class, 'update'])->middleware(['allo
 Route::post('/news/delete',[NewsController::class, 'delete'])->middleware(['allow:staff_admin,staff_office_manager']);
 Route::post('/news/send',[NewsSendController::class, 'send'])->middleware(['allow:staff_admin,staff_office_manager']);
 Route::post('/news/copy',[NewsController::class, 'copy'])->middleware(['allow:staff_admin,staff_office_manager']);
+Route::post('/news/test',[NewsController::class, 'test'])->middleware(['allow:staff_admin,staff_office_manager']);
 

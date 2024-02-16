@@ -27,6 +27,8 @@ export default {
                 '|', 'bold', 'italic',
                 '|', 'link', 'uploadImage', 'blockQuote',
                 '|', 'bulletedList', 'numberedList', 'outdent', 'indent',
+                '|', 'alignment',
+                '|', 'insertTable',
                 '|', 'undo', 'redo',
             ],
             simpleUpload: {
@@ -73,7 +75,7 @@ export default {
                 :link="{name: 'news-list'}"
                 :link-title="'К списку новостей'">
         <GuiContainer mt-30>
-            <FormString :form="form" name="title" title="Заголовок"/>
+            <FormString style="margin-bottom: 5px":form="form" name="title" title="Заголовок" />
             <ckeditor :editor="editor" v-model="form.values.description" :config="editorConfig"></ckeditor>
             <FormDictionary disabled :form="form" :dictionary="'news_recipients'" :name="'recipients'"/>
         </GuiContainer>

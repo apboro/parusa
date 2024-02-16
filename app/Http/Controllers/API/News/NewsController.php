@@ -6,15 +6,13 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiEditController;
 use App\Http\Requests\APIListRequest;
-use App\Models\Common\Image;
-use App\Models\Dictionaries\ExcursionProgram;
-use App\Models\Dictionaries\ExcursionStatus;
+use App\Jobs\SendNewsEmailJob;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\NewsStatus;
-use App\Models\Excursions\Excursion;
 use App\Models\Hit\Hit;
 use App\Models\News\News;
 use App\Models\NewsRecipients;
+use App\Models\Partner\Partner;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -200,5 +198,14 @@ class NewsController extends ApiEditController
         return APIResponse::success('Копия успешно создана');
     }
 
+    public function test(Request $request)
+    {
+        $partner = Partner::findOrFail(224);
+        $news = News::findOrFail($request->get('id'));
+        $email = $request->get('email');
+
+        SendNewsEmailJob::dispatch($email, $news, $partner);
+        return APIResponse::success('Тестовое письмо отправлено');
+    }
 
 }

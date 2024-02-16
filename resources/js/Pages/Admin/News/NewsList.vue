@@ -66,7 +66,7 @@ export default {
         </template>
 
         <LayoutFilters>
-            <LayoutFiltersItem :title="'Статус экскурсии'">
+            <LayoutFiltersItem :title="'Статус новости'">
                 <DictionaryDropDown
                     :dictionary="'news_statuses'"
                     v-model="list.filters['status_id']"
