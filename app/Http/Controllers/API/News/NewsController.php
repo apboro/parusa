@@ -200,7 +200,7 @@ class NewsController extends ApiEditController
 
     public function test(Request $request)
     {
-        $partner = Partner::findOrFail(224);
+        $partner = Partner::inRandomOrder()->first();
         $news = News::findOrFail($request->get('id'));
         $email = $request->get('email');
 
