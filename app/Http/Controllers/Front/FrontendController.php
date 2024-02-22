@@ -61,6 +61,12 @@ class FrontendController extends Controller
             $current->set($position, $role, $terminal);
         }
 
+
+        //кабинет контролёра судовладельца
+        if ($current->position()?->title === 'Контролёр'){
+            return $this->controllerPage($current, $loginVariantsCount > 1);
+        }
+
         // partner account
         if ($current->position() !== null && !$current->isStaff() && $current->partner()->type_id != PartnerType::promoter) {
             return $this->partnerPage($current, $loginVariantsCount > 1);

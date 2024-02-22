@@ -7,6 +7,14 @@
         <GuiContainer mt-30>
             <FormString :form="form" :name="'name'"/>
             <FormString :form="form" :name="'capacity'"/>
+            <FormDropdown :name="'partner_id'" :form="form"
+                          :options="partners"
+                          :identifier="'id'"
+                          :show="'name'"
+                          :placeholder="'Нет'"
+                          :fresh="true"
+                          :has-null="true"
+            />
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'ships_statuses'"/>
             <FormCheckBox :form="form" :name="'ship_has_seats_scheme'" :hide-title="true"/>
         </GuiContainer>
@@ -62,6 +70,9 @@ export default {
         processing() {
             return this.form.is_loading || this.form.is_saving;
         },
+        partners() {
+            return this.form.payload.partners;
+        }
     },
 
     created() {

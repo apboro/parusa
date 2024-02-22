@@ -21,6 +21,7 @@ class CookieKeys
     public const statistics_sales_list = 'statistics_sales_list';
     public const qr_codes_list = 'qr_codes_list';
     public const news_list = 'news_list';
+    public const filling_registry_list = 'filling_registry_list';
 
     public const promoters_list = 'promoters_list';
     public const promoters_shifts_list = 'promoters_shifts_list';

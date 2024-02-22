@@ -16,6 +16,7 @@ class PartnerTypesSeeder extends GenericSeeder
             PartnerType::horeka => ['name' => 'Хорека'],
             PartnerType::taxi => ['name' => 'Такси'],
             PartnerType::promoter => ['name' => 'Промоутер'],
+            PartnerType::ship_owner => ['name' => 'Судовладелец'],
         ]
     ];
 }

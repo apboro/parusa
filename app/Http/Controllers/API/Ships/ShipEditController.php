@@ -5,9 +5,11 @@ namespace App\Http\Controllers\API\Ships;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\ShipStatus;
 use App\Models\Hit\Hit;
+use App\Models\Partner\Partner;
 use App\Models\Ships\Ship;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,7 +28,8 @@ class ShipEditController extends ApiEditController
         'capacity' => 'Вместимость',
         'owner' => 'Владелец',
         'ship_has_seats_scheme' => 'Схема рассадки',
-        'status_id' => 'Статус'
+        'status_id' => 'Статус',
+        'partner_id' => 'Теплоход партнера'
     ];
 
     public function get(Request $request): JsonResponse
@@ -46,12 +49,16 @@ class ShipEditController extends ApiEditController
                 'description' => $ship->description,
                 'capacity' => (string)$ship->capacity,
                 'ship_has_seats_scheme' => $ship->ship_has_seats_scheme,
-                'status_id' => $ship->status_id
+                'status_id' => $ship->status_id,
+                'partner_id' => $ship->partner?->id,
             ],
             $this->rules,
             $this->titles,
             [
                 'name' => $ship->exists ? $ship->name : 'Добавление теплохода',
+                'partners' => Partner::query()
+                    ->where('type_id', PartnerType::ship_owner)
+                    ->get(),
             ]
         );
     }
@@ -79,6 +86,7 @@ class ShipEditController extends ApiEditController
         $ship->status_id = $data['status_id'];
         $ship->description = $data['description'];
         $ship->ship_has_seats_scheme = $data['ship_has_seats_scheme'];
+        $ship->partner_id = $data['partner_id'];
         $ship->save();
 
         return APIResponse::success(
@@ -93,6 +101,7 @@ class ShipEditController extends ApiEditController
                 'status' => $ship->status->name,
                 'status_id' => $ship->status_id,
                 'ship_has_seats_scheme' => $ship->ship_has_seats_scheme,
+                'partner_id' => $ship->partner?->id,
             ]
         );
     }

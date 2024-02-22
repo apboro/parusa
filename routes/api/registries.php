@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Registries\FillingRegistryController;
 use App\Http\Controllers\API\Registries\OrderRenderController;
 use App\Http\Controllers\API\Registries\OrderSendController;
 use App\Http\Controllers\API\Registries\OrdersRegistryBuyerController;
@@ -18,6 +19,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('/registries/orders', [OrdersRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_accountant,staff_terminal,partner']);
 Route::post('/registries/order', [OrdersRegistryItemController::class, 'view'])->middleware(['allow:staff_admin,staff_piers_manager,staff_office_manager,staff_accountant,staff_terminal,partner']);
 Route::post('/registries/order/buyer', [OrdersRegistryBuyerController::class, 'buyer'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant,partner']);
+
+Route::post('/registries/filling', [FillingRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant,partner']);
+Route::post('/registries/filling/export', [FillingRegistryController::class, 'export'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant,partner']);
+
 
 Route::post('/registries/reserves', [ReservesRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_office_manager,staff_accountant,staff_terminal,partner']);
 

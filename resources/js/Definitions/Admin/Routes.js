@@ -44,6 +44,7 @@ import ShipEditPage from "@/Pages/Admin/Ships/ShipEditPage.vue";
 import NewsList from "@/Pages/Admin/News/NewsList.vue";
 import NewsEditPage from "@/Pages/Admin/News/NewsEditPage.vue";
 import NewsViewPage from "@/Pages/Admin/News/NewsViewPage.vue";
+import FillingRegistryPage from "@/Pages/Admin/Registries/FillingRegistryPage.vue";
 
 export default [
     {path: '/', name: 'home', component: HomePage, meta: {title: 'Главная', roles: ['admin', 'office_manager', 'piers_manager', 'accountant', 'promoter_manager']}},
@@ -55,6 +56,7 @@ export default [
     {path: '/registry/reserves', name: 'reserves-registry', component: ReservesRegistryPage, meta: {title: 'Реестр броней', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
     {path: '/registry/transactions', name: 'transactions-registry', component: TransactionsRegistryPage, meta: {title: 'Реестр транзакций по кассам', roles: ['admin', 'accountant']}},
     {path: '/registry/promoters', name: 'promoters-registry', component: PromotersRegistryPage, meta: {title: 'Реестр по промоутерам', roles: ['admin', 'accountant', 'promoter_manager']}},
+    {path: '/registry/filling', name: 'filling-registry', component: FillingRegistryPage, meta: {title: 'Реестр наборов', roles: ['admin', 'accountant', 'office_manager']}},
 
     {path: '/statistics/sales', name: 'statistics-sales', component: StatisticsSalesPage, meta: {title: 'Статистика продаж', roles: ['admin']}},
     {path: '/statistics/sales-today', name: 'statistics-sales-today', component: StatisticsSalesTodayPage, meta: {title: 'Статистика продаж за сегодня', roles: ['admin']}},

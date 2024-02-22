@@ -39,6 +39,7 @@ export default [
             {'title': 'Реестр броней', 'route': 'reserves-registry', 'roles': ['admin', 'office_manager', 'piers_manager', 'accountant']},
             {'title': 'Реестр транзакций по кассам', 'route': 'transactions-registry', 'roles': ['admin', 'accountant']},
             {'title': 'Реестр по промоутерам', 'route': 'promoters-registry', 'roles': ['admin', 'accountant', 'promoter_manager']},
+            {'title': 'Реестр наборов', 'route': 'filling-registry', 'roles': ['admin', 'office_manager', 'accountant']},
         ]
     },
     {

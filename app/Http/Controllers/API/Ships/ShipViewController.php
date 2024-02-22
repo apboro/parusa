@@ -57,6 +57,7 @@ class ShipViewController extends ApiController
             'seats' => $seats->transform(fn($seat) => ['seat_id' => $seat->id, 'seat_number' => $seat->seat_number, 'category' => $seat->category, 'status' => null]),
             'seat_tickets_grades' => $ship->seat_categories_ticket_grades()->with('grade')->get(),
             'ship_has_seats_scheme' => $ship->ship_has_seats_scheme,
+            'partner' => $ship->partner?->name,
         ];
 
         // send response

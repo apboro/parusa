@@ -10,6 +10,7 @@ use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\ShipStatus;
 use App\Models\Dictionaries\ShipType;
 use App\Models\Model;
+use App\Models\Partner\Partner;
 use App\Models\Sails\Trip;
 use App\Models\Ships\Seats\Seat;
 use App\Models\Ships\Seats\ShipSeatCategoryTicketGrade;
@@ -133,5 +134,10 @@ class Ship extends Model implements Statusable, Typeable, AsDictionary
     public function seat_categories_ticket_grades()
     {
         return $this->hasMany(ShipSeatCategoryTicketGrade::class, 'ship_id', 'id');
+    }
+
+    public function partner()
+    {
+        return $this->hasOne(Partner::class, 'id', 'partner_id');
     }
 }

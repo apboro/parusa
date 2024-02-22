@@ -3,7 +3,8 @@
         <GuiContainer w-50 mt-30>
             <GuiValue :title="'Название'">{{ data['name'] }}</GuiValue>
             <GuiValue :title="'Вместимость'">{{ data['capacity'] }}</GuiValue>
-            <GuiValue :title="'Владелец'">{{ data['owner'] }}</GuiValue>
+            <GuiValue v-if="data['partner']" :title="'Теплоход партнёра'">{{ data['partner'] }}</GuiValue>
+            <GuiValue v-else :title="'Владелец'">{{ data['owner'] }}</GuiValue>
             <GuiValue :title="'Описание'">{{ data['description'] }}</GuiValue>
             <GuiValue :title="'Статус'">
                 <span class="link" v-if="editable" @click="statusChange"><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>

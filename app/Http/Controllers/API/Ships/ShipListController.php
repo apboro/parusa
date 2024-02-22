@@ -51,7 +51,8 @@ class ShipListController extends ApiController
                 'name' => $ship->name,
                 'description' => $ship->description,
                 'capacity' => $ship->capacity,
-                'owner' => $ship->owner
+                'owner' => $ship->owner,
+                'partner' => $ship->partner?->name
             ];
         });
 

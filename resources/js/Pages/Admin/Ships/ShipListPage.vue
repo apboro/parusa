@@ -29,7 +29,7 @@
                     <router-link class="link" :to="{ name: 'ship-view', params: { id: ship['id'] }}" v-html="highlight(ship['name'])"/>
                 </ListTableCell>
                 <ListTableCell>
-                    {{ship.owner}}
+                    {{ship.partner ?? ship.owner}}
                 </ListTableCell>
                 <ListTableCell>
                     {{ship.capacity}}

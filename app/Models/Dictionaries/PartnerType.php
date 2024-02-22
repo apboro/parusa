@@ -15,6 +15,7 @@ class PartnerType extends AbstractDictionary
     public const promoter = 1003;
     public const horeka = 1004;
     public const taxi = 1005;
+    public const ship_owner = 1010;
 
     /** @var string Referenced table */
     protected $table = 'dictionary_partner_types';
