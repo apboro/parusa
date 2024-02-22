@@ -5,8 +5,11 @@ namespace App\Http\Controllers\API\TicketsControl;
 use App\Http\APIResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\PartnerType;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Tickets\Ticket;
+use App\Models\User\Helpers\Currents;
 use Exception;
 use Illuminate\Http\Request;
 use Str;
@@ -71,9 +74,16 @@ class TicketQrCodeCheckController extends Controller
 
     public function useTicket(Request $request)
     {
+        $current = Currents::get($request);
         $tickets = Ticket::whereIn('id', $request->ticketIds)->get();
         foreach ($tickets as $ticket) {
             $ticket->setStatus(TicketStatus::used);
+            if ($current->partner()->type_id === PartnerType::ship_owner) {
+                $ticket->additionalData()->updateOrCreate([
+                    'provider_id' => Provider::scarlet_sails,
+                    'shipowner_partner_id' => $current->partnerId()
+                ]);
+            }
         }
 
         return APIResponse::success('Билет отмечен как использованный');

@@ -59,21 +59,6 @@
             </LayoutFiltersItem>
         </LayoutFilters>
         <LayoutFilters>
-            <LayoutFiltersItem :title="'Статус'">
-                <FieldDropDown
-                    :options="ticketStatuses"
-                    v-model="list.filters['ticket_status_id']"
-                    :identifier="'id'"
-                    :show="'name'"
-                    :original="list.filters_original['ticket_status_id']"
-                    :placeholder="'Все'"
-                    :has-null="true"
-                    :small="true"
-                    :hide-title="true"
-                    :disabled="!!list.search"
-                    @change="list.load()"
-                />
-            </LayoutFiltersItem>
             <LayoutFiltersItem :title="'Экскурсии'" style="margin-left: 10px; width: 100%;">
                 <div class="w-450px">
                     <DictionaryDropDown
@@ -136,13 +121,11 @@
         <GuiContainer v-if="totals" mt-30>
             <GuiHeading text-lg>Статистика за период: <span class="bold">{{
                     list.payload['dateFrom']
-                }} — {{ list.payload['dateTo'] }}</span>
+                }} — {{ list.payload['dateTo'] }}</span><span> по партнёру: {{list.payload.partner}}</span>
             </GuiHeading>
             <GuiValue :title="'Всего билетов:'">{{totals.ticketsCount}}</GuiValue>
-            <GuiValue :title="'Сумма билетов:'">{{totals.totalSum}}</GuiValue>
+            <GuiValue :title="'Сумма билетов:'">{{totals.totalSum}} руб.</GuiValue>
         </GuiContainer>
-
-
     </LoadingProgress>
 </template>
 
@@ -204,9 +187,6 @@ export default {
     computed: {
         partners() {
             return this.list.payload.partners;
-        },
-        ticketStatuses(){
-            return this.list.payload.ticketStatuses;
         },
         totals(){
             return this.list.payload.totals;

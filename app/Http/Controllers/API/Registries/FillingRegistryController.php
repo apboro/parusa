@@ -15,7 +15,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
-use MongoDB\Driver\BulkWrite;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -58,10 +57,19 @@ class FillingRegistryController extends ApiController
 
         $query = $this->getListQuery($request->search(), $filters);
 
-        $allResults = $query->clone()->get();
+        $allTickets = $query->clone()->get();
         $totals = [];
-        $totals['ticketsCount'] = $allResults->count();
-        $totals['totalSum'] = $allResults->sum('base_price');
+        $totals['ticketsCount'] = $allTickets->count();
+
+        $totals['totalSum'] = null;
+        foreach ($allTickets as $ticket) {
+            if ($ticket->order->promocode->isNotEmpty()) {
+                $amountToMinus = $ticket->order->promocode[0]->amount / $ticket->order->tickets->count();
+                $totals['totalSum'] += $ticket->base_price - $amountToMinus;
+            } else {
+                $totals['totalSum'] += $ticket->base_price;
+            }
+        }
 
         $tickets = $query->paginate($request->perPage());
 
@@ -93,10 +101,10 @@ class FillingRegistryController extends ApiController
                 'partners' => Partner::query()
                     ->where('type_id', PartnerType::ship_owner)
                     ->get(),
-                'ticketStatuses' => TicketStatus::all(),
                 'totals' => $totals,
                 'dateFrom' => Carbon::parse($filters['date_from'])->format('d.m.y, H:i'),
-                'dateTo' => Carbon::parse($filters['date_to'])->format('d.m.y, H:i')
+                'dateTo' => Carbon::parse($filters['date_to'])->format('d.m.y, H:i'),
+                'partner' => $filters['partner_id'] ? Partner::findOrFail($filters['partner_id'])->name : "Все"
             ]
         )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
@@ -189,18 +197,17 @@ class FillingRegistryController extends ApiController
                 ]
             )
             ->whereIn('status_id', array_merge(TicketStatus::ticket_had_paid_statuses, TicketStatus::ticket_reserved_statuses, [TicketStatus::used]))
-            ->whereHas('trip.ship', fn(Builder $ship) => $ship->whereNotNull('partner_id'))
+            ->whereHas('additionalData', fn(Builder $query) => $query->whereNotNull('shipowner_partner_id'))
             ->when($filters['partner_id'], function (Builder $query) use ($filters) {
-                $query->whereHas('trip.ship', function (Builder $query) use ($filters) {
-                    $query->where('partner_id', $filters['partner_id']);
+                $query->whereHas('additionalData', function (Builder $query) use ($filters) {
+                    $query->where('shipowner_partner_id', $filters['partner_id']);
                 });
             })
             ->when(!empty($filters['excursion_ids']), function (Builder $query) use ($filters) {
                 $query->whereHas('trip', function (Builder $query) use ($filters) {
                     $query->whereIn('excursion_id', $filters['excursion_ids']);
                 });
-            })
-            ->when($filters['ticket_status_id'], fn (Builder $query) => $query->where('status_id', $filters['ticket_status_id']));
+            });
 
         // apply search
         if ($search) {
