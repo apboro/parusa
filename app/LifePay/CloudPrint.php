@@ -47,17 +47,8 @@ class CloudPrint
         ];
         foreach ($tickets as $ticket) {
             /** @var Ticket $ticket */
-            if ($ticket->base_price == 0){
-                continue;
-            }
-            $ticketPriceByPromocode = null;
-            if ($ticket->order->promocode->isNotEmpty()){
-                $amountToMinus = $ticket->order->promocode[0]->amount / $order->tickets()->where('base_price', '>', 0)->count();
-                $ticketPriceByPromocode = $ticket->base_price - $amountToMinus;
-            }
-
             $ticket->loadMissing(['grade', 'trip.excursion', 'order', 'order.promocode']);
-            $ticketPrice = $ticketPriceByPromocode ?? $ticket->base_price;
+            $ticketPrice = $ticket->getPrice();
             $item['quantity'] = 1;
             $item['price'] = $ticketPrice;
             $receipt['card_amount'] += $ticketPrice;

@@ -54,7 +54,7 @@ use Illuminate\Support\Str;
  * @property Position|null $position
  * @property Terminal|null $terminal
  * @property Position|null $cashier
- * @property Collection $tickets
+ * @property Collection<Ticket> $tickets
  * @property Collection $payments
  * @property Collection<PromoCode> $promocode
  * @property AdditionalDataOrder $additionalData

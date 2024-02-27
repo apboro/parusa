@@ -96,7 +96,7 @@ class OrderReturnController extends ApiController
                     foreach ($order->tickets as $ticket) {
                         /** @var Ticket $ticket */
                         if (in_array($ticket->id, $ticketsToReturnIds, true)) {
-                            if (!in_array($ticket->status_id,[TicketStatus::partner_paid, TicketStatus::partner_paid_single])) {
+                            if (!in_array($ticket->status_id, [TicketStatus::partner_paid, TicketStatus::partner_paid_single])) {
                                 throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
                             }
                             $ticket->refundTicket($current->position());
@@ -110,7 +110,11 @@ class OrderReturnController extends ApiController
                     foreach ($order->tickets as $ticket) {
                         if ($ticket->seat) {
                             TripSeat::query()
-                                ->updateOrCreate(['trip_id' => $ticket->trip->id, 'seat_id' => $ticket->seat->id],
+                                ->updateOrCreate(
+                                    [
+                                        'trip_id' => $ticket->trip->id,
+                                        'seat_id' => $ticket->seat->id
+                                    ],
                                     ['status_id' => SeatStatus::vacant]);
                         }
                     }
@@ -159,11 +163,11 @@ class OrderReturnController extends ApiController
                 foreach ($order->tickets as $ticket) {
                     /** @var Ticket $ticket */
                     if (in_array($ticket->id, $ticketsToReturnIds, true)) {
-                        if (!in_array($ticket->status_id,[TicketStatus::showcase_paid, TicketStatus::showcase_paid_single, TicketStatus::used])) {
+                        if (!in_array($ticket->status_id, [TicketStatus::showcase_paid, TicketStatus::showcase_paid_single, TicketStatus::used])) {
                             throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
                         }
                         $tickets[] = $ticket;
-                        $returnAmount += $ticket->base_price;
+                        $returnAmount += $ticket->getPrice();
                     }
                 }
 

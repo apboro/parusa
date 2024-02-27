@@ -1,6 +1,8 @@
 <template>
-    <div class="dialogs__overlay" v-if="shown" :class="{'dialogs__overlay-hide': hiding, 'dialogs__overlay-shown': showing}" @click="popupClose">
-        <div class="dialogs__dialog">
+    <div class="dialogs__overlay" v-if="shown"
+         :class="{'dialogs__overlay-hide': hiding, 'dialogs__overlay-shown': showing}" @click="popupClose">
+        <div
+            :class="{ 'dialogs__dialog': !verticalAlignCenter, 'dialogs__dialog-vertical-align-center': verticalAlignCenter }">
             <LoadingProgress :loading="processing">
                 <div class="dialogs__dialog-wrapper">
                     <div class="dialogs__dialog-title" v-if="title">{{ title }}</div>
@@ -38,6 +40,7 @@ export default {
         manual: {type: Boolean, default: false},
         resolving: {type: Function, default: null},
         closeOnOverlay: {type: Boolean, default: false},
+        verticalAlignCenter: {type: Boolean, default: false},
     },
 
     data: () => ({
@@ -162,6 +165,20 @@ $base_light_gray_color: #e5e5e5 !default;
         max-width: calc(100% - 40px);
         display: inline-block;
         text-align: left;
+
+        &-vertical-align-center {
+            background-color: $base_white_color;
+            border-radius: 2px;
+            box-sizing: border-box;
+            padding: 15px;
+            box-shadow: $shadow_2;
+            max-width: calc(100% - 40px);
+            text-align: left;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            display: inline-block;
+        }
 
         &-wrapper {
             box-sizing: border-box;

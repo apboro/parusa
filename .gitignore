@@ -23,3 +23,5 @@ composer.phar
 /public_html
 /cp-update.sh
 /app/Http/Controllers/TestController.php
+/resources/js/config/env.js
+/alex_vivo.ovpn

@@ -86,7 +86,7 @@ class OrdersRegistryItemController extends ApiController
                 return [
                     'id' => $ticket->id,
                     'provider_id' => $ticket->provider_id,
-                    'base_price' => $ticket->base_price,
+                    'base_price' => $ticket->getPrice(),
                     'trip_id' => $ticket->trip_id,
                     'trip_start_date' => $ticket->trip->start_at->format('d.m.Y'),
                     'trip_start_time' => $ticket->trip->start_at->format('H:i'),

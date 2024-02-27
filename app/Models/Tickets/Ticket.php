@@ -409,4 +409,18 @@ class Ticket extends Model implements Statusable
         return $this->hasOne(Seat::class, 'id', 'seat_id');
     }
 
+    public function getPrice(): float|int
+    {
+        $this->loadMissing(['order', 'order.tickets']);
+        if ($this->base_price == 0){
+            return 0;
+        }
+        if ($this->order->promocode->isNotEmpty()){
+            return round($this->base_price - $this->order->promocode[0]->amount / $this->order->tickets()->where('base_price', '>', 0)->count(), 2);
+        }
+
+        return $this->base_price;
+
+    }
+
 }

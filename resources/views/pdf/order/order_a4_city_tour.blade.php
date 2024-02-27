@@ -25,6 +25,9 @@ use App\Models\Common\Image;
 
 <body style="margin: 0; padding: 0;">
 @foreach($tickets as $ticket)
+    @if($ticket->provider_id === null)
+        @continue
+    @endif
         <?php
         /** @var Ticket $ticket */
         /** @var Ticket $ticket */

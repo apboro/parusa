@@ -184,18 +184,15 @@ class TripsSelectListController extends ApiController
             $this->defaultFilters,
             [
                 'excursions_filter' => $this->excursionFilter($filters),
-
-                'piers_filter' => $this->piersFilter($filters),
-
+                'piers_filter' => $this->piersFilter($filters, $current),
                 'programs_filter' => $this->programsFilter($filters),
                 'partner' => $current->partner(),
                 'terminal' => $current->terminal(),
-
             ]
         )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }
 
-    private function piersFilter(array $filters)
+    private function piersFilter(array $filters, Currents $current)
     {
         $result = Pier::query()
             ->join('trips', function ($join) use ($filters) {
@@ -220,6 +217,9 @@ class TripsSelectListController extends ApiController
         if ($result->isEmpty()) {
             return null;
         } else {
+            if ($current->terminal()){
+                $result->push(Pier::find($current->terminal()->pier_id));
+            }
             return $result;
         }
     }
