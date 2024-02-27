@@ -31,10 +31,10 @@ export default {
         scheme12: scheme12,
         scheme3: scheme3,
         scheme58: scheme58,
-        scheme132: scheme132,
+        schemeKoryushka: schemeKoryushka,
         schemeAstra: schemeAstra,
-        scheme139: scheme139,
-        scheme140: scheme140,
+        schemeRyapushka: schemeRyapushka,
+        schemeMoskva: schemeMoskva,
         schemeAstraMeteor: schemeAstraMeteor
     },
     emits: ['selectSeat'],
