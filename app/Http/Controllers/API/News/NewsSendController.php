@@ -23,8 +23,9 @@ class NewsSendController extends ApiEditController
         foreach ($partners as $partner) {
             foreach ($partner->positions as $position) {
                 $email = $position->user->profile->email;
+                $profile = $position->user->profile;
                 if ($email) {
-                    SendNewsEmailJob::dispatch($email, $news, $partner)->delay(rand(5, 10));
+                    SendNewsEmailJob::dispatch($email, $news, $profile)->delay(rand(5, 10));
                 }
             }
         }

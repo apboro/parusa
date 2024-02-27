@@ -200,11 +200,12 @@ class NewsController extends ApiEditController
 
     public function test(Request $request)
     {
-        $partner = Partner::inRandomOrder()->first();
+        $partner = Partner::whereHas('positions')->inRandomOrder()->first();
         $news = News::findOrFail($request->get('id'));
         $email = $request->get('email');
+        $profile = $partner->positions[0]->user->profile;
+        SendNewsEmailJob::dispatch($email, $news, $profile);
 
-        SendNewsEmailJob::dispatch($email, $news, $partner);
         return APIResponse::success('Тестовое письмо отправлено');
     }
 
