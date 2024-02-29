@@ -1,21 +1,21 @@
 <template>
-    <LayoutPage :title="$route.meta['title']">
+    <LayoutPage :title="$route.meta['title']" :loading="list.is_loading">
         <LayoutFilters>
             <LayoutFiltersItem :title="'Период'">
                 <InputDate
-                    v-model="data.filters['date_from']"
-                    :original="data.filters_original['date_from']"
-                    @change="data.load()"
+                    v-model="list.filters['date_from']"
+                    :original="list.filters_original['date_from']"
+                    @change="list.load()"
                 />
                 <InputDate
-                    v-model="data.filters['date_to']"
-                    :original="data.filters_original['date_to']"
-                    @change="data.load()"
+                    v-model="list.filters['date_to']"
+                    :original="list.filters_original['date_to']"
+                    @change="list.load()"
                 />
             </LayoutFiltersItem>
         </LayoutFilters>
-        <ListTable v-if="data.list && Object.keys(data.list).length > 0" :titles="['Экскурсия', 'Продажа, руб.','Возвраты, руб.']">
-            <ListTableRow v-for="row in data.list">
+        <ListTable v-if="list.list && Object.keys(list.list).length > 0" :titles="['Экскурсия', 'Продажа, руб.','Возвраты, руб.']">
+            <ListTableRow v-for="row in list.list">
                 <ListTableCell>
                     {{ row['name'] }}
                 </ListTableCell>
@@ -31,14 +31,14 @@
                     Итого
                 </ListTableCell>
                 <ListTableCell>
-                    {{ data.payload['sold_amount_total'] }} руб.
+                    {{ list.payload['sold_amount_total'] }} руб.
                 </ListTableCell>
                 <ListTableCell>
-                    {{ data.payload['return_amount_total'] }} руб.
+                    {{ list.payload['return_amount_total'] }} руб.
                 </ListTableCell>
             </ListTableRow>
         </ListTable>
-        <GuiMessage border v-else-if="data.is_loaded">Ничего не найдено</GuiMessage>
+        <GuiMessage border v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
     </LayoutPage>
 </template>
 
@@ -69,13 +69,13 @@ export default {
     },
 
     data: () => ({
-        data: null,
+        list: null,
         info: null,
     }),
 
     created() {
-        this.data = list('/api/statistics/sales/list');
-        this.data.initial();
+        this.list = list('/api/statistics/sales/list');
+        this.list.initial();
     },
 
 }
