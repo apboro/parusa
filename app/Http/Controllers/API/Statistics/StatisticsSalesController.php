@@ -71,10 +71,10 @@ class StatisticsSalesController extends ApiController
             foreach ($order->tickets as $ticket) {
                 /** @var Ticket $ticket */
 
-                $soldAmount = $ticket->status_id === TicketStatus::showcase_paid ? $ticket->base_price : 0;
+                $soldAmount = in_array($ticket->status_id, TicketStatus::ticket_paid_statuses) ? $ticket->getPrice() : 0;
                 $soldAmountTotal += $soldAmount;
 
-                $returnedAmount = $ticket->status_id === TicketStatus::showcase_returned ? $ticket->base_price : 0;
+                $returnedAmount = $ticket->status_id === TicketStatus::showcase_returned ? $ticket->getPrice() : 0;
                 $returnAmountTotal += $returnedAmount;
 
                 if (!isset($result[$ticket->trip->excursion_id])) {
