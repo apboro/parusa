@@ -97,8 +97,8 @@ class StatisticsSalesController extends ApiController
             $filters,
             $this->defaultFilters,
             [
-                'sold_amount_total' => $soldAmountTotal,
-                'return_amount_total' => $returnAmountTotal,
+                'sold_amount_total' => round($soldAmountTotal),
+                'return_amount_total' => round($returnAmountTotal),
             ]
         );
     }
