@@ -270,7 +270,7 @@ export default {
             )
                 .then(result => {
                     if (result === 'yes') {
-                        this.is_exporting = true;
+                        this.fiscal_loading = true;
                         let options = {
                             filters: this.list.filters,
                             search: this.list.search,
@@ -291,7 +291,7 @@ export default {
                                 this.$toast.error(error.response.data['message']);
                             })
                             .finally(() => {
-                                this.is_exporting = false;
+                                this.fiscal_loading = false;
                             });
                     }
                 });

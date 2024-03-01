@@ -51,6 +51,7 @@ class ImportTrips
             });
 
             if ($findExcursion) {
+                echo 'import excursion: '. $findExcursion->name . PHP_EOL;
                 $trip = $trips->where('additionalData.provider_trip_id', $astraTrip['eventID'])->first();
                 if (!$trip) {
                     $trip = new Trip();
@@ -113,6 +114,7 @@ class ImportTrips
 
     public function importSeatCategories(array $astraTrip, Ship $ship): void
     {
+        echo 'import seatCategories for: '. $ship->name . PHP_EOL;
         foreach ($astraTrip['seatCategories'][0] as $seatCategory) {
             $categoryDetails = $this->astraApiData->getSeatsOnEvent([
                 'seatCategoryId' => $seatCategory['seatCategoryID'],
@@ -132,12 +134,16 @@ class ImportTrips
 
     public function importSeats(array $seats, Ship $ship): void
     {
+        echo 'import seats for: '. $ship->name . PHP_EOL;
+        $seatCategories = SeatCategory::all();
         foreach ($seats as $seat) {
-            Seat::updateOrCreate([
-                'ship_id' => $ship->id,
-                'seat_number' => $seat['aliasSeat']],
-
-                ['seat_category_id' => SeatCategory::where('provider_category_id', $seat['seatCategoryID'])->first()?->id,
+            Seat::updateOrCreate(
+                [
+                    'ship_id' => $ship->id,
+                    'seat_number' => $seat['aliasSeat']
+                ],
+                [
+                    'seat_category_id' => $seatCategories->firstWhere('provider_category_id', $seat['seatCategoryID'])->first()?->id,
                     'provider_seat_id' => $seat['seatID'],
                 ]);
         }
@@ -226,7 +232,7 @@ class ImportTrips
                 'provider_price_type_id' => $price['priceTypeID'],
                 'provider_menu_id' => $menu['menuID'],
                 'ship_id' => $trip->ship->id,
-            ],['name' => $menu['menuName']]);
+            ], ['name' => $menu['menuName']]);
 
             $menu->grades()->syncWithoutDetaching([$grade->id]);
         }
