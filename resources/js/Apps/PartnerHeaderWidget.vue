@@ -61,7 +61,6 @@ export default {
     }),
 
     created() {
-        this.refresh();
         this.updater = setInterval(this.refresh, 15000);
     },
 

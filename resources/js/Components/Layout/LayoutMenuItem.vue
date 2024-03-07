@@ -6,7 +6,11 @@
     >
 
         <router-link v-if="route" class="application__menu-item-link" :to="{name:route}" @click="menuToggle()">
-            <span @click="$emit('hide')">{{ title }}<icon-dropdown class="application__menu-item-link-drop" v-if="children"/></span>
+            <span @click="$emit('hide')" :class="{'parent-span' : newNews && route === 'news-list'}">
+                {{ title }}
+                <icon-dropdown class="application__menu-item-link-drop" v-if="children"/>
+                <span v-if="newNews && route === 'news-list'" class="newNews">{{newNews}}</span>
+            </span>
         </router-link>
 
         <span v-else class="application__menu-item-no-link">
@@ -34,6 +38,7 @@ export default {
     props: {
         item: Object,
         level: {type: Number, default: 0},
+        newNews: Number
     },
     mixins: [roles],
     data: () => ({
@@ -71,3 +76,26 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+.parent-span {
+    position: relative;
+}
+
+.newNews {
+    position: absolute;
+    bottom: 5px;
+    right: -4px;
+    width: 13px;
+    height: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    background-color: #00b2ff;
+    border-radius: 50%;
+}
+
+
+</style>

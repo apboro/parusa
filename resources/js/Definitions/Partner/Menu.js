@@ -24,4 +24,7 @@ export default [
             {'title': 'Тарифы и вознаграждение', 'route': 'company-rates'},
         ]
     },
+    {
+        'title': 'НОВОСТИ', 'route': 'news-list',
+    },
 ];

@@ -8,6 +8,7 @@ use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Hit\Hit;
+use App\Models\News\News;
 use App\Models\Order\Order;
 use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
@@ -26,7 +27,7 @@ class PartnerInfoController extends ApiController
         $id = $current->partnerId();
 
         if ($id === null ||
-            null === ($partner = Partner::query()->with(['account'])->where('id', $id)->first())
+            null === ($partner = Partner::query()->with(['account', 'news'])->where('id', $id)->first())
         ) {
             return APIResponse::notFound('Партнёр не найден');
         }
@@ -75,6 +76,7 @@ class PartnerInfoController extends ApiController
             'order_amount' => PriceConverter::storeToPrice($orderAmount ?? 0),
             'can_reserve' => $current->partner()->profile->can_reserve_tickets,
             'can_send_sms' => $current->partner()->profile->can_send_sms,
+            'new_news' => News::count() - $partner->news()->count(),
         ]);
     }
 }

@@ -2,7 +2,7 @@
     <div class="application">
         <layout-header :user="user">
             <template v-slot:menu>
-                <layout-menu :menu="menu"/>
+                <layout-menu :menu="menu" :newNews="newNews"/>
             </template>
             <template v-slot:personal>
                 <layout-user-menu :user="user">
@@ -27,11 +27,16 @@ import LayoutUserMenu from "@/Components/Layout/LayoutUserMenu";
 import PartnerHeaderWidget from "@/Apps/PartnerHeaderWidget";
 import Container from "@/Components/GUI/GuiContainer";
 import PopUp from "@/Components/PopUp";
+import {mapState} from "vuex";
 
 export default {
     props: {
         menu: Array,
         user: Object,
+    },
+
+    computed: {
+        ...mapState('partner', {newNews: state => state.new_news})
     },
 
     components: {
@@ -44,7 +49,7 @@ export default {
     },
 
     created() {
-
+        this.$store.dispatch('partner/refresh');
     },
 
     methods: {

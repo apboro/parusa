@@ -13,6 +13,7 @@ use App\Models\Hit\Hit;
 use App\Models\News\News;
 use App\Models\NewsRecipients;
 use App\Models\Partner\Partner;
+use App\Models\User\Helpers\Currents;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -44,9 +45,13 @@ class NewsController extends ApiEditController
     public function list(ApiListRequest $request): JsonResponse
     {
         Hit::register(HitSource::admin);
+        $current = Currents::get($request);
+
+        $partner = $current->partner();
+
         $query = News::query()
             ->with(['status'])
-            ->orderBy('created_at');
+            ->orderBy('created_at', 'desc');
 
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey)) && !empty($filters['status_id'])) {
@@ -57,7 +62,7 @@ class NewsController extends ApiEditController
         $news = $query->paginate($request->perPage(10, $this->rememberKey));
 
         /** @var LengthAwarePaginator $news */
-        $news->transform(function (News $news) {
+        $news->transform(function (News $news) use ($partner){
             return [
                 'id' => $news->id,
                 'title' => $news->title,
@@ -65,6 +70,7 @@ class NewsController extends ApiEditController
                 'send_at' => $news->send_at?->translatedFormat('D, d M Y H:i'),
                 'recipient' => $news->recipients->name,
                 'status' => $news->status->name,
+                'isNew' => !$partner?->news->contains($news->id)
             ];
         });
 
@@ -137,12 +143,15 @@ class NewsController extends ApiEditController
     public function view(Request $request): JsonResponse
     {
         Hit::register(HitSource::admin);
+        $current = Currents::get($request);
         $id = $request->input('id');
 
         if ($id === null ||
             null === ($news = News::query()->with(['status', 'recipients'])->where('id', $id)->first())) {
             return APIResponse::notFound('Экскурсия не найдена');
         }
+
+        $current->partner()?->news()->attach($id);
 
         /** @var News $news */
 

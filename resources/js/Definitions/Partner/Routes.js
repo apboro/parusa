@@ -13,6 +13,8 @@ import OrderMakePage from "@/Pages/Partner/OrderMakePage";
 import NotFound from '@/Pages/NotFound';
 import QrCodesPage from "@/Pages/Partner/QrCodesPage.vue";
 import TripViewPage from "@/Pages/Admin/Trips/TripViewPage.vue";
+import NewsList from "@/Pages/Partner/NewsList.vue";
+import NewsViewPage from "@/Pages/Partner/NewsViewPage.vue";
 
 export default [
     {path: '/', name: 'home', component: TripsSelectPage, meta: {title: 'Подбор билетов'}},
@@ -32,4 +34,6 @@ export default [
     {path: '/order', name: 'order', component: OrderMakePage, meta: {title: 'Оформление заказа'}},
     {path: '/:pathMatch(.*)*', name: '404', component: NotFound},
     {path: '/trips/:id', name: 'trip-view', component: TripViewPage, meta: {title: 'Просмотр рейса', roles: ['admin', 'office_manager', 'piers_manager', 'accountant']}},
+    {path: '/news', name: 'news-list', component: NewsList, meta: {title: 'Новости'}},
+    {path: '/news/:id', name: 'news-view', component: NewsViewPage, meta: {title: 'Просмотр новости'}},
 ];

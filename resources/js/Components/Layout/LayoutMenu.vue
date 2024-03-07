@@ -14,6 +14,7 @@
             <layout-menu-item v-for="(item, key) in menu"
                               :key="key"
                               :item="item"
+                              :newNews = "newNews"
             />
         </nav>
     </div>
@@ -25,6 +26,7 @@ import LayoutMenuItem from "./LayoutMenuItem";
 export default {
     props: {
         menu: Array,
+        newNews: Number
     },
 
     components: {

@@ -13,6 +13,7 @@ use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Excursions\Excursion;
 use App\Models\Model;
+use App\Models\News\News;
 use App\Models\Positions\Position;
 use App\Models\QrCodes\QrCode;
 use App\Models\Tickets\TicketPartnerRate;
@@ -190,6 +191,11 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
     public function getLastShift()
     {
         return $this->workShifts()->whereNotNull('end_at')->orderBy('created_at', 'desc')->first();
+    }
+
+    public function news(): BelongsToMany
+    {
+        return $this->belongsToMany(News::class, 'news_partner', 'partner_id','news_id');
     }
 
 }

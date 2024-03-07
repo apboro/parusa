@@ -13,6 +13,7 @@ export default {
         reserves: 0,
         can_reserve: false,
         order_amount: 0,
+        new_news: 0,
     }),
 
     mutations: {
@@ -40,6 +41,9 @@ export default {
         setPartnerType(state, value) {
             state.partner_type = value;
         },
+        setNewNews(state, value) {
+            state.new_news = value;
+        },
     },
 
     actions: {
@@ -56,6 +60,7 @@ export default {
                         commit('setOrderAmount', response.data.data.order_amount);
                         commit('setTotal', response.data.data.total);
                         commit('setPartnerType', response.data.data.partner_type);
+                        commit('setNewNews', response.data.data.new_news)
                         resolve();
                     })
                     .catch(error => {
