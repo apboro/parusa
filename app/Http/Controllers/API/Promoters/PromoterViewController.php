@@ -66,6 +66,7 @@ class PromoterViewController extends ApiController
             'payCommission' => $openShift->pay_commission ?? null, //записывается в методе Ticket->payCommission()
             'paid_out' => $openShift->paid_out ?? null,
             'balance' => $partner->getLastShift()?->balance ?? null,
+            'promoter_commission_rate' => $partner->tariff()->first()?->commission
         ];
 
         // send response

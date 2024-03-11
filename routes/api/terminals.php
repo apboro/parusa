@@ -30,4 +30,3 @@ Route::post('/terminals/promoters/open_work_shift', [WorkShiftController::class,
 Route::post('/terminals/promoters/pay_work_shift', [WorkShiftController::class, 'pay'])->middleware(['allow:staff_terminal']);
 Route::post('/terminals/promoters/close_work_shift', [WorkShiftController::class, 'close'])->middleware(['allow:staff_terminal']);
 Route::post('/terminals/promoters/print_payout', [WorkShiftController::class, 'print'])->middleware(['allow:staff_terminal']);
-Route::post('/terminals/promoters/change_commissions', [WorkShiftController::class, 'changeCommissions'])->middleware(['allow:staff_terminal']);

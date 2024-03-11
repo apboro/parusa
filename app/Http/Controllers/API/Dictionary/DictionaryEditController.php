@@ -56,7 +56,9 @@ class DictionaryEditController extends ApiEditController
         $all = $query->get();
 
         return APIResponse::response([
-            'items' => $all,
+            'items' => $all->filter(function ($item) {
+              return !$item->invisible;
+            })->values(),
             'item_name' => $this->dictionaries[$name]['item_name'],
             'fields' => $this->dictionaries[$name]['fields'],
             'titles' => $this->dictionaries[$name]['titles'],

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $partner_id
  * @property int $tickets_for_guides
  * @property bool $can_reserve_tickets
+ * @property int $promoter_commission_rate
  * @property bool $can_send_sms
  * @property string $notes
  */

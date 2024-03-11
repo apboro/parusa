@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Promoters;
 use App\Helpers\WorkShiftPdf;
 use App\Http\APIResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Dictionaries\Tariff;
 use App\Models\Dictionaries\WorkShiftStatus;
 use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
@@ -21,10 +22,18 @@ class WorkShiftController extends Controller
         if (!$current->terminalId())
             return APIResponse::error('Доступ запрещён');
 
+        $currentDateTime = Carbon::now();
+        $noonToday = Carbon::today()->setHour(12);
+
+        $promoter = Partner::find($request->input('promoterId'));
+        $tariff = $currentDateTime->lessThan($noonToday) ? Tariff::find(1) : $promoter->tariff()->first();
+        if (!$tariff) {
+            return APIResponse::error('Для промоутера не задан тариф');
+        }
         $workShift = WorkShift::create([
-            'partner_id' => $request->promoterId,
-            'tariff_id' => $request->data['tariff_id'],
-            'terminal_id' =>$current->terminalId(),
+            'partner_id' => $promoter->id,
+            'tariff_id' => $tariff->id,
+            'terminal_id' => $current->terminalId(),
             'start_at' => now(),
             'status_id' => WorkShiftStatus::active,
         ]);
@@ -65,7 +74,7 @@ class WorkShiftController extends Controller
         $workShift->pay_for_out = $workShift->tariff->pay_for_out;
         $workShift->pay_total = $workShift->getShiftTotalPay();
 
-        if ($close){
+        if ($close) {
             $workShift->end_at = now();
         }
 

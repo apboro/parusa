@@ -11,6 +11,7 @@ use App\Models\Common\File;
 use App\Models\Dictionaries\Interfaces\AsDictionary;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
+use App\Models\Dictionaries\Tariff;
 use App\Models\Excursions\Excursion;
 use App\Models\Model;
 use App\Models\News\News;
@@ -153,7 +154,7 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
         return $this->belongsToMany(Excursion::class, 'partner_excursion_showcase_disabling', 'partner_id', 'excursion_id');
     }
 
-    public function qrCodes():hasMany
+    public function qrCodes(): hasMany
     {
         return $this->hasMany(QrCode::class, 'partner_id', 'id');
 
@@ -162,7 +163,7 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
     public function createMassRates()
     {
         $partnerMassRates = TicketPartnerRate::where('mass_assignment', 1)->groupBy('rate_id')->get();
-        foreach ($partnerMassRates as $rate){
+        foreach ($partnerMassRates as $rate) {
             $newPartnerRate = new TicketPartnerRate();
             $newPartnerRate->partner_id = $this->id;
             $newPartnerRate->rate_id = $rate->rate_id;
@@ -173,7 +174,7 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
         }
     }
 
-    public function workShifts()
+    public function workShifts(): HasMany
     {
         return $this->hasMany(WorkShift::class);
     }
@@ -183,7 +184,7 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
         return $this->workShifts()->with('tariff')->whereNull('end_at')->first();
     }
 
-    public function inventory()
+    public function inventory(): HasMany
     {
         return $this->hasMany(PromoterInventory::class, 'promoter_id', 'id')->with('dictionary');
     }
@@ -195,7 +196,16 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
 
     public function news(): BelongsToMany
     {
-        return $this->belongsToMany(News::class, 'news_partner', 'partner_id','news_id');
+        return $this->belongsToMany(News::class, 'news_partner', 'partner_id', 'news_id');
     }
 
+//    public function tariff()
+//    {
+//        return $this->hasOneThrough(Tariff::class, PromoterTariff::class, 'partner_id', 'tariff_id', 'id', 'id');
+//    }
+
+    public function tariff(): BelongsToMany
+    {
+        return $this->belongsToMany(Tariff::class, 'promoter_tariff', 'partner_id', 'tariff_id');
+    }
 }

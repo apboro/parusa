@@ -67,15 +67,15 @@ trait EditableDictionaries
             ],
             'fields' => [
                 'name' => 'string',
-                'pay_per_hour' => 'Оплата в час, руб.',
-                'pay_for_out' => 'Оплата за выход, руб.',
-                'commission' => 'Комиссия, %'
+                'pay_per_hour' => 'integer',
+                'pay_for_out' => 'integer',
+                'commission' => 'integer'
             ],
             'validation' => [
                 'name' => 'required',
                 'pay_per_hour' => 'integer',
                 'pay_for_out' => 'integer',
-                'commission' => 'integer'
+                'commission' => 'integer|max:100'
             ],
         ],
         'inventory' => [

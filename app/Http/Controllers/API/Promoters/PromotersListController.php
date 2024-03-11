@@ -51,7 +51,7 @@ class PromotersListController extends ApiController
         }
 
         $query = Partner::query()
-            ->with(['type', 'status', 'positions', 'positions.user.profile', 'positions.user'])
+            ->with(['type', 'status', 'positions', 'positions.user.profile', 'positions.user', 'profile'])
             ->with(['workShifts' => fn($q) => $q->orderBy('start_at', 'asc')])
             ->where('type_id', PartnerType::promoter)
             ->when($current->terminalId(), function ($query) use ($partnersWithOpenShiftsOnOtherTerminals) {
@@ -100,6 +100,7 @@ class PromotersListController extends ApiController
                 'balance' => $partner->getOpenedShift()?->getShiftTotalPay() + $partner->getLastShift()?->balance,
                 'limit' => $partner->account->limit,
                 'open_shift' => $partner->workShifts()->with('tariff')->whereNull('end_at')->first(),
+                'promoter_commission_rate' => $partner->tariff()->first()?->commission
             ];
         });
 
@@ -110,13 +111,12 @@ class PromotersListController extends ApiController
                 'ID' => 'ID',
                 'balance' => 'Баланс',
                 'commission' => 'Ставка',
-                'action' => ''
             ],
             $filters,
             $this->defaultFilters,
             [
                 'promotersWithOpenedShift' => $promotersWithOpenedShift,
-                'tariffsCommissionsValues' => Tariff::all()->pluck('commission')
+                'tariffsCommissionsValues' => Tariff::visible()->active()->get()->pluck('commission')
             ]
         )->withCookie(cookie($this->rememberKey, $request->getToRemember()));
     }

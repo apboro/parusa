@@ -1,14 +1,6 @@
 <template>
     <LayoutPage :loading="list.is_loading" :title="$route.meta['title']">
-        <template #actions>
-            <GuiActionsMenu>
-                <span class="link" @click="showCommissionChecks">Изменить ставку комиссии</span>
-            </GuiActionsMenu>
-        </template>
         <LayoutFilters>
-            <LayoutFiltersItem>
-                <GuiButton v-if="commissionChanging" @click="showCommissionPopup">Изменить ставку</GuiButton>
-            </LayoutFiltersItem>
             <template #search>
                 <LayoutFiltersItem :title="'Поиск по ФИО и по ID'">
                     <InputSearch v-model="list.search" @change="list.load()"/>
@@ -16,12 +8,8 @@
             </template>
         </LayoutFilters>
 
-        <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
+        <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true">
             <ListTableRow v-for="partner in sortedList">
-                <ListTableCell :class="'w-5'" v-if="commissionChanging">
-                    <InputCheckbox v-model="checkedPromoters" :value="partner['id']"
-                                   :disabled="!partner['open_shift']"/>
-                </ListTableCell>
                 <ListTableCell :class="'w-30'">
                     <GuiActivityIndicator :active="partner['active']"/>
                     <router-link class="link" :to="{ name: 'terminal-promoters-view', params: { id: partner['id'] }}"
@@ -51,27 +39,6 @@
 
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
-        <FormPopUp :title="'Открытие смены'"
-                   :form="form"
-                   :options="{promoterId: promoterId}"
-                   ref="popup"
-        >
-            <GuiContainer w-350px>
-                <FormDictionary :form="form" :name="'tariff_id'" :dictionary="'tariffs'" :fresh="true"
-                                :hide-title="true" :placeholder="'Тариф'"/>
-            </GuiContainer>
-        </FormPopUp>
-        <FormPopUp :title="'Изменение ставки комиссии'"
-                   :form="formComm"
-                   :options="{newCommValue: newCommValue, promotersIds: checkedPromoters}"
-                   ref="commission_popup"
-        >
-            <GuiContainer w-350px>
-                <InputDropDown :options="list.payload.tariffsCommissionsValues" v-model="newCommValue"
-                               :placeholder="'Выберите новую ставку'"/>
-            </GuiContainer>
-        </FormPopUp>
-
     </LayoutPage>
 </template>
 
@@ -97,7 +64,6 @@ import FormCheckBox from "@/Components/Form/FormCheckBox.vue";
 import FormString from "@/Components/Form/FormString.vue";
 import FormPopUp from "@/Components/FormPopUp.vue";
 import FormText from "@/Components/Form/FormText.vue";
-import form from "@/Core/Form";
 import FormPhone from "@/Components/Form/FormPhone.vue";
 import FormDictionary from "@/Components/Form/FormDictionary.vue";
 import GuiValue from "@/Components/GUI/GuiValue.vue";
@@ -134,12 +100,7 @@ export default {
 
     data: () => ({
         list: list('/api/promoters'),
-        form: form(null, '/api/terminals/promoters/open_work_shift'),
-        formComm: form(null, '/api/terminals/promoters/change_commissions'),
         promoterId: null,
-        newCommValue: null,
-        commissionChanging: false,
-        checkedPromoters: [],
     }),
 
     created() {
@@ -147,7 +108,9 @@ export default {
     },
     computed: {
         sortedList() {
-            return this.list.list.sort(((a, b) => {
+            const sortedList = [...this.list.list];
+
+            sortedList.sort((a, b) => {
                 if (a.open_shift !== null && b.open_shift === null) {
                     return -1;
                 } else if (a.open_shift === null && b.open_shift !== null) {
@@ -155,7 +118,9 @@ export default {
                 } else {
                     return 0;
                 }
-            }))
+            });
+
+            return sortedList;
         }
     },
 
@@ -173,28 +138,6 @@ export default {
 
             return new Intl.DateTimeFormat('ru-RU', options).format(parsedDate);
         },
-        showCommissionChecks() {
-            this.commissionChanging = true;
-            this.checkedPromoters = this.list.payload.promotersWithOpenedShift
-            this.list.titles = {
-                'checked': 'Выбрать',
-                'name': 'ФИО промоутера',
-                'ID': 'ID',
-                'balance': 'Баланс',
-                'commission': 'Ставка',
-                'action': ''
-            }
-        },
-        showCommissionPopup() {
-            this.formComm.reset();
-            this.formComm.load();
-            this.formComm.toaster = this.$toast;
-            this.$refs.commission_popup.show().then(() => {
-                this.list.reload();
-                this.commissionChanging = false;
-                this.checkedPromoters = [];
-            });
-        },
         commissionPercent(partner) {
             return partner['open_shift']['tariff']['commission'] + partner['open_shift']['commission_delta'];
         },
@@ -202,15 +145,21 @@ export default {
             return this.$highlight(text, this.list.search);
         },
         openShift(promoter) {
-            this.promoterId = promoter['id'];
-            this.form.reset();
-            this.form.set('name', 'tariff_id');
-            this.form.toaster = this.$toast;
-            this.form.load();
-            this.$refs.popup.show()
-                .then(() => {
-                    this.list.reload();
-                })
+            this.$dialog.show('Открыть смену для "' + promoter.name + '"?', 'question', 'orange', [
+                this.$dialog.button('yes', 'Продолжить', 'orange'),
+                this.$dialog.button('no', 'Отмена', 'blue'),
+            ]).then(result => {
+                if (result === 'yes') {
+                    axios.post('/api/terminals/promoters/open_work_shift', {promoterId: promoter.id})
+                        .then(response => {
+                            this.$toast.success(response.data['message']);
+                            this.list.load()
+                        })
+                        .catch(error => {
+                            this.$toast.error(error.response.data['message']);
+                        })
+                }
+            });
         },
     }
 }

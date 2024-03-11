@@ -14,6 +14,7 @@ use App\Http\Controllers\API\Promoters\PromoterInfoController;
 use App\Http\Controllers\API\Promoters\PromoterInventoryController;
 use App\Http\Controllers\API\Promoters\PromotersListController;
 use App\Http\Controllers\API\Promoters\PromoterViewController;
+use App\Http\Controllers\API\Promoters\WorkShiftController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/promoters', [PromotersListController::class, 'list'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_terminal,staff_promoter_manager');
@@ -29,3 +30,5 @@ Route::post('/promoters/update', [PromoterEditController::class, 'update'])->mid
 Route::post('/promoters/delete', [PromoterDeleteController::class, 'delete'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_promoter_manager');
 
 Route::post('/promoters/promoter/info', [PromoterInfoController::class, 'get'])->middleware(['allow:partner']);
+Route::post('/promoters/change_commissions', [WorkShiftController::class, 'changeCommissions'])->middleware(['allow:staff_accountant,staff_admin']);
+

@@ -148,6 +148,10 @@ class DictionaryController extends ApiController
 
         $dictionary = $query->orderBy('order')->orderBy('name')->get();
 
+        $dictionary = $dictionary->filter(function ($item) {
+            return !$item->invisible;
+        })->values();
+
         return APIResponse::response($dictionary, null, null, $actual);
     }
 

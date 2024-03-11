@@ -10,6 +10,7 @@ use Database\Seeders\Dictionaries\OrderTypesSeeder;
 use Database\Seeders\Dictionaries\PartnerTypesSeeder;
 use Database\Seeders\Dictionaries\ProviderTypesSeeder;
 use Database\Seeders\Dictionaries\StatusesSeeder;
+use Database\Seeders\Dictionaries\TariffsSeeder;
 use Database\Seeders\Dictionaries\TypesSeeder;
 use Database\Seeders\Dictionaries\UserRolesSeeder;
 use Database\Seeders\Dictionaries\WorkShiftStatusesSeeder;
@@ -30,6 +31,7 @@ class DatabaseSeeder extends Seeder
         OrderTypesSeeder::class,
         PartnerTypesSeeder::class,
         WorkShiftStatusesSeeder::class,
+        TariffsSeeder::class
     ];
 
     /**

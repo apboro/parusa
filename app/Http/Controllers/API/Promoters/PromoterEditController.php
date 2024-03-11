@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiEditController;
 use App\Models\Common\File;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PartnerType;
+use App\Models\Dictionaries\Tariff;
 use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use App\Models\Positions\Position;
@@ -22,6 +23,7 @@ class PromoterEditController extends ApiEditController
         'email' => 'required|email',
         'phone' => 'required',
         'status_id' => 'required',
+        'promoter_commission_rate' => 'required|max:100'
     ];
 
     protected array $titles = [
@@ -31,7 +33,8 @@ class PromoterEditController extends ApiEditController
         'can_send_sms' => 'Отправка СМС',
         'email' => 'Почта',
         'phone' => 'Телефон',
-        'notes' => 'Заметки'
+        'notes' => 'Заметки',
+        'promoter_commission_rate' => 'Ставка комиссии'
     ];
 
     /**
@@ -64,6 +67,7 @@ class PromoterEditController extends ApiEditController
                 'phone' => $promoterUserProfile->mobile_phone ?? null,
                 'status_id' => $partner->status_id ?? null,
                 'notes' => $promoterUserProfile->notes ?? null,
+                'promoter_commission_rate' => $partner->tariff()->first()?->commission
             ],
             $this->rules,
             $this->titles,
@@ -97,7 +101,7 @@ class PromoterEditController extends ApiEditController
         }
 
         $promoterUser = $partner->positions()->first()?->user;
-        if (!$promoterUser){
+        if (!$promoterUser) {
             $promoterUser = new User();
             $promoterUser->save();
         }
@@ -132,6 +136,10 @@ class PromoterEditController extends ApiEditController
         $profile->tickets_for_guides = 0;
         $profile->can_reserve_tickets = 0;
         $profile->save();
+
+        $tariff = Tariff::query()
+            ->firstOrCreate(['invisible' => true, 'commission' => $data['promoter_commission_rate']]);
+        $partner->tariff()->sync($tariff->id);
 
         return APIResponse::success('Данные промоутера обновлены', [
             'id' => $partner->id,
