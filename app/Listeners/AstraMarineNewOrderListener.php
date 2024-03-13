@@ -21,7 +21,10 @@ class AstraMarineNewOrderListener
     {
         if ($event->order->tickets()->where('provider_id', Provider::astra_marine)->first()) {
             $astraOrder = new AstraMarineOrder($event->order);
-            $astraOrder->bookSeats();
+
+            if ($event->order->tickets[0]->trip->excursion->use_seat_scheme) {
+                $astraOrder->bookSeats();
+            }
             $astraOrder->registerOrder();
         }
     }

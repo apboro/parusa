@@ -12,6 +12,9 @@
             <GuiValue :title="'Эксклюзивная'">
                 {{ data['only_site'] ? 'Продажа только на сайте Алые Паруса' : 'Нет' }}
             </GuiValue>
+            <GuiValue :title="'Схема рассадки'">
+                {{ data['use_seat_scheme'] ? 'Используется' : 'Нет' }}
+            </GuiValue>
             <GuiValue :title="'Единый билет'">
                 {{ data['is_single_ticket'] ? 'Да' : 'Нет' }}
             </GuiValue>

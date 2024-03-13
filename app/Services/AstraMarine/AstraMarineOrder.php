@@ -59,7 +59,7 @@ class AstraMarineOrder
     public function getTickets(): Collection|array
     {
         return $this->order->tickets()
-            ->with(['trip', 'trip.ship', 'trip.additionalData', 'seat'])
+            ->with(['trip', 'trip.ship', 'trip.additionalData', 'seat', 'grade'])
             ->where('provider_id', Provider::astra_marine)
             ->get();
     }
@@ -69,9 +69,9 @@ class AstraMarineOrder
         foreach ($this->tickets as $ticket) {
             $orders[] = [
                 "eventID" => $ticket->trip->additionalData->provider_trip_id,
-                "seatID" => $ticket->seat->provider_seat_id,
+                "seatID" => $ticket->seat?->provider_seat_id,
                 "priceTypeID" => $ticket->grade->provider_price_type_id,
-                "seatCategoryID" => $ticket->seat->category->provider_category_id,
+                "seatCategoryID" => $ticket->grade->provider_category_id,
                 "ticketTypeID" => $ticket->grade->provider_ticket_type_id,
                 "menuID" => $ticket->additionalData?->menu?->provider_menu_id,
                 "quantityOfTickets" => 1,
@@ -85,8 +85,13 @@ class AstraMarineOrder
     public function saveTicketsBarcodes(array $orderedTickets): void
     {
         foreach ($orderedTickets['orderedSeats'] as $orderedTicket) {
-            $ticket = $this->tickets->first(fn($ticket) => $ticket->seat->provider_seat_id === $orderedTicket['seatID']);
+            $ticket = $this->tickets->first(function ($ticket) use ($orderedTicket){
+                return $ticket->grade->provider_ticket_type_id == $orderedTicket['ticketTypeID']
+                    && $ticket->grade->provider_category_id == $orderedTicket['seatCategoryID']
+                    && $ticket->grade->provider_price_type_id == $orderedTicket['priceTypeID'];
+            });
             if ($ticket) {
+                $this->tickets->forget($this->tickets->search($ticket));
                 $ticket->additionalData()->updateOrCreate(['provider_id' => Provider::astra_marine],
                     ['provider_qr_code' => $orderedTicket['barCodes'][0]]);
             }

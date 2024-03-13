@@ -54,8 +54,9 @@ class PromotersTest extends TestCase
 
         $response
             ->assertStatus(200)
-            ->assertJson(fn(AssertableJson $json) => $json->hasAll(['message', 'filters', 'filters_original', 'titles', 'payload', 'pagination', 'list'])
-                ->has('list.0', fn($list) => $list->hasAll('id', 'active', 'name', 'type', 'balance', 'limit', 'open_shift')
+            ->assertJson(fn(AssertableJson $json) => $json->hasAll([
+                'message', 'filters', 'filters_original', 'titles', 'payload', 'pagination', 'list'])
+                ->has('list.0', fn($list) => $list->hasAll('id', 'active', 'name', 'type', 'balance', 'limit', 'open_shift', 'promoter_commission_rate')
                 ));
     }
 
@@ -75,6 +76,7 @@ class PromotersTest extends TestCase
                     'status_id' => 1,
                     'notes' => 'Test notes',
                     'can_send_sms' => false,
+                    'promoter_commission_rate' => 20
                 ]
             ]);
         $response->dump();

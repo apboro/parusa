@@ -32,8 +32,9 @@ class AstraMarineApiConnectionTest extends TestCase
         (new ImportTrips())->run();
         $trip = Trip::where('start_at', '>', now())->where('provider_id', 30)->first();
         $ship = $trip->ship;
-        $seat = $ship->seats[rand(10,60)];
-        $grade = $ship->seat_categories_ticket_grades()->where('seat_category_id', $seat->category->id)
+        $seat = $ship->seats()->whereHas('category', fn ($q) => $q->where('has_menu', true))->first();
+        $grade = $ship->seat_categories_ticket_grades()
+            ->where('seat_category_id', $seat->category->id)
             ->whereHas('grade', function ($grade){
                 $grade->where('has_menu', true);
             })->first()->grade;

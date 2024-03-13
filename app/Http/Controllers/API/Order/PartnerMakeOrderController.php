@@ -18,21 +18,16 @@ use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
-use App\Models\Dictionaries\OrderType;
-use App\Models\Dictionaries\TicketStatus;
 use App\Models\Hit\Hit;
-use App\Models\Order\Order;
 use App\Models\Positions\PositionOrderingTicket;
-use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
-use App\Services\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
+use Illuminate\Support\Facades\Log;
 
 class   PartnerMakeOrderController extends ApiEditController
 {
@@ -142,6 +137,7 @@ class   PartnerMakeOrderController extends ApiEditController
             if (isset($transaction)) {
                 $partner->account->detachTransaction($transaction);
             }
+            Log::error($exception);
             return APIResponse::error($exception->getMessage());
         }
 

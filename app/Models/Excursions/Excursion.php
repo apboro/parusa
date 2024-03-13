@@ -55,6 +55,7 @@ class Excursion extends Model implements Statusable, AsDictionary
     protected $casts = [
         'only_site' => 'bool',
         'is_single_ticket' => 'bool',
+        'use_seat_scheme' => 'bool',
     ];
 
     /** @var array Default attributes. */

@@ -29,6 +29,7 @@ class ExcursionEditController extends ApiEditController
         'status_id' => 'Статус',
         'excursion_type_id' => 'Тип экскурсии',
         'only_site' => 'Эксклюзивная экскурсия - билеты продаются только через сайт Алые Паруса',
+        'use_seat_scheme' => 'Использовать схему рассадки',
         'images' => 'Фотография экскурсии',
         'programs' => 'Типы программы',
         'duration' => 'Продолжительность, минут',
@@ -64,6 +65,7 @@ class ExcursionEditController extends ApiEditController
                 'name_receipt' => $excursion->name_receipt,
                 'status_id' => $excursion->status_id,
                 'only_site' => $excursion->only_site,
+                'use_seat_scheme' => $excursion->use_seat_scheme,
                 'excursion_type_id' => $excursion->type_id,
                 'is_single_ticket' => $excursion->is_single_ticket,
                 'reverse_excursion_id' => $excursion->reverse_excursion_id,
@@ -114,6 +116,7 @@ class ExcursionEditController extends ApiEditController
         $excursion->setAttribute('type_id', $data['excursion_type_id']);
         $excursion->provider_id = $excursion->provider_id ?? Provider::scarlet_sails;
         $excursion->setAttribute('only_site', $data['only_site'] ?? false);
+        $excursion->setAttribute('use_seat_scheme', $data['use_seat_scheme'] ?? false);
         $excursion->setAttribute('is_single_ticket', $data['is_single_ticket'] ?? false);
         $excursion->setAttribute('reverse_excursion_id', $data['reverse_excursion_id'] ?? null);
         $excursion->setStatus($data['status_id'], false);
