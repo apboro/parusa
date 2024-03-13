@@ -153,6 +153,7 @@ class TripsSelectListController extends ApiController
                 'ship' => $trip->ship->name,
                 'capacity' => $trip->ship->capacity,
                 'ship_has_scheme' => $trip->ship->ship_has_seats_scheme,
+                'excursion_use_seat_scheme' => $trip->excursion->use_seat_scheme,
                 'shipId' => $trip->ship->id,
                 'scheme_name' => $trip->ship->scheme_name,
                 'categories' => $trip->getSeatCategories(),

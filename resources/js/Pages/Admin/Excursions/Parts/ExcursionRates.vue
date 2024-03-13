@@ -32,6 +32,7 @@
             <GuiActionsMenu :title="null" v-if="editable">
                 <span class="link" @click="edit(rate)">Редактировать</span>
                 <span class="link" @click="createFrom(rate)">Копировать тариф</span>
+                <span class="link" @click="override(rate)">Установить спец. условия</span>
                 <span class="link" @click="remove(rate)">Удалить</span>
             </GuiActionsMenu>
         </TicketRate>
