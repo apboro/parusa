@@ -65,6 +65,7 @@ trait RateToArray
         return [
             'id' => $list->id,
             'current' => $list->start_at <= $now && $now <= $list->end_at,
+            'future' => $list->start_at > $now,
             'archive' => $list->end_at < $now,
             'excursion' => $list->excursion->name,
             'excursion_id' => $list->excursion_id,

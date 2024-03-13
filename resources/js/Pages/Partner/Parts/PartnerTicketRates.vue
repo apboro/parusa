@@ -72,7 +72,7 @@ export default {
             let current = null;
             if (Object.keys(this.data.data).length > 0) {
                 this.data.data.some(rate => {
-                    if (rate['excursion_id'] === excursion['id'] && rate['current']) {
+                    if (rate['excursion_id'] === excursion['id'] && (rate['current'] || rate['future'])) {
                         current = rate;
                         return true;
                     }

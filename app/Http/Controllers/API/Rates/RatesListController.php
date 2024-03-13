@@ -53,7 +53,7 @@ class RatesListController extends ApiEditController
             })
             // list only current rates for non-staff users
             ->when(!$current->isStaff(), function (Builder $query) use ($now) {
-                $query->whereDate('start_at', '<=', $now)->whereDate('end_at', '>=', $now);
+//                $query->whereDate('start_at', '<=', $now)->whereDate('end_at', '>=', $now);
             })
             // select actual and coming or archive rates for staff users
             ->when($current->isStaff() && !$isArchiveRequested, function (Builder $query) use ($now) {
