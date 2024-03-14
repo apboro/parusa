@@ -51,6 +51,7 @@ class ExcursionViewController extends ApiController
             'reverse_excursion' => $excursion->reverseExcursion?->name,
             'excursion_type' => $excursion->type?->name ?? "Нет",
             'excursion_provider_id' => $excursion->provider_id,
+            'provider' => $excursion->provider->name,
         ];
 
         // send response

@@ -6,6 +6,7 @@ use App\Exceptions\Trips\WrongTripDiscountStatusException;
 use App\Exceptions\Trips\WrongTripSaleStatusException;
 use App\Exceptions\Trips\WrongTripStatusException;
 use App\Interfaces\Statusable;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TripDiscountStatus;
 use App\Models\Dictionaries\TripSaleStatus;
@@ -64,7 +65,7 @@ class Trip extends Model implements Statusable
 {
     use HasStatus, HasFactory;
 
-    protected $guarded=[];
+    protected $guarded = [];
     /** @var array Attributes casting. */
     protected $casts = [
         'created_at' => 'datetime',
@@ -287,7 +288,7 @@ class Trip extends Model implements Statusable
     {
         $now = Carbon::now();
         return Trip::query()
-            ->where(function(Builder $trip) use ($now){
+            ->where(function (Builder $trip) use ($now) {
                 $trip->where('start_at', '>', $now)
                     ->orWhere(function (Builder $trip) use ($now) {
                         $trip->where('end_at', '>', $now)
@@ -320,7 +321,7 @@ class Trip extends Model implements Statusable
 
     public function getTripStarts(): string
     {
-       return $this->getAllTripsOfExcursionAndPierOnDay()
+        return $this->getAllTripsOfExcursionAndPierOnDay()
             ->orderBy('start_at')
             ->pluck('start_at')->map(function ($start_at) {
                 return $start_at->format('H:i');
@@ -335,8 +336,8 @@ class Trip extends Model implements Statusable
 
         return Trip::saleTripQuery()
             ->whereDate('start_at', $tripDate)
-            ->where('excursion_id',$excursionId)
-            ->where('start_pier_id',$startPierId);
+            ->where('excursion_id', $excursionId)
+            ->where('start_pier_id', $startPierId);
     }
 
     public function additionalData()
@@ -383,6 +384,11 @@ class Trip extends Model implements Statusable
             });
         }
         return $seatsGradesQuery->get();
+    }
+
+    public function provider()
+    {
+        return $this->hasOne(Provider::class, 'id', 'provider_id');
     }
 
 

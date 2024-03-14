@@ -71,7 +71,7 @@ class TripsSelectListController extends ApiController
         $now = Carbon::now();
 
         $query = Trip::query()
-            ->with(['startPier', 'excursion', 'excursion.programs', 'excursion.ratesLists', 'ship', 'ship.seats'])
+            ->with(['startPier', 'excursion', 'excursion.programs', 'excursion.ratesLists', 'ship', 'ship.seats', 'provider'])
             ->withCount(['tickets' => function (Builder $query) {
                 $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
             }])
@@ -89,6 +89,7 @@ class TripsSelectListController extends ApiController
                             });
                     });
             })
+
             ->whereHas('excursion.ratesLists', function (Builder $query) use ($date) {
                 $query->whereDate('start_at', '<=', $date)->whereDate('end_at', '>=', $date);
             })

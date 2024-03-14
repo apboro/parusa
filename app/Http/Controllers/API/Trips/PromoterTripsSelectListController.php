@@ -91,6 +91,9 @@ class PromoterTripsSelectListController extends ApiController
                             });
                     });
             })
+            ->whereHas('provider', function ($provider) {
+                $provider->where('enabled', true);
+            })
             ->whereHas('excursion.ratesLists', function (Builder $query) use ($date) {
                 $query->whereDate('start_at', '<=', $date)->whereDate('end_at', '>=', $date);
             })

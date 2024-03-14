@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Dictionary;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\Inventory;
 use App\Models\Dictionaries\PartnerType;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\Tariff;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Ships\Seats\SeatCategory;
@@ -92,5 +93,19 @@ trait EditableDictionaries
                 'name' => 'required',
             ],
         ],
+        'providers' => [
+            'name' => 'Поставщики экскурсий',
+            'class' => Provider::class,
+            'item_name' => 'поставщика',
+            'titles' => [
+                'name' => 'Поставщик',
+            ],
+            'fields' => [
+                'name' => 'string'
+            ],
+            'validation' => [
+                'name' => 'required'
+            ]
+        ]
     ];
 }
