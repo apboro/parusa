@@ -42,6 +42,7 @@ class ExcursionInfoController extends ApiController
             'id' => $excursion->id,
             'name' => $excursion->name,
             'status' => $excursion->status->name,
+            'provider' => $excursion->provider->name,
             'active' => $excursion->hasStatus(ExcursionStatus::active),
             'images' => $excursion->images->map(function (Image $image) {
                 return 'data:' . $image->mime . ';base64, ' . base64_encode(Storage::disk($image->disk)->get($image->filename));

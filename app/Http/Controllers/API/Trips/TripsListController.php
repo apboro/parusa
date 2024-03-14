@@ -55,8 +55,11 @@ class TripsListController extends ApiController
         $excursionTypeId = $request->input('filters.excursion_type_id');
 
         $query = Trip::query()
-            ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus'])
+            ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus', 'provider'])
             ->where('excursions.status_id', 1)
+            ->whereHas('provider', function ($provider) {
+                $provider->where('enabled', true);
+            })
             ->with(['chains' => function (BelongsToMany $query) {
                 $query->withCount('trips');
             }])

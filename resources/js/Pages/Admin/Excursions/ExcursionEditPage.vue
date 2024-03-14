@@ -8,6 +8,7 @@
             <FormString :form="form" :name="'name'"/>
             <FormString :form="form" :name="'name_receipt'"/>
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'excursion_statuses'"/>
+            <FormDictionary :form="form" :name="'provider_id'" :dictionary="'providers'"/>
             <FormCheckBox :form="form" :name="'only_site'" :hide-title="true"/>
             <FormCheckBox :form="form" :name="'use_seat_scheme'" :hide-title="true"/>
             <FormCheckBox :form="form" :name="'is_single_ticket'" :hide-title="true"/>

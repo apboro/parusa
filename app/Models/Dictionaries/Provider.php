@@ -13,13 +13,16 @@ class Provider extends Model
 
     public const astra_marine = 30;
 
-    protected $fillable = [
-        'name',
-        'status',
-        'service'
-    ];
+   protected $guarded = [];
 
     protected $table = 'dictionary_providers';
 
     public $timestamps = false;
+
+    protected $casts = [
+        'enabled' => 'boolean',
+        'locked' => 'boolean',
+        'has_integration' => 'boolean',
+        'order' => 'int',
+    ];
 }

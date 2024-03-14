@@ -9,6 +9,9 @@
                 <span class="link" v-if="editable" @click="statusChange"><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
                 <span v-else><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
             </GuiValue>
+            <GuiValue :title="'Поставщик'">
+                    {{ data['provider'] }}
+            </GuiValue>
             <GuiValue :title="'Эксклюзивная'">
                 {{ data['only_site'] ? 'Продажа только на сайте Алые Паруса' : 'Нет' }}
             </GuiValue>

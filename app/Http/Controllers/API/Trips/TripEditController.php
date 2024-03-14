@@ -326,6 +326,7 @@ class TripEditController extends ApiEditController
         $trip->tickets_total = $data['tickets_total'];
         $trip->discount_status_id = $data['discount_status_id'];
         $trip->cancellation_time = $data['cancellation_time'];
+        $trip->provider_id = $trip->excursion->provider_id;
 
         return $trip;
     }

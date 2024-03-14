@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
-//    use RefreshDatabase;
+    use RefreshDatabase;
 
     protected User $admin;
 

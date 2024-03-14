@@ -63,6 +63,9 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
                     ->whereDate('start_at', '<=', $date)
                     ->whereDate('end_at', '>=', $date);
             })
+            ->whereHas('provider', function ($provider) {
+                $provider->where('enabled', true);
+            })
             ->when(!empty($excursionsIDs), function (Builder $query) use ($excursionsIDs) {
                 $query->whereHas('excursion', function (Builder $query) use ($excursionsIDs) {
                     $query->whereIn('id', $excursionsIDs);
