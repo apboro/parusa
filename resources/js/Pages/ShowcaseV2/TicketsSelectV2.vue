@@ -224,7 +224,7 @@
         </template>
     </div>
 
-    <PopUp ref="category"
+    <ShowcaseV2PopUp ref="category"
            :buttons="[
                {result: 'ok', caption: 'OK', color: 'green', disabled: !selectedGrade || (selectedGrade.menus.length > 0 ? !selectedMenu : false)},
                {result: 'cancel', caption: 'Отмена'},
@@ -242,7 +242,7 @@
                        :name="'menu-select'"> {{ menu.name }}
             </label>
         </div>
-    </PopUp>
+    </ShowcaseV2PopUp>
 </template>
 
 <script>
@@ -262,16 +262,16 @@ import OfferInfo from "@/Pages/Showcase/Parts/OfferInfo.vue";
 import PersonalDataInfo from "@/Pages/Showcase/Parts/PersonalDataInfo.vue";
 import BackwardTicketSelectShowcase from "../../Components/BackwardTicketSelectShowcase.vue";
 import DynamicSchemeContainer from "@/Pages/Admin/Ships/SeatsSchemes/DynamicSchemeContainer.vue";
-import PopUp from "@/Components/PopUp.vue";
 import seatMethods from "@/Mixins/seatMethods.vue";
 import CategoriesBox from "@/Pages/Parts/Seats/CategoriesBox.vue";
 import SelectedTickets from "@/Pages/Parts/Seats/SelectedTickets.vue";
+import ShowcaseV2PopUp from "@/Pages/ShowcaseV2/Components/ShowcaseV2PopUp.vue";
 
 export default {
     components: {
+        ShowcaseV2PopUp,
         SelectedTickets,
         CategoriesBox,
-        PopUp,
         DynamicSchemeContainer,
         BackwardTicketSelectShowcase,
         PersonalDataInfo,
