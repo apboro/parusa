@@ -25,22 +25,18 @@ class ApiTripsController extends Controller
                 $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
             }])
             //filter by date
-            ->when($request->date, fn ($query) => $query->whereDate('start_at', Carbon::parse($request->date)))
-            ->when(!$request->date, fn ($query) => $query->whereDate('start_at', today()))
+            ->when($request->date, fn($query) => $query->whereDate('start_at', Carbon::parse($request->date)))
+            ->when(!$request->date, fn($query) => $query->whereDate('start_at', today()))
             //filter by excursion
-            ->when(!empty($request->excursion_ids), fn ($query) => $query
-                ->whereHas('excursion', fn ($excursion) => $excursion->whereIn('id',$request->excursion_ids)))
-
-            ->where(function (Builder $query) {
-                $query->whereNull('provider_id')
-                    ->orWhere('provider_id', Provider::scarlet_sails);
-                })
+            ->when(!empty($request->excursion_ids), fn($query) => $query
+                ->whereHas('excursion', fn($excursion) => $excursion->whereIn('id', $request->excursion_ids)))
             ->where('start_at', '>=', now())
             ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
-            ->whereHas('excursion', fn ($excursion) => $excursion
+            ->whereHas('excursion', fn($excursion) => $excursion
                 ->where('status_id', ExcursionStatus::active)
-                ->where('only_site', 0))
+                ->where('only_site', 0)
+                ->where('use_seat_scheme', false))
             ->whereHas('excursion.ratesLists', function (Builder $query) {
                 $query->whereDate('start_at', '<=', now())->whereDate('end_at', '>=', now());
             })

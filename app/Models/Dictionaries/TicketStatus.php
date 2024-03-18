@@ -84,6 +84,7 @@ class TicketStatus extends AbstractDictionary
         self::terminal_paid_single,
         self::partner_paid_single,
         self::promoter_paid,
+        self::api_confirmed
     ];
 
     public const ticket_paid_statuses = [
@@ -94,6 +95,7 @@ class TicketStatus extends AbstractDictionary
         self::terminal_paid_single,
         self::partner_paid_single,
         self::promoter_paid,
+        self::api_confirmed
     ];
 
     public const ticket_had_paid_statuses = [
@@ -106,6 +108,7 @@ class TicketStatus extends AbstractDictionary
         self::showcase_paid_single,
         self::terminal_paid_single,
         self::partner_paid_single,
+        self::api_confirmed
     ];
 
     public const ticket_reserved_statuses = [
@@ -128,6 +131,7 @@ class TicketStatus extends AbstractDictionary
         self::partner_reserve_canceled,
         self::terminal_canceled,
         self::showcase_canceled,
+        self::api_canceled,
     ];
     public const ticket_single_statuses = [
         self::showcase_paid_single,

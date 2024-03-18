@@ -56,6 +56,4 @@ class StoreOrderTest extends TestCase
         $response->assertStatus(200);
         $this->assertDatabaseHas('orders', ['phone' => $phone]);
     }
-
-
 }

@@ -19,7 +19,7 @@ class ExcursionFactory extends Factory
         return [
             'name' => $this->faker->word,
             'status_id' => ExcursionStatus::active,
-            'provider_id' => Provider::scarlet_sails
+            'provider_id' => Provider::inRandomOrder()->first()->id,
         ];
     }
 

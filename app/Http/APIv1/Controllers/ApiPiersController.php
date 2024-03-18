@@ -14,7 +14,7 @@ class ApiPiersController extends Controller
 {
     public function __invoke(ApiGetPiersRequest $request): JsonResponse
     {
-        $piers = Pier::where(['provider_id'=>Provider::scarlet_sails, 'status_id' => PiersStatus::active])->get();
+        $piers = Pier::where(['status_id' => PiersStatus::active])->get();
 
         return response()->json(ApiPiersResource::collection($piers));
 

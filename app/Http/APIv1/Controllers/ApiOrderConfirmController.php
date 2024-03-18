@@ -2,6 +2,10 @@
 
 namespace App\Http\APIv1\Controllers;
 
+
+use App\Events\AstraMarineOrderPaidEvent;
+use App\Events\CityTourOrderPaidEvent;
+use App\Events\NevaTravelOrderPaidEvent;
 use App\Helpers\PriceConverter;
 use App\Http\APIResponse;
 use App\Http\APIv1\Requests\ApiOrderConfirmRequest;
@@ -40,6 +44,10 @@ class ApiOrderConfirmController extends Controller
 
                 $order->setStatus(OrderStatus::api_confirmed);
                 $order->tickets->each(fn(Ticket $ticket) => $ticket->setStatus(TicketStatus::api_confirmed));
+
+                NevaTravelOrderPaidEvent::dispatch($order);
+                CityTourOrderPaidEvent::dispatch($order);
+                AstraMarineOrderPaidEvent::dispatch($order);
 
                 $order->partner->account->attachTransaction(new AccountTransaction([
                     'type_id' => AccountTransactionType::tickets_buy,

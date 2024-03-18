@@ -3,11 +3,12 @@
 namespace App\Http\APIv1\Controllers;
 
 use App\Actions\CreateOrderFromApi;
+use App\Events\AstraMarineNewOrderEvent;
+use App\Events\NewCityTourOrderEvent;
+use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
 use App\Http\APIv1\Requests\ApiOrderStoreRequest;
 use App\Http\Controllers\Controller;
-use App\Models\Dictionaries\PartnerStatus;
-use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
@@ -30,7 +31,7 @@ class ApiOrderStoreController extends Controller
             return ApiResponse::notFound('Рейс не найден');
         }
 
-        $rateList = $trip?->getRate();
+        $rateList = $trip->getRate();
 
         if (($trip->start_at < now() && $trip->excursion->is_single_ticket == 0)
             || ($trip->excursion->is_single_ticket != 0 && $trip->start_at < now() && !$trip->start_at->isCurrentDay())
@@ -55,7 +56,7 @@ class ApiOrderStoreController extends Controller
 
         foreach ($tickets as $ticket) {
 
-            $rate = $rateList?->rates()->where('grade_id', $ticket['grade_id'])->first();
+            $rate = $rateList->rates()->where('grade_id', $ticket['grade_id'])->first();
             if (!$rate) {
                 return ApiResponse::badRequest('Неправильно указан grade_id для заказа билета - ' . $ticket['grade_id']);
             }
@@ -68,7 +69,7 @@ class ApiOrderStoreController extends Controller
                 'trip_id' => $request->trip_id,
                 'grade_id' => $ticket['grade_id'],
                 'status_id' => TicketStatus::api_reserved,
-                'provider_id' => Provider::scarlet_sails,
+                'provider_id' => $trip->excursion->provider_id,
                 'base_price' => $rate->partner_price,
                 'seat_id' => $request->seat_id,
             ]);
@@ -83,6 +84,10 @@ class ApiOrderStoreController extends Controller
         $customerData['phone'] = $request->client_phone;
 
         $order = (new CreateOrderFromApi($partner))->execute($newTickets, $customerData);
+
+        NewNevaTravelOrderEvent::dispatch($order);
+        NewCityTourOrderEvent::dispatch($order);
+        AstraMarineNewOrderEvent::dispatch($order);
 
         return ApiResponse::response(
             data: [

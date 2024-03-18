@@ -17,7 +17,7 @@ class TicketResource extends JsonResource
             'seat_id' => $this->seat_id,
             'trip_id' => $this->trip_id,
             'grade_id' => $this->grade_id,
-            'qr-code' => $this->qrData(),
+            'qr-code' => $this->additionalData?->provider_qr_code ?? $this->qrData(),
         ];
     }
 }

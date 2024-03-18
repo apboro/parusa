@@ -1,4 +1,4 @@
- y7<?php
+ <?php
 
  use App\Models\Dictionaries\Provider;
  use Illuminate\Database\Migrations\Migration;

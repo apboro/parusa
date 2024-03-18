@@ -18,8 +18,8 @@ class ApiExcursionsController extends Controller
     public function __invoke(ApiGetExcursionsRequest $request): JsonResponse
     {
         $excursions = Excursion::where([
-            'provider_id' => Provider::scarlet_sails,
-            'status_id' => ExcursionStatus::active
+            'status_id' => ExcursionStatus::active,
+            'use_seat_scheme' => false,
         ])->get();
 
         return response()->json(ApiExcursionResource::collection($excursions));

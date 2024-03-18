@@ -16,9 +16,7 @@ use OpenApi\Attributes as OA;
   seat_id - id места, integer (может отсутствовать в запросе, если на рейсе не предусмотрена рассадка)
   </li>
 
-</ul>
-',
-
+</ul>',
     summary: 'Запрос заказа',
     tags: ['Заказы']
 )]
@@ -33,7 +31,7 @@ use OpenApi\Attributes as OA;
                 new OA\Property(property: 'tickets', type: 'array', items: new OA\Items(
                     properties: [
                         new OA\Property(property: 'grade_id', type: 'integer', example: 1003),
-                        new OA\Property(property: 'seat_id', type: 'integer', example: 13, nullable: true),
+                        new OA\Property(property: 'seat_id', type: 'integer', example: null, nullable: true),
                     ]
                 ))
             ]
