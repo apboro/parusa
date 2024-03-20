@@ -53,6 +53,10 @@ class NewsController extends ApiEditController
             ->with(['status'])
             ->orderBy('created_at', 'desc');
 
+        if ($partner){
+            $query->where('status_id', NewsStatus::SENT);
+        }
+
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey)) && !empty($filters['status_id'])) {
             $query->where('status_id', $filters['status_id']);
@@ -146,12 +150,13 @@ class NewsController extends ApiEditController
         $current = Currents::get($request);
         $id = $request->input('id');
 
-        if ($id === null ||
-            null === ($news = News::query()->with(['status', 'recipients'])->where('id', $id)->first())) {
+        $news = News::query()->with(['status', 'recipients'])->where('id', $id)->first();
+
+        if ($id === null || !$news) {
             return APIResponse::notFound('Экскурсия не найдена');
         }
 
-        $current->partner()?->news()->attach($id);
+        $current->partner()?->news()->sync($id);
 
         /** @var News $news */
 
