@@ -18,6 +18,10 @@ class NewsSendController extends ApiEditController
         $news = News::findOrFail($request->get('id'));
         $news->update(['send_at' => now(), 'status_id' => NewsStatus::SENT]);
 
+        if (config('app.env') === 'local') {
+            return APIResponse::success('ИМИТАЦИЯ Отправка произведена');
+        }
+
         $partners = Partner::with(['positions', 'positions.user.profile'])->get();
 
         foreach ($partners as $partner) {

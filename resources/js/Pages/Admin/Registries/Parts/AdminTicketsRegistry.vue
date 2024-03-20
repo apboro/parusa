@@ -1,6 +1,5 @@
 <template>
     <LoadingProgress :loading="list.is_loading">
-
         <LayoutFilters v-if="tripId === null">
             <LayoutFiltersItem :title="'Период продажи'">
                 <div class="w-210px mr-10">
@@ -38,11 +37,11 @@
                                style="max-width: 100%;">
                 <InputSearch v-model="list.search" @change="list.load()"/>
 
-            <div style="display: flex; align-items: flex-end; margin-left: 10px">
-                <GuiActionsMenu :title="null">
-                    <span class="link" @click="excelExport">Экспорт в Excel</span>
-                </GuiActionsMenu>
-            </div>
+                <div style="display: flex; align-items: flex-end; margin-left: 10px">
+                    <GuiActionsMenu :title="null">
+                        <span class="link" @click="excelExport">Экспорт в Excel</span>
+                    </GuiActionsMenu>
+                </div>
             </LayoutFiltersItem>
         </LayoutFilters>
 
@@ -89,71 +88,69 @@
                 />
             </LayoutFiltersItem>
         </LayoutFilters>
-
-        <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
-            <ListTableRow v-for="ticket in list.list">
-                <ListTableCell>
-                    <div>{{ ticket['date'] }}</div>
-                    <div>{{ ticket['time'] }}</div>
-                </ListTableCell>
-                <ListTableCell>
-                    <div class="bold">
-                        <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}"
-                                     v-html="highlight(ticket['id'])"/>
-                    </div>
-                    <div>
-                        <router-link class="link" :to="{name: 'order-info', params: {id: ticket['order_id']}}"
-                                     v-html="highlight(ticket['order_id'])"/>
-                    </div>
-                    <div v-if="ticket['neva_travel_order_number']"
-                         v-html="highlight(ticket['neva_travel_order_number'])"></div>
-                </ListTableCell>
-                <ListTableCell>
-                    <div>{{ ticket['type'] }}</div>
-                    <div>{{ ticket['amount'] }} руб.</div>
-                </ListTableCell>
-                <ListTableCell>
-                    <template v-if="ticket['commission_amount']">
-                        <div>{{ ticket['commission_type'] }}</div>
-                        <div>{{ ticket['commission_amount'] }} руб.</div>
-                    </template>
-                    <span v-else>—</span>
-                </ListTableCell>
-                <ListTableCell>
-                    <div><b>№{{ ticket['trip_id'] }}</b> {{ ticket['trip_date'] }} {{ ticket['trip_time'] }}</div>
-                    <div>{{ ticket['excursion'] }} {{ ticket['pier'] }}</div>
-                </ListTableCell>
-                <ListTableCell>
-                    <div style="white-space: normal;">{{ ticket['order_type'] }}</div>
-                    <div v-if="ticket['terminal']">{{ ticket['terminal'] }}</div>
-                    <br>
-                    <div>{{ ticket['partner'] }}</div>
-                    <div>{{ ticket['sale_by'] }}</div>
-                </ListTableCell>
-                <ListTableCell>
-                    <div v-if="ticket['buyer_name']"><span v-html="highlight(ticket['buyer_name'])"/></div>
-                    <div v-if="ticket['buyer_email']"><span v-html="highlight(ticket['buyer_email'])"/></div>
-                    <div v-if="ticket['buyer_phone']"><span style="white-space: nowrap;"
-                                                            v-html="highlight(ticket['buyer_phone'])"/></div>
-                </ListTableCell>
-                <ListTableCell>
-                    {{ ticket['status'] }}
-                </ListTableCell>
-                <ListTableCell>
-                    <span v-if="ticket['return_up_to'] === null">—</span>
-                    <template v-else>
-                        <div>Оформить возврат</div>
-                        <div></div>
-                    </template>
-                </ListTableCell>
-            </ListTableRow>
-        </ListTable>
-
-        <GuiMessage v-else-if="list.is_loaded" border>Нет проданных билетов</GuiMessage>
-
-        <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
-
     </LoadingProgress>
+    <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
+        <ListTableRow v-for="ticket in list.list">
+            <ListTableCell>
+                <div>{{ ticket['date'] }}</div>
+                <div>{{ ticket['time'] }}</div>
+            </ListTableCell>
+            <ListTableCell>
+                <div class="bold">
+                    <router-link class="link" :to="{name: 'ticket-info', params: {id: ticket['id']}}"
+                                 v-html="highlight(ticket['id'])"/>
+                </div>
+                <div>
+                    <router-link class="link" :to="{name: 'order-info', params: {id: ticket['order_id']}}"
+                                 v-html="highlight(ticket['order_id'])"/>
+                </div>
+                <div v-if="ticket['neva_travel_order_number']"
+                     v-html="highlight(ticket['neva_travel_order_number'])"></div>
+            </ListTableCell>
+            <ListTableCell>
+                <div>{{ ticket['type'] }}</div>
+                <div>{{ ticket['amount'] }} руб.</div>
+            </ListTableCell>
+            <ListTableCell>
+                <template v-if="ticket['commission_amount']">
+                    <div>{{ ticket['commission_type'] }}</div>
+                    <div>{{ ticket['commission_amount'] }} руб.</div>
+                </template>
+                <span v-else>—</span>
+            </ListTableCell>
+            <ListTableCell>
+                <div><b>№{{ ticket['trip_id'] }}</b> {{ ticket['trip_date'] }} {{ ticket['trip_time'] }}</div>
+                <div>{{ ticket['excursion'] }} {{ ticket['pier'] }}</div>
+            </ListTableCell>
+            <ListTableCell>
+                <div style="white-space: normal;">{{ ticket['order_type'] }}</div>
+                <div v-if="ticket['terminal']">{{ ticket['terminal'] }}</div>
+                <br>
+                <div>{{ ticket['partner'] }}</div>
+                <div>{{ ticket['sale_by'] }}</div>
+            </ListTableCell>
+            <ListTableCell>
+                <div v-if="ticket['buyer_name']"><span v-html="highlight(ticket['buyer_name'])"/></div>
+                <div v-if="ticket['buyer_email']"><span v-html="highlight(ticket['buyer_email'])"/></div>
+                <div v-if="ticket['buyer_phone']"><span style="white-space: nowrap;"
+                                                        v-html="highlight(ticket['buyer_phone'])"/></div>
+            </ListTableCell>
+            <ListTableCell>
+                {{ ticket['status'] }}
+            </ListTableCell>
+            <ListTableCell>
+                <span v-if="ticket['return_up_to'] === null">—</span>
+                <template v-else>
+                    <div>Оформить возврат</div>
+                    <div></div>
+                </template>
+            </ListTableCell>
+        </ListTableRow>
+    </ListTable>
+
+    <GuiMessage v-else-if="list.is_loaded" border>Нет проданных билетов</GuiMessage>
+
+    <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 </template>
 
 <script>
