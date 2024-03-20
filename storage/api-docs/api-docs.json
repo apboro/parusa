@@ -206,7 +206,7 @@
                     "Заказы"
                 ],
                 "summary": "Запрос заказа",
-                "description": "Запрос служит для создания резерва заказа.\n<br>Входные параметры:\n<ul>\n <li>trip_id - id рейса, integer</li>\n <li>tickets - массив объектов:<br>\n  grade_id - категория билета, integer<br>\n  seat_id - id места, integer (может отсутствовать в запросе, если на рейсе не предусмотрена рассадка)\n  </li>\n\n</ul>\n",
+                "description": "Запрос служит для создания резерва заказа.\n<br>Входные параметры:\n<ul>\n <li>trip_id - id рейса, integer</li>\n <li>tickets - массив объектов:<br>\n  grade_id - категория билета, integer<br>\n  seat_id - id места, integer (может отсутствовать в запросе, если на рейсе не предусмотрена рассадка)\n  </li>\n\n</ul>",
                 "operationId": "15cbc9269e086d93bca966b9c4e383d8",
                 "requestBody": {
                     "content": {
@@ -239,7 +239,7 @@
                                                 },
                                                 "seat_id": {
                                                     "type": "integer",
-                                                    "example": 13,
+                                                    "example": null,
                                                     "nullable": true
                                                 }
                                             },
