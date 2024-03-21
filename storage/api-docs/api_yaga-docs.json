@@ -1,0 +1,147 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API компании \"Алые паруса\" для Яндекс Афишы",
+        "description": "Точки для Яндекс Афишы",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/yaga/manifest": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "98579cd2aecc408ee68bea4033d3f95a",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/cities": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "f61961e14ebe6c351442f57c38298c8b",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/events": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "ed4258b48adf81c2e5d4db3351282572",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/hallplan": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "e94c92db06f57facbb45fb075dccabc5",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/halls": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "73fd2b130f78f0e15cfc361449fae633",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/organizers": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "d392587af220ec6ffe1a2801ef8dea96",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/persons": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "f0811bd0f6e3119d7ab7e5fb4a0114aa",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/schedule": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "3664507fa49b23f76b111f7da650c966",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/venues": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "d18bce822e9ff3cc4d3d7d1490e4f056",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        {
+            "sanctum": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "Расписание"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    }
+}
