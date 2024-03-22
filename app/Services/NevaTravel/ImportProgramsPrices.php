@@ -46,6 +46,7 @@ class ImportProgramsPrices
                             'max_price' => $prices[$grade_name]['price'] / 100,
                             'commission_type' => 'fixed',
                             'commission_value' => 100,
+                            'partner_price' => $prices[$grade_name]['price'] / 100,
                             'site_price' => $prices[$grade_name]['price'] / 100,
                         ]
                     );
