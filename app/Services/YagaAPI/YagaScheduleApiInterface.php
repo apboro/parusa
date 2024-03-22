@@ -2,7 +2,9 @@
 
 namespace App\Services\YagaAPI;
 
+use App\Services\YagaAPI\Requests\GetVenuesRequest;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 interface YagaScheduleApiInterface
 {
@@ -14,5 +16,5 @@ interface YagaScheduleApiInterface
     public function getOrganizers($offset = null, $limit = null, array $organizerId = null, Carbon $updatedAfter = null);
     public function getPersons($offset = null, $limit = null, array $personId = null, Carbon $updatedAfter = null);
     public function getSchedule($offset = null, $limit = null, $venueId = null, array $sessionId = null, Carbon $updatedAfter = null);
-    public function getVenues($offset = null, $limit = null, $cityId = null, array $venueId = null, Carbon $updatedAfter = null);
+    public function getVenues(GetVenuesRequest $request);
 }

@@ -10,7 +10,7 @@ class City
         $data = [
             "cities" => [
                 [
-                    "additional" => [],
+                    "additional" => (object)[],
                     "coordinates" => [
                         "latitude" => null,
                         "longitude" => null
@@ -34,7 +34,6 @@ class City
         ];
 
         return response()->json($data);
-
     }
 
 }

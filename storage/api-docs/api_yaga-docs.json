@@ -6,6 +6,61 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/yaga/venues": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "d363681404f8f42a1bacfbb70b8a4085",
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "venueId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cityId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "updatedAfter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/yaga/manifest": {
             "get": {
                 "tags": [
@@ -103,19 +158,6 @@
                     "Расписание"
                 ],
                 "operationId": "3664507fa49b23f76b111f7da650c966",
-                "responses": {
-                    "200": {
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/api/yaga/venues": {
-            "get": {
-                "tags": [
-                    "Расписание"
-                ],
-                "operationId": "d18bce822e9ff3cc4d3d7d1490e4f056",
                 "responses": {
                     "200": {
                         "description": ""
