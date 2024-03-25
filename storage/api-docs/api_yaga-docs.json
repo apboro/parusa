@@ -6,6 +6,64 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/yaga/halls": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "5ae41e8430d761f420a75641a9579cb1",
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "venueId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "hallId[]",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "name": "updatedAfter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/yaga/venues": {
             "get": {
                 "tags": [
@@ -30,11 +88,14 @@
                         }
                     },
                     {
-                        "name": "venueId",
+                        "name": "venueId[]",
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     },
                     {
@@ -113,19 +174,6 @@
                 }
             }
         },
-        "/api/yaga/halls": {
-            "get": {
-                "tags": [
-                    "Расписание"
-                ],
-                "operationId": "73fd2b130f78f0e15cfc361449fae633",
-                "responses": {
-                    "200": {
-                        "description": ""
-                    }
-                }
-            }
-        },
         "/api/yaga/organizers": {
             "get": {
                 "tags": [
@@ -166,6 +214,21 @@
             }
         }
     },
+    "components": {
+        "responses": {
+            "200": {
+                "description": ""
+            }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    },
     "security": [
         {
             "sanctum": []
@@ -175,15 +238,5 @@
         {
             "name": "Расписание"
         }
-    ],
-    "components": {
-        "securitySchemes": {
-            "sanctum": {
-                "type": "apiKey",
-                "description": "Enter token in format (Bearer <token>)",
-                "name": "Authorization",
-                "in": "header"
-            }
-        }
-    }
+    ]
 }

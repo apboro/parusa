@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Services\YagaAPI\Model;
 
 use App\Models\Ships\Ship;
+use Illuminate\Http\Request;
 
 class Venue
 {
@@ -47,7 +49,7 @@ class Venue
         $this->types = ['OTHER_VENUE'];
         $this->cancelAllowance = 'CANCEL_ALLOWED';
         $this->saleOpening = '';
-        $this->saleClosing = '';
+        $this->saleClosing = '20 minutes';
         $this->saleCanceling = '60 minutes';
         $this->reservationTimeout = '15 minutes';
         $this->integrations = [];
@@ -58,29 +60,30 @@ class Venue
     {
         return [
             "additional" => $this->additional,
-            "address" => $this->address,
+//            "address" => $this->address,
             "cancelAllowance" => $this->cancelAllowance,
             "cityId" => $this->cityId,
-            "coordinates" => [$this->coordinates],
+//            "coordinates" => (object)$this->coordinates,
             "description" => $this->description,
             "id" => $this->id,
-            "images" => [$this->images],
-            "integrations" => $this->integrations,
+//            "images" => $this->images,
+//            "integrations" => $this->integrations,
             "name" => $this->name,
-            "phones" => [$this->phones],
+//            "phones" => $this->phones,
             "reservationTimeout" => $this->reservationTimeout,
             "saleCanceling" => $this->saleCanceling,
             "saleClosing" => $this->saleClosing,
-            "saleOpening" => $this->saleOpening,
-            "subwayStations" => [$this->subwayStations],
-            "synonyms" => [$this->synonyms],
-            "tags" => [$this->tags],
-            "types" => [$this->types],
-            "urls" => [$this->urls],
-            "videos" => [$this->videos],
-            "workTimes" => [$this->workTimes]
+//            "saleOpening" => $this->saleOpening,
+//            "subwayStations" => $this->subwayStations,
+//            "synonyms" => $this->synonyms,
+//            "tags" => $this->tags,
+            "types" => $this->types,
+//            "urls" => $this->urls,
+//            "videos" => $this->videos,
+//            "workTimes" => $this->workTimes,
         ];
     }
+
 }
 
 
