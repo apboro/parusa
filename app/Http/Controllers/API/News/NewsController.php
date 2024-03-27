@@ -33,11 +33,9 @@ class NewsController extends ApiEditController
         'recipients' => 'Получатели'
     ];
     protected array $defaultFilters = [
-        'status_id' => NewsStatus::DRAFT,
     ];
 
     protected array $rememberFilters = [
-        'status_id',
     ];
 
     protected string $rememberKey = CookieKeys::news_list;

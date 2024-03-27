@@ -63,7 +63,11 @@ export default {
                 })
         },
         cancel(){
-            this.$router.push({name: 'news-view', params: {id: this.newsId}})
+            if (this.newsId === 0){
+                this.$router.push({name: 'news-list'})
+            } else {
+                this.$router.push({name: 'news-view', params: {id: this.newsId}})
+            }
         }
     }
 }
@@ -75,7 +79,7 @@ export default {
                 :link="{name: 'news-list'}"
                 :link-title="'К списку новостей'">
         <GuiContainer mt-30>
-            <FormString style="margin-bottom: 5px":form="form" name="title" title="Заголовок" />
+            <FormString style="margin-bottom: 5px" :form="form" name="title" title="Заголовок" />
             <ckeditor :editor="editor" v-model="form.values.description" :config="editorConfig"></ckeditor>
             <FormDictionary disabled :form="form" :dictionary="'news_recipients'" :name="'recipients'"/>
         </GuiContainer>
