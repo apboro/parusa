@@ -6,6 +6,7 @@ use App\Helpers\PriceConverter;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\NewsStatus;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Hit\Hit;
 use App\Models\News\News;
@@ -76,7 +77,7 @@ class PartnerInfoController extends ApiController
             'order_amount' => PriceConverter::storeToPrice($orderAmount ?? 0),
             'can_reserve' => $current->partner()->profile->can_reserve_tickets,
             'can_send_sms' => $current->partner()->profile->can_send_sms,
-            'new_news' => News::count() - $partner->news()->count(),
+            'new_news' => News::query()->sent()->count() - $partner->news()->count(),
         ]);
     }
 }

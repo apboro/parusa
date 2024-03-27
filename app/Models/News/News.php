@@ -6,6 +6,7 @@ use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\NewsStatus;
 use App\Models\NewsRecipients;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -26,5 +27,10 @@ class News extends Model
     public function recipients(): HasOne
     {
         return $this->hasOne(NewsRecipients::class, 'id', 'recipients_id');
+    }
+
+    public function scopeSent(Builder $query)
+    {
+        return $query->where('status_id', NewsStatus::SENT);
     }
 }
