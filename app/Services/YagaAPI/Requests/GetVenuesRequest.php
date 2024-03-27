@@ -2,6 +2,7 @@
 
 namespace App\Services\YagaAPI\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use OpenApi\Attributes as OA;
 
@@ -29,6 +30,11 @@ class GetVenuesRequest extends FormRequest
             'cityId' => 'integer',
             'updatedAfter' => 'integer'
         ];
+    }
+
+    protected function failedValidation(Validator $validator): bool
+    {
+        return false;
     }
 
 }

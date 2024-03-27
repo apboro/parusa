@@ -2,6 +2,7 @@
 
 namespace App\Services\YagaAPI\Model;
 
+use App\Models\Sails\Trip;
 use App\Models\Ships\Ship;
 use Illuminate\Http\Request;
 
@@ -35,7 +36,7 @@ class Venue
         $this->id = $ship->id;
         $this->name = $ship->name;
         $this->cityId = 1;
-        $this->address = '';
+        $this->address = Trip::activeScarletSails()->where('ship_id', $ship->id)->first()->startPier->info->address;
         $this->description = $ship->description;
         $this->urls = [];
         $this->images = [];
@@ -59,8 +60,7 @@ class Venue
     public function getResource()
     {
         return [
-            "additional" => $this->additional,
-//            "address" => $this->address,
+            "address" => $this->address,
             "cancelAllowance" => $this->cancelAllowance,
             "cityId" => $this->cityId,
 //            "coordinates" => (object)$this->coordinates,

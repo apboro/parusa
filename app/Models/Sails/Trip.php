@@ -6,6 +6,7 @@ use App\Exceptions\Trips\WrongTripDiscountStatusException;
 use App\Exceptions\Trips\WrongTripSaleStatusException;
 use App\Exceptions\Trips\WrongTripStatusException;
 use App\Interfaces\Statusable;
+use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TripDiscountStatus;
@@ -389,6 +390,19 @@ class Trip extends Model implements Statusable
     public function provider()
     {
         return $this->hasOne(Provider::class, 'id', 'provider_id');
+    }
+
+    public function scopeActiveScarletSails(Builder $query)
+    {
+        return $query->with(['excursion', 'excursion.info', 'ship', 'provider', 'excursion.ratesLists', 'tickets', 'excursion.provider'])
+            ->where('status_id', TripStatus::regular)
+            ->where('sale_status_id', TripSaleStatus::selling)
+            ->whereHas('excursion', fn($excursions) => $excursions->where('status_id', ExcursionStatus::active)->where('only_site', false))
+            ->where('provider_id', Provider::scarlet_sails)
+            ->whereHas('excursion.ratesLists', function (Builder $query) {
+                $query->whereDate('start_at', '<=', now())
+                    ->whereDate('end_at', '>=', now());
+            });
     }
 
 

@@ -17,6 +17,7 @@ use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketsRatesList;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -195,7 +196,7 @@ class Excursion extends Model implements Statusable, AsDictionary
      */
     public function partnerShowcaseHide(): BelongsToMany
     {
-        return $this->belongsToMany(Partner::class, 'partner_excursion_showcase_disabling', 'excursion_id','partner_id');
+        return $this->belongsToMany(Partner::class, 'partner_excursion_showcase_disabling', 'excursion_id', 'partner_id');
     }
 
     public function reverseExcursion()
@@ -216,5 +217,16 @@ class Excursion extends Model implements Statusable, AsDictionary
     public function type()
     {
         return $this->hasOne(ExcursionType::class, 'id', 'type_id');
+    }
+
+    public function scopeActiveScarletSails(Builder $query, Carbon $dateFrom, Carbon $dateTo)
+    {
+        return $query->where('status_id', ExcursionStatus::active)
+            ->where('only_site', false)
+            ->where('provider_id', Provider::scarlet_sails)
+            ->whereHas('ratesLists', function ($ratesLists) use ($dateFrom, $dateTo) {
+                $ratesLists->whereDate('start_at', '<=', $dateFrom)
+                    ->whereDate('end_at', '>=', $dateTo);
+            });
     }
 }

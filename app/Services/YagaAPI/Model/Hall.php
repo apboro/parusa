@@ -2,26 +2,31 @@
 
 namespace App\Services\YagaAPI\Model;
 
+use App\Models\Dictionaries\TicketGrade;
+use App\Models\Ships\Ship;
+use Illuminate\Support\Collection;
+
 class Hall
 {
 
-    protected $id;
+    protected ?Ship $ship;
+    protected Collection $grades;
 
-    protected $name;
-
-    protected $venueId;
-
-    protected $levels;
-
-
-    public function __construct(array $data = null)
+    public function __construct(Collection $grades, ?Ship $ship = null)
     {
-        $this->id = isset($data['id']) ? $data['id'] : null;
-        $this->name = isset($data['name']) ? $data['name'] : null;
-        $this->venueId = isset($data['venueId']) ? $data['venueId'] : null;
-        $this->levels = isset($data['levels']) ? $data['levels'] : null;
+        $this->ship = $ship;
+        $this->grades = $grades;
     }
 
+    public function getResource(): array
+    {
+        return [
+            "id" => $this->ship->id,
+            "name" => $this->ship->name,
+            "venueId" => $this->ship->id,
+            "levels" => (new Level($this->grades))->getResource()
+        ];
+    }
 }
 
 

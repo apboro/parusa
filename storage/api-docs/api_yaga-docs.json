@@ -6,6 +6,95 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/yaga/events": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "c48b6bffb4d73e2b8a22eec5b1236f4c",
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "eventId[]",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "name": "dateFrom",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "dateTo",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "updatedAfter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/hallplan": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "e1013bbe8f6ad587f6d266994ed64a16",
+                "parameters": [
+                    {
+                        "name": "sessionId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/yaga/halls": {
             "get": {
                 "tags": [
@@ -46,6 +135,114 @@
                             "items": {
                                 "type": "string"
                             }
+                        }
+                    },
+                    {
+                        "name": "updatedAfter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/organizers": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "24c6d8c3c93feaf1b59bfefadd0a0386",
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organizerId[]",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "name": "updatedAfter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/schedule": {
+            "get": {
+                "tags": [
+                    "Расписание"
+                ],
+                "operationId": "5624676a1f08bc86f3b3f7c87e2d1cc8",
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sessionId[]",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "name": "venueId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     {
@@ -147,86 +344,6 @@
                     }
                 }
             }
-        },
-        "/api/yaga/events": {
-            "get": {
-                "tags": [
-                    "Расписание"
-                ],
-                "operationId": "ed4258b48adf81c2e5d4db3351282572",
-                "responses": {
-                    "200": {
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/api/yaga/hallplan": {
-            "get": {
-                "tags": [
-                    "Расписание"
-                ],
-                "operationId": "e94c92db06f57facbb45fb075dccabc5",
-                "responses": {
-                    "200": {
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/api/yaga/organizers": {
-            "get": {
-                "tags": [
-                    "Расписание"
-                ],
-                "operationId": "d392587af220ec6ffe1a2801ef8dea96",
-                "responses": {
-                    "200": {
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/api/yaga/persons": {
-            "get": {
-                "tags": [
-                    "Расписание"
-                ],
-                "operationId": "f0811bd0f6e3119d7ab7e5fb4a0114aa",
-                "responses": {
-                    "200": {
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/api/yaga/schedule": {
-            "get": {
-                "tags": [
-                    "Расписание"
-                ],
-                "operationId": "3664507fa49b23f76b111f7da650c966",
-                "responses": {
-                    "200": {
-                        "description": ""
-                    }
-                }
-            }
-        }
-    },
-    "components": {
-        "responses": {
-            "200": {
-                "description": ""
-            }
-        },
-        "securitySchemes": {
-            "sanctum": {
-                "type": "apiKey",
-                "description": "Enter token in format (Bearer <token>)",
-                "name": "Authorization",
-                "in": "header"
-            }
         }
     },
     "security": [
@@ -238,5 +355,15 @@
         {
             "name": "Расписание"
         }
-    ]
+    ],
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    }
 }
