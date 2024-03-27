@@ -154,7 +154,7 @@ class NewsController extends ApiEditController
             return APIResponse::notFound('Экскурсия не найдена');
         }
 
-        $current->partner()?->news()->sync($id);
+        $current->partner()?->news()->syncWithoutDetaching($id);
 
         /** @var News $news */
 
