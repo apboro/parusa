@@ -112,12 +112,14 @@ class YagaScheduleApiController
 
     public function getHalls(GetHallsRequest $request): JsonResponse
     {
+        $shipsInActiveTrips = Trip::activeScarletSails()->distinct()->pluck('ship_id')->toArray();
+
         $ship = Ship::where('id', $request->input('venueId'))->first();
         $grades = TicketGrade::where('provider_id', Provider::scarlet_sails)->get();
         $halls = [];
 
         if (!$ship) {
-            $ships = Ship::all();
+            $ships = Ship::whereIn('id', $shipsInActiveTrips)->get();
             foreach ($ships as $ship) {
                 $halls[] = (new Hall($grades, $ship))->getResource();
             }

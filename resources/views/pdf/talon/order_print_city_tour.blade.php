@@ -55,7 +55,7 @@ use App\Models\Tickets\Ticket;
                     <div style="position:absolute; left: 95pt; top: 80pt; width: 100%; font-size: 7pt; text-align: center;">Тип билета</div>
                     <div style="position:absolute; left: 90pt; top: 93pt; width: 100%; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->base_price }} рублей</div>
                     <div style="position:absolute; left: 95pt; top: 105pt; width: 100%; font-size: 7pt; text-align: center;">Стоимость</div>
-                    <div style="font-family: 'Proxima Nova',serif; color: #6b7280; position:absolute; left: 80pt; top: 120pt; width: 100%; font-size: 8pt; text-align: center; font-weight: bold">*Билет действителен в течении 6 месяцев с даты покупки</div>
+                    <div style="font-family: 'Proxima Nova',serif; color: black; position:absolute; left: 80pt; top: 120pt; width: 100%; font-size: 8pt; text-align: center; font-weight: bold">*Билет действителен в течении 6 месяцев с даты покупки</div>
                 </div>
                 <div style="border: 1px solid black; font-family: 'Proxima Nova',serif; position: absolute; left: 230pt; top: 10pt; width: 95pt; height: 200pt;">
                     <div style="font-size: 8pt;  position: absolute; top: 5pt; left: 10pt; font-weight: bold; text-decoration: underline">
