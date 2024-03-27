@@ -162,7 +162,8 @@ class YagaScheduleApiController
         $limit = $request->input('limit') ?? 500;
 
         $tripsQuery = Trip::query()->activeScarletSails()
-            ->when($request->input('sessionId'), fn ($trips) => $trips->whereIn('id', $request->input('sessionId')));
+            ->when($request->input('sessionId'), fn ($trips) => $trips->whereIn('id', $request->input('sessionId')))
+            ->when($request->input('venueId'), fn ($trips) => $trips->where('ship_id', $request->input('venueId')));
 
         $sessionsCount = $tripsQuery->clone()->count();
 
