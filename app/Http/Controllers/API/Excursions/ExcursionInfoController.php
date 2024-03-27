@@ -11,6 +11,7 @@ use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
 use App\Models\Hit\Hit;
 use App\Models\User\Helpers\Currents;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -45,7 +46,11 @@ class ExcursionInfoController extends ApiController
             'provider' => $excursion->provider->name,
             'active' => $excursion->hasStatus(ExcursionStatus::active),
             'images' => $excursion->images->map(function (Image $image) {
-                return 'data:' . $image->mime . ';base64, ' . base64_encode(Storage::disk($image->disk)->get($image->filename));
+                try {
+                    return 'data:' . $image->mime . ';base64, ' . base64_encode(Storage::disk($image->disk)->get($image->filename));
+                } catch (FileNotFoundException $e){
+                    return null;
+                }
             }),
             'programs' => $excursion->programs->map(function (ExcursionProgram $program) {
                 return $program->name;
@@ -54,7 +59,11 @@ class ExcursionInfoController extends ApiController
             'description' => $excursion->info->description,
             'announce' => $excursion->info->announce,
             'map_images' => $excursion->tripImages->map(function (Image $image) {
-                return 'data:' . $image->mime . ';base64, ' . base64_encode(Storage::disk($image->disk)->get($image->filename));
+                try {
+                    return 'data:' . $image->mime . ';base64, ' . base64_encode(Storage::disk($image->disk)->get($image->filename));
+                } catch (FileNotFoundException $e) {
+                    return null;
+                }
             }),
         ];
 

@@ -6,7 +6,7 @@
 
         <GuiContainer w-50 mt-30 v-else>
             <GuiValue :title="'Смена открыта:'"> {{data.open_shift.start_at}}</GuiValue>
-            <GuiValue :title="'Тариф:'"> {{data.open_shift.tariff.name}}
+            <GuiValue :title="'Тариф:'"> {{data.open_shift.tariff.commission}} %
                 <span v-if="data.open_shift.commission_delta !== 0">
                     ({{data.open_shift.commission_delta > 0 ? '+'+data.open_shift.commission_delta : data.open_shift.commission_delta}}%)
                 </span>
