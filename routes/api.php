@@ -3,6 +3,10 @@
 use App\Http\Controllers\API\NotFoundController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/api/documentation', function () {
+    return redirect('/api/v1');
+});
+
 Route::prefix('api')->middleware(['api', 'auth:sanctum'])->group(function () {
 
     require base_path('routes/api/dictionaries.php');
