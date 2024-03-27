@@ -54,11 +54,11 @@ class NewsController extends ApiEditController
             ->orderBy('created_at', 'desc');
 
         if ($partner){
-            $query->where('status_id', NewsStatus::SENT);
+            $query->sent();
         }
 
-        // apply filters
-        if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey)) && !empty($filters['status_id'])) {
+        $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
+        if (!empty($filters) && !empty($filters['status_id']) && !$partner) {
             $query->where('status_id', $filters['status_id']);
         }
 
