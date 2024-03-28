@@ -56,6 +56,18 @@
 
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
+        <GuiContainer mt-30>
+            <GuiHeading text-lg>Статистика за период: <span class="bold">{{
+                    list.payload['date_from']
+                }} — {{ list.payload['date_to'] }}</span></GuiHeading>
+
+            <GuiContainer pr-40 pt-15 w-350px>
+                <GuiValue :class="'w-300px'" :title="'Визиты за период'">{{ list.payload['visits_for_period'] }}
+                </GuiValue>
+                <GuiValue :class="'w-300px'" :title="'Продажи за период'">{{ list.payload['sells_for_period'] }}
+                </GuiValue>
+            </GuiContainer>
+        </GuiContainer>
     </LayoutPage>
 </template>
 
@@ -78,9 +90,12 @@ import ShowcaseInputDropDown from "@/Pages/Showcase/Components/ShowcaseInputDrop
 import GuiMessage from "@/Components/GUI/GuiMessage.vue";
 import Pagination from "@/Components/Pagination.vue";
 import PopUp from "@/Components/PopUp.vue";
+import GuiValue from "@/Components/GUI/GuiValue.vue";
+import GuiHeading from "@/Components/GUI/GuiHeading.vue";
 
 export default {
     components: {
+        GuiHeading, GuiValue,
         PopUp,
         Pagination,
         GuiMessage,

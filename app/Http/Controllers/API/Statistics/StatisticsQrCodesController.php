@@ -53,6 +53,10 @@ class StatisticsQrCodesController extends Controller
         ->selectRaw("qr_code_id")
         ->groupBy('qr_code_id');
 
+        $allResults = $query->clone()->get();
+
+        $visits = $allResults->sum('visits_count');
+        $paid = $allResults->sum('payed_tickets_count');
 
         $qrcodes = $query->paginate($request->perPage(10, $this->rememberKey));
 
@@ -61,6 +65,13 @@ class StatisticsQrCodesController extends Controller
             $qrcodes,
             ['Название', 'Ссылка','Визиты','Покупки','QR-код'],
             $filters,
+            [],
+            [
+                'date_from' => Carbon::parse($filters['date_from'])->translatedFormat('d M Y'),
+                'date_to' => Carbon::parse($filters['date_to'])->translatedFormat('d M Y'),
+                'visits_for_period' => $visits,
+                'sells_for_period' => $paid
+            ]
         );
     }
 }
