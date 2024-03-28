@@ -30,11 +30,13 @@ class PromoterEditController extends ApiEditController
         'last_name' => 'Фамилия',
         'first_name' => 'Имя',
         'patronymic' => 'Отчество',
-        'can_send_sms' => 'Отправка СМС',
+        'can_send_sms' => 'Разрешена отправка СМС',
         'email' => 'Почта',
         'phone' => 'Телефон',
         'notes' => 'Заметки',
-        'promoter_commission_rate' => 'Ставка комиссии'
+        'pay_per_hour' => 'Почасовая ставка, руб.',
+        'auto_change_tariff' => 'Автоматическая смена тарифа',
+        'promoter_commission_rate' => 'Ставка комиссии, %'
     ];
 
     /**
@@ -67,6 +69,8 @@ class PromoterEditController extends ApiEditController
                 'phone' => $promoterUserProfile->mobile_phone ?? null,
                 'status_id' => $partner->status_id ?? null,
                 'notes' => $promoterUserProfile->notes ?? null,
+                'pay_per_hour' => $partner->tariff()->first()?->pay_per_hour ?? '—',
+                'auto_change_tariff' => $partner->profile->auto_change_tariff,
                 'promoter_commission_rate' => $partner->tariff()->first()?->commission
             ],
             $this->rules,
@@ -133,12 +137,17 @@ class PromoterEditController extends ApiEditController
         $profile = $partner->profile;
 
         $profile->can_send_sms = $data['can_send_sms'];
+        $profile->auto_change_tariff = $data['auto_change_tariff'];
         $profile->tickets_for_guides = 0;
         $profile->can_reserve_tickets = 0;
         $profile->save();
 
         $tariff = Tariff::query()
-            ->firstOrCreate(['invisible' => true, 'commission' => $data['promoter_commission_rate']]);
+            ->firstOrCreate([
+                'invisible' => true,
+                'commission' => $data['promoter_commission_rate'],
+                'pay_per_hour' => $data['pay_per_hour']
+            ]);
         $partner->tariff()->sync($tariff->id);
 
         return APIResponse::success('Данные промоутера обновлены', [

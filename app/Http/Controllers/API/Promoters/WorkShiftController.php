@@ -23,7 +23,7 @@ class WorkShiftController extends Controller
             return APIResponse::error('Доступ запрещён');
 
         $currentDateTime = Carbon::now();
-        $noonToday = Carbon::today()->setHour(12);
+        $noonToday = Carbon::today()->setHour(11);
 
         $promoter = Partner::find($request->input('promoterId'));
         $tariff = $currentDateTime->lessThan($noonToday) ? Tariff::find(1) : $promoter->tariff()->first();

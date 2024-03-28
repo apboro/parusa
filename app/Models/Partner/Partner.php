@@ -22,6 +22,7 @@ use App\Models\WorkShift\WorkShift;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -199,13 +200,28 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
         return $this->belongsToMany(News::class, 'news_partner', 'partner_id', 'news_id');
     }
 
-//    public function tariff()
-//    {
-//        return $this->hasOneThrough(Tariff::class, PromoterTariff::class, 'partner_id', 'tariff_id', 'id', 'id');
-//    }
-
     public function tariff(): BelongsToMany
     {
         return $this->belongsToMany(Tariff::class, 'promoter_tariff', 'partner_id', 'tariff_id');
+    }
+
+    public function scopeActive(Builder $query)
+    {
+        return $query->where('status_id', PartnerStatus::active);
+    }
+
+    public function scopePromoter(Builder $query)
+    {
+        return $query->where('type_id', PartnerType::promoter);
+    }
+
+    public function scopeHasAutoChangeTariffTrue(Builder $query)
+    {
+        return $query->whereHas('profile', fn ($profiles) => $profiles->where('auto_change_tariff', true));
+    }
+
+    public function scopeHasOpenedShift(Builder $query)
+    {
+        return $query->whereHas('workShifts', fn ($workShifts) => $workShifts->whereNull('end_at'));
     }
 }

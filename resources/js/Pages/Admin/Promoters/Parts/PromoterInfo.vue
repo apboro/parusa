@@ -3,11 +3,13 @@
         <GuiContainer w-50 mt-30>
             <GuiValue :title="'ФИО промоутера'">{{ data['name'] }}</GuiValue>
             <GuiValue :title="'Ставка комиссии'">{{ data['promoter_commission_rate'] }} %</GuiValue>
+            <GuiValue :title="'Почасовая ставка'">{{ data['pay_per_hour'] ?? 0 }} руб.</GuiValue>
             <GuiValue :title="'ID'">{{ data['id'] }}</GuiValue>
             <GuiValue :title="'Дата заведения'" v-if="editable">{{ data['created_at'] }}</GuiValue>
             <GuiValue :title="'Телефон'" v-if="editable">{{ data['phone'] }}</GuiValue>
             <GuiValue :title="'Почта'" v-if="editable">{{ data['email'] }}</GuiValue>
             <GuiValue :title="'Отправка СМС'">{{ data['can_send_sms'] === 1? 'Разрешена' : 'Запрещена' }}</GuiValue>
+            <GuiValue :title="'Автоматическая смена тарифа'">{{ data['auto_change_tariff'] === true ? 'Да' : 'Нет' }}</GuiValue>
         </GuiContainer>
 
         <GuiContainer w-100 mt-20 v-if="editable">

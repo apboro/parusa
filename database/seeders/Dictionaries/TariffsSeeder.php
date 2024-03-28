@@ -12,7 +12,7 @@ class TariffsSeeder extends GenericSeeder
 {
     protected array $data = [
         Tariff::class => [
-            Tariff::standard => ['name' => 'Стандарт с 10:00 до 12:00', 'invisible' => false, 'commission' => 25],
+            Tariff::standard => ['name' => 'Стандарт с 9:30 до 11:00', 'invisible' => false, 'commission' => 25],
         ]
     ];
 }

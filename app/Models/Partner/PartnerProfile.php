@@ -29,6 +29,7 @@ class PartnerProfile extends Model
     ];
 
     protected $casts =[
-      'can_send_sms' => 'boolean'
+      'can_send_sms' => 'boolean',
+      'auto_change_tariff' => 'boolean'
     ];
 }

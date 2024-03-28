@@ -8,9 +8,11 @@
             <FormString :form="form" :name="'last_name'" :autocomplete="'nope'"/>
             <FormString :form="form" :name="'first_name'" :autocomplete="'nope'"/>
             <FormString :form="form" :name="'patronymic'" :autocomplete="'nope'"/>
+            <FormNumber :form="form" :name="'pay_per_hour'"/>
             <FormNumber :form="form" :name="'promoter_commission_rate'"/>
             <FormString :form="form" :name="'email'"/>
             <FormPhone :form="form" :name="'phone'"/>
+            <FormCheckBox :form="form" :name="'auto_change_tariff'" :hide-title="true" :small="true"/>
             <FormCheckBox :form="form" :name="'can_send_sms'" :hide-title="true" :small="true"/>
         </GuiContainer>
 
