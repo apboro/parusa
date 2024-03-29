@@ -30,6 +30,14 @@
                         }
                     },
                     {
+                        "name": "eventId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "eventId[]",
                         "in": "query",
                         "required": false,
@@ -127,6 +135,14 @@
                         }
                     },
                     {
+                        "name": "hallId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "hallId[]",
                         "in": "query",
                         "required": false,
@@ -177,6 +193,14 @@
                         }
                     },
                     {
+                        "name": "organizerId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "organizerId[]",
                         "in": "query",
                         "required": false,
@@ -220,6 +244,14 @@
                     },
                     {
                         "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sessionId",
                         "in": "query",
                         "required": false,
                         "schema": {
@@ -278,6 +310,14 @@
                     },
                     {
                         "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "venueId",
                         "in": "query",
                         "required": false,
                         "schema": {

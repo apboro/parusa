@@ -12,6 +12,7 @@ use OpenApi\Attributes as OA;
     parameters: [
         new OA\Parameter(name: 'offset', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
         new OA\Parameter(name: 'limit', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'eventId', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
         new OA\Parameter(name: 'eventId[]', in: 'query', required: false, schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'string'))),
         new OA\Parameter(name: 'dateFrom', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
         new OA\Parameter(name: 'dateTo', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
@@ -26,8 +27,6 @@ class GetEventsRequest extends FormRequest
         return [
             'offset' => 'integer',
             'limit' => 'integer',
-            'eventId' => 'array',
-            'eventId.*' => 'integer',
             'dateFrom' => 'string',
             'dateTo' => 'string',
             'updatedAfter' => 'integer'

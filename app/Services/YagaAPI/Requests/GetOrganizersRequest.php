@@ -12,6 +12,7 @@ use OpenApi\Attributes as OA;
     parameters: [
         new OA\Parameter(name: 'offset', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
         new OA\Parameter(name: 'limit', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'organizerId', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
         new OA\Parameter(name: 'organizerId[]', in: 'query', required: false, schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'string'))),
         new OA\Parameter(name: 'updatedAfter', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
     ])
@@ -24,8 +25,6 @@ class GetOrganizersRequest extends FormRequest
         return [
             'offset' => 'integer',
             'limit' => 'integer',
-            'organizerId' => 'array',
-            'organizerId.*' => 'integer',
             'updatedAfter' => 'integer'
         ];
     }

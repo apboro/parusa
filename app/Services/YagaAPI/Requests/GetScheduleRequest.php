@@ -12,6 +12,7 @@ use OpenApi\Attributes as OA;
     parameters: [
         new OA\Parameter(name: 'offset', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
         new OA\Parameter(name: 'limit', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'sessionId', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
         new OA\Parameter(name: 'sessionId[]', in: 'query', required: false, schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'string'))),
         new OA\Parameter(name: 'venueId', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
         new OA\Parameter(name: 'updatedAfter', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
@@ -25,8 +26,6 @@ class GetScheduleRequest extends FormRequest
         return [
             'offset' => 'integer',
             'limit' => 'integer',
-            'sessionId' => 'array',
-            'sessionId.*' => 'integer',
             'venueId' => 'integer',
             'updatedAfter' => 'integer'
         ];

@@ -53,6 +53,11 @@ class YagaScheduleApiController
         $limit = $request->input('limit') ?? 500;
         $dateFrom = $request->input('dateFrom') ? Carbon::createFromTimestamp($request->input('dateFrom')) : now();
         $dateTo = $request->input('dateTo') ? Carbon::createFromTimestamp($request->input('dateTo')) : $dateFrom;
+        if ($request->input('eventId') && is_string($request->input('eventId'))){
+            $eventsArr = [$request->input('eventId')];
+        } else {
+            $eventsArr = $request->input('eventId');
+        }
 
         $excursionQuery = Excursion::query()->activeScarletSails($dateFrom, $dateTo)
             ->when($request->input('dateFrom'), function ($excursions) use ($request) {
@@ -65,8 +70,8 @@ class YagaScheduleApiController
                     $trips->whereDate('end_at', '>=', Carbon::createFromTimestamp($request->input('dateTo')));
                 });
             })
-            ->when($request->input('eventId'), function ($excursions) use ($request) {
-                $excursions->whereIn('id', $request->input('eventId'));
+            ->when(!empty($request->input('eventId')), function ($excursions) use ($eventsArr) {
+                $excursions->whereIn('id', $eventsArr);
             });
 
         $countEvents = $excursionQuery->clone()->count();
@@ -118,21 +123,26 @@ class YagaScheduleApiController
         $grades = TicketGrade::where('provider_id', Provider::scarlet_sails)->get();
         $halls = [];
 
+        if ($request->input('hallId') && is_string($request->input('hallId'))){
+            $hallsArr = [$request->input('hallId')];
+        } else {
+            $hallsArr = $request->input('hallId');
+        }
+
         if (!$ship) {
-            $ships = Ship::whereIn('id', $shipsInActiveTrips)->get();
+            if (!empty($hallsArr)) {
+                $filteredQueryArr = array_intersect($shipsInActiveTrips, $hallsArr);
+            }
+            $ships = Ship::whereIn('id', $filteredQueryArr ?? $shipsInActiveTrips)->get();
             foreach ($ships as $ship) {
-                $halls[] = (new Hall($grades, $ship))->getResource();
+                $halls[] = (new Hall($grades, $ship))->getResource($request);
             }
         } else {
-            $halls[] = (new Hall($grades, $ship))->getResource();
+            $halls[] = (new Hall($grades, $ship))->getResource($request);
         }
 
         return response()->json([
-            'halls' => collect($halls)
-                ->when($request->input('venueId'), fn(Collection $halls) => $halls->where('venueId', $request->input('venueId')))
-                ->when($request->input('hallId'), fn(Collection $halls) => $halls->whereIn('id', $request->input('hallId')))
-                ->when($request->input('offset'), fn($halls) => $halls->skip($request->input('offset')))
-                ->take($request->input('limit')),
+            'halls' => $halls,
             'paging' => [
                 "limit" => $request->input('limit'),
                 "offset" => $request->input('offset'),
@@ -144,8 +154,14 @@ class YagaScheduleApiController
 
     public function getOrganizers(GetOrganizersRequest $request): JsonResponse
     {
+        if ($request->input('organizerId') && is_string($request->input('organizerId'))){
+            $organizersArr = [$request->input('organizerId')];
+        } else {
+            $organizersArr = $request->input('organizerId');
+        }
+
         $organizer = Organizer::getStaticResource();
-        if ($request->input('offset') > 0 || (!empty($request->input('organizerId')) && !in_array(1, $request->input('organizerId')))) {
+        if ($request->input('offset') > 0 || (!empty($request->input('organizerId')) && !in_array(1, $organizersArr))) {
             $organizer = [];
         }
 
@@ -162,16 +178,21 @@ class YagaScheduleApiController
     public function getSchedule(GetScheduleRequest $request): JsonResponse
     {
         $limit = $request->input('limit') ?? 500;
+        if ($request->input('sessionId') && is_string($request->input('sessionId'))){
+            $sessionsArr = [$request->input('sessionId')];
+        } else {
+            $sessionsArr = $request->input('sessionId');
+        }
 
         $tripsQuery = Trip::query()->activeScarletSails()
-            ->when($request->input('sessionId'), fn ($trips) => $trips->whereIn('id', $request->input('sessionId')))
-            ->when($request->input('venueId'), fn ($trips) => $trips->where('ship_id', $request->input('venueId')));
+            ->when(!empty($request->input('sessionId')), fn($trips) => $trips->whereIn('id', $sessionsArr))
+            ->when($request->input('venueId'), fn($trips) => $trips->where('ship_id', $request->input('venueId')));
 
         $sessionsCount = $tripsQuery->clone()->count();
 
         $trips = $tripsQuery->skip($request->input('offset'))
-        ->take($limit)
-        ->get();
+            ->take($limit)
+            ->get();
 
         $sessions = [];
         foreach ($trips as $trip) {
@@ -190,6 +211,11 @@ class YagaScheduleApiController
 
     public function getVenues(GetVenuesRequest $request): JsonResponse
     {
+        if ($request->input('venueId') && is_string($request->input('venueId'))) {
+            $venuesArr = [$request->input('venueId')];
+        } else {
+            $venuesArr = $request->input('venueId');
+        }
         if ($request->input('cityId') && $request->input('cityId') != 1) {
             return response()->json([
                 'venues' => [],
@@ -206,15 +232,14 @@ class YagaScheduleApiController
             ->whereIn('id', $shipsInActiveTrips)
             ->where('provider_id', Provider::scarlet_sails)
             ->where('status_id', ShipStatus::active)
-            ->when(!empty($request->input('venueId')), function ($ship) use ($request) {
-                $ship->whereIn('id', $request->input('venueId'));
+            ->when(!empty($venuesArr), function ($ship) use ($venuesArr) {
+                $ship->whereIn('id', $venuesArr);
             })
             ->when($request->input('updatedAfter'), function ($ship) use ($request) {
                 $ship->whereDate('updated_at', '>', Carbon::createFromTimestamp($request->input('updatedAfter')));
             });
 
-        $countShipsQuery = $shipsQuery->clone();
-        $countShips = $countShipsQuery->get()->count();
+        $countShips = $shipsQuery->clone()->count();
 
         $ships = $shipsQuery->skip($request->input('offset'))->take($request->input('limit') ?? 500)->get();
 
