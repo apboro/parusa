@@ -26,7 +26,9 @@ class WorkShiftController extends Controller
         $noonToday = Carbon::today()->setHour(11);
 
         $promoter = Partner::find($request->input('promoterId'));
-        $tariff = $currentDateTime->lessThan($noonToday) ? Tariff::find(1) : $promoter->tariff()->first();
+
+        $tariff = ($currentDateTime->lessThan($noonToday) && $promoter->profile->auto_change_tariff) ? Tariff::find(1) : $promoter->tariff()->first();
+
         if (!$tariff) {
             return APIResponse::error('Для промоутера не задан тариф');
         }
