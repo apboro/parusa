@@ -30,5 +30,5 @@ Route::post('/promoters/update', [PromoterEditController::class, 'update'])->mid
 Route::post('/promoters/delete', [PromoterDeleteController::class, 'delete'])->middleware('allow:staff_admin,staff_office_manager,staff_accountant,staff_promoter_manager');
 
 Route::post('/promoters/promoter/info', [PromoterInfoController::class, 'get'])->middleware(['allow:partner']);
-Route::post('/promoters/change_commissions', [WorkShiftController::class, 'changeCommissions'])->middleware(['allow:staff_accountant,staff_admin']);
+Route::post('/promoters/change_commissions', [WorkShiftController::class, 'changeCommissions'])->middleware(['allow:staff_accountant,staff_admin,staff_promoter_manager']);
 
