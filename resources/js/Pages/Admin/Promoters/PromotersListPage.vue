@@ -2,7 +2,8 @@
     <LayoutPage :loading="list.is_loading" :title="$route.meta['title']">
         <template #actions>
             <GuiActionsMenu>
-                <router-link class="link" :to="{ name: 'promoters-edit', params: { id: 0 }}">Добавить промоутера</router-link>
+                <router-link class="link" :to="{ name: 'promoters-edit', params: { id: 0 }}">Добавить промоутера
+                </router-link>
                 <span class="link" @click="showCommissionChecks">Изменить ставку комиссии</span>
             </GuiActionsMenu>
         </template>
@@ -19,16 +20,17 @@
         </LayoutFilters>
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles">
-            <ListTableRow v-for="partner in list.list">
+            <ListTableRow v-for="partner in sortedList">
                 <ListTableCell :class="'w-5'" v-if="commissionChanging">
                     <InputCheckbox v-model="checkedPromoters" :value="partner['id']"
                                    :disabled="!partner['open_shift']"/>
                 </ListTableCell>
                 <ListTableCell>
                     <GuiActivityIndicator :active="partner['active']"/>
-                    <router-link class="link" :to="{ name: 'promoters-view', params: { id: partner['id'] }}" v-html="highlight(partner['name'])"/>
+                    <router-link class="link" :to="{ name: 'promoters-view', params: { id: partner['id'] }}"
+                                 v-html="highlight(partner['name'])"/>
                 </ListTableCell>
-                <ListTableCell>{{partner['id']}}</ListTableCell>
+                <ListTableCell>{{ partner['id'] }}</ListTableCell>
                 <ListTableCell>{{ partner['balance'] }} руб.</ListTableCell>
                 <ListTableCell :class="'w-20'" v-if="partner['open_shift']">
                     <div style="font-weight: bold;">
@@ -119,6 +121,23 @@ export default {
         this.list.initial();
     },
 
+    computed: {
+        sortedList() {
+            const sortedList = [...this.list.list];
+
+            sortedList.sort((a, b) => {
+                if (a.open_shift !== null && b.open_shift === null) {
+                    return -1;
+                } else if (a.open_shift === null && b.open_shift !== null) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+
+            return sortedList;
+        }
+    },
     methods: {
         highlight(text) {
             return this.$highlight(text, this.list.search);
