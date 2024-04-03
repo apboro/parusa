@@ -6,12 +6,88 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/yaga/available-seats": {
+            "get": {
+                "tags": [
+                    "Заказ"
+                ],
+                "operationId": "f9a7c6d0830b332ad9374eb948a84e8a",
+                "parameters": [
+                    {
+                        "name": "sessionId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "venueId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "eventId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "hallId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sessionTime",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/reserve": {
+            "post": {
+                "tags": [
+                    "Заказ"
+                ],
+                "operationId": "52e5b0d1bf4fea103d3a751b1963809f",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {},
+                            "example": "{\n  \"additional\": {},\n  \"codeWord\": string,\n  \"created\": string,\n  \"customer\": {\n    \"email\": string,\n    \"firstName\": string,\n    \"lastName\": string,\n    \"phone\": string\n  },\n  \"deliveryType\": string,\n  \"eventId\": string,\n  \"hallId\": string,\n  \"id\": string,\n  \"items\": [\n    {\n      \"admission\": boolean,\n      \"categoryId\": string,\n      \"cost\": {\n        \"fee\": {\n          \"currencyCode\": string,\n          \"value\": string\n        },\n        \"price\": {\n          \"currencyCode\": string,\n          \"value\": string\n        },\n        \"total\": {\n          \"currencyCode\": string,\n          \"value\": string\n        }\n      },\n      \"levelId\": string,\n      \"seat\": {\n        \"fragment\": string,\n        \"id\": string,\n        \"place\": string,\n        \"row\": string,\n        \"x\": integer,\n        \"y\": integer\n      },\n      \"seatId\": string,\n      \"supplementType\": string\n    }\n  ],\n  \"orderNumber\": string,\n  \"paymentType\": string,\n  \"promocode\": string,\n  \"reservationTimeout\": string,\n  \"sessionId\": string,\n  \"sessionTime\": {\n    \"sessionEnd\": string,\n    \"sessionStart\": string,\n    \"timezone\": string,\n    \"type\": string\n  },\n  \"specificFields\": {},\n  \"sum\": {\n    \"fee\": {\n      \"currencyCode\": string,\n      \"value\": string\n    },\n    \"price\": {\n      \"currencyCode\": string,\n      \"value\": string\n    },\n    \"total\": {\n      \"currencyCode\": string,\n      \"value\": string\n    }\n  },\n  \"venueId\": string\n}"
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/yaga/events": {
             "get": {
                 "tags": [
                     "Расписание"
                 ],
-                "operationId": "c48b6bffb4d73e2b8a22eec5b1236f4c",
+                "operationId": "f1f1b5946445417707792cfda5ce9157",
                 "parameters": [
                     {
                         "name": "offset",
@@ -85,7 +161,7 @@
                 "tags": [
                     "Расписание"
                 ],
-                "operationId": "e1013bbe8f6ad587f6d266994ed64a16",
+                "operationId": "0723b7199c9d4fa3d896225a750ec231",
                 "parameters": [
                     {
                         "name": "sessionId",
@@ -108,7 +184,7 @@
                 "tags": [
                     "Расписание"
                 ],
-                "operationId": "5ae41e8430d761f420a75641a9579cb1",
+                "operationId": "7a34a6488e11a335009caa131a9d3218",
                 "parameters": [
                     {
                         "name": "offset",
@@ -174,7 +250,7 @@
                 "tags": [
                     "Расписание"
                 ],
-                "operationId": "24c6d8c3c93feaf1b59bfefadd0a0386",
+                "operationId": "7582b075b5915173731061cc3b421636",
                 "parameters": [
                     {
                         "name": "offset",
@@ -232,7 +308,7 @@
                 "tags": [
                     "Расписание"
                 ],
-                "operationId": "5624676a1f08bc86f3b3f7c87e2d1cc8",
+                "operationId": "442f719577275acea1a0ccaad2019605",
                 "parameters": [
                     {
                         "name": "offset",
@@ -298,7 +374,7 @@
                 "tags": [
                     "Расписание"
                 ],
-                "operationId": "d363681404f8f42a1bacfbb70b8a4085",
+                "operationId": "5c0a0933486b3220f86674691a8bf26d",
                 "parameters": [
                     {
                         "name": "offset",
@@ -394,6 +470,9 @@
     "tags": [
         {
             "name": "Расписание"
+        },
+        {
+            "name": "Заказ"
         }
     ],
     "components": {

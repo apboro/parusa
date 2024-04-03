@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+//        Model::preventsLazyLoading();
 
         if ($this->app->runningInConsole()) {
             $this->loadMigrationsFrom(database_path('migrations' . DIRECTORY_SEPARATOR . 'common'));

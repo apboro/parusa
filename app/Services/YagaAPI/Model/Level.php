@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services\YagaAPI\Model;
 
 use Illuminate\Support\Collection;
@@ -22,6 +23,27 @@ class Level
                 "id" => $grade->id,
                 "name" => $grade->name,
             ];
+        }
+
+        return $levels ?? [];
+    }
+
+    public function getResourceWithSeatsCount($ticketsCount): array
+    {
+        foreach ($this->grades as $grade) {
+            $level =
+                [
+                    "admission" => true,
+                    "admissionStates" => AdmissionState::getResource($this->grades, $ticketsCount),
+                    "id" => $grade->id,
+                    "name" => $grade->name,
+                ];
+
+            if ($ticketsCount > 0) {
+                unset($level['admissionStates']);
+            }
+
+            $levels[] = $level;
         }
 
         return $levels ?? [];

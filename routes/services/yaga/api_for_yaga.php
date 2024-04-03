@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\YagaAPI\YagaOrderApiController;
 use App\Services\YagaAPI\YagaScheduleApiController;
 
 Route::middleware(['auth:sanctum'])->prefix('api/yaga/')->group(function (){
@@ -12,5 +13,14 @@ Route::middleware(['auth:sanctum'])->prefix('api/yaga/')->group(function (){
     Route::get('persons', [YagaScheduleApiController::class,'getPersons']);
     Route::get('schedule', [YagaScheduleApiController::class,'getSchedule']);
     Route::get('venues', [YagaScheduleApiController::class,'getVenues']);
+
+    Route::get('available-seats', [YagaOrderApiController::class,'availableSeats']);
+    Route::get('order-info', [YagaOrderApiController::class,'orderInfo']);
+    Route::get('order-status', [YagaOrderApiController::class,'orderStatus']);
+    Route::get('cancel-order', [YagaOrderApiController::class,'cancelOrder']);
+    Route::get('check-promocode', [YagaOrderApiController::class,'checkPromocode']);
+    Route::get('clear-reservation', [YagaOrderApiController::class,'clearReservation']);
+    Route::get('approve', [YagaOrderApiController::class,'approve']);
+
 });
 

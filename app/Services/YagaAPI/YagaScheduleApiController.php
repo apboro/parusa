@@ -2,12 +2,9 @@
 
 namespace App\Services\YagaAPI;
 
-use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\ShipStatus;
 use App\Models\Dictionaries\TicketGrade;
-use App\Models\Dictionaries\TripSaleStatus;
-use App\Models\Dictionaries\TripStatus;
 use App\Models\Excursions\Excursion;
 use App\Models\Sails\Trip;
 use App\Models\Ships\Ship;
@@ -18,17 +15,14 @@ use App\Services\YagaAPI\Model\Manifest;
 use App\Services\YagaAPI\Model\Organizer;
 use App\Services\YagaAPI\Model\Session;
 use App\Services\YagaAPI\Model\Venue;
-use App\Services\YagaAPI\Requests\GetEventsRequest;
-use App\Services\YagaAPI\Requests\GetHallPlanRequest;
-use App\Services\YagaAPI\Requests\GetHallsRequest;
-use App\Services\YagaAPI\Requests\GetOrganizersRequest;
-use App\Services\YagaAPI\Requests\GetScheduleRequest;
-use App\Services\YagaAPI\Requests\GetVenuesRequest;
+use App\Services\YagaAPI\Requests\Schedule\GetEventsRequest;
+use App\Services\YagaAPI\Requests\Schedule\GetHallPlanRequest;
+use App\Services\YagaAPI\Requests\Schedule\GetHallsRequest;
+use App\Services\YagaAPI\Requests\Schedule\GetOrganizersRequest;
+use App\Services\YagaAPI\Requests\Schedule\GetScheduleRequest;
+use App\Services\YagaAPI\Requests\Schedule\GetVenuesRequest;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use OpenApi\Attributes as OA;
 
 class YagaScheduleApiController

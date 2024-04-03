@@ -14,6 +14,7 @@ use OpenApi\Attributes as OA;
     title: 'API компании "Алые паруса" для Яндекс Афишы',
 )]
 #[OA\Tag(name: 'Расписание')]
+#[OA\Tag(name: 'Заказ')]
 class YagaSwaggerDocs
 {
 

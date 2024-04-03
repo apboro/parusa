@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\YagaAPI\Requests;
+namespace App\Services\YagaAPI\Requests\Schedule;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
