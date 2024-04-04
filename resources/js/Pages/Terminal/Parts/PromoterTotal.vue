@@ -1,29 +1,30 @@
 <template>
     <div>
-        <GuiContainer w-50 mt-30 v-if="!data.open_shift" >
+        <GuiContainer w-50 mt-30 v-if="!data.open_shift">
             <GuiMessage border>Смена не открыта</GuiMessage>
         </GuiContainer>
 
         <GuiContainer w-50 mt-30 v-else>
-            <GuiValue :title="'Смена открыта:'"> {{data.open_shift.start_at}}</GuiValue>
-            <GuiValue :title="'Тариф:'"> {{data.open_shift.tariff.commission}} %
+            <GuiValue :title="'Смена открыта:'"> {{ data.open_shift.start_at }}</GuiValue>
+            <GuiValue :title="'Тариф:'"> {{ data.open_shift.tariff.commission }} %
                 <span v-if="data.open_shift.commission_delta !== 0">
-                    ({{data.open_shift.commission_delta > 0 ? '+'+data.open_shift.commission_delta : data.open_shift.commission_delta}}%)
+                    ({{ data.open_shift.commission_delta > 0 ? '+' + data.open_shift.commission_delta : data.open_shift.commission_delta }}%)
                 </span>
             </GuiValue>
-            <GuiValue v-if="data.payForOut" :title="'Оплата за выход:'"> {{data.payForOut}} руб.</GuiValue>
-            <GuiValue v-if="data.payForTime" :title="'Оплата за время:'"> {{data.payForTime}} руб.</GuiValue>
-            <GuiValue v-if="data.payCommission" :title="'Оплата за продажи:'"> {{data.payCommission}} руб.</GuiValue>
-            <GuiValue v-if="data.balance" :title="'Перенос с прошлой смены:'"> {{data.balance}} руб.</GuiValue>
+            <GuiValue v-if="data.payForOut" :title="'Оплата за выход:'"> {{ data.payForOut }} руб.</GuiValue>
+            <GuiValue v-if="data.payForTime" :title="'Оплата за время:'"> {{ data.payForTime }} руб.</GuiValue>
+            <GuiValue v-if="data.payCommission" :title="'Оплата за продажи:'"> {{ data.payCommission }} руб.</GuiValue>
+            <GuiValue v-if="data.balance" :title="'Перенос с прошлой смены:'"> {{ data.balance }} руб.</GuiValue>
             <br>
-            <GuiValue v-if="paid_out" :title="'Выплачено:'"> {{paid_out}} руб.</GuiValue>
-            <GuiValue :title="'Итого к оплате:'"> {{totalToPay}} руб.</GuiValue>
+            <GuiValue v-if="paid_out" :title="'Выплачено:'"> {{ paid_out }} руб.</GuiValue>
+            <GuiValue v-if="taxi_paid" :title="'На такси:'"> {{ taxi_paid }} руб.</GuiValue>
+            <GuiValue :title="'Итого к оплате:'"> {{ totalToPay }} руб.</GuiValue>
         </GuiContainer>
 
         <GuiContainer v-if="data.open_shift" w-100 mt-20>
-            <GuiButton color="red" @click="closeShift" >Закрыть смену</GuiButton>
-            <GuiButton color="green" @click="payShift" >Оплата</GuiButton>
-            <GuiButton color="blue" @click="printPayout" >Печать расписки</GuiButton>
+            <GuiButton color="red" @click="closeShift">Закрыть смену</GuiButton>
+            <GuiButton color="green" @click="payShift">Оплата</GuiButton>
+            <GuiButton color="blue" @click="printPayout">Печать расписки</GuiButton>
         </GuiContainer>
 
         <PayoutShift ref="payout_popup" :totalToPay="totalToPay" :partnerId="partnerId" @made_payout="update"/>
@@ -52,7 +53,8 @@ export default {
     emits: ['update'],
 
     data: () => ({
-       payout: null
+        payout: null,
+        payTaxi: null,
     }),
 
     components: {
@@ -68,14 +70,16 @@ export default {
     },
 
     computed: {
-        totalToPay(){
+        totalToPay() {
             return this.data.payForOut + this.data.payForTime + this.data.payCommission + this.data.balance - this.data.paid_out - this.payout;
         },
-        paid_out(){
+        paid_out() {
             return this.data.paid_out + this.payout;
+        },
+        taxi_paid() {
+            return this.data.taxi + this.payTaxi;
         }
     },
-
     methods: {
         closeShift() {
             this.$dialog.show('Закрыть смену?', 'question', 'orange', [
@@ -95,14 +99,14 @@ export default {
                     }
                 });
         },
-        payShift(){
-            this.$emit('update')
+        payShift() {
             this.$refs.payout_popup.show()
         },
-        update(sumToPay){
-            this.payout = sumToPay;
+        update(payouts) {
+            this.payout += payouts.sumToPay;
+            this.payTaxi += payouts.payTaxi;
         },
-        printPayout(){
+        printPayout() {
             axios.post('/api/terminals/promoters/print_payout', {partnerId: this.partnerId})
                 .then(response => {
                     let order = atob(response.data.data['workShift']);

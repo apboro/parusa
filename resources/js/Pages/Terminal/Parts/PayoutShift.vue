@@ -3,15 +3,18 @@
            :manual="true"
            :resolving="resolved"
            :buttons="[
-               {result: 'payout', caption: 'Выплатить', color: 'green', disabled: (!sumToPay || sumToPay > totalToPay)},
+               {result: 'payout', caption: 'Выплатить', color: 'green', disabled: (!sumToPay && !payTaxi) || (sumToPay > totalToPay && !payTaxi)},
                {result: 'cancel', caption: 'Отмена'},
            ]"
            ref="popup"
     >
         <GuiText mb-10> Итого к оплате за смену: {{ totalToPay }} руб.</GuiText>
-
         <InputNumber :placeholder="'Введите сумму для выплаты'" v-model="sumToPay"/>
         <p v-if="sumToPay > totalToPay" style="color: red">Максимум {{ totalToPay }} руб.</p>
+        <br>
+        <GuiText mb-10> На такси: </GuiText>
+        <InputNumber :placeholder="'Введите сумму'" v-model="payTaxi"/>
+
     </PopUp>
 </template>
 
@@ -38,6 +41,7 @@ export default {
 
     data: () => ({
         sumToPay: null,
+        payTaxi: null,
     }),
 
     methods: {
@@ -54,11 +58,13 @@ export default {
             axios.post('/api/terminals/promoters/pay_work_shift', {
                 sumToPay: this.sumToPay,
                 totalToPay: this.totalToPay,
-                partnerId: this.partnerId
+                partnerId: this.partnerId,
+                payTaxi: this.payTaxi
             }).then((response) => {
                 this.$refs.popup.hide();
-                this.$emit('made_payout', this.sumToPay)
+                this.$emit('made_payout', {sumToPay: this.sumToPay, payTaxi: this.payTaxi});
                 this.sumToPay = null;
+                this.payTaxi = null;
                 this.$toast.success(response.data['message']);
             }).finally(() => {
                 this.$refs.popup.process(false);

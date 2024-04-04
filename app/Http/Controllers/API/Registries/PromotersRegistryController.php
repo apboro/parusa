@@ -94,14 +94,16 @@ class PromotersRegistryController extends ApiController
                 'total_to_pay_out' => $filteredWorkshifts->sum(function ($shift) {
                     return $shift->getShiftTotalPay();
                 }),
-                'total_paid_out' => $filteredWorkshifts->sum('paid_out')
+                'total_paid_out' => $filteredWorkshifts->sum('paid_out'),
+                'balance' => $filteredWorkshifts->sum('balance'),
+                'taxi' => $filteredWorkshifts->sum('taxi')
             ];
         });
 
 
         return APIResponse::list(
             $partners,
-            ['ID', 'ФИО', 'За выход', 'Кол-во часов', 'Оплата за время', 'Касса', '% от кассы', 'Всего начислено', 'Получено'],
+            ['ID', 'ФИО', 'За выход', 'Кол-во часов', 'Оплата за время', 'Касса', '% от кассы', 'Такси', 'Всего начислено', 'Получено', 'Долг'],
             $filters,
             $this->defaultFilters,
             [

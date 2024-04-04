@@ -44,25 +44,31 @@
                         {{promoter.name}}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['pay_for_out']  > 0 ? promoter['pay_for_out'] + ' руб.': null }}
+                        {{promoter['pay_for_out']  > 0 ? promoter['pay_for_out'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['total_hours']  > 0 ? promoter['total_hours'] : null }}
+                        {{promoter['total_hours']  > 0 ? promoter['total_hours'] : '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['pay_for_time']  > 0 ? promoter['pay_for_time'] + ' руб.': null }}
+                        {{promoter['pay_for_time']  > 0 ? promoter['pay_for_time'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['sales_total']  > 0 ? promoter['sales_total'] + ' руб.': null }}
+                        {{promoter['sales_total']  > 0 ? promoter['sales_total'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['commission']  > 0 ? promoter['commission'] + ' руб.': null }}
+                        {{promoter['commission']  > 0 ? promoter['commission'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['total_to_pay']  > 0 ? promoter['total_to_pay'] + ' руб.': null }}
+                        {{promoter['taxi']  > 0 ? promoter['taxi'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['total_paid_out']  > 0 ? promoter['total_paid_out'] + ' руб.': null }}
+                        {{promoter['total_to_pay_out']  > 0 ? promoter['total_to_pay_out'] + ' руб.': '—' }}
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{promoter['total_paid_out']  > 0 ? promoter['total_paid_out'] + ' руб.': '—' }}
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{promoter['balance']  > 0 ? promoter['balance'] + ' руб.': '—' }}
                     </ListTableCell>
 
                 </ListTableRow>

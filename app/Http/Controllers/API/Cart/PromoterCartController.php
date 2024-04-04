@@ -263,10 +263,17 @@ class PromoterCartController extends ApiEditController
         $id = $request->input('ticket_id');
 
 
-        $cartTicketQuery = PositionOrderingTicket::query()->where(['id' => $id, 'position_id' => $position->id, 'terminal_id' => $current->terminalId()]);
+        $cartTicketQuery = PositionOrderingTicket::query()
+            ->where(['id' => $id,
+                'position_id' => $position->id,
+                'terminal_id' => $current->terminalId()
+            ]);
         $ticket = $cartTicketQuery->first();
-        TripSeat::query()->where('trip_id', $ticket->trip_id)->where('seat_number', $ticket->seat->seat_number)->delete();
-
+        if ($ticket->seat_id) {
+            TripSeat::query()->where('trip_id', $ticket->trip_id)
+                ->where('seat_number', $ticket->seat->seat_number)
+                ->delete();
+        }
         $cartTicketQuery->delete();
 
         return APIResponse::success('Билет удалён из заказа.');

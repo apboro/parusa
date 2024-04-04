@@ -48,12 +48,14 @@ class WorkShiftController extends Controller
         $workShift = WorkShift::query()
             ->with('tariff')
             ->where('partner_id', $request->input('partnerId'))
-            ->whereNull('end_at')->first();
+            ->whereNull('end_at')
+            ->first();
 
         $sumToPay = $request->input('sumToPay');
 
         $workShift->paid_out = $workShift->paid_out + $sumToPay;
         $workShift->balance = $request->input('totalToPay') - $sumToPay;
+        $workShift->taxi = $workShift->taxi + $request->input('payTaxi');
 
         $this->save($workShift);
 
