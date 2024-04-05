@@ -44,7 +44,7 @@ class CreateOrderFromYaga
         return [
             "id" => $order->id,
             "orderNumber" => $order->id,
-            "status" => "reserved",
+            "status" => "RESERVED",
             "sum" => [
                 "fee" => [
                     "currencyCode" => 'RUB',

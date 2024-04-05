@@ -5,15 +5,23 @@ namespace App\Services\YagaAPI;
 use App\Actions\CreateOrderFromYaga;
 use App\Actions\CreateTicketsFromYaga;
 use App\Http\APIResponse;
+use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
+use App\Models\Order\Order;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\Ticket;
 use App\Services\YagaAPI\Model\AvailableSeats;
+use App\Services\YagaAPI\Model\OrderInfo;
+use App\Services\YagaAPI\Requests\Order\ApproveOrderRequest;
 use App\Services\YagaAPI\Requests\Order\AvailableSeatsRequest;
+use App\Services\YagaAPI\Requests\Order\OrderInfoRequest;
 use App\Services\YagaAPI\Requests\Order\ReserveTicketsRequest;
+use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class YagaOrderApiController
 {
@@ -21,7 +29,7 @@ class YagaOrderApiController
     {
         $data = $request->all();
 
-        if (!$data['sessionId']) {
+        if (empty($data['sessionId'])) {
             return response()->json();
         }
 
@@ -46,7 +54,7 @@ class YagaOrderApiController
 
         $results = AvailableSeats::getResource($trip);
 
-        return response()->json([$results]);
+        return response()->json($results);
     }
 
 
@@ -67,16 +75,13 @@ class YagaOrderApiController
         }
 
         if (!empty($data['venueId']) && $trip->ship->id != $data['venueId']) {
-            return response()->json();
+            return response()->json('wrong venueID');
         }
         if (!empty($data['eventId']) && $trip->excursion->id != $data['eventId']) {
-            return response()->json();
+            return response()->json('wrong eventId');
         }
         if (!empty($data['hallId']) && $trip->ship->id != $data['hallId']) {
-            return response()->json();
-        }
-        if (!empty($data['sessionTime']) && $trip->start_at->timestamp != $data['sessionTime']) {
-            return response()->json();
+            return response()->json('wrong hallId');
         }
 
         $rateList = $trip->getRate();
@@ -119,8 +124,19 @@ class YagaOrderApiController
         return response()->json($order);
     }
 
-    public function orderInfo()
+    public function orderInfo(OrderInfoRequest $request): JsonResponse
     {
+        $order = Order::with(['status', 'tickets', 'partner'])->where('id', $request->orderNumber)->first();
+
+        if (!$order) {
+            return response()->json('Заказ не найден');
+        }
+
+        if (!$order->hasStatus(OrderStatus::yaga_confirmed)) {
+            return response()->json('Заказ не подтвержден');
+        }
+
+        return response()->json((new OrderInfo($order))->getResource());
     }
 
     public function orderStatus()
@@ -139,8 +155,30 @@ class YagaOrderApiController
     {
     }
 
-    public function approve()
+    public function approve(ApproveOrderRequest $request)
     {
+        $order = Order::with(['status', 'tickets', 'partner'])->where('id', $request->orderNumber)->first();
+
+        if (!$order) {
+            return response()->json('Заказ не найден');
+        }
+
+        if (!$order->hasStatus(OrderStatus::yaga_reserved)) {
+            return response()->json('Заказ не находится в резерве');
+        }
+
+        try {
+            DB::transaction(static function () use (&$order) {
+
+                $order->setStatus(OrderStatus::yaga_confirmed);
+                $order->tickets->each(fn(Ticket $ticket) => $ticket->setStatus(TicketStatus::yaga_confirmed));
+            });
+        } catch (Exception $e) {
+            Log::channel('yaga')->error($e);
+        }
+
+        return response()->json(['orderNumber' => $order->id, 'status' => 'APPROVED']);
+
     }
 
     private function areEnoughTicketsAvailable($trip, $data): bool

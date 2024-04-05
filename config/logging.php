@@ -117,6 +117,11 @@ return [
             'path' => storage_path('logs/sber_payments.log'),
             'level' => 'info',
         ],
+        'yaga' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/yaga.log'),
+            'level' => 'info',
+        ],
 
         'cloud_print' => [
             'driver' => 'single',
