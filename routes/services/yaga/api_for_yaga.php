@@ -14,13 +14,16 @@ Route::middleware(['auth:sanctum'])->prefix('api/yaga/')->group(function (){
     Route::get('schedule', [YagaScheduleApiController::class,'getSchedule']);
     Route::get('venues', [YagaScheduleApiController::class,'getVenues']);
 
+
     Route::get('available-seats', [YagaOrderApiController::class,'availableSeats']);
+    Route::post('reserve', [YagaOrderApiController::class,'reserve']);
     Route::get('order-info', [YagaOrderApiController::class,'orderInfo']);
     Route::get('order-status', [YagaOrderApiController::class,'orderStatus']);
     Route::get('cancel-order', [YagaOrderApiController::class,'cancelOrder']);
     Route::get('check-promocode', [YagaOrderApiController::class,'checkPromocode']);
     Route::get('clear-reservation', [YagaOrderApiController::class,'clearReservation']);
     Route::get('approve', [YagaOrderApiController::class,'approve']);
+
 
 });
 

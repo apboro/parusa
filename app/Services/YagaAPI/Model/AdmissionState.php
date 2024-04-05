@@ -8,17 +8,14 @@ class AdmissionState
 {
     public static function getResource($grades, $ticketsCount): array
     {
-        $result = [];
-        if ($ticketsCount <= 0) {
-            foreach ($grades as $grade) {
-                $result[] = [
-                        "availableSeatCount" => 0,
-                        "categoryId" => $grade->id,
-                    ];
-            }
+        foreach ($grades as $grade) {
+            $result[] = [
+                "availableSeatCount" => $ticketsCount,
+                "categoryId" => $grade->id,
+            ];
         }
 
-        return $result;
+        return $result ?? [];
     }
 
 }

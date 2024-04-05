@@ -24,6 +24,7 @@ class OrderTypesSeeder extends GenericSeeder
             OrderType::referral_link => ['name' => 'Реферальная ссылка'],
             OrderType::promoter_sale => ['name' => 'Личный кабинет промоутера'],
             OrderType::api_sale => ['name' => 'Продажа по Api'],
+            OrderType::yaga_sale => ['name' => 'Продажа Афиша'],
         ],
     ];
 }

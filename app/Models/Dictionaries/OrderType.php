@@ -36,6 +36,9 @@ class OrderType extends AbstractDictionary
     /** @var int Api */
     public const api_sale = 13;
 
+    /** @var int yaga*/
+    public const yaga_sale = 14;
+
 
     /** @var string Referenced table name. */
     protected $table = 'dictionary_order_types';

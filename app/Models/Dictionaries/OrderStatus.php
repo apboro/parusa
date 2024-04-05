@@ -56,6 +56,10 @@ class OrderStatus extends AbstractDictionary
     public const api_confirmed = 105;
     public const api_canceled = 110;
     public const api_returned = 115;
+    public const yaga_reserved = 120;
+    public const yaga_confirmed = 125;
+    public const yaga_canceled = 130;
+    public const yaga_returned = 135;
 
 
     public const order_returnable_statuses = [
@@ -66,7 +70,8 @@ class OrderStatus extends AbstractDictionary
         self::terminal_wait_for_return,
         self::showcase_paid,
         self::showcase_partial_returned,
-        self::api_confirmed
+        self::api_confirmed,
+        self::yaga_confirmed
     ];
 
     public const order_printable_statuses = [
@@ -77,7 +82,9 @@ class OrderStatus extends AbstractDictionary
         self::showcase_paid,
         self::showcase_partial_returned,
         self::promoter_paid,
-        self::api_confirmed
+        self::api_confirmed,
+        self::yaga_confirmed
+
     ];
 
     public const partner_commission_pay_statuses = [
@@ -85,7 +92,9 @@ class OrderStatus extends AbstractDictionary
         self::terminal_paid,
         self::showcase_paid,
         self::promoter_paid,
-        self::api_confirmed
+        self::api_confirmed,
+        self::yaga_confirmed,
+
     ];
 
     public const partial_returned_statuses = [
@@ -107,7 +116,8 @@ class OrderStatus extends AbstractDictionary
         self::showcase_returned,
         self::showcase_partial_returned,
         self::promoter_paid,
-        self::api_confirmed
+        self::api_confirmed,
+        self::yaga_confirmed,
     ];
 
     public const order_reserved_statuses = [

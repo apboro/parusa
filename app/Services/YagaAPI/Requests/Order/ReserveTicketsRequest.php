@@ -10,77 +10,63 @@ use OpenApi\Attributes as OA;
     requestBody: new OA\RequestBody(
         content: new OA\JsonContent(
             example: '{
-  "additional": {},
-  "codeWord": string,
   "created": string,
   "customer": {
-    "email": string,
-    "firstName": string,
-    "lastName": string,
-    "phone": string
+    "email": "Yaga@baba.ru",
+    "firstName": "Yaga",
+    "lastName": "Baba",
+    "phone": "867676767677"
   },
   "deliveryType": string,
-  "eventId": string,
-  "hallId": string,
+  "eventId": "9",
+  "hallId": "21",
   "id": string,
   "items": [
     {
-      "admission": boolean,
-      "categoryId": string,
+      "admission": true,
+      "categoryId": 1030,
       "cost": {
         "fee": {
-          "currencyCode": string,
-          "value": string
+          "currencyCode": "RUB",
+          "value": 0
         },
         "price": {
-          "currencyCode": string,
-          "value": string
+          "currencyCode": "RUB",
+          "value": "150"
         },
         "total": {
-          "currencyCode": string,
-          "value": string
+          "currencyCode": "RUB",
+          "value": "150"
         }
       },
-      "levelId": string,
-      "seat": {
-        "fragment": string,
-        "id": string,
-        "place": string,
-        "row": string,
-        "x": integer,
-        "y": integer
-      },
-      "seatId": string,
-      "supplementType": string
+      "levelId": 17,
     }
   ],
   "orderNumber": string,
   "paymentType": string,
-  "promocode": string,
   "reservationTimeout": string,
-  "sessionId": string,
+  "sessionId": "181753",
   "sessionTime": {
     "sessionEnd": string,
     "sessionStart": string,
     "timezone": string,
     "type": string
   },
-  "specificFields": {},
   "sum": {
     "fee": {
-      "currencyCode": string,
-      "value": string
+      "currencyCode": "RUB",
+      "value": "0"
     },
     "price": {
-      "currencyCode": string,
-      "value": string
+      "currencyCode": "RUB",
+      "value": "150"
     },
     "total": {
-      "currencyCode": string,
-      "value": string
+      "currencyCode": "RUB",
+      "value": "150"
     }
   },
-  "venueId": string
+  "venueId": "21"
 }'
         )
     ),

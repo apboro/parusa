@@ -39,10 +39,6 @@ class Level
                     "name" => $grade->name,
                 ];
 
-            if ($ticketsCount > 0) {
-                unset($level['admissionStates']);
-            }
-
             $levels[] = $level;
         }
 
