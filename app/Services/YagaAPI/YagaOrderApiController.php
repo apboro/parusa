@@ -30,13 +30,13 @@ class YagaOrderApiController
         $data = $request->all();
 
         if (empty($data['sessionId'])) {
-            return response()->json();
+            return response()->json('В запросе нет sessionId', 400);
         }
 
         $trip = Trip::with(['excursion', 'excursion.ratesLists', 'tickets'])->where('id', $data['sessionId'])->first();
 
         if (!$trip) {
-            return response()->json();
+            return response()->json('Рейс не найден', 400);
         }
 
         if (!empty($data['venueId']) && $trip->ship->id != $data['venueId']) {
