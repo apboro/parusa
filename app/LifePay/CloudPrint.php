@@ -54,7 +54,7 @@ class CloudPrint
             $receipt['card_amount'] += $ticketPrice;
             $item['tax'] = 'none'; // НДС не облагается
             $item['unit'] = 'piece'; // штуки
-            $item['type'] = 1; // Полная предварительная оплата до момента передачи предмета расчета
+            $item['type'] = 4; // Полная предварительная оплата до момента передачи предмета расчета
             $item['item_type'] = 4; // услуга
             $item['name'] = 'Билет №' . $ticket->id . ' (' . mb_strtolower($ticket->grade->name) . ')  на экскурсию ' . $ticket->trip->excursion->name
                 . ', рейс №' . $ticket->trip->id . ', ' . $ticket->trip->start_at->format('d.m.Y H:i');
