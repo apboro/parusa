@@ -137,7 +137,7 @@ class PromoterEditController extends ApiEditController
         $profile = $partner->profile;
 
         $profile->can_send_sms = $data['can_send_sms'];
-        $profile->auto_change_tariff = $data['auto_change_tariff'];
+        $profile->auto_change_tariff = $data['auto_change_tariff'] ?? 0;
         $profile->tickets_for_guides = 0;
         $profile->can_reserve_tickets = 0;
         $profile->save();
