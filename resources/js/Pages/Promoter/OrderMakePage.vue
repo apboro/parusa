@@ -35,10 +35,15 @@
                     <template v-if="ticket['available']">
                         <td>
                             <span class="order-table__mobile-subtitle">Цена, руб</span>
-                            <FormNumber v-if="ticket['backward_price'] === null" :form="form"
-                                        :name="'tickets.' + ticket['id'] + '.price'" :hide-title="true"/>
-                            <FormNumber v-if="ticket['backward_price'] !== null" :model-value="ticket['backward_price']"
-                                        :disabled="true" :name="'tickets.' + ticket['id'] + '.price'" :form="form"
+                            <FormNumber v-if="ticket['backward_price'] === null"
+                                        :form="form"
+                                        :name="'tickets.' + ticket['id'] + '.price'"
+                                        :hide-title="true"/>
+                            <FormNumber v-if="ticket['backward_price'] !== null"
+                                        :model-value="ticket['backward_price']"
+                                        :disabled="true"
+                                        :name="'tickets.' + ticket['id'] + '.price'"
+                                        :form="form"
                                         :hide-title="true"/>
                         </td>
                         <td>
@@ -52,7 +57,7 @@
                         <td class="bold no-wrap">
                             <span class="order-table__mobile-subtitle">Стоимость</span>
                             {{
-                                multiply(ticket['backward_price'] ?? ticket['base_price'], form.values['tickets.' + ticket['id'] + '.quantity'])
+                                multiply(ticket['backward_price'] ?? form.values['tickets.' + ticket['id'] + '.price'], form.values['tickets.' + ticket['id'] + '.quantity'])
                             }}
                             руб.
                         </td>
@@ -176,7 +181,7 @@ export default {
             let total = 0;
             this.data.data['tickets'].map(ticket => {
                 if (ticket['available'] && !isNaN(ticket['base_price'])) {
-                    total += this.multiply(ticket['backward_price'] ?? ticket['base_price'], this.form.values['tickets.' + ticket['id'] + '.quantity']);
+                    total += this.multiply(ticket['backward_price'] ?? this.form.values['tickets.' + ticket['id'] + '.price'], this.form.values['tickets.' + ticket['id'] + '.quantity']);
                 }
             });
             return this.multiply(total, 1) + ' руб.';

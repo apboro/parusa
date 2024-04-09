@@ -37,8 +37,8 @@
                                     :hide-title="true"/>
                     </td>
                     <td>
-                        <FormNumber :disabled="(ticket['backward_price'] !== null && ticket['ticket_provider_id'] !== null)
-                         || ticket['seat_number'] !== null" :form="form"
+                        <FormNumber :disabled="ifBackwardTicketOrHaveSeatScheme(ticket)"
+                                    :form="form"
                                     :name="'tickets.' + ticket['id'] + '.quantity'" :quantity="true" :min="0"
                                     :hide-title="true" :model-value="ticket['quantity']"
                                     @change="(value) => quantityChange(ticket['id'], value)"
@@ -46,7 +46,7 @@
                     </td>
                     <td class="bold no-wrap">
                         {{
-                            multiply(ticket['backward_price'] ?? ticket['base_price'], ticket['quantity'])
+                            multiply(ticket['backward_price'] ?? form.values['tickets.' + ticket['id'] + '.price'], form.values['tickets.' + ticket['id'] + '.quantity'])
                         }}
                     </td>
                 </template>
@@ -166,7 +166,7 @@ export default {
             let total = 0;
             this.data['tickets'].map(ticket => {
                 if (ticket['available'] && !isNaN(ticket['base_price'])) {
-                    total += this.multiply(ticket['backward_price'] ??  ticket['base_price'], ticket.quantity);
+                    total += this.multiply(ticket['backward_price'] ??  this.form.values['tickets.' + ticket['id'] + '.price'], this.form.values['tickets.' + ticket['id'] + '.quantity']);
                 }
             });
             return this.multiply(total, 1) + ' руб.';
@@ -191,6 +191,9 @@ export default {
     },
 
     methods: {
+        ifBackwardTicketOrHaveSeatScheme(ticket){
+            return (ticket['backward_price'] !== null || ticket['seat_id'] !== null);
+        },
         update() {
             this.form.reset();
             this.data['tickets'].map(ticket => {

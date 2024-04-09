@@ -90,6 +90,10 @@ class PositionOrderingTicket extends Model
 
         $rate = $rateList?->rates()->where('grade_id', $this->grade_id)->first();
 
+        if (!$rate){
+            return null;
+        }
+
         return $rate->backward_price_type === 'fixed' ? $rate->backward_price_value : $rate->base_price * ($rate->backward_price_value/100);
     }
 
