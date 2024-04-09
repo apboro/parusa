@@ -157,7 +157,7 @@ class YagaOrderApiController
 
     public function approve(ApproveOrderRequest $request)
     {
-        $order = Order::with(['status', 'tickets', 'partner'])->where('id', $request->orderNumber)->first();
+        $order = Order::with(['status', 'tickets', 'partner'])->where('id', $request->id)->first();
 
         if (!$order) {
             return response()->json('Заказ не найден');
