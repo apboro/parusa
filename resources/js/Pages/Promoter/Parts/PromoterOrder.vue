@@ -77,6 +77,7 @@
                 <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning"
                            @clicked="emailOrder">Отправить на почту
                 </GuiButton>
+                <GuiButton v-if="info.data['can_send_sms']" @clicked="sendSMS">Отправить по СМС</GuiButton>
                 <GuiButton v-if="!info.data['is_printable'] && info.data['can_send_sms']" @clicked="sendPaymentLinkSMS">Ссылка на оплату в СМС</GuiButton>
                 <GuiButton v-if="!info.data['is_printable']" @click="showQR">QR-код на оплату</GuiButton>
                 <GuiButton v-if="info.data['self_pay'] && !info.data['is_printable']" @click="selfPay">Оплата на месте</GuiButton>
