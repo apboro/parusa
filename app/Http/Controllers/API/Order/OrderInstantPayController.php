@@ -58,7 +58,7 @@ class OrderInstantPayController extends ApiController
                     'amount' => $order->total(),
                     'order_id' => $order->id,
                     'committer_id' => $current->positionId(),
-                ]));
+                ]), true);
 
                 // update order statuses
                 foreach ($order->tickets as $ticket) {
