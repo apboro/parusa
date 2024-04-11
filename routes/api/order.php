@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\Order\OrderBackwardTicketsController;
+use App\Http\Controllers\API\Order\OrderInstantPayController;
 use App\Http\Controllers\API\Order\OrderReserveController;
 use App\Http\Controllers\API\Order\OrderReturnController;
 use App\Http\Controllers\API\Order\OrderSMSController;
@@ -46,3 +47,4 @@ Route::post('/order/backward/add_backward_tickets_showcase', [OrderBackwardTicke
 
 Route::post('/order/generate_payment_code', [QrCodeGenerateController::class, 'generateOrderPaymentQr'])->middleware(['allow:staff_admin,partner']);
 
+Route::post('/order/instant_pay', [OrderInstantPayController::class, 'pay'])->middleware(['allow:partner']);

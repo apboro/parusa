@@ -32,3 +32,4 @@ Route::post('/promoters/delete', [PromoterDeleteController::class, 'delete'])->m
 Route::post('/promoters/promoter/info', [PromoterInfoController::class, 'get'])->middleware(['allow:partner']);
 Route::post('/promoters/change_commissions', [WorkShiftController::class, 'changeCommissions'])->middleware(['allow:staff_accountant,staff_admin,staff_promoter_manager']);
 
+Route::post('/promoters/open_work_shift', [WorkShiftController::class, 'openSelfPay'])->middleware(['allow:partner']);

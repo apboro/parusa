@@ -48,7 +48,6 @@ class TicketStatus extends AbstractDictionary
     public const yaga_reserved = 120;
     public const yaga_confirmed = 125;
     public const yaga_canceled = 130;
-    public const yaga_returned = 135;
 
     public const showcase_creating = 61;
     public const showcase_wait_for_pay = 62;

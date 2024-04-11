@@ -109,6 +109,7 @@ class OrdersRegistryItemController extends ApiController
             'email' => $order->email,
             'phone' => $order->phone,
             'can_send_sms' => $current->partner()?->profile->can_send_sms,
+            'self_pay' => $current->partner()?->profile->self_pay,
             'can_buy' => $current->isRepresentative() || $current->isStaffTerminal(),
             'can_return' => $current->isRepresentative() || $current->isStaffAdmin(), // terminal users can not return tickets from CRM yet -> || $current->isStaffTerminal(),
             'returnable' => $returnable,

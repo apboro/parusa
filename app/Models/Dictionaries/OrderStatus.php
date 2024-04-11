@@ -59,8 +59,6 @@ class OrderStatus extends AbstractDictionary
     public const yaga_reserved = 120;
     public const yaga_confirmed = 125;
     public const yaga_canceled = 130;
-    public const yaga_returned = 135;
-
 
     public const order_returnable_statuses = [
         self::partner_paid,
@@ -140,5 +138,10 @@ class OrderStatus extends AbstractDictionary
         self::promoter_wait_for_pay,
         self::promoter_confirmed,
         self::promoter_paid,
+    ];
+    public const yaga_statuses = [
+        self::yaga_canceled,
+        self::yaga_confirmed,
+        self::yaga_canceled,
     ];
 }

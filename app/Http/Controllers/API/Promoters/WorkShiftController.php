@@ -42,6 +42,31 @@ class WorkShiftController extends Controller
 
         return APIResponse::success('Смена открыта', ['start_at' => Carbon::parse($workShift->start_at)->format('Y-m-d H:i:s')]);
     }
+    public function openSelfPay(Request $request)
+    {
+        $current = Currents::get($request);
+
+        $currentDateTime = Carbon::now();
+        $noonToday = Carbon::today()->setHour(11);
+
+        $promoter = $current->partner();
+
+        $tariff = ($currentDateTime->lessThan($noonToday) && $promoter->profile->auto_change_tariff == 1) ? Tariff::find(1) : $promoter->tariff()->first();
+
+        if (!$tariff) {
+            return APIResponse::error('Не задан тариф');
+        }
+
+        $workShift = WorkShift::create([
+            'partner_id' => $promoter->id,
+            'tariff_id' => $tariff->id,
+            'terminal_id' => 1,
+            'start_at' => now(),
+            'status_id' => WorkShiftStatus::active,
+        ]);
+
+        return APIResponse::success('Смена открыта', ['start_at' => Carbon::parse($workShift->start_at)->format('Y-m-d H:i:s')]);
+    }
 
     public function pay(Request $request)
     {

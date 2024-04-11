@@ -10,6 +10,7 @@
             <GuiValue :title="'Почта'" v-if="editable">{{ data['email'] }}</GuiValue>
             <GuiValue :title="'Отправка СМС'">{{ data['can_send_sms'] === 1? 'Разрешена' : 'Запрещена' }}</GuiValue>
             <GuiValue :title="'Автоматическая смена тарифа'">{{ data['auto_change_tariff'] === true ? 'Да' : 'Нет' }}</GuiValue>
+            <GuiValue :title="'Оплата на месте'">{{ data['self_pay'] === true ? 'Разрешена' : 'Запрещена' }}</GuiValue>
         </GuiContainer>
 
         <GuiContainer w-100 mt-20 v-if="editable">

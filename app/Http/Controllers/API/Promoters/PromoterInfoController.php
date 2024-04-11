@@ -63,6 +63,7 @@ class PromoterInfoController extends ApiController
             'tariff' => $openshift? $openshift->getCurrentCommission() : null,
             'order_amount' => PriceConverter::storeToPrice($orderAmount ?? 0),
             'can_send_sms' => $current->partner()->profile->can_send_sms,
+            'self_pay' => $current->partner()->profile->self_pay,
         ]);
     }
 }

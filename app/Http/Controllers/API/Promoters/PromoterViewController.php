@@ -69,6 +69,7 @@ class PromoterViewController extends ApiController
             'taxi' => $openShift?->taxi,
             'pay_per_hour' =>  $partner->tariff()->first()?->pay_per_hour,
             'auto_change_tariff' => $partner->profile->auto_change_tariff,
+            'self_pay' => $partner->profile->self_pay,
             'promoter_commission_rate' => $partner->tariff()->first()?->commission
         ];
 

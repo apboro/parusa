@@ -6,6 +6,26 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/yaga/approve": {
+            "post": {
+                "tags": [
+                    "Заказ"
+                ],
+                "operationId": "fe5632aaf7dd3713fc065685359fbcea",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/yaga/available-seats": {
             "get": {
                 "tags": [
@@ -54,6 +74,26 @@
                         }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/order-info": {
+            "post": {
+                "tags": [
+                    "Заказ"
+                ],
+                "operationId": "28ad9c24af92ba1246f5b487c587d68e",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": ""

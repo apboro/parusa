@@ -108,7 +108,6 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::yaga_reserved => ['name' => 'Резерв Афиша'],
             TicketStatus::yaga_confirmed => ['name' => 'Подтвержден Афиша'],
             TicketStatus::yaga_canceled => ['name' => 'Отменен Афиша'],
-            TicketStatus::yaga_returned => ['name' => 'Возвращён Афиша'],
             // использован после просрочки
         ],
 
@@ -146,7 +145,6 @@ class StatusesSeeder extends GenericSeeder
             OrderStatus::yaga_reserved => ['name' => 'Зарезервирован афиша'],
             OrderStatus::yaga_confirmed => ['name' => 'Подтвержден афиша'],
             OrderStatus::yaga_canceled => ['name' => 'Отменён афиша'],
-            OrderStatus::yaga_returned => ['name' => 'Возвращён афиша'],
         ],
 
         TerminalStatus::class => [

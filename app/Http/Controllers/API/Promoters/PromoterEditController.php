@@ -36,6 +36,7 @@ class PromoterEditController extends ApiEditController
         'notes' => 'Заметки',
         'pay_per_hour' => 'Почасовая ставка, руб.',
         'auto_change_tariff' => 'Автоматическая смена тарифа',
+        'self_pay' => 'Оплата на месте',
         'promoter_commission_rate' => 'Ставка комиссии, %'
     ];
 
@@ -71,6 +72,7 @@ class PromoterEditController extends ApiEditController
                 'notes' => $promoterUserProfile->notes ?? null,
                 'pay_per_hour' => $partner->tariff()->first()?->pay_per_hour ?? '—',
                 'auto_change_tariff' => $partner->profile->auto_change_tariff,
+                'self_pay' => $partner->profile->self_pay,
                 'promoter_commission_rate' => $partner->tariff()->first()?->commission
             ],
             $this->rules,
@@ -138,6 +140,7 @@ class PromoterEditController extends ApiEditController
 
         $profile->can_send_sms = $data['can_send_sms'];
         $profile->auto_change_tariff = $data['auto_change_tariff'] ?? 0;
+        $profile->self_pay = $data['self_pay'] ?? 0;
         $profile->tickets_for_guides = 0;
         $profile->can_reserve_tickets = 0;
         $profile->save();

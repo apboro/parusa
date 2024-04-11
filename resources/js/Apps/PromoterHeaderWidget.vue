@@ -17,6 +17,7 @@
             <div v-if="tariff === null" class="balance-widget__item">
                 <div class="balance-widget__item-wrapper">
                     <span class="balance-widget__item-title">Смена не открыта</span>
+                    <GuiButton v-if="self_pay" @clicked="openShift">Открыть смену</GuiButton>
                 </div>
             </div>
             <div v-if="total > 0 && total !== null" class="balance-widget__item">
@@ -33,9 +34,11 @@
 import Container from "@/Components/GUI/GuiContainer";
 import {mapState} from 'vuex';
 import IconShoppingCart from "@/Components/Icons/IconShoppingCart";
+import GuiButton from "@/Components/GUI/GuiButton.vue";
 
 export default {
     components: {
+        GuiButton,
         IconShoppingCart,
         Container,
     },
@@ -46,6 +49,7 @@ export default {
             total: state => state.total,
             order_amount: state => state.order_amount,
             tariff: state => state.tariff,
+            self_pay: state => state.self_pay
         }),
     },
 
@@ -59,6 +63,16 @@ export default {
     },
 
     methods: {
+        openShift() {
+            axios.post('/api/promoters/open_work_shift')
+                .then(response => {
+                    this.$toast.success(response.data['message']);
+                    this.list.load()
+                })
+                .catch(error => {
+                    this.$toast.error(error.response.data['message']);
+                })
+        },
         refresh() {
             this.$store.dispatch('promoter/refresh');
         },
@@ -120,7 +134,7 @@ $widget_base: 90px;
             transition: color $animation $animation_time;
         }
 
-        &:hover &-title{
+        &:hover &-title {
             color: $base_primary_hover_color;
             pointer-events: none;
         }

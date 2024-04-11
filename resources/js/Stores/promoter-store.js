@@ -8,6 +8,8 @@ export default {
         total: 0,
         order_amount: 0,
         tariff: 0,
+        can_send_sms: false,
+        self_pay: false
     }),
 
     mutations: {
@@ -23,6 +25,12 @@ export default {
         setTariff(state, value) {
             state.tariff = value;
         },
+        setSMS(state, value) {
+            state.can_send_sms = value;
+        },
+        setSelfPay(state, value) {
+            state.self_pay = value;
+        },
     },
 
     actions: {
@@ -35,6 +43,8 @@ export default {
                         commit('setOrderAmount', response.data.data.order_amount);
                         commit('setTotal', response.data.data.total);
                         commit('setTariff', response.data.data.tariff);
+                        commit('setSMS', response.data.data.can_send_sms);
+                        commit('setSelfPay', response.data.data.self_pay);
                         resolve();
                     })
                     .catch(error => {

@@ -79,6 +79,7 @@
                 </GuiButton>
                 <GuiButton v-if="!info.data['is_printable'] && info.data['can_send_sms']" @clicked="sendPaymentLinkSMS">Ссылка на оплату в СМС</GuiButton>
                 <GuiButton v-if="!info.data['is_printable']" @click="showQR">QR-код на оплату</GuiButton>
+                <GuiButton v-if="info.data['self_pay'] && !info.data['is_printable']" @click="selfPay">Оплата на месте</GuiButton>
             </GuiContainer>
         </template>
 
@@ -184,6 +185,29 @@ export default {
     },
 
     methods: {
+        selfPay(){
+            this.$dialog.show('Заказ был оплачен?', 'question', 'orange', [
+                this.$dialog.button('ok', 'Да', 'orange'),
+                this.$dialog.button('cancel', 'Отмена'),
+            ], 'center')
+                .then((result) => {
+                    if (result === 'ok') {
+                        this.ordering = true;
+                        axios.post('/api/order/instant_pay', {id: this.orderId})
+                            .then((response) => {
+                                this.$toast.success(response.data['message']);
+                                this.info.load({id: this.orderId});
+                            })
+                            .catch(error => {
+                                this.$toast.error(error.response.data['message']);
+                            })
+                            .finally(() => {
+                                this.ordering = false;
+                            })
+                    }
+                });
+
+        },
         showQR(){
                 axios.post('/api/order/generate_payment_code', {orderId: this.orderId})
                     .then(response => {
