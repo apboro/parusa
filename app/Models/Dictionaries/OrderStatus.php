@@ -140,7 +140,7 @@ class OrderStatus extends AbstractDictionary
         self::promoter_paid,
     ];
     public const yaga_statuses = [
-        self::yaga_canceled,
+        self::yaga_reserved,
         self::yaga_confirmed,
         self::yaga_canceled,
     ];

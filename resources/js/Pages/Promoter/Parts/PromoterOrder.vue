@@ -74,8 +74,8 @@
 
         <template v-if="info.is_loaded">
             <GuiContainer>
-                <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning"
-                           @clicked="emailOrder">Отправить на почту
+                <GuiButton v-if="info.data['is_printable'] && info.data['email']"
+                           @clicked="emailOrder">Билеты на почту
                 </GuiButton>
                 <GuiButton v-if="info.data['can_send_sms'] && info.data['is_printable']" @clicked="sendSMS">Билеты по СМС</GuiButton>
 
