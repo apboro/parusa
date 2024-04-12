@@ -12,11 +12,13 @@
 
         <template v-if="data.is_loaded">
             <LayoutRoutedTabs :tabs="{
+                total: 'Сводка',
                 details: 'Персональные данные',
                 access: 'Доступ',
-                inventory: 'Инвентарь',
+                inventory: 'Инвентарь'
             }" @change="tab = $event"/>
 
+            <PromoterTotal v-if="tab === 'total'" :partnerId="partnerId" :data="data.data" @update="update"/>
             <PromoterInfo v-if="tab === 'details'" :data="data.data" :partner-id="partnerId" :editable="true" @update="update"/>
             <RepresentativeAccess v-if="tab === 'access'" :representative-id="data.data.representativeId" :data="data.data" :editable="true" @update="update"/>
             <PromotersInventory v-if="tab === 'inventory'" :promoterId="partnerId"/>
@@ -43,9 +45,11 @@ import PartnerQrCodes from "@/Pages/Admin/Partners/Parts/PartnerQrCodes.vue";
 import RepresentativeAccess from "@/Pages/Admin/Representatives/Parts/RepresentativeAccess.vue";
 import PromoterInfo from "@/Pages/Admin/Promoters/Parts/PromoterInfo.vue";
 import PromotersInventory from "@/Pages/Admin/Promoters/Parts/PromotersInventory.vue";
+import PromoterTotal from "@/Pages/Terminal/Parts/PromoterTotal.vue";
 
 export default {
     components: {
+        PromoterTotal,
         PromotersInventory,
         PromoterInfo,
         RepresentativeAccess,
@@ -92,7 +96,7 @@ export default {
         deletePartner() {
             const name = this.data.data['name'];
 
-            this.deleteEntry('Удалить карточку партнёра "' + name + '"?', '/api/promoters/delete', {id: this.partnerId})
+            this.deleteEntry('Удалить карточку промоутера "' + name + '"?', '/api/promoters/delete', {id: this.partnerId})
                 .then(() => {
                     this.$router.push({name: 'promoters-list'});
                 });

@@ -116,7 +116,8 @@ class TicketStatus extends AbstractDictionary
         self::terminal_paid_single,
         self::partner_paid_single,
         self::api_confirmed,
-        self::yaga_confirmed
+        self::yaga_confirmed,
+        self::promoter_paid
     ];
 
     public const ticket_reserved_statuses = [
