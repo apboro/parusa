@@ -57,9 +57,6 @@ class OrderTicketReplacementController extends ApiController
             ->whereDate('start_at', '>=', $now)
             ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
-            ->whereHas('excursion.ratesLists', function (Builder $query) use ($now) {
-                $query->whereDate('start_at', '<=', $now)->whereDate('end_at', '>=', $now);
-            })
             ->orderBy('start_at')
             ->select(DB::raw('DATE(start_at) start_at'))
             ->groupBy(DB::RAW('DATE(start_at)'))
