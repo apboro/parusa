@@ -25,11 +25,9 @@ abstract class AbstractDictionary extends Model
      * @param int $id
      *
      */
-    public static function get(?int $id = null): array|Model|null
+    public static function get(int $id): ?Model
     {
-        if (!$id){
-            return parent::get();
-        }
+        /** @var Model $model */
         $model = self::query()->where('id', $id)->first();
 
         return $model ?? null;

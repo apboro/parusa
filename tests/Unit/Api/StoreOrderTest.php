@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Api;
 
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Excursions\Excursion;
 use App\Models\Partner\Partner;
@@ -21,7 +22,7 @@ class StoreOrderTest extends TestCase
     {
         parent::setUp();
 
-        $excursion = Excursion::factory()->create();
+        $excursion = Excursion::factory(['provider_id' => Provider::scarlet_sails])->create();
         $ticketRateList = TicketsRatesList::create([
             'excursion_id' => $excursion->id,
             'start_at' => now()->addMinutes(10),

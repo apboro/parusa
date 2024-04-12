@@ -126,14 +126,12 @@ class YagaOrderApiController
 
     public function orderInfo(OrderInfoRequest $request): JsonResponse
     {
-        $order = Order::with(['status', 'tickets', 'partner'])->where('id', $request->orderNumber)->first();
+        $order = Order::with(['status', 'tickets', 'partner', 'tickets.grade'])
+            ->whereIn('status_id', OrderStatus::yaga_statuses)
+            ->where('id', $request->id)->first();
 
         if (!$order) {
             return response()->json('Заказ не найден');
-        }
-
-        if (!$order->hasStatus(OrderStatus::yaga_confirmed)) {
-            return response()->json('Заказ не подтвержден');
         }
 
         return response()->json((new OrderInfo($order))->getResource());
@@ -155,9 +153,11 @@ class YagaOrderApiController
     {
     }
 
-    public function approve(ApproveOrderRequest $request)
+    public function approve(ApproveOrderRequest $request): JsonResponse
     {
-        $order = Order::with(['status', 'tickets', 'partner'])->where('id', $request->id)->first();
+        $order = Order::with(['status', 'tickets', 'partner'])
+            ->whereIn('status_id', OrderStatus::yaga_statuses)
+            ->where('id', $request->id)->first();
 
         if (!$order) {
             return response()->json('Заказ не найден');
@@ -178,7 +178,6 @@ class YagaOrderApiController
         }
 
         return response()->json(['orderNumber' => $order->id, 'status' => 'APPROVED']);
-
     }
 
     private function areEnoughTicketsAvailable($trip, $data): bool
