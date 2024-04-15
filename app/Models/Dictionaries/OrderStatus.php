@@ -69,7 +69,8 @@ class OrderStatus extends AbstractDictionary
         self::showcase_paid,
         self::showcase_partial_returned,
         self::api_confirmed,
-        self::yaga_confirmed
+        self::yaga_confirmed,
+        self::promoter_paid
     ];
 
     public const order_printable_statuses = [

@@ -16,6 +16,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\LifePay\CloudPrint;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Dictionaries\Role;
 use App\Models\Dictionaries\SeatStatus;
@@ -155,7 +156,7 @@ class OrderReturnController extends ApiController
         } else if ($current->isStaffAdmin()) {
             // Returning tickets bought
             try {
-                if ($order->external_id === null) {
+                if ($order->type_id === OrderType::site && $order->external_id === null) {
                     throw new Exception('Отсутствует внешний ID заказа');
                 }
                 $tickets = [];
@@ -163,30 +164,30 @@ class OrderReturnController extends ApiController
                 foreach ($order->tickets as $ticket) {
                     /** @var Ticket $ticket */
                     if (in_array($ticket->id, $ticketsToReturnIds, true)) {
-                        if (!in_array($ticket->status_id, [TicketStatus::showcase_paid, TicketStatus::showcase_paid_single, TicketStatus::used])) {
+                        if (!in_array($ticket->status_id, [TicketStatus::showcase_paid, TicketStatus::showcase_paid_single, TicketStatus::used, TicketStatus::promoter_paid])) {
                             throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
                         }
                         $tickets[] = $ticket;
                         $returnAmount += $ticket->getPrice();
                     }
                 }
+                if ($order->type_id === OrderType::site) {
+                    // send return request to sber
+                    $isProduction = env('SBER_ACQUIRING_PRODUCTION');
+                    $connection = new Connection([
+                        'token' => env('SBER_ACQUIRING_TOKEN'),
+                        'userName' => env('SBER_ACQUIRING_USER'),
+                        'password' => env('SBER_ACQUIRING_PASSWORD'),
+                    ], new CurlClient(), $isProduction);
+                    $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
+                    $sber = new Sber($connection, $options);
 
-                // send return request to sber
-                $isProduction = env('SBER_ACQUIRING_PRODUCTION');
-                $connection = new Connection([
-                    'token' => env('SBER_ACQUIRING_TOKEN'),
-                    'userName' => env('SBER_ACQUIRING_USER'),
-                    'password' => env('SBER_ACQUIRING_PASSWORD'),
-                ], new CurlClient(), $isProduction);
-                $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
-                $sber = new Sber($connection, $options);
+                    $response = $sber->refundOrder($order->external_id, $returnAmount * 100);
 
-                $response = $sber->refundOrder($order->external_id, $returnAmount * 100);
-
-                if (!$response->isSuccess()) {
-                    throw new Exception($response->errorMessage());
+                    if (!$response->isSuccess()) {
+                        throw new Exception($response->errorMessage());
+                    }
                 }
-
                 // change order and tickets status
                 foreach ($tickets as $ticket) {
                     /** @var Ticket $ticket */
@@ -201,21 +202,23 @@ class OrderReturnController extends ApiController
                     $order->setStatus(OrderStatus::showcase_partial_returned);
                 }
 
-                // add transaction
-                $payment = new Payment();
-                $payment->gate = 'sber';
-                $payment->order_id = $order->id;
-                $payment->status_id = PaymentStatus::return;
-                $payment->fiscal = '';
-                $payment->total = $returnAmount;
-                $payment->by_card = $returnAmount;
-                $payment->by_cash = 0;
-                $payment->external_id = null;
-                $payment->save();
+                if ($order->type_id === OrderType::site) {
+                    // add transaction
+                    $payment = new Payment();
+                    $payment->gate = 'sber';
+                    $payment->order_id = $order->id;
+                    $payment->status_id = PaymentStatus::return;
+                    $payment->fiscal = '';
+                    $payment->total = $returnAmount;
+                    $payment->by_card = $returnAmount;
+                    $payment->by_cash = 0;
+                    $payment->external_id = null;
+                    $payment->save();
 
-                CloudPrint::createReceipt($order, $tickets, CloudPrint::refund, $payment);
-
-            } catch (Exception $exception) {
+                    CloudPrint::createReceipt($order, $tickets, CloudPrint::refund, $payment);
+                }
+            } catch
+            (Exception $exception) {
                 return APIResponse::error($exception->getMessage());
             }
 

@@ -110,7 +110,7 @@ class Promocode
                 ];
             }
 
-            $base_price = $partnerID === null ? ($rate->site_price ?? $rate->base_price) : $rate->base_price;
+            $base_price = $rate->site_price ?? $rate->base_price;
 
             $full_price += $base_price * ($ticket['quantity'] ?? 0);
             // Refactor on need $discount_price += $base_price;

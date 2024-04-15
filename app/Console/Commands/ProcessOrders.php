@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\AstraMarineCancelOrderEvent;
 use App\Events\CityTourCancelOrderEvent;
 use App\Events\NevaTravelCancelOrderEvent;
 use App\Models\Dictionaries\OrderStatus;
@@ -84,7 +85,7 @@ class ProcessOrders extends Command
     protected function destroyPartnerReserves(Carbon $now): void
     {
         $orders = Order::query()
-            ->where('status_id', OrderStatus::partner_reserve)
+            ->whereIn('status_id', [OrderStatus::partner_reserve, OrderStatus::promoter_wait_for_pay, OrderStatus::yaga_reserved])
             ->whereHas('tickets', function (Builder $query) use ($now) {
                 $query->whereHas('trip', function (Builder $query) use ($now) {
                     $query->whereRaw('DATE_SUB(`start_at`, INTERVAL `cancellation_time` MINUTE) <= \'' . $now . '\'');
@@ -100,6 +101,7 @@ class ProcessOrders extends Command
 
                 NevaTravelCancelOrderEvent::dispatch($order);
                 CityTourCancelOrderEvent::dispatch($order);
+                AstraMarineCancelOrderEvent::dispatch($order);
 
                 $order->setStatus(OrderStatus::partner_reserve_canceled);
                 $order->tickets->map(function (Ticket $ticket) {
