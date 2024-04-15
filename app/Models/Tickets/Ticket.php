@@ -331,7 +331,7 @@ class Ticket extends Model implements Statusable
             'ticket_id' => $this->id,
             'commission_type' => $transaction->commission_type,
             'commission_value' => $transaction->commission_value,
-        ]));
+        ]), true, false);
     }
 
     /**
