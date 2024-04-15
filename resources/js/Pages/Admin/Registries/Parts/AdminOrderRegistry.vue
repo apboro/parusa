@@ -65,7 +65,9 @@
                     </ListTableCell>
                     <ListTableCell>
                         <span v-if="order.info['order_type']">Способ продажи: {{ order.info['order_type'] }}<br/></span>
-                        <GuiValue v-if="order.info['partner']" :dots="!!order.info['terminal_name']" :title="order.info['position_name'] === null ? 'Промоутер' : 'Партнёр'">
+                        <GuiValue v-if="order.info['partner']"
+                                  :dots="!!order.info['terminal_name']"
+                                  :title="order.info['partner_type']">
                             {{ order.info['partner'] }}<span
                             v-if="order.info['position_name']">, {{ order.info['position_name'] }}</span></GuiValue>
                         <GuiValue v-if="order.info['terminal_name']" :dots="false" :title="'Касса'">{{ order.info['terminal_name'] }}<span
