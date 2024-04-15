@@ -145,6 +145,7 @@ class OrdersRegistryController extends ApiController
                         'buyer_email' => $order->email,
                         'buyer_phone' => $order->phone,
                         'order_type' => $order->type->name,
+                        'partner_type' => $order->partner?->type->name,
                         'partner_id' => $order->partner_id,
                         'partner' => $order->partner->name ?? null,
                         'position_id' => $order->position_id,
