@@ -26,7 +26,7 @@ class YagaTicket
                     "levelId" => $ticket->grade->id,
                     "levelName" => $ticket->grade->name,
                     "organizerInfo" => 'Алые Паруса',
-                    "pdfUrl" => $ticket->qr(),
+                    "pdfUrl" => route('external.order.print', $this->order->hash),
                 ];
         }
 

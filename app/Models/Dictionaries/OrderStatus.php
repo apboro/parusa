@@ -83,7 +83,6 @@ class OrderStatus extends AbstractDictionary
         self::promoter_paid,
         self::api_confirmed,
         self::yaga_confirmed
-
     ];
 
     public const partner_commission_pay_statuses = [

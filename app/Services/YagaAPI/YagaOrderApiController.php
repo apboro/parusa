@@ -4,7 +4,6 @@ namespace App\Services\YagaAPI;
 
 use App\Actions\CreateOrderFromYaga;
 use App\Actions\CreateTicketsFromYaga;
-use App\Http\APIResponse;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
