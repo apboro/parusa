@@ -71,6 +71,8 @@ class ProcessOrders extends Command
         // OrderStatus::showcase_wait_for_pay:
         $this->cancelShowcaseDelayed($now->addHours(-1));
         $this->cancelApiDelayed($now->subMinutes(15));
+        $this->cancelYagaDelayed($now->subMinutes(15));
+        $this->cancelPromotersDelayed($now->subMinutes(15));
 
         return 0;
     }
@@ -85,7 +87,7 @@ class ProcessOrders extends Command
     protected function destroyPartnerReserves(Carbon $now): void
     {
         $orders = Order::query()
-            ->whereIn('status_id', [OrderStatus::partner_reserve, OrderStatus::promoter_wait_for_pay, OrderStatus::yaga_reserved])
+            ->whereIn('status_id', [OrderStatus::partner_reserve])
             ->whereHas('tickets', function (Builder $query) use ($now) {
                 $query->whereHas('trip', function (Builder $query) use ($now) {
                     $query->whereRaw('DATE_SUB(`start_at`, INTERVAL `cancellation_time` MINUTE) <= \'' . $now . '\'');
@@ -138,6 +140,7 @@ class ProcessOrders extends Command
             });
         }
     }
+
     /**
      * Cancel API long delayed orders.
      *
@@ -145,12 +148,12 @@ class ProcessOrders extends Command
      *
      * @return void
      */
-    protected function cancelApiDelayed(Carbon $before): void
+    protected function cancelApiDelayed(Carbon $reserveTime): void
     {
         $orders = Order::query()
             ->with('tickets')
             ->whereIn('status_id', [OrderStatus::api_reserved])
-            ->where('created_at', '<=', $before)
+            ->where('created_at', '<=', $reserveTime)
             ->get();
 
         foreach ($orders as $order) {
@@ -158,6 +161,39 @@ class ProcessOrders extends Command
             $order->setStatus(OrderStatus::api_canceled);
             $order->tickets->map(function (Ticket $ticket) {
                 $ticket->setStatus(TicketStatus::api_canceled);
+            });
+        }
+    }
+
+    protected function cancelYagaDelayed(Carbon $reserveTime): void
+    {
+        $orders = Order::query()
+            ->with('tickets')
+            ->whereIn('status_id', [OrderStatus::yaga_reserved])
+            ->where('created_at', '<=', $reserveTime)
+            ->get();
+
+        foreach ($orders as $order) {
+            /** @var Order $order */
+            $order->setStatus(OrderStatus::yaga_canceled);
+            $order->tickets->map(function (Ticket $ticket) {
+                $ticket->setStatus(TicketStatus::yaga_canceled);
+            });
+        }
+    }
+    protected function cancelPromotersDelayed(Carbon $reserveTime): void
+    {
+        $orders = Order::query()
+            ->with('tickets')
+            ->whereIn('status_id', [OrderStatus::promoter_wait_for_pay])
+            ->where('created_at', '<=', $reserveTime)
+            ->get();
+
+        foreach ($orders as $order) {
+            /** @var Order $order */
+            $order->setStatus(OrderStatus::promoter_canceled);
+            $order->tickets->map(function (Ticket $ticket) {
+                $ticket->setStatus(TicketStatus::promoter_canceled);
             });
         }
     }
