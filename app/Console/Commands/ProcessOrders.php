@@ -41,10 +41,8 @@ class ProcessOrders extends Command
      */
     public function handle(): int
     {
-        $now = Carbon::now();
-
         // OrderStatus::partner_reserve:
-        $this->destroyPartnerReserves($now);
+        $this->destroyPartnerReserves(now());
 
         // OrderStatus::partner_paid is OK
         // OrderStatus::partner_returned - is OK
@@ -69,10 +67,10 @@ class ProcessOrders extends Command
 
         // OrderStatus::showcase_creating:
         // OrderStatus::showcase_wait_for_pay:
-        $this->cancelShowcaseDelayed($now->addHours(-1));
-        $this->cancelApiDelayed($now->subMinutes(15));
-        $this->cancelYagaDelayed($now->subMinutes(15));
-        $this->cancelPromotersDelayed($now->subMinutes(15));
+        $this->cancelShowcaseDelayed(now()->addHours(-1));
+        $this->cancelApiDelayed(now()->subMinutes(15));
+        $this->cancelYagaDelayed(now()->subMinutes(15));
+        $this->cancelPromotersDelayed(now()->subMinutes(15));
 
         return 0;
     }
@@ -98,20 +96,20 @@ class ProcessOrders extends Command
 
         foreach ($orders as $order) {
             /** @var Order $order */
-            try{
-            DB::transaction(static function() use ($order){
+            try {
+                DB::transaction(static function () use ($order) {
 
-                NevaTravelCancelOrderEvent::dispatch($order);
-                CityTourCancelOrderEvent::dispatch($order);
-                AstraMarineCancelOrderEvent::dispatch($order);
+                    NevaTravelCancelOrderEvent::dispatch($order);
+                    CityTourCancelOrderEvent::dispatch($order);
+                    AstraMarineCancelOrderEvent::dispatch($order);
 
-                $order->setStatus(OrderStatus::partner_reserve_canceled);
-                $order->tickets->map(function (Ticket $ticket) {
-                    $ticket->setStatus(TicketStatus::partner_reserve_canceled);
+                    $order->setStatus(OrderStatus::partner_reserve_canceled);
+                    $order->tickets->map(function (Ticket $ticket) {
+                        $ticket->setStatus(TicketStatus::partner_reserve_canceled);
+                    });
                 });
-            });
             } catch (Exception $exception) {
-                Log::channel('neva')->error('destroyPartnerReserves error', [$exception]);
+                Log::error('destroyPartnerReserves error', [$exception]);
             }
         }
         $this->info('All done.');
@@ -158,10 +156,21 @@ class ProcessOrders extends Command
 
         foreach ($orders as $order) {
             /** @var Order $order */
-            $order->setStatus(OrderStatus::api_canceled);
-            $order->tickets->map(function (Ticket $ticket) {
-                $ticket->setStatus(TicketStatus::api_canceled);
-            });
+            try {
+                DB::transaction(static function () use ($order) {
+
+                    NevaTravelCancelOrderEvent::dispatch($order);
+                    CityTourCancelOrderEvent::dispatch($order);
+                    AstraMarineCancelOrderEvent::dispatch($order);
+
+                    $order->setStatus(OrderStatus::api_canceled);
+                    $order->tickets->map(function (Ticket $ticket) {
+                        $ticket->setStatus(TicketStatus::api_canceled);
+                    });
+                });
+            } catch (Exception $exception) {
+                Log::error('destroy api reserve error', [$exception]);
+            }
         }
     }
 
@@ -181,6 +190,7 @@ class ProcessOrders extends Command
             });
         }
     }
+
     protected function cancelPromotersDelayed(Carbon $reserveTime): void
     {
         $orders = Order::query()
@@ -191,10 +201,21 @@ class ProcessOrders extends Command
 
         foreach ($orders as $order) {
             /** @var Order $order */
-            $order->setStatus(OrderStatus::promoter_canceled);
-            $order->tickets->map(function (Ticket $ticket) {
-                $ticket->setStatus(TicketStatus::promoter_canceled);
-            });
+            try {
+                DB::transaction(static function () use ($order) {
+
+                    NevaTravelCancelOrderEvent::dispatch($order);
+                    CityTourCancelOrderEvent::dispatch($order);
+                    AstraMarineCancelOrderEvent::dispatch($order);
+
+                    $order->setStatus(OrderStatus::promoter_canceled);
+                    $order->tickets->map(function (Ticket $ticket) {
+                        $ticket->setStatus(TicketStatus::promoter_canceled);
+                    });
+                });
+            } catch (Exception $exception) {
+                Log::error('destroy promoter reserve error', [$exception]);
+            }
         }
     }
 }
