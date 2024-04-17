@@ -176,7 +176,7 @@ class YagaOrderApiController
             Log::channel('yaga')->error($e);
         }
 
-        return response()->json(['orderNumber' => $order->id, 'status' => 'APPROVED']);
+        return response()->json(['id' => $order->id, 'orderNumber' => $order->id, 'status' => 'APPROVED', 'specificFields' => (object)[]]);
     }
 
     private function areEnoughTicketsAvailable($trip, $data): bool
