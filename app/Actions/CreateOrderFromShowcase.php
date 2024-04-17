@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Exceptions\Tickets\WrongOrderException;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\PromoCodeStatus;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
@@ -88,11 +89,15 @@ class CreateOrderFromShowcase
         $promocodeId = null;
 
         if ($promocode) {
-            $calc = \App\Helpers\Promocode::calc($promocode, $tickets, $partnerId);
-            if ($calc['status'] ?? false) {
-                $promocodeId = PromoCode::query()->where('code', mb_strtolower($promocode))->value('id');
+            $promoCode = PromoCode::query()
+                ->where('status_id', PromoCodeStatus::active)
+                ->where('code', mb_strtolower($promocode))
+                ->first();
+            if ($promoCode?->excursions->where('id', $trip->excursion_id)->count() > 0) {
+                $promocodeId = $promoCode->id;
             }
         }
+
         try {
             DB::transaction(static function () use (&$order, $tickets, $promocodeId, $backwardTickets) {
                 $order->save();
