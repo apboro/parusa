@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Helpers\Fiscal;
@@ -297,11 +298,12 @@ class TerminalCurrentOrderController extends ApiController
 
                         NevaTravelOrderPaidEvent::dispatch($order);
                         CityTourOrderPaidEvent::dispatch($order);
+                        AstraMarineOrderPaidEvent::dispatch($order);
                     }
                 }
             }
         } catch (Exception $exception) {
-            Log::channel('lifepos_payments')->error('status method error', [$exception]);
+            Log::channel('lifepos_payments')->error('error in TerminalCurrentOrderController', [$exception, $order, $payments ?? null]);
         }
 
         return APIResponse::response([

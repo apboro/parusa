@@ -3,7 +3,6 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Front\FrontendController;
 use App\Http\Controllers\TestController;
-use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {
     Route::get('/login', [AuthController::class, 'form'])->middleware('guest')->name('login');
@@ -14,7 +13,7 @@ Route::middleware('web')->group(function () {
     Route::post('/login/change', [FrontendController::class, 'change'])->middleware('auth');
 });
 
-Route::get('/test',[TestController::class, 'test']);
+Route::get('/test',[TestController::class, 'test'])->middleware(['web', 'auth']);
 
 Route::name('frontend')
     ->any('/{query?}', [FrontendController::class, 'index'])
