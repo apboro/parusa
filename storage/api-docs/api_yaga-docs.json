@@ -101,6 +101,26 @@
                 }
             }
         },
+        "/api/yaga/order-status": {
+            "post": {
+                "tags": [
+                    "Заказ"
+                ],
+                "operationId": "6fb194b3add13be66889d404088e6579",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/yaga/reserve": {
             "post": {
                 "tags": [
@@ -110,8 +130,7 @@
                 "requestBody": {
                     "content": {
                         "application/json": {
-                            "schema": {},
-                            "example": "{\n  \"created\": string,\n  \"customer\": {\n    \"email\": \"Yaga@baba.ru\",\n    \"firstName\": \"Yaga\",\n    \"lastName\": \"Baba\",\n    \"phone\": \"867676767677\"\n  },\n  \"deliveryType\": string,\n  \"eventId\": \"9\",\n  \"hallId\": \"21\",\n  \"id\": string,\n  \"items\": [\n    {\n      \"admission\": true,\n      \"categoryId\": 1030,\n      \"cost\": {\n        \"fee\": {\n          \"currencyCode\": \"RUB\",\n          \"value\": 0\n        },\n        \"price\": {\n          \"currencyCode\": \"RUB\",\n          \"value\": \"150\"\n        },\n        \"total\": {\n          \"currencyCode\": \"RUB\",\n          \"value\": \"150\"\n        }\n      },\n      \"levelId\": 17,\n    }\n  ],\n  \"orderNumber\": string,\n  \"paymentType\": string,\n  \"reservationTimeout\": string,\n  \"sessionId\": \"181753\",\n  \"sessionTime\": {\n    \"sessionEnd\": string,\n    \"sessionStart\": string,\n    \"timezone\": string,\n    \"type\": string\n  },\n  \"sum\": {\n    \"fee\": {\n      \"currencyCode\": \"RUB\",\n      \"value\": \"0\"\n    },\n    \"price\": {\n      \"currencyCode\": \"RUB\",\n      \"value\": \"150\"\n    },\n    \"total\": {\n      \"currencyCode\": \"RUB\",\n      \"value\": \"150\"\n    }\n  },\n  \"venueId\": \"21\"\n}"
+                            "schema": {}
                         }
                     }
                 },
