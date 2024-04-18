@@ -15,7 +15,9 @@ use App\Services\YagaAPI\Model\AvailableSeats;
 use App\Services\YagaAPI\Model\OrderInfo;
 use App\Services\YagaAPI\Requests\Order\ApproveOrderRequest;
 use App\Services\YagaAPI\Requests\Order\AvailableSeatsRequest;
+use App\Services\YagaAPI\Requests\Order\CancelOrderRequest;
 use App\Services\YagaAPI\Requests\Order\OrderInfoRequest;
+use App\Services\YagaAPI\Requests\Order\OrderStatusRequest;
 use App\Services\YagaAPI\Requests\Order\ReserveTicketsRequest;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -136,17 +138,31 @@ class YagaOrderApiController
         return response()->json((new OrderInfo($order))->getResource());
     }
 
-    public function orderStatus()
+    public function orderStatus(OrderStatusRequest $request): JsonResponse
     {
+        $order = Order::with('status')->find($request->id);
+        $status = match ($order->status->id) {
+            OrderStatus::yaga_confirmed => 'APPROVED',
+            OrderStatus::yaga_reserved => 'RESERVED',
+            OrderStatus::yaga_canceled => 'CANCELLED',
+            default => 'UNDEFINED_ORDER_STATUS'
+        };
+
+        return response()->json([
+            "id" => $order->id,
+            "orderNumber" => $order->id,
+            "specificFields" => (object)[],
+            "status" => $status
+        ]);
     }
 
-    public function cancelOrder()
+    public function cancelOrder(CancelOrderRequest $request)
     {
+        $order = Order::with('status')->find($request->id);
+
+
     }
 
-    public function checkPromocode()
-    {
-    }
 
     public function clearReservation()
     {

@@ -91,7 +91,7 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::terminal_paid => ['name' => 'Оплачен'],
             TicketStatus::terminal_wait_for_return => ['name' => 'Ожидает возврата'],
             TicketStatus::terminal_returned => ['name' => 'Оформлен возврат'],
-            TicketStatus::terminal_canceled => ['name' => 'Оплачен'],
+            TicketStatus::terminal_canceled => ['name' => 'Отменён'],
             TicketStatus::showcase_creating => ['name' => 'Оформление'],
             TicketStatus::showcase_wait_for_pay => ['name' => 'Ожидает оплаты'],
             TicketStatus::showcase_paid => ['name' => 'Оплачен'],
