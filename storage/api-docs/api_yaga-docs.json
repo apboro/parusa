@@ -81,6 +81,46 @@
                 }
             }
         },
+        "/api/yaga/cancel-order": {
+            "post": {
+                "tags": [
+                    "Заказ"
+                ],
+                "operationId": "af31866747ca7525da4d8c9bfa69ea1e",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/yaga/clear-reservation": {
+            "post": {
+                "tags": [
+                    "Заказ"
+                ],
+                "operationId": "d6831056dbd7d9879b6413ab70196c9b",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/yaga/order-info": {
             "post": {
                 "tags": [

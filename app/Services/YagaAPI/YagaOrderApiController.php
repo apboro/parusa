@@ -16,6 +16,7 @@ use App\Services\YagaAPI\Model\OrderInfo;
 use App\Services\YagaAPI\Requests\Order\ApproveOrderRequest;
 use App\Services\YagaAPI\Requests\Order\AvailableSeatsRequest;
 use App\Services\YagaAPI\Requests\Order\CancelOrderRequest;
+use App\Services\YagaAPI\Requests\Order\ClearReservationRequest;
 use App\Services\YagaAPI\Requests\Order\OrderInfoRequest;
 use App\Services\YagaAPI\Requests\Order\OrderStatusRequest;
 use App\Services\YagaAPI\Requests\Order\ReserveTicketsRequest;
@@ -156,16 +157,65 @@ class YagaOrderApiController
         ]);
     }
 
-    public function cancelOrder(CancelOrderRequest $request)
+    public function cancelOrder(CancelOrderRequest $request): JsonResponse
     {
-        $order = Order::with('status')->find($request->id);
+        $order = Order::with(['status', 'tickets', 'tickets.trip'])->find($request->id);
 
+        if ($order->hasStatus(OrderStatus::yaga_confirmed)) {
+            foreach ($order->tickets as $ticket) {
+                if ($ticket->trip->start_at > now()->addMinutes($ticket->trip->cancellation_time)) {
+                    $ticket->setStatus(TicketStatus::yaga_canceled);
+                } else {
+                    return response()->json(['message' => 'Срок для отмены заказа прошёл']);
+                }
+            }
+            $order->setStatus(OrderStatus::yaga_canceled);
+        } else {
+            return response()->json(['message' => 'Неверный статус для отмены']);
+        }
+        $statusId = $order->status_id;
+        $status = match ($statusId) {
+            OrderStatus::yaga_confirmed => 'APPROVED',
+            OrderStatus::yaga_reserved => 'RESERVED',
+            OrderStatus::yaga_canceled => 'CANCELLED',
+            default => 'UNDEFINED_ORDER_STATUS'
+        };
 
+        return response()->json([
+            "id" => $order->id,
+            "orderNumber" => $order->id,
+            "specificFields" => (object)[],
+            "status" => $status
+        ]);
     }
 
 
-    public function clearReservation()
+    public function clearReservation(ClearReservationRequest $request)
     {
+        $order = Order::with(['status', 'tickets', 'tickets.trip'])->find($request->id);
+
+        if ($order->hasStatus(OrderStatus::yaga_reserved)) {
+            foreach ($order->tickets as $ticket) {
+                $ticket->setStatus(TicketStatus::yaga_canceled);
+            }
+            $order->setStatus(OrderStatus::yaga_canceled);
+        } else {
+            return response()->json(['message' => 'Неверный статус для отмены']);
+        }
+        $statusId = $order->status_id;
+        $status = match ($statusId) {
+            OrderStatus::yaga_confirmed => 'APPROVED',
+            OrderStatus::yaga_reserved => 'RESERVED',
+            OrderStatus::yaga_canceled => 'CANCELLED',
+            default => 'UNDEFINED_ORDER_STATUS'
+        };
+
+        return response()->json([
+            "id" => $order->id,
+            "orderNumber" => $order->id,
+            "specificFields" => (object)[],
+            "status" => $status
+        ]);
     }
 
     public function approve(ApproveOrderRequest $request): JsonResponse
