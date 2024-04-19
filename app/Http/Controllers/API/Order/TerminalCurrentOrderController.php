@@ -303,7 +303,10 @@ class TerminalCurrentOrderController extends ApiController
                 }
             }
         } catch (Exception $exception) {
-            Log::channel('lifepos_payments')->error('error in TerminalCurrentOrderController', [$exception, $order, $payments ?? null]);
+            Log::channel('lifepos_payments')->error('error in TerminalCurrentOrderController: ' . $exception->getMessage() .' '.$exception->getFile() . ' '. $exception->getLine()
+            . ' order id: ' . $order->id
+            . ' order external_id: ' . $order->external_id
+            . ' payments array from lifePos: ' . json_encode($payments ?? null));
         }
 
         return APIResponse::response([

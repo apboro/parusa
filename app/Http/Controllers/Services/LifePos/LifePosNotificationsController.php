@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Services\LifePos;
 
+use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourCancelOrderEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelCancelOrderEvent;
@@ -142,6 +143,7 @@ class LifePosNotificationsController extends ApiController
                     Log::channel('neva')->info('terminal_finishing');
                     NevaTravelOrderPaidEvent::dispatch($order);
                     CityTourOrderPaidEvent::dispatch($order);
+                    AstraMarineOrderPaidEvent::dispatch($order);
 
 
                 } else if ($order && $order->terminal_id !== null && !$order->hasStatus(OrderStatus::terminal_finishing)) {
@@ -155,6 +157,7 @@ class LifePosNotificationsController extends ApiController
                     Log::channel('neva')->info('terminal_paid');
                     NevaTravelOrderPaidEvent::dispatch($order);
                     CityTourOrderPaidEvent::dispatch($order);
+                    AstraMarineOrderPaidEvent::dispatch($order);
 
                 } else {
                     Log::channel('lifepos_payments')->error(sprintf('LifePos [SalePayment:%s] - order not found', $input['guid']));
@@ -164,7 +167,7 @@ class LifePosNotificationsController extends ApiController
                 Log::channel('lifepos_payments')->error(sprintf('LifePos [SalePayment]  error: GUID not set. Request content: %s', json_encode($input)));
             }
         } catch (Exception $exception) {
-            Log::channel('lifepos_payments')->error(sprintf('LifePos [SalePayment:%s] - %s', $input['guid'], $exception->getMessage()));
+            Log::channel('lifepos_payments')->error(sprintf('LifePos notification [SalePayment:%s] - %s', $input['guid'], $exception->getMessage()));
             Log::channel('lifepos_payments')->info('Request content: ' . json_encode($input));
         }
     }
