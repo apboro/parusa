@@ -3,6 +3,7 @@
 namespace App\Services\AstraMarine;
 
 use App\Exceptions\AstraMarine\AstraMarineNoTicketException;
+use App\Http\APIResponse;
 use App\Models\Dictionaries\Provider;
 use App\Models\Order\Order;
 use App\Models\Ships\Seats\Seat;
@@ -41,7 +42,7 @@ class AstraMarineOrder
         }
     }
 
-    public function registerOrder(): void
+    public function registerOrder()
     {
         $orders = $this->getOrdersQueryData();
 
@@ -53,7 +54,14 @@ class AstraMarineOrder
             'order' => $orders,
         ]);
 
-        $this->saveTicketsBarcodes($response['body']);
+        if ($response['body']['isOrderRegistered']) {
+            $this->saveTicketsBarcodes($response['body']);
+        } else {
+
+            return APIResponse::error('Не удалось оформить заказ:' . $response['body']['descriptionRegistredOrder']);
+        }
+
+        return APIResponse::success('Заказ зарезервирован');
     }
 
     public function getTickets(): Collection|array
@@ -85,7 +93,7 @@ class AstraMarineOrder
     public function saveTicketsBarcodes(array $orderedTickets): void
     {
         foreach ($orderedTickets['orderedSeats'] as $orderedTicket) {
-            $ticket = $this->tickets->first(function ($ticket) use ($orderedTicket){
+            $ticket = $this->tickets->first(function ($ticket) use ($orderedTicket) {
                 return $ticket->grade->provider_ticket_type_id == $orderedTicket['ticketTypeID']
                     && $ticket->grade->provider_category_id == $orderedTicket['seatCategoryID']
                     && $ticket->grade->provider_price_type_id == $orderedTicket['priceTypeID'];
@@ -110,7 +118,7 @@ class AstraMarineOrder
     {
         $order_id_formatted = number_format($this->order->id, 0, '', ' ');
         $order = explode(' ', $order_id_formatted);
-        $dataOrder = $order[0]."\xC2\xA0".$order[1];
+        $dataOrder = $order[0] . "\xC2\xA0" . $order[1];
         $this->astraMarineRepository->returnOrder(["orderID" => $dataOrder]);
     }
 
@@ -118,7 +126,7 @@ class AstraMarineOrder
     {
         $order_id_formatted = number_format($this->order->id, 0, '', ' ');
         $order = explode(' ', $order_id_formatted);
-        $dataOrder = $order[0]."\xC2\xA0".$order[1];
+        $dataOrder = $order[0] . "\xC2\xA0" . $order[1];
         return $this->astraMarineRepository->getOrder(["orderID" => $dataOrder]);
     }
 
