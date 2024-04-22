@@ -7,6 +7,8 @@ use App\Http\APIResponse;
 use App\Models\Dictionaries\Provider;
 use App\Models\Order\Order;
 use App\Models\Ships\Seats\Seat;
+use Exception;
+use http\Exception\RuntimeException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -60,10 +62,12 @@ class AstraMarineOrder
                 $this->saveTicketsBarcodes($response['body']);
             } else {
 
-                return APIResponse::error('Не удалось оформить заказ:' . $response['body']['descriptionRegistredOrder']);
+                throw new RuntimeException('Не удалось оформить заказ:' . $response['body']['descriptionRegistredOrder']);
             }
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
+
             Log::channel('astra-marine')->error($exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
+            throw new RuntimeException('Не удалось оформить заказ:' . $exception->getMessage());
         }
 
         return null;
@@ -98,7 +102,7 @@ class AstraMarineOrder
     public function saveTicketsBarcodes(array $orderedTickets): void
     {
         foreach ($orderedTickets['orderedSeats'] as $orderedTicket) {
-            $ticket = $this->tickets->first(function ($ticket) use ($orderedTicket){
+            $ticket = $this->tickets->first(function ($ticket) use ($orderedTicket) {
                 return $ticket->grade->provider_ticket_type_id == $orderedTicket['ticketTypeID']
                     && $ticket->grade->provider_category_id == $orderedTicket['seatCategoryID']
                     && $ticket->grade->provider_price_type_id == $orderedTicket['priceTypeID'];
@@ -118,9 +122,17 @@ class AstraMarineOrder
                 'orderID' => $this->order->id,
                 'orderConfirm' => true,
             ]);
-            Log::channel('astra-marine')->notice('confirm order success: ' . json_encode($response['body']));
-        } catch (\Exception $exception) {
-            Log::channel('astra-marine')->error('confirm order error: ' .$exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
+
+            if ($response['body']['orderPaymentConfirmed']) {
+                Log::channel('astra-marine')->notice('confirm order success: ' . json_encode($response['body']));
+            } else {
+                throw new RuntimeException('Не удалось оформить заказ:' . $response['body']['descriptionOrderPayment']);
+            }
+
+        } catch (Exception $exception) {
+
+            Log::channel('astra-marine')->error('confirm order error: ' . $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
+            throw new RuntimeException('Не удалось оформить заказ:' . $exception->getMessage());
         }
     }
 
@@ -132,8 +144,8 @@ class AstraMarineOrder
             $dataOrder = $order[0] . "\xC2\xA0" . $order[1];
             $response = $this->astraMarineRepository->returnOrder(["orderID" => $dataOrder]);
             Log::channel('astra-marine')->notice('cancel order success: ' . json_encode($response));
-        } catch (\Exception $exception) {
-            Log::channel('astra-marine')->error('cancel order error: '. $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
+        } catch (Exception $exception) {
+            Log::channel('astra-marine')->error('cancel order error: ' . $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
         }
     }
 
@@ -141,7 +153,7 @@ class AstraMarineOrder
     {
         $order_id_formatted = number_format($this->order->id, 0, '', ' ');
         $order = explode(' ', $order_id_formatted);
-        $dataOrder = $order[0]."\xC2\xA0".$order[1];
+        $dataOrder = $order[0] . "\xC2\xA0" . $order[1];
         return $this->astraMarineRepository->getOrder(["orderID" => $dataOrder]);
     }
 
