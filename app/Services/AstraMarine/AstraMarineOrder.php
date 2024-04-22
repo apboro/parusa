@@ -7,6 +7,8 @@ use App\Models\Dictionaries\Provider;
 use App\Models\Order\Order;
 use App\Models\Ships\Seats\Seat;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class AstraMarineOrder
 {
@@ -43,17 +45,27 @@ class AstraMarineOrder
 
     public function registerOrder(): void
     {
-        $orders = $this->getOrdersQueryData();
+        try {
+            $orders = $this->getOrdersQueryData();
+            $response = $this->astraMarineRepository->registerOrder([
+                "sessionID" => md5($this->order->phone),
+                "orderID" => $this->order->id,
+                "paymentTypeID" => "000000002",
+                "email" => "info@parus-a.ru",
+                'order' => $orders,
+            ]);
+            if ($response['body']['isOrderRegistred']) {
+                Log::channel('astra-marine')->notice('register order success: ' . json_encode($response));
+                $this->saveTicketsBarcodes($response['body']);
+            } else {
 
-        $response = $this->astraMarineRepository->registerOrder([
-            "sessionID" => md5($this->order->phone),
-            "orderID" => $this->order->id,
-            "paymentTypeID" => "000000002",
-            "email" => "info@parus-a.ru",
-            'order' => $orders,
-        ]);
+                return APIResponse::error('Не удалось оформить заказ:' . $response['body']['descriptionRegistredOrder']);
+            }
+        } catch (\Exception $exception) {
+            Log::channel('astra-marine')->error($exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
+        }
 
-        $this->saveTicketsBarcodes($response['body']);
+        return null;
     }
 
     public function getTickets(): Collection|array
@@ -100,18 +112,28 @@ class AstraMarineOrder
 
     public function confirmOrder()
     {
-        $this->astraMarineRepository->confirmPayment([
-            'orderID' => $this->order->id,
-            'orderConfirm' => true,
-        ]);
+        try {
+            $response = $this->astraMarineRepository->confirmPayment([
+                'orderID' => $this->order->id,
+                'orderConfirm' => true,
+            ]);
+            Log::channel('astra-marine')->notice('confirm order success: ' . json_encode($response));
+        } catch (\Exception $exception) {
+            Log::channel('astra-marine')->error('confirm order error: ' .$exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
+        }
     }
 
     public function cancel()
     {
-        $order_id_formatted = number_format($this->order->id, 0, '', ' ');
-        $order = explode(' ', $order_id_formatted);
-        $dataOrder = $order[0]."\xC2\xA0".$order[1];
-        $this->astraMarineRepository->returnOrder(["orderID" => $dataOrder]);
+        try {
+            $order_id_formatted = number_format($this->order->id, 0, '', ' ');
+            $order = explode(' ', $order_id_formatted);
+            $dataOrder = $order[0] . "\xC2\xA0" . $order[1];
+            $response = $this->astraMarineRepository->returnOrder(["orderID" => $dataOrder]);
+            Log::channel('astra-marine')->notice('cancel order success: ' . json_encode($response));
+        } catch (\Exception $exception) {
+            Log::channel('astra-marine')->error('cancel order error: '. $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
+        }
     }
 
     public function getOrder()
