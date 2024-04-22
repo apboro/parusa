@@ -3,6 +3,7 @@
 namespace App\Services\AstraMarine;
 
 use App\Exceptions\AstraMarine\AstraMarineNoTicketException;
+use App\Http\APIResponse;
 use App\Models\Dictionaries\Provider;
 use App\Models\Order\Order;
 use App\Models\Ships\Seats\Seat;
@@ -43,7 +44,7 @@ class AstraMarineOrder
         }
     }
 
-    public function registerOrder(): void
+    public function registerOrder(): null|JsonResponse
     {
         try {
             $orders = $this->getOrdersQueryData();
