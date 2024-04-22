@@ -8,6 +8,7 @@ use App\Models\Dictionaries\Provider;
 use App\Models\Order\Order;
 use App\Models\Ships\Seats\Seat;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 
 class AstraMarineOrder
 {
@@ -42,7 +43,7 @@ class AstraMarineOrder
         }
     }
 
-    public function registerOrder()
+    public function registerOrder(): null|JsonResponse
     {
         $orders = $this->getOrdersQueryData();
 
@@ -54,14 +55,14 @@ class AstraMarineOrder
             'order' => $orders,
         ]);
 
-        if ($response['body']['isOrderRegistered']) {
+        if ($response['body']['isOrderRegistred']) {
             $this->saveTicketsBarcodes($response['body']);
         } else {
 
             return APIResponse::error('Не удалось оформить заказ:' . $response['body']['descriptionRegistredOrder']);
         }
 
-        return APIResponse::success('Заказ зарезервирован');
+        return null;
     }
 
     public function getTickets(): Collection|array
