@@ -51,12 +51,12 @@ class AstraMarineOrder
             $response = $this->astraMarineRepository->registerOrder([
                 "sessionID" => md5($this->order->phone),
                 "orderID" => $this->order->id,
-                "paymentTypeID" => "000000002",
+                "paymentTypeID" => "000000001",
                 "email" => "info@parus-a.ru",
                 'order' => $orders,
             ]);
             if ($response['body']['isOrderRegistred']) {
-                Log::channel('astra-marine')->notice('register order success: ' . json_encode($response));
+                Log::channel('astra-marine')->notice('register order success: ' . json_encode($response['body']));
                 $this->saveTicketsBarcodes($response['body']);
             } else {
 
@@ -118,7 +118,7 @@ class AstraMarineOrder
                 'orderID' => $this->order->id,
                 'orderConfirm' => true,
             ]);
-            Log::channel('astra-marine')->notice('confirm order success: ' . json_encode($response));
+            Log::channel('astra-marine')->notice('confirm order success: ' . json_encode($response['body']));
         } catch (\Exception $exception) {
             Log::channel('astra-marine')->error('confirm order error: ' .$exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
         }
