@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PromoterMakeOrderController extends ApiEditController
 {
@@ -88,7 +89,7 @@ class PromoterMakeOrderController extends ApiEditController
 
 
         } catch (Exception $exception) {
-
+            Log::error('promoter make order error: ' . $exception->getMessage(). ' ' . $exception->getFile(). ' '.$exception->getLine());
             return APIResponse::error($exception->getMessage());
         }
 
