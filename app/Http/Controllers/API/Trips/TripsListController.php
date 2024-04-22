@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Http\Resources\StopResource;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketStatus;
@@ -130,6 +131,7 @@ class TripsListController extends ApiController
                 'has_return_trip' => $trip->excursion->has_return_trip,
                 'trip_provider' => $trip->excursion->additionalData?->provider_id,
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
+                'stops' => StopResource::collection($trip->stops),
             ];
         });
 

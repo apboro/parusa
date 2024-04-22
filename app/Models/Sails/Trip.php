@@ -19,6 +19,7 @@ use App\Models\Piers\Pier;
 use App\Models\Ships\Ship;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketsRatesList;
+use App\Models\TripStop;
 use App\Settings;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
@@ -403,6 +404,11 @@ class Trip extends Model implements Statusable
                 $query->whereDate('start_at', '<=', now())
                     ->whereDate('end_at', '>=', now());
             });
+    }
+
+    public function stops()
+    {
+        return $this->hasMany(TripStop::class, 'trip_id', 'id');
     }
 
 

@@ -10,6 +10,7 @@ use App\Models\Dictionaries\TripStatus;
 use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
+use App\Models\TripStop;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -143,6 +144,17 @@ class TripEditController extends ApiEditController
         if (!$trip->exists) {
             $trip = $this->fillTrip($trip, $data, Carbon::parse($data['start_at']), Carbon::parse($data['end_at']));
             $trip->save();
+            foreach ($request->middle_piers as $stop_index){
+                $stop_index +=1;
+                TripStop::create([
+                    'trip_id' => $trip->id,
+                    'stop_pier_id' => $data['middle_pier_id_'. $stop_index] ?? null,
+                    'start_at' => $data['middle_start_at_'. $stop_index] ?? null,
+                    'terminal_price' => $data['middle_terminal_price_'. $stop_index] ?? null,
+                    'partner_price' => $data['middle_partner_price_'. $stop_index] ?? null,
+                    'site_price' => $data['middle_site_price_'. $stop_index] ?? null,
+                ]);
+            }
 
             $message = 'Рейс добавлен';
             if (in_array($mode, ['range', 'weekly'])) {

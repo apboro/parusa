@@ -5,29 +5,79 @@
                 :link-title="'К списку рейсов'"
     >
         <GuiContainer mt-20 w-700px>
-            <FormDictionary :form="form" :name="'start_pier_id'" :dictionary="'piers'" :fresh="true" :search="true" @change="startPierChanged"/>
+            <FormDictionary :form="form" :name="'start_pier_id'" :dictionary="'piers'" :fresh="true" :search="true"
+                            @change="startPierChanged"/>
             <FormDateTime :form="form" :name="'start_at'" :to="start_end_match ? null : form.values['end_at']"
                           :clearable="true" :pick-on-clear="true" @change="startDateChanged"
                           :date-disabled="tripId !== 0"
             />
+            <div v-for="(pier, index) in middle_piers" :key="index">
+                <div style="background: rgb(250 247 247);; margin: 10px 0 10px 0;">
+                    <FormDictionary
+                        :form="form"
+                        :title="'Промежуточный причал '+ [++index]"
+                        :placeholder="'Выберите причал'"
+                        :name="'middle_pier_id_'+[index]"
+                        :dictionary="'piers'"
+                        :fresh="true"
+                        :search="true"
+                        @change="startPierChanged(index)"
+                    />
+                    <FormDateTime
+                        :form="form"
+                        :title="'Время прибытия'"
+                        :name="'middle_start_at_'+[index]"
+                        :from="form.values['start_at']"
+                        :clearable="true"
+                        :pick-on-clear="true"
+                        @change="startDateChanged(index)"
+                        :date-disabled="true"
+                    />
+                    <FormNumber
+                        :form="form"
+                        :name="'middle_terminal_price_'+[index]"
+                        :placeholder="'Введите цену'"
+                        :title="'Цена кассы'"
+                    />
+                    <FormNumber
+                        :form="form"
+                        :name="'middle_partner_price_'+[index]"
+                        :placeholder="'Введите цену'"
+                        :title="'Цена партнёра'"
+                    />
+                    <FormNumber
+                        :form="form"
+                        :name="'middle_site_price_'+[index]"
+                        :placeholder="'Введите цену'"
+                        :title="'Цена витрины'"
+                    />
+                </div>
+            </div>
+
             <GuiContainer mt-5 mb-10>
-                <InputCheckbox v-model="start_end_match" :label="'Дата и причал прибытия совпадают с отправлением'" @change="matchModeChanged"/>
+                <InputCheckbox v-model="start_end_match" :label="'Дата и причал прибытия совпадают с отправлением'"
+                               @change="matchModeChanged"/>
             </GuiContainer>
-            <FormDictionary :form="form" :name="'end_pier_id'" :dictionary="'piers'" :fresh="true" :search="true" :disabled="start_end_match"/>
+            <FormDictionary :form="form" :name="'end_pier_id'" :dictionary="'piers'" :fresh="true" :search="true"
+                            :disabled="start_end_match"/>
             <FormDateTime :form="form" :name="'end_at'" :from="form.values['start_at']"
                           :clearable="true" :pick-on-clear="true"
                           :date-disabled="start_end_match || tripId !== 0"
             />
         </GuiContainer>
 
+
         <GuiContainer mt-20 w-700px>
-            <FormDictionary :form="form" :name="'ship_id'" :dictionary="'ships'" :fresh="true" :search="true" @change="shipSelected"/>
-            <FormDictionary :form="form" :name="'excursion_id'" :dictionary="'excursions'" :fresh="true" :search="true"/>
+            <FormDictionary :form="form" :name="'ship_id'" :dictionary="'ships'" :fresh="true" :search="true"
+                            @change="shipSelected"/>
+            <FormDictionary :form="form" :name="'excursion_id'" :dictionary="'excursions'" :fresh="true"
+                            :search="true"/>
         </GuiContainer>
 
         <GuiContainer mt-20 w-700px>
             <FormNumber :form="form" :name="'tickets_total'"/>
-            <FormDictionary :form="form" :name="'discount_status_id'" :dictionary="'trip_discount_statuses'" :fresh="true"/>
+            <FormDictionary :form="form" :name="'discount_status_id'" :dictionary="'trip_discount_statuses'"
+                            :fresh="true"/>
             <FormNumber :form="form" :name="'cancellation_time'"/>
         </GuiContainer>
 
@@ -40,7 +90,8 @@
                            :show="'name'"
                            :top="true"
             />
-            <FieldDaysOfWeek v-model="create_days" v-if="create_mode === 'weekly'" :title="'Дни'" :valid="!days_error" @change="daysChanged"/>
+            <FieldDaysOfWeek v-model="create_days" v-if="create_mode === 'weekly'" :title="'Дни'" :valid="!days_error"
+                             @change="daysChanged"/>
             <FieldDate v-model="create_until" v-if="create_mode === 'range' || create_mode === 'weekly'"
                        :title="'Повторять до (включительно)'"
                        :from="form.values['start_at']"
@@ -51,7 +102,8 @@
 
         <GuiContainer mt-30 w-700px v-else-if="chained">
             <GuiHeading mb-15>Связанные рейсы</GuiHeading>
-            <InputCheckbox v-model="edit_chained" :label="'Применить корректировки для связанных рейсов'" @change="editModeChanged"/>
+            <InputCheckbox v-model="edit_chained" :label="'Применить корректировки для связанных рейсов'"
+                           @change="editModeChanged"/>
             <GuiContainer mt-15 v-if="edit_chained">
                 <FieldWrapper :title="'Изменить в диапазоне'">
                     <GuiContainer w-50 pr-5 flex>
@@ -60,7 +112,8 @@
                     </GuiContainer>
                     <GuiContainer w-50 pl-5 flex>
                         <GuiText mr-5 pt-10>До:</GuiText>
-                        <InputDate v-model="edit_to" :from="edit_from" :to="edit_max" @change="dateEditToChanged" :valid="!date_error"/>
+                        <InputDate v-model="edit_to" :from="edit_from" :to="edit_max" @change="dateEditToChanged"
+                                   :valid="!date_error"/>
                     </GuiContainer>
                 </FieldWrapper>
                 <GuiText mt-20 mb-20>
@@ -75,9 +128,12 @@
         </GuiText>
 
         <GuiContainer mt-30 w-700px>
-            <GuiButton @clicked="save" :color="'green'" :disabled="!can_edit">{{ tripId === 0 ? 'Добавить' : 'Применить' }}{{ buttonCount ? ' (' + buttonCount + ')' : '' }}
+            <GuiButton @clicked="save" :color="'green'" :disabled="!can_edit">{{
+                    tripId === 0 ? 'Добавить' : 'Применить'
+                }}{{ buttonCount ? ' (' + buttonCount + ')' : '' }}
             </GuiButton>
             <GuiButton @click="cancel">Отмена</GuiButton>
+            <GuiButton @click="addPier">Добавить причал</GuiButton>
         </GuiContainer>
 
     </LayoutPage>
@@ -122,6 +178,8 @@ export default {
         form: form('/api/trips/get', '/api/trips/update', {}),
         start_end_match: true,
         loading_info: false,
+
+        middle_piers: [],
 
         create_mode: 'single',
         create_days: [],
@@ -218,7 +276,10 @@ export default {
 
         const query = this.$route.query;
 
-        this.form.load({id: this.tripId, create_from: typeof query['from'] !== "undefined" && query['from'] !== null ? query['from'] : null})
+        this.form.load({
+            id: this.tripId,
+            create_from: typeof query['from'] !== "undefined" && query['from'] !== null ? query['from'] : null
+        })
             .then(response => {
                 if (this.tripId === 0) {
                     if (typeof query['pier'] !== "undefined" && query['pier'] !== null) {
@@ -251,6 +312,9 @@ export default {
     },
 
     methods: {
+        addPier() {
+            this.middle_piers.push(this.middle_piers.length);
+        },
         save() {
             if (!this.form.validate()) {
                 return;
@@ -278,7 +342,7 @@ export default {
             let mode = this.tripId === 0 ? this.create_mode : (this.edit_chained ? 'range' : 'single');
             let to = this.tripId === 0 ? this.create_until : this.edit_to;
             let days = this.tripId === 0 ? this.create_days : null;
-            this.form.save({id: this.tripId, mode: mode, to: to, days: days})
+            this.form.save({id: this.tripId, mode: mode, to: to, days: days, middle_piers: this.middle_piers})
                 .then(() => {
                     if (this.tripId === 0) {
                         const newId = this.form.payload['id'];
@@ -346,7 +410,11 @@ export default {
                 return;
             }
             this.loading_info = true;
-            axios.post('/api/trips/info', {id: this.tripId, mode: this.edit_chained ? 'range' : 'single', to: this.edit_to})
+            axios.post('/api/trips/info', {
+                id: this.tripId,
+                mode: this.edit_chained ? 'range' : 'single',
+                to: this.edit_to
+            })
                 .then(response => {
                     this.count = response.data.data['count'];
                     this.can_edit = response.data.data['operable'];

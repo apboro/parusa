@@ -122,6 +122,13 @@
                 </ListTableResponsiveCell>
                 <ListTableResponsiveCell :mobile-title="list.titles[3]">
                     <div>{{ trip['pier'] }}</div>
+
+                    <div v-if="trip['stops'].length > 0">
+                        <div v-for="stop in trip['stops']">
+                            {{stop.pier.name}} - {{stop.start_at}}
+                        </div>
+                    </div>
+
                     <div>{{ trip['ship'] }}</div>
                 </ListTableResponsiveCell>
                 <ListTableResponsiveCell :mobile-title="list.titles[4]">
