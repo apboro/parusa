@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Events\AstraMarineNewOrderEvent;
+use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourCancelOrderEvent;
+use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelCancelOrderEvent;
+use App\Events\NevaTravelOrderPaidEvent;
+use App\Events\NewCityTourOrderEvent;
+use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Account\AccountTransaction;
@@ -22,6 +28,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderInstantPayController extends ApiController
 {
@@ -66,13 +73,18 @@ class OrderInstantPayController extends ApiController
                     $ticket->setStatus(TicketStatus::promoter_paid);
                 }
                 $order->setStatus(OrderStatus::promoter_paid);
-            });
 
-            // pay commissions
-            $order->payCommissions();
+                NevaTravelOrderPaidEvent::dispatch($order);
+                CityTourOrderPaidEvent::dispatch($order);
+                AstraMarineOrderPaidEvent::dispatch($order);
+
+                // pay commissions
+                $order->payCommissions();
+            });
 
         } catch (Exception $exception) {
 
+            Log::error($exception);
             return APIResponse::error($exception->getMessage());
         }
 

@@ -132,10 +132,22 @@ class ProcessOrders extends Command
 
         foreach ($orders as $order) {
             /** @var Order $order */
-            $order->setStatus(OrderStatus::showcase_canceled);
-            $order->tickets->map(function (Ticket $ticket) {
-                $ticket->setStatus(TicketStatus::showcase_canceled);
-            });
+
+            try {
+                DB::transaction(static function () use ($order) {
+
+                    $order->setStatus(OrderStatus::showcase_canceled);
+                    $order->tickets->map(function (Ticket $ticket) {
+                        $ticket->setStatus(TicketStatus::showcase_canceled);
+                    });
+
+                    NevaTravelCancelOrderEvent::dispatch($order);
+                    CityTourCancelOrderEvent::dispatch($order);
+                    AstraMarineCancelOrderEvent::dispatch($order);
+                });
+            } catch (Exception $exception) {
+                Log::error('destroy showcase reserve error', [$exception]);
+            }
         }
     }
 
