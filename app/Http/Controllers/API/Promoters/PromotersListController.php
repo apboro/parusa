@@ -43,21 +43,10 @@ class PromotersListController extends ApiController
 
         Hit::register(HitSource::admin);
 
-        $partnersWithOpenShiftsOnOtherTerminals = null;
-        if ($current->terminalId()) {
-            $partnersWithOpenShiftsOnOtherTerminals = Partner::query()
-                ->whereHas('workShifts', function ($query) use ($current) {
-                    $query->whereNull('end_at')->where('terminal_id', '!=', $current->terminalId());
-                })->pluck('id');
-        }
-
         $query = Partner::query()
             ->with(['type', 'status', 'positions', 'positions.user.profile', 'positions.user', 'profile'])
             ->with(['workShifts' => fn($q) => $q->orderBy('start_at', 'asc')])
-            ->where('type_id', PartnerType::promoter)
-            ->when($current->terminalId(), function ($query) use ($partnersWithOpenShiftsOnOtherTerminals) {
-                $query->whereNotIn('id', $partnersWithOpenShiftsOnOtherTerminals);
-            });
+            ->where('type_id', PartnerType::promoter);
 
         // apply filters
         if (!empty($filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey))) {
