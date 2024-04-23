@@ -15,13 +15,15 @@
                 total: 'Сводка',
                 details: 'Персональные данные',
                 access: 'Доступ',
-                inventory: 'Инвентарь'
+                inventory: 'Инвентарь',
+                account: 'Лицевой счёт'
             }" @change="tab = $event"/>
 
             <PromoterTotal v-if="tab === 'total'" :partnerId="partnerId" :data="data.data" @update="update"/>
             <PromoterInfo v-if="tab === 'details'" :data="data.data" :partner-id="partnerId" :editable="true" @update="update"/>
             <RepresentativeAccess v-if="tab === 'access'" :representative-id="data.data.representativeId" :data="data.data" :editable="true" @update="update"/>
             <PromotersInventory v-if="tab === 'inventory'" :promoterId="partnerId"/>
+            <PromoterAccount v-if="tab === 'account'" :partnerId="partnerId"/>
         </template>
     </LayoutPage>
 </template>
@@ -46,9 +48,11 @@ import RepresentativeAccess from "@/Pages/Admin/Representatives/Parts/Representa
 import PromoterInfo from "@/Pages/Admin/Promoters/Parts/PromoterInfo.vue";
 import PromotersInventory from "@/Pages/Admin/Promoters/Parts/PromotersInventory.vue";
 import PromoterTotal from "@/Pages/Terminal/Parts/PromoterTotal.vue";
+import PromoterAccount from "@/Pages/Terminal/Parts/PromoterAccount.vue";
 
 export default {
     components: {
+        PromoterAccount,
         PromoterTotal,
         PromotersInventory,
         PromoterInfo,

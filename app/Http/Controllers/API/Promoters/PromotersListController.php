@@ -13,6 +13,7 @@ use App\Models\Dictionaries\Tariff;
 use App\Models\Hit\Hit;
 use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
+use App\Models\WorkShift\WorkShift;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -88,29 +89,32 @@ class PromotersListController extends ApiController
             });
         }
         $promotersWithOpenedShift = $query->clone()->whereHas('workShifts', fn($q) => $q->whereNull('end_at'))->pluck('id');
-        $partners = $query->orderBy('name')->paginate($request->perPage(25, $this->rememberKey));
+        $partners = $query->orderBy('name')->get();
 
         /** @var LengthAwarePaginator $partners */
         $partners->transform(function (Partner $partner) {
+            $openedShift = $partner->getOpenedShift();
             return [
                 'id' => $partner->id,
                 'active' => $partner->hasStatus(PartnerStatus::active),
                 'name' => $partner->name,
                 'type' => $partner->type->name,
-                'balance' => $partner->getOpenedShift()?->getShiftTotalPay() + $partner->getLastShift()?->balance,
+                'balance' => $openedShift?->getShiftTotalPay() + $partner->getLastShift()?->balance,
                 'limit' => $partner->account->limit,
                 'open_shift' => $partner->workShifts()->with('tariff')->whereNull('end_at')->first(),
-                'promoter_commission_rate' => $partner->tariff()->first()?->commission
+                'promoter_commission_rate' => $partner->tariff()->first()?->commission,
+                'pier_name' => $openedShift && $partner->profile->self_pay ?  'Самостоятельно' : $openedShift?->terminal->pier->name,
             ];
         });
 
         return APIResponse::list(
-            $partners,
+            new LengthAwarePaginator($partners, 1000, 1000),
             [
                 'name' => 'ФИО промоутера',
                 'ID' => 'ID',
                 'balance' => 'Баланс',
                 'commission' => 'Ставка',
+                'opened_at' => 'Смена открыта'
             ],
             $filters,
             $this->defaultFilters,

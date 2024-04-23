@@ -37,8 +37,6 @@
 
         <GuiMessage v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
 
-        <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
-
     </LayoutPage>
 </template>
 

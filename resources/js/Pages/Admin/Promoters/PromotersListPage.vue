@@ -45,6 +45,9 @@
                 <ListTableCell v-else>
                     {{ partner['promoter_commission_rate'] }} %
                 </ListTableCell>
+                <ListTableCell>
+                    {{ partner['pier_name'] }}
+                </ListTableCell>
             </ListTableRow>
         </ListTable>
 
@@ -154,6 +157,7 @@ export default {
                 'ID': 'ID',
                 'balance': 'Баланс',
                 'commission': 'Ставка',
+                'opened_at': 'Смена открыта'
             }
         },
         showCommissionPopup() {

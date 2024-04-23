@@ -32,6 +32,11 @@ class WorkShift extends Model
         return $this->belongsTo(Partner::class, 'partner_id', 'id');
     }
 
+    public function terminal()
+    {
+        return $this->belongsTo(Terminal::class, 'terminal_id', 'id');
+    }
+
     public function getPayForTime(): int
     {
         if ($this->tariff->pay_per_hour) {
