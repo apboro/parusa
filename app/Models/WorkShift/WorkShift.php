@@ -49,7 +49,9 @@ class WorkShift extends Model
     public function getWorkingHours(): float
     {
         $interval = Carbon::parse($this->start_at)->diff($this->end_at ? Carbon::parse($this->end_at) : now());
-        return round(($interval->days * 24 + $interval->h + $interval->i / 60), 1);
+        $hours = $interval->days * 24 + $interval->h + $interval->i / 60;
+
+        return ("" . round($hours, 1));
     }
 
     public function getShiftTotalPay()
