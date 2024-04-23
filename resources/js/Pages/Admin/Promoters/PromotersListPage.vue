@@ -64,7 +64,6 @@
             </GuiContainer>
         </FormPopUp>
 
-        <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
     </LayoutPage>
 </template>
 
