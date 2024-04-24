@@ -22,18 +22,19 @@ class ImportTrips
 {
     private Collection $seatCategories;
     private Collection $ticketGrades;
+    private Collection $ships;
+    private Collection $piers;
 
     public function __construct(private $astraApiData = new AstraMarineRepository())
     {
         $this->seatCategories = SeatCategory::all();
         $this->ticketGrades = TicketGrade::all();
+        $this->ships = Ship::all();
+        $this->piers = Pier::all();
     }
 
     public function run(): void
     {
-
-        $ships = Ship::all();
-        $piers = Pier::all();
         $trips = Trip::query()
             ->with(['additionalData'])
             ->where('start_at', '>=', now())
@@ -72,9 +73,9 @@ class ImportTrips
                     $trip->start_at = Carbon::parse($astraTrip['eventDateTime']);
                     $trip->end_at = Carbon::parse($astraTrip['eventDateTime'])->addMinutes($astraTrip['eventDuration']);
                     $trip->excursion_id = $findExcursion->id;
-                    $trip->start_pier_id = $piers->firstWhere('external_id', $astraTrip['pierID'])->id ?? $this->importPier($astraTrip);
-                    $trip->end_pier_id = $piers->firstWhere('external_id', $astraTrip['endPointID'])->id ?? $this->importPier($astraTrip);
-                    $trip->ship_id = $ships->firstWhere('external_id', $astraTrip['venueID'])->id ?? $this->importShip($astraTrip);
+                    $trip->start_pier_id = $this->piers->firstWhere('external_id', $astraTrip['pierID'])->id ?? $this->importPier($astraTrip);
+                    $trip->end_pier_id = $this->piers->firstWhere('external_id', $astraTrip['endPointID'])->id ?? $this->importPier($astraTrip);
+                    $trip->ship_id = $this->ships->firstWhere('external_id', $astraTrip['venueID'])->id ?? $this->importShip($astraTrip);
                     $trip->cancellation_time = 60;
                     $trip->provider_id = Provider::astra_marine;
                 }
@@ -109,6 +110,7 @@ class ImportTrips
         $info->address = explode('|', $data['pierName'])[0] ?? $data['pierName'];
         $info->save();
 
+        $this->piers->push($pier);
         return $pier->id;
     }
 
@@ -119,12 +121,12 @@ class ImportTrips
             'status_id' => 1,
             'owner' => 'Astra Marine',
             'capacity' => $data['availableSeats'],
-            'external_id' => $data['venueID'],
             'provider_id' => Provider::astra_marine,
             'ship_has_seats_scheme' => $data['eventFreeSeating'] == false,
             'scheme_name' => strtolower($data['venueName'])
         ]);
 
+        $this->ships->push($ship);
         return $ship->id;
     }
 
@@ -153,7 +155,10 @@ class ImportTrips
                 $seatCategory->provider_id = Provider::astra_marine;
                 $seatCategory->provider_category_id = $categoryDetails['seats'][0]['seatCategoryID'];
                 $seatCategory->save();
+
+                $this->seatCategories->push($seatCategory);
             }
+
             if (!$astraTrip['eventFreeSeating']) {
                 $this->importSeats($categoryDetails['seats'], $shipId);
             }
@@ -163,7 +168,6 @@ class ImportTrips
     public function importSeats(array $seats, int $shipId): void
     {
         Log::info('import seats for shipId: ' . $shipId, [$seats]);
-        $this->seatCategories = SeatCategory::all();
         foreach ($seats as $seat) {
             Seat::updateOrCreate(
                 [
@@ -190,7 +194,7 @@ class ImportTrips
 
                 foreach ($seatsPrices['seatPrices'] as $price) {
                     $grade = TicketGrade::updateOrCreate([
-                        'name' => explode('|', $price['seatCategoryName'])[0] . ' ' . rtrim(explode('|', $price['priceTypeName'])[0]) .' '. $price['priceTypeDescription'],
+                        'name' => explode('|', $price['seatCategoryName'])[0] . ' ' . rtrim(explode('|', $price['priceTypeName'])[0]) . ' ' . $price['priceTypeDescription'],
                         'provider_id' => Provider::astra_marine,
                         'provider_ticket_type_id' => $type['ticketTypeID'],
                         'provider_category_id' => $category['seatCategoryID'],
