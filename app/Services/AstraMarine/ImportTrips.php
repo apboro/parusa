@@ -121,6 +121,7 @@ class ImportTrips
             'status_id' => 1,
             'owner' => 'Astra Marine',
             'capacity' => $data['availableSeats'],
+            'external_id' => $data['venueID'],
             'provider_id' => Provider::astra_marine,
             'ship_has_seats_scheme' => $data['eventFreeSeating'] == false,
             'scheme_name' => strtolower($data['venueName'])
