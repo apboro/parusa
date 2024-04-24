@@ -113,6 +113,9 @@ class OrdersRegistryItemController extends ApiController
             'can_buy' => $current->isRepresentative() || $current->isStaffTerminal(),
             'can_return' => $current->isRepresentative() || $current->isStaffAdmin(), // terminal users can not return tickets from CRM yet -> || $current->isStaffTerminal(),
             'returnable' => $returnable,
+            'cant_partly_return' => $order->tickets->contains(function (Ticket $ticket) {
+               return $ticket->provider_id !== Provider::scarlet_sails;
+            }),
             'is_actual' => in_array($order->status_id, OrderStatus::order_returnable_statuses, true),
             'is_printable' => in_array($order->status_id, OrderStatus::order_printable_statuses, true)
                 && $order->tickets()->whereIn('status_id', TicketStatus::ticket_printable_statuses)->count() > 0,

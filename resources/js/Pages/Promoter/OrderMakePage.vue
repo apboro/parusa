@@ -307,7 +307,7 @@ export default {
             if (!this.canOrder) {
                 return;
             }
-            this.$dialog.show('Оформить заказ и оплатить с лицевого счёта?', 'question', 'orange', [
+            this.$dialog.show('Оформить заказ?', 'question', 'orange', [
                 this.$dialog.button('ok', 'Продолжить', 'orange'),
                 this.$dialog.button('cancel', 'Отмена'),
             ], 'center')
