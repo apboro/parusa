@@ -78,7 +78,7 @@ class TicketQrCodeCheckController extends Controller
         $tickets = Ticket::whereIn('id', $request->ticketIds)->get();
         foreach ($tickets as $ticket) {
             $ticket->setStatus(TicketStatus::used);
-            if ($current->partner()->type_id === PartnerType::ship_owner) {
+            if ($current->partner()?->type_id === PartnerType::ship_owner) {
                 $ticket->additionalData()->updateOrCreate([
                     'provider_id' => Provider::scarlet_sails,
                     'shipowner_partner_id' => $current->partnerId()
