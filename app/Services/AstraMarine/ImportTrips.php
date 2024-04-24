@@ -62,7 +62,7 @@ class ImportTrips
             });
 
             if ($findExcursion) {
-                Log::info('import trips for: ' . $findExcursion->name, [$astraTrip]);
+                Log::channel('astra-marine')->info('import trips for: ' . $findExcursion->name, [$astraTrip]);
                 $findExcursion->use_seat_scheme = !$astraTrip['eventFreeSeating'];
                 if ($findExcursion->isDirty('use_seat_scheme')) {
                     $findExcursion->save();
@@ -133,7 +133,7 @@ class ImportTrips
 
     public function importSeatCategories(array $astraTrip, int $shipId): void
     {
-        Log::info('import seatCategories for shipId: ' . $shipId, [$astraTrip]);
+        Log::channel('astra-marine')->info('import seatCategories for shipId: ' . $shipId, [$astraTrip]);
         foreach ($astraTrip['seatCategories'][0] as $seatCategory) {
             $categoryDetails = $this->astraApiData->getSeatsOnEvent([
                 'seatCategoryId' => $seatCategory['seatCategoryID'],
@@ -168,7 +168,7 @@ class ImportTrips
 
     public function importSeats(array $seats, int $shipId): void
     {
-        Log::info('import seats for shipId: ' . $shipId, [$seats]);
+        Log::channel('astra-marine')->info('import seats for shipId: ' . $shipId, [$seats]);
         foreach ($seats as $seat) {
             Seat::updateOrCreate(
                 [
@@ -184,13 +184,14 @@ class ImportTrips
 
     public function importGrades(array $astraTrip, Trip $trip): void
     {
+        Log::channel('astra-marine')->info('import grades for service: ' . $astraTrip['serviceName']);
         foreach ($astraTrip['seatCategories'][0] as $category) {
             foreach ($astraTrip['ticketTypes'][0] as $type) {
                 $seatsPrices = $this->astraApiData->getSeatPrices([
                     'eventID' => $astraTrip['eventID'],
                     'seatCategoryID' => $category['seatCategoryID'],
                     'ticketTypeID' => $type['ticketTypeID'],
-                    "paymentTypeID" => "000000001",
+                    "paymentTypeID" => "000000002",
                 ])['body'];
 
                 foreach ($seatsPrices['seatPrices'] as $price) {
@@ -218,6 +219,7 @@ class ImportTrips
 
     public function importPrice(Trip $trip, array $price, array $category): void
     {
+        Log::channel('astra-marine')->info('import price for $category: ', $category);
         $rateList = $this->createOrUpdateRateList($trip);
         TicketRate::updateOrCreate([
             'rate_id' => $rateList->id,

@@ -348,7 +348,7 @@ class AstraMarineRepository
      * "ticketTypeID": "000000002",
      * "ticketTypeName": "Стандарт | Standard",
      * "resident": "",
-     * "paymentTypeID": "000000001",
+     * "paymentTypeID": "000000002",
      * "amountSeats": 2500
      * }
      * ]
