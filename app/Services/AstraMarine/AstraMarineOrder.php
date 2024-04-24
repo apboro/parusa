@@ -52,9 +52,10 @@ class AstraMarineOrder
     {
         try {
             $orders = $this->getOrdersQueryData();
+            $orderNumber =  strlen((string)$this->order->id) > 5 ? 'ALP' .$this->order->id : 'ALP0' .$this->order->id;
             $response = $this->astraMarineRepository->registerOrder([
                 "sessionID" => md5($this->order->phone),
-                "orderID" => $this->order->id,
+                "orderID" => $orderNumber,
                 "paymentTypeID" => "000000002",
                 "email" => "info@parus-a.ru",
                 'order' => $orders,
@@ -62,6 +63,7 @@ class AstraMarineOrder
             if ($response['body']['isOrderRegistred']) {
                 Log::channel('astra-marine')->notice('register order success: ' . json_encode($response['body']));
                 $this->saveTicketsBarcodes($response['body']);
+                $this->order->additionalData()->create(['provider_id' => Provider::astra_marine, 'provider_order_id' => $orderNumber]);
             } else {
 
                 throw new Exception($response['body']['descriptionRegistredOrder']);
@@ -124,7 +126,7 @@ class AstraMarineOrder
     {
         try {
             $response = $this->astraMarineRepository->confirmPayment([
-                'orderID' => $this->order->id,
+                'orderID' => $this->order->additionalData->provider_order_id,
                 'orderConfirm' => true,
             ]);
 
@@ -144,10 +146,7 @@ class AstraMarineOrder
     public function cancel()
     {
         try {
-            $order_id_formatted = number_format($this->order->id, 0, '', ' ');
-            $order = explode(' ', $order_id_formatted);
-            $dataOrder = $order[0] . "\xC2\xA0" . $order[1];
-            $response = $this->astraMarineRepository->returnOrder(["orderID" => $dataOrder]);
+            $response = $this->astraMarineRepository->returnOrder(["orderID" => $this->order->additionalData->provider_order_id]);
 
             if (!$response['body']['isOrderReturned']) {
                 throw new Exception('Не удалось оформить возврат');
@@ -162,10 +161,7 @@ class AstraMarineOrder
 
     public function getOrder()
     {
-        $order_id_formatted = number_format($this->order->id, 0, '', ' ');
-        $order = explode(' ', $order_id_formatted);
-        $dataOrder = $order[0] . "\xC2\xA0" . $order[1];
-        return $this->astraMarineRepository->getOrder(["orderID" => $dataOrder]);
+        return $this->astraMarineRepository->getOrder(["orderID" => $this->order->additionalData->provider_order_id]);
     }
 
 }
