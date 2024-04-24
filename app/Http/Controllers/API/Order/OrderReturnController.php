@@ -149,6 +149,7 @@ class OrderReturnController extends ApiController
 
                 });
             } catch (Exception $exception) {
+                Log::error('return order error ' . $exception->getMessage() .  ' ' .$exception->getFile() . ' '. $exception->getLine());
                 return APIResponse::error($exception->getMessage());
             }
             $successMessage = 'Возврат оформлен.';
@@ -226,6 +227,7 @@ class OrderReturnController extends ApiController
 
             NevaTravelCancelOrderEvent::dispatch($order);
             CityTourCancelOrderEvent::dispatch($order);
+            AstraMarineCancelOrderEvent::dispatch($order);
 
             if ($order->status_id == OrderStatus::partial_returned_statuses) {
                 NewNevaTravelOrderEvent::dispatch($order);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Services\LifePos;
 
+use App\Events\AstraMarineCancelOrderEvent;
 use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourCancelOrderEvent;
 use App\Events\CityTourOrderPaidEvent;
@@ -252,6 +253,7 @@ class LifePosNotificationsController extends ApiController
 
             NevaTravelCancelOrderEvent::dispatch($order);
             CityTourCancelOrderEvent::dispatch($order);
+            AstraMarineCancelOrderEvent::dispatch($order);
 
         } else {
             Log::channel('lifepos_payments')->error(sprintf('LifePos [SaleRefund:%s] - order not found', $input['guid']));
