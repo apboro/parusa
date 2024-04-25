@@ -95,7 +95,7 @@ class PromotersRegistryController extends ApiController
                     return $shift->getShiftTotalPay();
                 }),
                 'total_paid_out' => $filteredWorkshifts->sum('paid_out'),
-                'balance' => $filteredWorkshifts->last()->balance,
+                'balance' => $filteredWorkshifts->last()?->balance,
                 'taxi' => $filteredWorkshifts->sum('taxi')
             ];
         });
