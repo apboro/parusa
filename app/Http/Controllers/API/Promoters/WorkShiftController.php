@@ -38,6 +38,7 @@ class WorkShiftController extends Controller
             'terminal_id' => $current->terminalId(),
             'start_at' => now(),
             'status_id' => WorkShiftStatus::active,
+            'balance' => $promoter->getLastShift()?->balance,
         ]);
 
         return APIResponse::success('Смена открыта', ['start_at' => Carbon::parse($workShift->start_at)->format('Y-m-d H:i:s')]);
@@ -63,6 +64,7 @@ class WorkShiftController extends Controller
             'terminal_id' => 1,
             'start_at' => now(),
             'status_id' => WorkShiftStatus::active,
+            'balance' => $promoter->getLastShift()?->balance,
         ]);
 
         return APIResponse::success('Смена открыта', ['start_at' => Carbon::parse($workShift->start_at)->format('Y-m-d H:i:s')]);
@@ -102,7 +104,7 @@ class WorkShiftController extends Controller
         $workShift->pay_for_time = $workShift->getPayForTime();
         $workShift->pay_for_out = $workShift->tariff->pay_for_out;
         $workShift->pay_total = $workShift->getShiftTotalPay();
-        $workShift->balance = ($workShift->pay_total + $workShift->promoter->getLastShift()?->balance) - $workShift->paid_out;
+        $workShift->balance = ($workShift->pay_total + $workShift->balance) - $workShift->paid_out;
 
         if ($close) {
             $workShift->end_at = now();

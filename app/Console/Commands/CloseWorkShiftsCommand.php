@@ -22,7 +22,7 @@ class CloseWorkShiftsCommand extends Command
             $shift->pay_for_out = $shift->tariff->pay_for_out;
             $shift->pay_total = $payTotal;
             $shift->end_at = now();
-            $shift->balance = ($shift->pay_total + $shift->promoter->getLastShift()?->balance) - $shift->paid_out;
+            $shift->balance = ($shift->pay_total + $shift->balance) - $shift->paid_out;
             $shift->save();
         }
     }
