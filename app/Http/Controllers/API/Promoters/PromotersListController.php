@@ -88,7 +88,7 @@ class PromotersListController extends ApiController
                 'active' => $partner->hasStatus(PartnerStatus::active),
                 'name' => $partner->name,
                 'type' => $partner->type->name,
-                'balance' => $openedShift?->getShiftTotalPay() + $openedShift->balance,
+                'balance' => $openedShift?->getShiftTotalPay() + $openedShift?->balance,
                 'limit' => $partner->account->limit,
                 'open_shift' => $partner->workShifts()->with('tariff')->whereNull('end_at')->first(),
                 'promoter_commission_rate' => $partner->tariff()->first()?->commission,

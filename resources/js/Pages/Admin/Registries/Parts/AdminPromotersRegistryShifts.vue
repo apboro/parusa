@@ -44,31 +44,31 @@
                         {{ shift['end_at'] }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{ shift['pay_for_out'] > 0 ? shift['pay_for_out'] + ' руб.': null }}
+                        {{ shift['pay_for_out'] > 0 ? shift['pay_for_out'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{ shift['working_hours'] > 0 ? shift['working_hours'] : null }}
+                        {{ shift['working_hours'] > 0 ? shift['working_hours'] : '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{ shift['tariff'] }}
+                        {{ shift['tariff'] }} %
                     </ListTableCell>
                     <ListTableCell>
-                        {{ shift['pay_per_hour']  > 0 ? shift['pay_per_hour'] + ' руб.': null }}
+                        {{ shift['pay_per_hour']  > 0 ? shift['pay_per_hour'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{ shift['pay_for_time']  > 0 ? shift['pay_for_time'] + ' руб.': null }}
+                        {{ shift['pay_for_time']  > 0 ? shift['pay_for_time'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{ shift['sales_total'] > 0 ? shift['sales_total'] + ' руб.': null }}
+                        {{ shift['sales_total'] > 0 ? shift['sales_total'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{ shift['pay_commission']  > 0 ? shift['pay_commission'] + ' руб.': null }}
+                        {{ shift['pay_commission']  > 0 ? shift['pay_commission'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{ shift['pay_total']  > 0 ? shift['pay_total'] + ' руб.': null }}
+                        {{ shift['pay_total']  > 0 ? shift['pay_total'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{ shift['paid_out']  > 0 ? shift['paid_out'] + ' руб.': null }}
+                        {{ shift['paid_out']  > 0 ? shift['paid_out'] + ' руб.': '—' }}
                     </ListTableCell>
                 </ListTableRow>
             </template>
