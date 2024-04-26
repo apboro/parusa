@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\Log;
 class ImportTrips
 {
     private Collection $seatCategories;
-    private Collection $ticketGrades;
     private Collection $ships;
     private Collection $piers;
 
@@ -85,9 +84,13 @@ class ImportTrips
                 $trip->save();
 
                 $trip->additionalData()
-                    ->firstOrCreate([
+                    ->updateOrCreate([
                         'provider_trip_id' => $astraTrip['eventID'],
-                        'provider_id' => Provider::astra_marine]);
+                        'provider_id' => Provider::astra_marine,
+                    ],
+                        [
+                            'with_seats' => $astraTrip['eventFreeSeating'] == false
+                        ]);
                 $trip->loadMissing('ship');
 
                 if (config('app.env') == 'local' || $trip->wasRecentlyCreated) {
@@ -123,7 +126,7 @@ class ImportTrips
             'capacity' => $data['availableSeats'],
             'external_id' => $data['venueID'],
             'provider_id' => Provider::astra_marine,
-            'ship_has_seats_scheme' => $data['eventFreeSeating'] == false,
+            'ship_has_seats_scheme' => true,
             'scheme_name' => strtolower($data['venueName'])
         ]);
 
@@ -221,22 +224,24 @@ class ImportTrips
     {
         Log::channel('astra-marine')->info('import price for $category: ', $category);
         $rateList = $this->createOrUpdateRateList($trip);
-        TicketRate::updateOrCreate([
-            'rate_id' => $rateList->id,
-            'grade_id' => TicketGrade::query()
-                ->where('provider_price_type_id', $price['priceTypeID'])
-                ->where('provider_category_id', $category['seatCategoryID'])
-                ->first()?->id
-        ],
-            [
-                'base_price' => $price['priceTypeValueBoxOffice'],
-                'min_price' => $price['priceTypeValueBoxOffice'],
-                'max_price' => $price['priceTypeValueBoxOffice'],
-                'commission_type' => 'percents',
-                'commission_value' => 10,
-                'site_price' => $price['priceTypeValueBoxOffice'],
-                'partner_price' => $price['priceTypeValueBoxOffice']
-            ]);
+        if ($price['priceTypeValueRetail'] != 0) {
+            TicketRate::updateOrCreate([
+                'rate_id' => $rateList->id,
+                'grade_id' => TicketGrade::query()
+                    ->where('provider_price_type_id', $price['priceTypeID'])
+                    ->where('provider_category_id', $category['seatCategoryID'])
+                    ->first()?->id
+            ],
+                [
+                    'base_price' => $price['priceTypeValueRetail'],
+                    'min_price' => $price['priceTypeValueRetail'],
+                    'max_price' => $price['priceTypeValueRetail'],
+                    'commission_type' => 'percents',
+                    'commission_value' => 10,
+                    'site_price' => $price['priceTypeValueRetail'],
+                    'partner_price' => $price['priceTypeValueRetail']
+                ]);
+        }
     }
 
     public function createOrUpdateRateList($trip): TicketsRatesList

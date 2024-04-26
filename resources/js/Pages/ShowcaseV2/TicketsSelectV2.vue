@@ -25,7 +25,7 @@
                             <span class="ap-showcase__trip-info-line-text">{{ trip['start_date'] }}</span>
                         </div>
                         <div class="ap-showcase__trip-info-line">
-                            <span class="ap-showcase__trip-info-line-title">Время отправления:</span>
+                            <span class="ap-showcase__trip-info-line-title">{{trip.is_single_ticket ? 'Начало движения' : 'Время отправления:'}}</span>
                             <span v-if="!trip.is_single_ticket"
                                   class="ap-showcase__trip-info-line-text">{{ trip['start_time'] }}</span>
                             <span v-if="trip.is_single_ticket"
@@ -56,7 +56,7 @@
             </div>
 
             <div class="ap-showcase__title">Билеты</div>
-            <div v-if="trip.ship_has_scheme">
+            <div v-if="trip.trip_with_seats">
                 <DynamicSchemeContainer
                     :data="trip"
                     :shipId="trip['shipId']"
@@ -207,7 +207,7 @@
                         <span v-else class="ap-showcase__checkout-not-selected">В заказе отсутствуют билеты</span>
                     </div>
                     <div class="ap-showcase__checkout-button">
-                        <ShowcaseButton v-if="trip.ship_has_scheme" @clicked="orderWithScheme" :disabled="tickets.length < 1">Оплатить</ShowcaseButton>
+                        <ShowcaseButton v-if="trip.trip_with_seats" @clicked="orderWithScheme" :disabled="tickets.length < 1">Оплатить</ShowcaseButton>
                         <ShowcaseButton v-else @clicked="order" :disabled="count < 1">Оплатить</ShowcaseButton>
                     </div>
                 </div>

@@ -226,7 +226,7 @@ class ShowcaseTripsController extends ApiController
                 'pier_id' => $trip->start_pier_id,
                 'start_date' => $trip->start_at->translatedFormat('j F Y') . ' г.',
                 'start_time' => $trip->start_at->format('H:i'),
-                'ship_has_scheme' => $trip->ship->ship_has_seats_scheme,
+                'trip_with_seats' => $trip->additionalData->with_seats,
                 'capacity' => $trip->ship->capacity,
                 'shipId' => $trip->ship->id,
                 'scheme_name' => $trip->ship->scheme_name,

@@ -109,12 +109,12 @@ class OrderReturnController extends ApiController
                     }
 
                     foreach ($order->tickets as $ticket) {
-                        if ($ticket->seat) {
+                        if ($ticket->seat_id) {
                             TripSeat::query()
                                 ->updateOrCreate(
                                     [
-                                        'trip_id' => $ticket->trip->id,
-                                        'seat_id' => $ticket->seat->id
+                                        'trip_id' => $ticket->trip_id,
+                                        'seat_id' => $ticket->seat_id
                                     ],
                                     ['status_id' => SeatStatus::vacant]);
                         }
@@ -171,14 +171,26 @@ class OrderReturnController extends ApiController
                         throw new Exception($response->errorMessage());
                     }
                 }
+
                 // change order and tickets status
                 foreach ($tickets as $ticket) {
+                    if ($ticket->seat_id) {
+                        TripSeat::query()
+                            ->updateOrCreate(
+                                [
+                                    'trip_id' => $ticket->trip_id,
+                                    'seat_id' => $ticket->seat_id
+                                ],
+                                ['status_id' => SeatStatus::vacant]);
+                    }
                     /** @var Ticket $ticket */
                     $ticket->refundCommission($current->position());
                     $ticket->setStatus(TicketStatus::showcase_returned, false);
                     $ticket->save();
                     $ticket->return()->save(new TicketReturn(['reason' => $reasonOfReturn]));
                 }
+
+
                 if ($order->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() === 0) {
                     $order->setStatus(OrderStatus::showcase_returned);
                 } else {

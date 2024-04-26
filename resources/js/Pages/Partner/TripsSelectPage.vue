@@ -222,7 +222,7 @@
                 this.$refs.date.addDays(increment);
             },
             addToOrder(trip) {
-                if (trip['excursion_use_seat_scheme'] && trip['ship_has_scheme'] && trip['seats'].length > 0) {
+                if (trip['excursion_use_seat_scheme'] && trip['trip_with_seats'] && trip['seats'].length > 0) {
                     this.$refs.select_scheme_popup.handle(trip);
                 } else {
                     this.$refs.select_popup.handle(trip);
