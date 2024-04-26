@@ -25,7 +25,8 @@
                             <span class="ap-showcase__trip-info-line-text">{{ trip['start_date'] }}</span>
                         </div>
                         <div class="ap-showcase__trip-info-line">
-                            <span class="ap-showcase__trip-info-line-title">{{trip.is_single_ticket ? 'Начало движения' : 'Время отправления:'}}</span>
+                            <span
+                                class="ap-showcase__trip-info-line-title">{{ trip.is_single_ticket ? 'Начало движения' : 'Время отправления:' }}</span>
                             <span v-if="!trip.is_single_ticket"
                                   class="ap-showcase__trip-info-line-text">{{ trip['start_time'] }}</span>
                             <span v-if="trip.is_single_ticket"
@@ -60,10 +61,11 @@
                 <DynamicSchemeContainer
                     :data="trip"
                     :shipId="trip['shipId']"
+                    :scheme_name="trip['scheme_name']"
                     :selecting="true"
                     @selectSeat="handleSelectSeat"/>
 
-            <SelectedTickets v-if="tickets.length > 0" :tickets="tickets"/>
+                <SelectedTickets v-if="tickets.length > 0" :tickets="tickets"/>
             </div>
 
             <div v-else class="ap-showcase__tickets">
@@ -106,97 +108,97 @@
             </div>
 
 
-                <div v-if="trip.reverse_excursion_id !== null">
-                    <ShowcaseInputCheckbox :name="'choose_back_trip'" v-model="checkedBackward"
-                                           :label="'Выбрать обратный рейс со скидкой'" :big="true"/>
-                    <div style="text-align: center">
-                        <BackwardTicketSelectShowcase v-if="checkedBackward"
-                                                      @select-backward-trip="handleSelectBackwardTrip"
-                                                      :trip="this.trip" :session="session"
-                                                      :crm_url="crm_url"/>
+            <div v-if="trip.reverse_excursion_id !== null">
+                <ShowcaseInputCheckbox :name="'choose_back_trip'" v-model="checkedBackward"
+                                       :label="'Выбрать обратный рейс со скидкой'" :big="true"/>
+                <div style="text-align: center">
+                    <BackwardTicketSelectShowcase v-if="checkedBackward"
+                                                  @select-backward-trip="handleSelectBackwardTrip"
+                                                  :trip="this.trip" :session="session"
+                                                  :crm_url="crm_url"/>
+                </div>
+            </div>
+
+            <div class="ap-showcase__title">Контактные данные</div>
+
+            <div class="ap-showcase__text">Контактные данные необходимы на случай отмены рейса, а также для отправки
+                билетов. Данные не передаются третьим лицам.
+            </div>
+
+            <div class="ap-showcase__contacts">
+                <div class="ap-showcase__contacts-item">
+                    <ShowcaseFormString :form="form" :name="'name'" :autocomplete="'given-name'"/>
+                </div>
+                <div class="ap-showcase__contacts-item">
+                    <ShowcaseFormPhone :form="form" :name="'phone'" :autocomplete="'tel'"/>
+                    <span class="ap-showcase__contacts-item-description">Необходим на случай отмены рейса.</span>
+                </div>
+                <div class="ap-showcase__contacts-item">
+                    <ShowcaseFormString :form="form" :name="'email'" :autocomplete="'email'"/>
+                    <span
+                        class="ap-showcase__contacts-item-description">На этот адрес будет выслан электронный билет.</span>
+                </div>
+            </div>
+
+            <div class="ap-showcase__promocode">
+                <span class="ap-showcase__title">Промокод</span>
+                <div class="ap-showcase__promocode-input">
+                    <div class="ap-showcase__promocode-item">
+                        <ShowcaseFormString :form="form" :name="'promocode'" :hide-title="true"
+                                            placeholder="Промокод"/>
+                        <span v-if="message" class="ap-showcase__contacts-item-description">{{ message }}</span>
+                    </div>
+                    <div class="ap-showcase__promocode-button">
+                        <ShowcaseButton @clicked="promoCode(true)" :disabled="!form.values['promocode']">Применить
+                        </ShowcaseButton>
                     </div>
                 </div>
-
-                <div class="ap-showcase__title">Контактные данные</div>
-
-                <div class="ap-showcase__text">Контактные данные необходимы на случай отмены рейса, а также для отправки
-                    билетов. Данные не передаются третьим лицам.
+                <div class="ap-showcase__promocode-discount" v-if="status && discounted">
+                    Скидка по промокоду: <span class="ap-showcase__promocode-discount-value">{{
+                        discounted
+                    }} руб.</span>
                 </div>
+            </div>
 
-                <div class="ap-showcase__contacts">
-                    <div class="ap-showcase__contacts-item">
-                        <ShowcaseFormString :form="form" :name="'name'" :autocomplete="'given-name'"/>
-                    </div>
-                    <div class="ap-showcase__contacts-item">
-                        <ShowcaseFormPhone :form="form" :name="'phone'" :autocomplete="'tel'"/>
-                        <span class="ap-showcase__contacts-item-description">Необходим на случай отмены рейса.</span>
-                    </div>
-                    <div class="ap-showcase__contacts-item">
-                        <ShowcaseFormString :form="form" :name="'email'" :autocomplete="'email'"/>
-                        <span
-                            class="ap-showcase__contacts-item-description">На этот адрес будет выслан электронный билет.</span>
-                    </div>
-                </div>
-
-                <div class="ap-showcase__promocode">
-                    <span class="ap-showcase__title">Промокод</span>
-                    <div class="ap-showcase__promocode-input">
-                        <div class="ap-showcase__promocode-item">
-                            <ShowcaseFormString :form="form" :name="'promocode'" :hide-title="true"
-                                                placeholder="Промокод"/>
-                            <span v-if="message" class="ap-showcase__contacts-item-description">{{ message }}</span>
-                        </div>
-                        <div class="ap-showcase__promocode-button">
-                            <ShowcaseButton @clicked="promoCode(true)" :disabled="!form.values['promocode']">Применить
-                            </ShowcaseButton>
-                        </div>
-                    </div>
-                    <div class="ap-showcase__promocode-discount" v-if="status && discounted">
-                        Скидка по промокоду: <span class="ap-showcase__promocode-discount-value">{{
-                            discounted
-                        }} руб.</span>
-                    </div>
-                </div>
-
-                <div class="ap-showcase__agreement">
-                    <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_valid"
-                                          :errors="['Необходимо принять условия оферты на оказание услуг и дать своё согласие на обработку персональных данных']">
-                        <ShowcaseInputCheckbox v-model="agree" :small="true">
-                            Я принимаю условия <span class="ap-showcase__link" @click="showOfferInfo">Оферты на оказание услуг</span>
-                            и даю своё <span class="ap-showcase__link" @click="showPersonalDataInfo">согласие на обработку
+            <div class="ap-showcase__agreement">
+                <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_valid"
+                                      :errors="['Необходимо принять условия оферты на оказание услуг и дать своё согласие на обработку персональных данных']">
+                    <ShowcaseInputCheckbox v-model="agree" :small="true">
+                        Я принимаю условия <span class="ap-showcase__link" @click="showOfferInfo">Оферты на оказание услуг</span>
+                        и даю своё <span class="ap-showcase__link" @click="showPersonalDataInfo">согласие на обработку
                         персональных данных</span>
-                        </ShowcaseInputCheckbox>
-                    </ShowcaseFieldWrapper>
+                    </ShowcaseInputCheckbox>
+                </ShowcaseFieldWrapper>
 
-                    <OfferInfo ref="offer"
-                               :crm_url="crm_url"
-                               :debug="debug"
-                               :session="session"
-                    />
-                    <PersonalDataInfo ref="personal"
-                                      :crm_url="crm_url"
-                                      :debug="debug"
-                                      :session="session"
-                    />
-                </div>
-                <div class="ap-showcase__agreement" v-if="status">
-                    <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_promocode_valid"
-                                          :errors="['Необходимо принять условия использования промокода']">
-                        <ShowcaseInputCheckbox v-model="agree_promocode" :small="true">
-                            Билеты, купленные с применением промокода, возврату не подлежат
-                        </ShowcaseInputCheckbox>
-                    </ShowcaseFieldWrapper>
-                </div>
+                <OfferInfo ref="offer"
+                           :crm_url="crm_url"
+                           :debug="debug"
+                           :session="session"
+                />
+                <PersonalDataInfo ref="personal"
+                                  :crm_url="crm_url"
+                                  :debug="debug"
+                                  :session="session"
+                />
+            </div>
+            <div class="ap-showcase__agreement" v-if="status">
+                <ShowcaseFieldWrapper :hide-title="true" :valid="agreement_promocode_valid"
+                                      :errors="['Необходимо принять условия использования промокода']">
+                    <ShowcaseInputCheckbox v-model="agree_promocode" :small="true">
+                        Билеты, купленные с применением промокода, возврату не подлежат
+                    </ShowcaseInputCheckbox>
+                </ShowcaseFieldWrapper>
+            </div>
 
-                <template v-if="has_error">
-                    <ShowcaseMessage>Ошибка: {{ error_message }}</ShowcaseMessage>
-                </template>
+            <template v-if="has_error">
+                <ShowcaseMessage>Ошибка: {{ error_message }}</ShowcaseMessage>
+            </template>
 
 
-                <div class="ap-showcase__checkout">
-                    <div class="ap-showcase__checkout-total">
-                        Итого к оплате:
-                        <span v-if="count > 0" class="ap-showcase__checkout-total-value">
+            <div class="ap-showcase__checkout">
+                <div class="ap-showcase__checkout-total">
+                    Итого к оплате:
+                    <span v-if="count > 0" class="ap-showcase__checkout-total-value">
                         <template v-if="status">
                             <s>{{ total }}</s> {{ discount_price }} руб.
                         </template>
@@ -204,36 +206,41 @@
                             {{ total }}
                         </template>
                     </span>
-                        <span v-else class="ap-showcase__checkout-not-selected">В заказе отсутствуют билеты</span>
-                    </div>
-                    <div class="ap-showcase__checkout-button">
-                        <ShowcaseButton v-if="trip.trip_with_seats" @clicked="orderWithScheme" :disabled="tickets.length < 1">Оплатить</ShowcaseButton>
-                        <ShowcaseButton v-else @clicked="order" :disabled="count < 1">Оплатить</ShowcaseButton>
-                    </div>
+                    <span v-else class="ap-showcase__checkout-not-selected">В заказе отсутствуют билеты</span>
                 </div>
+                <div class="ap-showcase__checkout-button">
+                    <ShowcaseButton v-if="trip.trip_with_seats" @clicked="orderWithScheme"
+                                    :disabled="tickets.length < 1">Оплатить
+                    </ShowcaseButton>
+                    <ShowcaseButton v-else @clicked="order" :disabled="count < 1">Оплатить</ShowcaseButton>
+                </div>
+            </div>
 
-                <div class="ap-showcase__notice">
-                    <div class="ap-showcase__notice-sign">
-                        <ShowcaseIconSign class="ap-showcase__notice-sign-icon"/>
-                    </div>
-                    <div class="ap-showcase__notice-text">
-                        При получении билетов в кассе необходимо предоставить документ, подтверждающий право на льготу:
-                        студенческий билет, пенсионное удостоверение и т.д.
-                    </div>
+            <div class="ap-showcase__notice">
+                <div class="ap-showcase__notice-sign">
+                    <ShowcaseIconSign class="ap-showcase__notice-sign-icon"/>
                 </div>
+                <div class="ap-showcase__notice-text">
+                    При получении билетов в кассе необходимо предоставить документ, подтверждающий право на льготу:
+                    студенческий билет, пенсионное удостоверение и т.д.
+                </div>
+            </div>
         </template>
     </div>
 
     <ShowcaseV2PopUp ref="category"
-           :buttons="[
+                     :buttons="[
                {result: 'ok', caption: 'OK', color: 'green', disabled: !selectedGrade || (selectedGrade.menus.length > 0 ? !selectedMenu : false)},
-               {result: 'cancel', caption: 'Отмена'},
-           ]"
-    >
-        <label v-for="(grade, index) in seatGrades" :key="index">
-            <input @click="selectedMenu = null" style="margin-top: 10px" type="radio" v-model="selectedGrade" :value="grade.grade"
-                   :name="'grade-select'"> {{ grade.grade.name }} - {{ getGradePrice(grade.grade.id) }} руб.
-        </label>
+           ]">
+
+        <div v-for="(grade, index) in seatGrades" :key="index">
+            <label v-if="getGradePrice(grade.grade.id)">
+                <input @click="selectedMenu = null" style="margin-top: 10px" type="radio"
+                       v-model="selectedGrade"
+                       :value="grade.grade"
+                       :name="'grade-select'"> {{ grade.grade.name }} - {{ getGradePrice(grade.grade.id) }} руб.
+            </label>
+        </div>
         <div style="display: flex; flex-direction: column; align-items: center"
              v-if="selectedGrade && selectedGrade.menus.length > 0">
             <span style="margin-top: 20px;">Выберите меню</span>
@@ -397,7 +404,7 @@ export default {
 
     methods: {
         getGradePrice(gradeId) {
-            return this.trip['rates'].find(e => e.grade_id === gradeId).base_price;
+            return this.trip['rates'].find(e => e.grade_id === gradeId)?.base_price;
         },
         getFilteredGrades(categoryId) {
             return this.trip['seat_tickets_grades'].filter(el => el.seat_category_id === categoryId)
@@ -448,7 +455,7 @@ export default {
             return Math.ceil(a * b * 100) / 100;
         },
 
-        orderWithScheme(){
+        orderWithScheme() {
             this.agreement_valid = this.agreement;
             this.agreement_promocode_valid = !this.status || this.agreement_promocode;
             if (!this.agreement_valid || !this.agreement_promocode_valid || this.tickets.length < 1) {
