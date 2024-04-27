@@ -26,7 +26,7 @@
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span
-                                class="ap-showcase__trip-info-line-title">{{ trip.is_single_ticket ? 'Начало движения' : 'Время отправления:' }}</span>
+                                class="ap-showcase__trip-info-line-title">{{ trip.is_single_ticket ? 'Начало движения с:' : 'Время отправления:' }}</span>
                             <span v-if="!trip.is_single_ticket"
                                   class="ap-showcase__trip-info-line-text">{{ trip['start_time'] }}</span>
                             <span v-if="trip.is_single_ticket"
