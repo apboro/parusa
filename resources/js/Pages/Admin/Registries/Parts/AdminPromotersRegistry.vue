@@ -31,6 +31,11 @@
                 <LayoutFiltersItem :title="'Поиск промоутера по ID, ФИО'">
                     <InputSearch v-model="list.search" @change="list.load()"/>
                 </LayoutFiltersItem>
+                <div style="display: flex; align-items: flex-end; margin-left: 10px;">
+                    <GuiActionsMenu :title="null">
+                        <span class="link" @click="excelExport">Экспорт в Excel</span>
+                    </GuiActionsMenu>
+                </div>
             </template>
         </LayoutFilters>
 
@@ -77,6 +82,7 @@
         <GuiMessage border v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
         <GuiValue v-if="list.payload.total_to_pay_out" :title="'Всего начислено:'"> {{ list.payload.total_to_pay_out }} руб.</GuiValue>
         <GuiValue v-if="list.payload.total_paid_out" :title="'Всего выплачено:'"> {{ list.payload.total_paid_out }} руб.</GuiValue>
+        <GuiValue v-if="list.payload.total_earned" :title="'Кассы итого:'"> {{ list.payload.total_earned }} руб.</GuiValue>
 
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
     </LoadingProgress>
@@ -100,6 +106,7 @@ import InputDate from "@/Components/Inputs/InputDate";
 import IconExclamation from "../../../../Components/Icons/IconExclamation";
 import InputPhone from "@/Components/Inputs/InputPhone.vue";
 import list from "@/Core/List";
+import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu.vue";
 
 export default {
     props: {
@@ -107,6 +114,7 @@ export default {
     },
 
     components: {
+        GuiActionsMenu,
         InputPhone,
         IconExclamation,
         InputDate,
@@ -143,6 +151,43 @@ export default {
 
         highlightPartial(text) {
             return this.$highlight(String(text), String(this.list.search));
+        },
+        excelExport() {
+            this.$dialog.show('Экспортировать ' + this.list.pagination.total + ' записей в Excel?',
+                null,
+                'blue',
+                [
+                    this.$dialog.button('yes', 'Экспортировать', 'blue'),
+                    this.$dialog.button('no', 'Отмена', 'default'),
+                ]
+            )
+                .then(result => {
+                    if (result === 'yes') {
+                        this.is_exporting = true;
+                        let options = {
+                            filters: this.list.filters,
+                            search: this.list.search,
+                        }
+                        axios.post('/api/registries/promoters/export', options)
+                            .then(response => {
+                                let file = atob(response.data.data['file']);
+                                let byteNumbers = new Array(file.length);
+                                for (let i = 0; i < file.length; i++) {
+                                    byteNumbers[i] = file.charCodeAt(i);
+                                }
+                                let byteArray = new Uint8Array(byteNumbers);
+                                let blob = new Blob([byteArray], {type: response.data.data['type']});
+
+                                saveAs(blob, response.data.data['file_name'], {autoBom: true});
+                            })
+                            .catch(error => {
+                                this.$toast.error(error.response.data['message']);
+                            })
+                            .finally(() => {
+                                this.is_exporting = false;
+                            });
+                    }
+                });
         },
 
     },

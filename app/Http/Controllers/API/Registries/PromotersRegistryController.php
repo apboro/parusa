@@ -14,6 +14,8 @@ use App\Models\User\Helpers\Currents;
 use App\Models\WorkShift\WorkShift;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class PromotersRegistryController extends ApiController
 {
@@ -108,7 +110,8 @@ class PromotersRegistryController extends ApiController
             $this->defaultFilters,
             [
                 'total_to_pay_out' => $partners->sum('total_to_pay_out'),
-                'total_paid_out' => $partners->sum('total_paid_out')
+                'total_paid_out' => $partners->sum('total_paid_out'),
+                'total_earned' => $partners->sum('sales_total'),
             ])->withCookie(cookie($this->rememberKey, $request->getToRemember()));;
     }
 
@@ -128,6 +131,106 @@ class PromotersRegistryController extends ApiController
         }
 
         return null;
+    }
+
+    public function export(ApiListRequest $request): JsonResponse
+    {
+        $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
+        $terminalId = $this->getTerminalId($request);
+        $query = Partner::query()
+            ->where('type_id', PartnerType::promoter);
+
+        if ($terminalId) {
+            $query->whereHas('workShifts', fn($q) => $q->where('terminal_id', $terminalId));
+        }
+        if ($request->input('search')) {
+            $query->where('name', 'like', '%' . $request->input('search') . '%')
+                ->orWhere('id', 'like', $request->input('search') . '%');
+        }
+
+        if (!empty($filters['date_from'])) {
+            $query->whereHas('workShifts', function ($query) use ($filters) {
+                $query->where('start_at', '>=', Carbon::parse($filters['date_from']));
+            });
+        }
+        if (!empty($filters['date_to'])) {
+            $query->whereHas('workShifts', function ($query) use ($filters) {
+                $query->where('start_at', '<=', Carbon::parse($filters['date_to']));
+            });
+        }
+
+        $partners = $query->get();
+
+        $titles = [
+        'ID',
+        'ФИО',
+        'ЗА ВЫХОД',
+        'КОЛ-ВО ЧАСОВ',
+        'ОПЛАТА ЗА ВРЕМЯ',
+        'КАССА',
+        '% ОТ КАССЫ',
+        'ВСЕГО НАЧИСЛЕНО',
+        'ПОЛУЧЕНО',
+        'ДОЛГ',
+        'ТАКСИ',
+        ];
+
+        $partners->transform(function (Partner $partner) use ($filters) {
+
+            $filteredWorkshifts = $partner->workShifts->filter(function ($shift) use ($filters) {
+                if (!empty($filters['date_to']))
+                    if (Carbon::parse($shift->start_at) > Carbon::parse($filters['date_to'])->endOfDay())
+                        return false;
+                if (!empty($filters['date_from']))
+                    if (Carbon::parse($shift->start_at) < Carbon::parse($filters['date_from']))
+                        return false;
+                if (!empty($filters['terminal_id']))
+                    if ($shift->terminal_id != $filters['terminal_id'])
+                        return false;
+                return true;
+            });
+
+            return [
+                'id' => $partner->id,
+                'name' => $partner->name,
+                'pay_for_out' => $filteredWorkshifts->sum('pay_for_out'),
+                'total_hours' => $filteredWorkshifts->sum(function ($shift) {
+                    return $shift->getWorkingHours();
+                }),
+                'pay_for_time' => $filteredWorkshifts->sum(function ($shift) {
+                    return $shift->getPayForTime();
+                }),
+                'sales_total' => $filteredWorkshifts->sum('sales_total'),
+                'commission' => $filteredWorkshifts->sum('pay_commission'),
+                'total_to_pay_out' => $filteredWorkshifts->sum(function ($shift) {
+                    return $shift->getShiftTotalPay();
+                }),
+                'total_paid_out' => $filteredWorkshifts->sum('paid_out'),
+                'balance' => $filteredWorkshifts->last()?->balance,
+                'taxi' => $filteredWorkshifts->sum('taxi')
+            ];
+        });
+
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->setActiveSheetIndex(0)->setTitle('Транзакции')->setShowRowColHeaders(true);
+
+        $spreadsheet->getActiveSheet()->fromArray($titles, '—', 'A1');
+        $spreadsheet->getActiveSheet()->fromArray($partners->toArray(), '—', 'A2');
+        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'] as $col) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        ob_start();
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        $export = ob_get_clean();
+
+        return APIResponse::response([
+            'file' => base64_encode($export),
+            'file_name' => 'Промоутеры ' . Carbon::now()->format('Y-m-d H:i'),
+            'type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
     }
 
 }

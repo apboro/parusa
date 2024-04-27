@@ -44,3 +44,4 @@ Route::post('/registries/order/send', [OrderSendController::class, 'send'])->mid
 
 Route::post('/registries/promoters/shifts', [PromotersShiftsRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_accountant,staff_promoter_manager']);
 Route::post('/registries/promoters', [PromotersRegistryController::class, 'list'])->middleware(['allow:staff_admin,staff_accountant,staff_promoter_manager']);
+Route::post('/registries/promoters/export', [PromotersRegistryController::class, 'export'])->middleware(['allow:staff_admin,staff_accountant,staff_promoter_manager']);

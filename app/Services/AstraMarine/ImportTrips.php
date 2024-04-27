@@ -232,7 +232,7 @@ class ImportTrips
                     'min_price' => $price['priceTypeValueRetail'],
                     'max_price' => $price['priceTypeValueRetail'],
                     'commission_type' => 'percents',
-                    'commission_value' => 10,
+                    'commission_value' => 15,
                     'site_price' => $price['priceTypeValueRetail'],
                     'partner_price' => $price['priceTypeValueRetail']
                 ]);
