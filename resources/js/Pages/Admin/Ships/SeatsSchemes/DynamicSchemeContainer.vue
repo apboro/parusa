@@ -105,6 +105,7 @@ export default {
 .class_vip5{fill:#349184;}
 .class_business{fill: #f6a68c;}
 .class_comfort{fill: #759fd6;}
+.class_comfort_plus{fill: #afcff7;}
 .class_vip8
 {
     fill: #318F82;

@@ -52,7 +52,7 @@ class ImportTrips
             "getTicketType" => true,
             "seatsByGroups" => true,
             "dateFrom" => now()->toIso8601String(),
-            "dateTo" => now()->addDays(7)->toIso8601String()
+            "dateTo" => now()->addDays(14)->toIso8601String()
         ]);
 
         foreach ($astraTrips['body']['events'] as $astraTrip) {
@@ -61,7 +61,6 @@ class ImportTrips
             });
 
             if ($findExcursion) {
-                Log::channel('astra-marine')->info('import trips for: ' . $findExcursion->name, [$astraTrip]);
                 $findExcursion->use_seat_scheme = !$astraTrip['eventFreeSeating'];
                 if ($findExcursion->isDirty('use_seat_scheme')) {
                     $findExcursion->save();
@@ -136,7 +135,6 @@ class ImportTrips
 
     public function importSeatCategories(array $astraTrip, int $shipId): void
     {
-        Log::channel('astra-marine')->info('import seatCategories for shipId: ' . $shipId, [$astraTrip]);
         foreach ($astraTrip['seatCategories'][0] as $seatCategory) {
             $categoryDetails = $this->astraApiData->getSeatsOnEvent([
                 'seatCategoryId' => $seatCategory['seatCategoryID'],
@@ -171,7 +169,6 @@ class ImportTrips
 
     public function importSeats(array $seats, int $shipId): void
     {
-        Log::channel('astra-marine')->info('import seats for shipId: ' . $shipId, [$seats]);
         foreach ($seats as $seat) {
             Seat::updateOrCreate(
                 [
@@ -187,7 +184,6 @@ class ImportTrips
 
     public function importGrades(array $astraTrip, Trip $trip): void
     {
-        Log::channel('astra-marine')->info('import grades for service: ' . $astraTrip['serviceName']);
         foreach ($astraTrip['seatCategories'][0] as $category) {
             foreach ($astraTrip['ticketTypes'][0] as $type) {
                 $seatsPrices = $this->astraApiData->getSeatPrices([
@@ -222,7 +218,6 @@ class ImportTrips
 
     public function importPrice(Trip $trip, array $price, array $category): void
     {
-        Log::channel('astra-marine')->info('import price for $category: ', $category);
         $rateList = $this->createOrUpdateRateList($trip);
         if ($price['priceTypeValueRetail'] != 0) {
             TicketRate::updateOrCreate([

@@ -5,7 +5,8 @@ export default {
     data: () => ({
         selectedSeats: [],
         seatCategory: null,
-        categoryColors: {'Standard': '#ACD08F', 'VIP-8': '#318F82', 'VIP-5': '#318F82'},
+        categoryColors: {'Standard': '#ACD08F', 'VIP-8': '#318F82', 'VIP-5': '#318F82', 'Business Class': '#f6a68c',
+        'Comfort': '#179485', 'Comfort+': '#90B3DF'},
     }),
 
     methods: {
@@ -71,6 +72,8 @@ export default {
                     return 'class_business';
                 case 'Comfort':
                     return 'class_comfort';
+                case 'Comfort+':
+                    return 'class_comfort_plus';
             }
         },
         handleSelectSeat(data) {
