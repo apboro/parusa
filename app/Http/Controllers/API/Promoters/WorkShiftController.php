@@ -81,10 +81,10 @@ class WorkShiftController extends Controller
         $sumToPay = $request->input('sumToPay');
 
         $workShift->paid_out = $workShift->paid_out + $sumToPay;
-        $workShift->balance = $request->input('totalToPay') - $sumToPay;
+
         $workShift->taxi = $workShift->taxi + $request->input('payTaxi');
 
-        $this->save($workShift);
+        $workShift->save();
 
         return APIResponse::success('Выплата записана.');
     }
@@ -94,23 +94,15 @@ class WorkShiftController extends Controller
         $workShift = WorkShift::query()
             ->where('partner_id', $request->partnerId)
             ->whereNull('end_at')->first();
-        $this->save($workShift, true);
 
-        return APIResponse::success('Смена закрыта');
-    }
-
-    public function save(WorkShift $workShift, bool $close = false)
-    {
         $workShift->pay_for_time = $workShift->getPayForTime();
         $workShift->pay_for_out = $workShift->tariff->pay_for_out;
         $workShift->pay_total = $workShift->getShiftTotalPay();
+        $workShift->end_at = now();
         $workShift->balance = ($workShift->pay_total + $workShift->balance) - $workShift->paid_out;
-
-        if ($close) {
-            $workShift->end_at = now();
-        }
-
         $workShift->save();
+
+        return APIResponse::success('Смена закрыта');
     }
 
     public function print(Request $request): JsonResponse
