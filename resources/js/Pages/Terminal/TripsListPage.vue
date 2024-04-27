@@ -127,7 +127,10 @@
                     {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})
                 </ListTableCell>
                 <ListTableCell>
-                    <table v-if="trip['rates'] && trip['rates'].length > 0" :style="{fontSize: '13px'}">
+                    <div v-if="trip['trip_with_seats']">
+                        от {{ minimalTicketPrice(trip) }} руб.
+                    </div>
+                    <table v-else-if="trip['rates'] && trip['rates'].length > 0" class="inner-table">
                         <tr v-for="rate in trip['rates']">
                             <td class="pr-15 no-wrap">{{ rate['name'] }}</td>
                             <td class="no-wrap">{{ rate['value'] }} руб.</td>
@@ -205,6 +208,12 @@
         },
 
         methods: {
+            minimalTicketPrice(trip){
+                const minObject = trip.rates.reduce((min, current) => {
+                    return min.value < current.value ? min : current;
+                });
+                return minObject.value;
+            },
             emptyFilters() {
                 this.list.filters['start_pier_id'] = null;
                 this.list.filters['excursion_id'] = null;
