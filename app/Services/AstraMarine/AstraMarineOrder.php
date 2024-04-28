@@ -130,11 +130,11 @@ class AstraMarineOrder
                 'orderConfirm' => true,
             ]);
 
-            if ($response['body']['orderPaymentConfirmed']) {
-                Log::channel('astra-marine')->notice('confirm order success: ' . json_encode($response['body']));
-            } else {
-                throw new Exception('Не удалось оформить заказ:' . $response['body']['descriptionOrderPayment']);
-            }
+//            if ($response['body']['orderPaymentConfirmed']) {
+//                Log::channel('astra-marine')->notice('confirm order success: ' . json_encode($response['body']));
+//            } else {
+//                throw new Exception('Не удалось оформить заказ:' . $response['body']['descriptionOrderPayment']);
+//            }
 
         } catch (Exception $exception) {
 
