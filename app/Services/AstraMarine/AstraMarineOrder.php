@@ -113,8 +113,10 @@ class AstraMarineOrder
             });
             if ($ticket) {
                 $this->tickets->forget($this->tickets->search($ticket));
-                $ticket->additionalData()->updateOrCreate(['provider_id' => Provider::astra_marine],
-                    ['provider_qr_code' => $orderedTicket['barCodes'][0]]);
+                $ticket->additionalData()->create([
+                    'provider_id' => Provider::astra_marine,
+                    'provider_qr_code' => $orderedTicket['barCodes'][0]]
+                );
             }
         }
     }
