@@ -4,7 +4,7 @@ import CategoriesBox from "@/Pages/Parts/Seats/CategoriesBox.vue";
 import LoadingProgress from "@/Components/LoadingProgress.vue";
 //КОРЮШКА
 export default {
-    name: "Scheme132",
+    name: "SchemeKoryshka",
     components: {LoadingProgress, CategoriesBox},
     mixins: [seatMethods],
     emits:['selectSeat'],

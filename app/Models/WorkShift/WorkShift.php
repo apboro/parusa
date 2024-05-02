@@ -20,6 +20,8 @@ class WorkShift extends Model
 {
     use HasFactory;
 
+    protected $dates = ['start_at', 'end_at'];
+
     protected $guarded = [];
 
     public function tariff()

@@ -102,34 +102,39 @@ class ImportTrips
 
     public function importPier(array $data): int
     {
-        $pier = Pier::create([
-            'name' => rtrim(explode('|', $data['pierName'])[0] ?? $data['pierName']),
-            'external_id' => $data['pierID'],
-            'provider_id' => Provider::astra_marine,
-        ]);
+        $pier = Pier::firstOrCreate(
+            ['external_id' => $data['pierID'], 'provider_id' => Provider::astra_marine],
+            [
+                'name' => rtrim(explode('|', $data['pierName'])[0] ?? $data['pierName']),
+            ]);
 
         $info = $pier->info;
         $info->address = explode('|', $data['pierName'])[0] ?? $data['pierName'];
         $info->save();
 
-        $this->piers->push($pier);
+        if ($pier->wasRecentlyCreated) {
+            $this->piers->push($pier);
+        }
+
         return $pier->id;
     }
 
     public function importShip(array $data): int
     {
-        $ship = Ship::create([
-            'name' => ucfirst($data['venueName']),
-            'status_id' => 1,
-            'owner' => 'Astra Marine',
-            'capacity' => $data['availableSeats'],
-            'external_id' => $data['venueID'],
-            'provider_id' => Provider::astra_marine,
-            'ship_has_seats_scheme' => true,
-            'scheme_name' => strtolower($data['venueName'])
-        ]);
+        $ship = Ship::updateOrCreate(
+            ['external_id' => $data['venueID'], 'provider_id' => Provider::astra_marine],
+            ['name' => ucfirst($data['venueName']),
+                'status_id' => 1,
+                'owner' => 'Astra Marine',
+                'capacity' => $data['availableSeats'],
+                'ship_has_seats_scheme' => true,
+                'scheme_name' => strtolower($data['venueName']) === 'meteor' ? 'astra_meteor' : strtolower($data['venueName']),
+            ]);
 
-        $this->ships->push($ship);
+        if ($ship->wasRecentlyCreated) {
+            $this->ships->push($ship);
+        }
+
         return $ship->id;
     }
 

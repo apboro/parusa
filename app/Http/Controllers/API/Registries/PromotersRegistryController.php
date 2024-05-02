@@ -42,8 +42,15 @@ class PromotersRegistryController extends ApiController
         $terminalId = $this->getTerminalId($request);
 
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
-        $query = Partner::query()
-            ->where('type_id', PartnerType::promoter);
+        $query = Partner::query()->with(['workShifts' => function ($query) use ($filters) {
+            $query->where(function ($q) use ($filters) {
+                $q->whereDate('start_at', '>=', Carbon::parse($filters['date_from']))
+                    ->whereDate('start_at', '<=', Carbon::parse($filters['date_to']));
+            })->orWhere(function ($q) use ($filters) {
+                $q->whereDate('end_at', '>=', Carbon::parse($filters['date_from']))
+                    ->whereDate('end_at', '<=', Carbon::parse($filters['date_to']));
+            });
+        }])->where('type_id', PartnerType::promoter);
 
         if ($terminalId) {
             $query->whereHas('workShifts', fn($q) => $q->where('terminal_id', $terminalId));
@@ -52,15 +59,14 @@ class PromotersRegistryController extends ApiController
             $query->where('name', 'like', '%' . $request->input('search') . '%')
                 ->orWhere('id', 'like', $request->input('search') . '%');
         }
-
         if (!empty($filters['date_from'])) {
             $query->whereHas('workShifts', function ($query) use ($filters) {
-                $query->where('start_at', '>=', Carbon::parse($filters['date_from']));
+                $query->whereDate('start_at', '>=', Carbon::parse($filters['date_from']))->orWhereDate('end_at', '=', Carbon::parse($filters['date_to']));
             });
         }
         if (!empty($filters['date_to'])) {
             $query->whereHas('workShifts', function ($query) use ($filters) {
-                $query->where('start_at', '<=', Carbon::parse($filters['date_to']));
+                $query->whereDate('end_at', '<=', Carbon::parse($filters['date_to']))->orWhereDate('start_at', '=', Carbon::parse($filters['date_to']));
             });
         }
 
@@ -68,18 +74,7 @@ class PromotersRegistryController extends ApiController
 
         $partners->transform(function (Partner $partner) use ($filters) {
 
-            $filteredWorkshifts = $partner->workShifts->filter(function ($shift) use ($filters) {
-                if (!empty($filters['date_to']))
-                    if (Carbon::parse($shift->start_at) > Carbon::parse($filters['date_to'])->endOfDay())
-                        return false;
-                if (!empty($filters['date_from']))
-                    if (Carbon::parse($shift->start_at) < Carbon::parse($filters['date_from']))
-                        return false;
-                if (!empty($filters['terminal_id']))
-                    if ($shift->terminal_id != $filters['terminal_id'])
-                        return false;
-                return true;
-            });
+            $filteredWorkshifts = $partner->workShifts;
 
             return [
                 'id' => $partner->id,
@@ -162,17 +157,17 @@ class PromotersRegistryController extends ApiController
         $partners = $query->get();
 
         $titles = [
-        'ID',
-        'ФИО',
-        'ЗА ВЫХОД',
-        'КОЛ-ВО ЧАСОВ',
-        'ОПЛАТА ЗА ВРЕМЯ',
-        'КАССА',
-        '% ОТ КАССЫ',
-        'ВСЕГО НАЧИСЛЕНО',
-        'ПОЛУЧЕНО',
-        'ДОЛГ',
-        'ТАКСИ',
+            'ID',
+            'ФИО',
+            'ЗА ВЫХОД',
+            'КОЛ-ВО ЧАСОВ',
+            'ОПЛАТА ЗА ВРЕМЯ',
+            'КАССА',
+            '% ОТ КАССЫ',
+            'ВСЕГО НАЧИСЛЕНО',
+            'ПОЛУЧЕНО',
+            'ДОЛГ',
+            'ТАКСИ',
         ];
 
         $partners->transform(function (Partner $partner) use ($filters) {

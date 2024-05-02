@@ -21,7 +21,7 @@ import scheme58 from "@/Pages/Admin/Ships/SeatsSchemes/Scheme58.vue";
 import LoadingProgress from "@/Components/LoadingProgress.vue";
 import schemeAstra from "@/Pages/Admin/Ships/SeatsSchemes/SchemeAstra.vue";
 import schemeAstraMeteor from "@/Pages/Admin/Ships/SeatsSchemes/SchemeAstraMeteor.vue";
-import schemeKoryushka from "@/Pages/Admin/Ships/SeatsSchemes/SchemeKoryushka.vue";
+import schemeKoryshka from "@/Pages/Admin/Ships/SeatsSchemes/SchemeKoryshka.vue";
 import schemeRyapushka from "@/Pages/Admin/Ships/SeatsSchemes/SchemeRyapushka.vue";
 import schemeMoskva from "@/Pages/Admin/Ships/SeatsSchemes/SchemeMoskva.vue";
 
@@ -31,7 +31,7 @@ export default {
         scheme12: scheme12,
         scheme3: scheme3,
         scheme58: scheme58,
-        schemeKoryushka: schemeKoryushka,
+        schemeKoryshka: schemeKoryshka,
         schemeAstra: schemeAstra,
         schemeRyapushka: schemeRyapushka,
         schemeMoskva: schemeMoskva,
@@ -70,8 +70,8 @@ export default {
                     return scheme3
                 case 58:
                     return scheme58
-                case 'koryushka':
-                    return schemeKoryushka
+                case 'koryshka':
+                    return schemeKoryshka
                 case 'ryapushka':
                     return schemeRyapushka
                 case 'moskva':
