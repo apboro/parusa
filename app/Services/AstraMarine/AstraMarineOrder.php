@@ -106,17 +106,20 @@ class AstraMarineOrder
     public function saveTicketsBarcodes(array $orderedTickets): void
     {
         foreach ($orderedTickets['orderedSeats'] as $orderedTicket) {
-            $ticket = $this->tickets->first(function ($ticket) use ($orderedTicket) {
-                return $ticket->grade->provider_ticket_type_id == $orderedTicket['ticketTypeID']
-                    && $ticket->grade->provider_category_id == $orderedTicket['seatCategoryID']
-                    && $ticket->grade->provider_price_type_id == $orderedTicket['priceTypeID'];
-            });
-            if ($ticket) {
-                $this->tickets->forget($this->tickets->search($ticket));
-                $ticket->additionalData()->create([
-                    'provider_id' => Provider::astra_marine,
-                    'provider_qr_code' => $orderedTicket['barCodes'][0]]
-                );
+            foreach ($orderedTicket['barCodes'] as $barcode) {
+                $ticket = $this->tickets->first(function ($ticket) use ($orderedTicket) {
+                    return $ticket->grade->provider_ticket_type_id == $orderedTicket['ticketTypeID']
+                        && $ticket->grade->provider_category_id == $orderedTicket['seatCategoryID']
+                        && $ticket->grade->provider_price_type_id == $orderedTicket['priceTypeID'];
+                });
+
+                if ($ticket) {
+                    $this->tickets->forget($this->tickets->search($ticket));
+                    $ticket->additionalData()->create([
+                            'provider_id' => Provider::astra_marine,
+                            'provider_qr_code' => $barcode
+                    ]);
+                }
             }
         }
     }
@@ -132,12 +135,7 @@ class AstraMarineOrder
                 'orderConfirm' => true,
             ]);
 
-//            if ($response['body']['orderPaymentConfirmed']) {
-//                Log::channel('astra-marine')->notice('confirm order success: ' . json_encode($response['body']));
-//            } else {
-//                throw new Exception('Не удалось оформить заказ:' . $response['body']['descriptionOrderPayment']);
-//            }
-
+            Log::channel('astra-marine')->notice('confirm order success: ' . json_encode($response));
         } catch (Exception $exception) {
 
             Log::channel('astra-marine')->error('confirm order error: ' . $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
