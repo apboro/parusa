@@ -118,7 +118,7 @@
                     <div><span :style="{fontSize: '13px'}">{{ trip['start_date'] }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
-                    <div :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" @click="excursionInfo(trip['excursion_id'])"><b>{{ trip['excursion'] }}</b></div>
+                    <div :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'"><b>{{ trip['excursion'] }}</b></div>
                     <div><span :style="{fontSize: '13px'}">{{ trip['programs'] && trip['programs'].length ? trip['programs'].join(', ') : '' }}</span></div>
                 </ListTableCell>
                 <ListTableCell>

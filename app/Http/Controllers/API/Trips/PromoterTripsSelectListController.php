@@ -131,7 +131,7 @@ class PromoterTripsSelectListController extends ApiController
             $rateList = $excursion->rateForDate($date);
             $rates = !$rateList ? [] : $rateList->rates
                 ->filter(function (TicketRate $rate) use ($current) {
-                    return $rate->grade_id === TicketGrade::guide || $rate->base_price > 0;
+                    return /*$rate->grade_id === TicketGrade::guide ||*/ $rate->base_price > 0;
                 })
                 ->map(function (TicketRate $rate) use ($current) {
                     return [
