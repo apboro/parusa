@@ -104,7 +104,7 @@
                     обязательной.
                 </GuiHint>
                 <FormString :form="form" :name="'name'"/>
-                <FormString :form="form" :name="'email'" required/>
+                <FormString :form="form" :name="'email'"/>
                 <FormPhone :form="form" :name="'phone'" required/>
             </GuiContainer>
 
