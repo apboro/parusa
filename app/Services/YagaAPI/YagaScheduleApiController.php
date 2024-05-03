@@ -129,10 +129,10 @@ class YagaScheduleApiController
             }
             $ships = Ship::whereIn('id', $filteredQueryArr ?? $shipsInActiveTrips)->get();
             foreach ($ships as $ship) {
-                $halls[] = (new Hall($grades, $ship))->getResource($request);
+                $halls[] = (new Hall($grades, $ship))->getResource();
             }
         } else {
-            $halls[] = (new Hall($grades, $ship))->getResource($request);
+            $halls[] = (new Hall($grades, $ship))->getResource();
         }
 
         return response()->json([

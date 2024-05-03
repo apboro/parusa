@@ -35,7 +35,9 @@ class YagaOrderApiController
             return response()->json('В запросе нет sessionId', 400);
         }
 
-        $trip = Trip::with(['excursion', 'excursion.ratesLists', 'tickets'])->where('id', $data['sessionId'])->first();
+        $trip = Trip::query()->activeScarletSails()
+            ->where('id', $data['sessionId'])
+            ->first();
 
         if (!$trip) {
             return response()->json('Рейс не найден', 400);
