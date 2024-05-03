@@ -95,7 +95,7 @@ class CheckoutInitPayController extends ApiController
         // });
         $data = [
             'jsonParams' => [
-                'email' => $order->email,
+                'email' => $order->email ?? 'noreply@city-tours-spb.ru',
                 'phone' => $phone,
             ],
             // Нет документации по частичному возврату с корзиной заказов, без неё работает
