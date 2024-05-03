@@ -160,7 +160,7 @@ class YagaScheduleApiController
         }
 
         return response()->json([
-            'organizers' => $organizer,
+            'organizers' => [$organizer],
             'paging' => [
                 "limit" => $request->input('limit'),
                 "offset" => $request->input('offset'),
