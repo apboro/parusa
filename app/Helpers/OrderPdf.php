@@ -49,7 +49,7 @@ class OrderPdf
 
         NevaTravelOrderPaidEvent::dispatch($order);
         CityTourOrderPaidEvent::dispatch($order);
-//        AstraMarineOrderPaidEvent::dispatch($order);
+        AstraMarineOrderPaidEvent::dispatch($order);
 
         if ($order->additionalData?->provider_id == Provider::city_tour) {
             $view = config('tickets.order_print_city_tour');
