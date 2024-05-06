@@ -198,12 +198,12 @@
             <div class="ap-showcase__checkout">
                 <div class="ap-showcase__checkout-total">
                     Итого к оплате:
-                    <span v-if="count > 0" class="ap-showcase__checkout-total-value">
+                    <span v-if="count > 0 || selectedSeats.length > 0" class="ap-showcase__checkout-total-value">
                         <template v-if="status">
                             <s>{{ total }}</s> {{ discount_price }} руб.
                         </template>
                         <template v-else>
-                            {{ total }}
+                            {{ total = '0 руб.' ? schemeTotal() + ' руб.' : total }}
                         </template>
                     </span>
                     <span v-else class="ap-showcase__checkout-not-selected">В заказе отсутствуют билеты</span>
