@@ -15,14 +15,14 @@
                 </ShowcaseV2LoadingProgress>
             </div>
             <div class="ap-dialogs__dialog-buttons" :class="'ap-dialogs__dialog-buttons-' + align">
-                <GuiButton v-for="button in buttons"
+                <ShowcaseV2Button v-for="button in buttons"
                            :color="button.color"
                            :identifier="button.result"
                            :disabled="button.disabled"
                            @clicked="resolve"
                 >
                     {{ button.caption }}
-                </GuiButton>
+                </ShowcaseV2Button>
             </div>
         </div>
     </div>
@@ -32,11 +32,9 @@
 import ShowcaseV2Button from "@/Pages/ShowcaseV2/Components/ShowcaseV2Button";
 import ShowcaseV2LoadingProgress from "@/Pages/ShowcaseV2/Components/ShowcaseV2LoadingProgress";
 import IconCross from "@/Components/Icons/IconCross";
-import GuiButton from "@/Components/GUI/GuiButton.vue";
 
 export default {
     components: {
-        GuiButton,
         IconCross,
         ShowcaseV2LoadingProgress,
         ShowcaseV2Button,
