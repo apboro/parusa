@@ -58,6 +58,10 @@ class ShowcaseOrderController extends ApiEditController
             return response()->json(['message' => 'Ошибка сессии.'], 400);
         }
 
+        if (!$request->data['email']){
+            return APIResponse::error('Не указан email');
+        }
+
         list($user, $domain) = explode('@', $request->data['email']);
         if (!checkdnsrr($domain, 'MX')) {
             return APIResponse::error('Указан несуществующий email');
@@ -109,7 +113,7 @@ class ShowcaseOrderController extends ApiEditController
 
         $flat = $request->input('data');
         $data = Arr::undot($flat);
-        if (!$trip->ship->ship_has_seats_scheme) {
+        if (!$trip->additionalData->with_seats) {
             $tickets = $this->createTickets($data, $trip, $backwardTrip, $isPartnerSite);
         } else {
             $tickets = $this->createTicketsWithScheme($data, $request, $trip);
