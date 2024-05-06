@@ -203,7 +203,7 @@
                             <s>{{ total }}</s> {{ discount_price }} руб.
                         </template>
                         <template v-else>
-                            {{ total = '0 руб.' ? schemeTotal() + ' руб.' : total }}
+                            {{ total === '0 руб.' ? schemeTotal() + ' руб.' : total }}
                         </template>
                     </span>
                     <span v-else class="ap-showcase__checkout-not-selected">В заказе отсутствуют билеты</span>
