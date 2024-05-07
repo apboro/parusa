@@ -30,7 +30,7 @@
                 </ListTableCell>
                 <ListTableCell :class="'w-15'">
                     <GuiButton v-if="!partner.open_shift" @click="openShift(partner)">открыть смену</GuiButton>
-                    <GuiValue v-else>Смена открыта <br>{{ formatDate(partner.open_shift.start_at) }}</GuiValue>
+                    <GuiValue v-else>Смена открыта <br>{{ partner.open_shift.start_at }}</GuiValue>
                 </ListTableCell>
             </ListTableRow>
         </ListTable>
@@ -123,19 +123,6 @@ export default {
     },
 
     methods: {
-        formatDate(dateString) {
-            const parsedDate = new Date(dateString.replace(/-/g, '/'));
-            const options = {
-                weekday: 'short',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-            };
-
-            return new Intl.DateTimeFormat('ru-RU', options).format(parsedDate);
-        },
         commissionPercent(partner) {
             return partner['open_shift']['tariff']['commission'] + partner['open_shift']['commission_delta'];
         },

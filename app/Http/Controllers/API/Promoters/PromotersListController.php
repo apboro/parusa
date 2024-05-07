@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Http\Resources\WorkShiftResource;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PartnerStatus;
 use App\Models\Dictionaries\PartnerType;
@@ -77,7 +78,8 @@ class PromotersListController extends ApiController
                     });
             });
         }
-        $promotersWithOpenedShift = $query->clone()->whereHas('workShifts', fn($q) => $q->whereNull('end_at'))->pluck('id');
+        $promotersWithOpenedShift = $query->clone()
+            ->whereHas('workShifts', fn($q) => $q->whereNull('end_at'))->pluck('id');
         $partners = $query->orderBy('name')->get();
 
         /** @var LengthAwarePaginator $partners */
@@ -90,7 +92,7 @@ class PromotersListController extends ApiController
                 'type' => $partner->type->name,
                 'balance' => $openedShift?->getShiftTotalPay() + $openedShift?->balance,
                 'limit' => $partner->account->limit,
-                'open_shift' => $partner->workShifts()->with('tariff')->whereNull('end_at')->first(),
+                'open_shift' => $partner->workShifts()->with('tariff')->whereNull('end_at')->first() ? WorkShiftResource::make($partner->workShifts()->with('tariff')->whereNull('end_at')->first()) : null,
                 'promoter_commission_rate' => $partner->tariff()->first()?->commission,
                 'pier_name' => $openedShift && $partner->profile->self_pay ?  'Самостоятельно' : $openedShift?->terminal->pier->name,
             ];
