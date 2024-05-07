@@ -113,7 +113,7 @@ class ShowcaseOrderController extends ApiEditController
 
         $flat = $request->input('data');
         $data = Arr::undot($flat);
-        if (!$trip->additionalData->with_seats) {
+        if (!$trip->additionalData?->with_seats) {
             $tickets = $this->createTickets($data, $trip, $backwardTrip, $isPartnerSite);
         } else {
             $tickets = $this->createTicketsWithScheme($data, $request, $trip);
