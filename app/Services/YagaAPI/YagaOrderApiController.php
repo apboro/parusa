@@ -163,23 +163,32 @@ class YagaOrderApiController
     {
         $order = Order::with(['status', 'tickets', 'tickets.trip'])->find($request->id);
 
-        if ($order->hasStatus(OrderStatus::yaga_confirmed)) {
-            foreach ($order->tickets as $ticket) {
-                if ($ticket->trip->start_at > now()->addMinutes($ticket->trip->cancellation_time)) {
+        if (!$request->cancelItems) {
+            if ($order->hasStatus(OrderStatus::yaga_confirmed)) {
+                foreach ($order->tickets as $ticket) {
                     $ticket->setStatus(TicketStatus::yaga_canceled);
+                }
+                $order->setStatus(OrderStatus::yaga_canceled);
+            }
+        } else {
+            foreach ($request->cancelItems as $item) {
+                $ticket = $order->tickets->find($item['ticketId']);
+                if ($ticket->base_price > $item['refundedCost']['total']['value']) {
+                    $ticket->setStatus(TicketStatus::yaga_canceled_with_penalty);
+                    $ticket->additionalData->update(['penalty_sum' => $ticket->base_price - $item['refundedCost']['total']['value']]);
+                    $order->setStatus(OrderStatus::yaga_canceled_with_penalty);
                 } else {
-                    return response()->json(['message' => 'Срок для отмены заказа прошёл']);
+                    $ticket->setStatus(TicketStatus::yaga_canceled);
+                    $order->setStatus(OrderStatus::yaga_canceled);
                 }
             }
-            $order->setStatus(OrderStatus::yaga_canceled);
-        } else {
-            return response()->json(['message' => 'Неверный статус для отмены']);
         }
+
         $statusId = $order->status_id;
         $status = match ($statusId) {
             OrderStatus::yaga_confirmed => 'APPROVED',
             OrderStatus::yaga_reserved => 'RESERVED',
-            OrderStatus::yaga_canceled => 'CANCELLED',
+            OrderStatus::yaga_canceled, OrderStatus::yaga_canceled_with_penalty => 'CANCELLED',
             default => 'UNDEFINED_ORDER_STATUS'
         };
 

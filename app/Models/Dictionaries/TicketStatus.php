@@ -46,9 +46,11 @@ class TicketStatus extends AbstractDictionary
     public const api_confirmed = 105;
     public const api_canceled = 110;
     public const api_returned = 115;
+
     public const yaga_reserved = 120;
     public const yaga_confirmed = 125;
     public const yaga_canceled = 130;
+    public const yaga_canceled_with_penalty = 135;
 
     public const showcase_creating = 61;
     public const showcase_wait_for_pay = 62;
@@ -118,7 +120,8 @@ class TicketStatus extends AbstractDictionary
         self::partner_paid_single,
         self::api_confirmed,
         self::yaga_confirmed,
-        self::promoter_paid
+        self::promoter_paid,
+        self::yaga_canceled_with_penalty,
     ];
 
     public const ticket_reserved_statuses = [
@@ -137,7 +140,6 @@ class TicketStatus extends AbstractDictionary
         self::partner_paid_single,
         self::used,
         self::api_confirmed,
-        self::yaga_confirmed,
         self::promoter_paid
     ];
 
@@ -147,6 +149,7 @@ class TicketStatus extends AbstractDictionary
         self::showcase_canceled,
         self::api_canceled,
         self::yaga_canceled,
+        self::yaga_canceled_with_penalty,
     ];
     public const ticket_single_statuses = [
         self::showcase_paid_single,
