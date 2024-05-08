@@ -46,7 +46,7 @@ class PromoterPayOutController extends ApiController
             })->when($request->date_to, function ($query) use ($filters) {
                 $query->whereDate('end_at', '<=', $filters['date_to']);
             });
-
+        $payOutsTotal = $query->clone()->sum('paid_out');
         $payOuts = $query->paginate($request->perPage(10, ''));
 
         $payOuts->transform(function (WorkShift $workShift) {
@@ -64,7 +64,7 @@ class PromoterPayOutController extends ApiController
             ],
             $filters,
             $this->defaultFilters,
-            []
+            ['selected_total' => $payOutsTotal, 'selected_page_total' => $payOuts->sum('paid_out')]
         );
     }
 
