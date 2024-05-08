@@ -10,14 +10,15 @@
                 total: 'Сводка',
                 registry: 'Реестр продаж',
                 account: 'Лицевой счёт',
-                details: 'Персональные данные'
+                details: 'Персональные данные',
+                pay_outs: 'Выплаты',
             }" @change="tab = $event"/>
 
             <PromoterInfo v-if="tab === 'details'" :data="data.data" :partnerId="partnerId" :editable="true"/>
             <PromoterAccount v-if="tab === 'account'" :partnerId="partnerId"/>
             <AdminOrderRegistry v-if="tab === 'registry'" :partnerId="partnerId"/>
             <PromoterTotal v-if="tab === 'total'" :partnerId="partnerId" :data="data.data" @update="update"/>
-
+            <PromoterPayOuts v-if="tab === 'pay_outs'" :partnerId="partnerId"/>
         </template>
     </LayoutPage>
 </template>
@@ -33,9 +34,11 @@ import GuiTabs from "@/Components/GUI/GuiTabs";
 import PromoterInfo from "@/Pages/Terminal/Parts/PromoterInfo.vue";
 import PromoterAccount from "@/Pages/Terminal/Parts/PromoterAccount.vue";
 import PromoterTotal from "@/Pages/Terminal/Parts/PromoterTotal.vue";
+import PromoterPayOuts from "@/Pages/Terminal/Parts/PromoterPayOuts.vue";
 
 export default {
     components: {
+        PromoterPayOuts,
         PromoterTotal,
         PromoterAccount,
         PromoterInfo,
