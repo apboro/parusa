@@ -75,6 +75,9 @@ class PromotersRegistryController extends ApiController
         $partners->transform(function (Partner $partner) use ($filters) {
 
             $filteredWorkshifts = $partner->workShifts;
+            $totalToPay = $filteredWorkshifts->sum(function ($shift) {
+                return $shift->getShiftTotalPay();
+            });
 
             return [
                 'id' => $partner->id,
@@ -88,11 +91,9 @@ class PromotersRegistryController extends ApiController
                 }),
                 'sales_total' => $filteredWorkshifts->sum('sales_total'),
                 'commission' => $filteredWorkshifts->sum('pay_commission'),
-                'total_to_pay_out' => $filteredWorkshifts->sum(function ($shift) {
-                    return $shift->getShiftTotalPay();
-                }),
+                'total_to_pay_out' => $totalToPay,
                 'total_paid_out' => $filteredWorkshifts->sum('paid_out'),
-                'balance' => $filteredWorkshifts->last()?->balance,
+                'debt' => $totalToPay - $filteredWorkshifts->sum('paid_out'),
                 'taxi' => $filteredWorkshifts->sum('taxi')
             ];
         });
