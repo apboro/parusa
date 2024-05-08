@@ -32,14 +32,18 @@ class WorkShiftController extends Controller
         if (!$tariff) {
             return APIResponse::error('Для промоутера не задан тариф');
         }
-        $workShift = WorkShift::create([
-            'partner_id' => $promoter->id,
-            'tariff_id' => $tariff->id,
-            'terminal_id' => $current->terminalId(),
-            'start_at' => now(),
-            'status_id' => WorkShiftStatus::active,
-            'balance' => $promoter->getLastShift()?->balance,
-        ]);
+
+        $workShift = $promoter->getOpenedShift();
+        if (!$workShift) {
+            $workShift = WorkShift::create([
+                'partner_id' => $promoter->id,
+                'tariff_id' => $tariff->id,
+                'terminal_id' => $current->terminalId(),
+                'start_at' => now(),
+                'status_id' => WorkShiftStatus::active,
+                'balance' => $promoter->getLastShift()?->balance,
+            ]);
+        }
 
         return APIResponse::success('Смена открыта', ['start_at' => Carbon::parse($workShift->start_at)->format('Y-m-d H:i:s')]);
     }
