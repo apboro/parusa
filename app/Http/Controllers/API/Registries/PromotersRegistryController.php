@@ -93,7 +93,7 @@ class PromotersRegistryController extends ApiController
                 'commission' => $filteredWorkshifts->sum('pay_commission'),
                 'total_to_pay_out' => $totalToPay,
                 'total_paid_out' => $filteredWorkshifts->sum('paid_out'),
-                'debt' => $totalToPay - $filteredWorkshifts->sum('paid_out'),
+                'balance' => $totalToPay - $filteredWorkshifts->sum('paid_out'),
                 'taxi' => $filteredWorkshifts->sum('taxi')
             ];
         });
