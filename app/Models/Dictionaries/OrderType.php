@@ -21,7 +21,7 @@ class OrderType extends AbstractDictionary
     /** @var int Касса */
     public const terminal = 3;
 
-    /** @var int Касса (промоутер)*/
+    /** @var int Касса (промоутер) */
     public const terminal_partner = 4;
 
     /** @var int Витрина на сайте компании «Алые паруса» */
@@ -36,10 +36,16 @@ class OrderType extends AbstractDictionary
     /** @var int Api */
     public const api_sale = 13;
 
-    /** @var int yaga*/
+    /** @var int yaga */
     public const yaga_sale = 14;
 
-
+    public const types_with_sber_payment = [
+        self::partner_site,
+        self::site,
+        self::qr_code,
+        self::referral_link,
+        self::promoter_sale
+    ];
     /** @var string Referenced table name. */
     protected $table = 'dictionary_order_types';
 }

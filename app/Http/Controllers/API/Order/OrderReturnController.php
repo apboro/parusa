@@ -139,7 +139,7 @@ class OrderReturnController extends ApiController
         } else if ($current->isStaffAdmin()) {
             // Returning tickets bought
             try {
-                if ($order->type_id === OrderType::site && $order->external_id === null) {
+                if (in_array($order->type_id, OrderType::types_with_sber_payment) && $order->external_id === null) {
                     throw new Exception('Отсутствует внешний ID заказа');
                 }
                 $tickets = [];
@@ -154,7 +154,7 @@ class OrderReturnController extends ApiController
                         $returnAmount += $ticket->getPrice();
                     }
                 }
-                if ($order->type_id === OrderType::site) {
+                if (in_array($order->type_id, OrderType::types_with_sber_payment)) {
                     // send return request to sber
                     $isProduction = env('SBER_ACQUIRING_PRODUCTION');
                     $connection = new Connection([
@@ -197,7 +197,7 @@ class OrderReturnController extends ApiController
                     $order->setStatus(OrderStatus::showcase_partial_returned);
                 }
 
-                if ($order->type_id === OrderType::site) {
+                if (in_array($order->type_id, OrderType::types_with_sber_payment)) {
                     // add transaction
                     $payment = new Payment();
                     $payment->gate = 'sber';
