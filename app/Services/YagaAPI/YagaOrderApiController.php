@@ -4,7 +4,9 @@ namespace App\Services\YagaAPI;
 
 use App\Actions\CreateOrderFromYaga;
 use App\Actions\CreateTicketsFromYaga;
+use App\Helpers\PriceConverter;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
@@ -173,9 +175,12 @@ class YagaOrderApiController
         } else {
             foreach ($request->cancelItems as $item) {
                 $ticket = $order->tickets->find($item['ticketId']);
-                if ($ticket->base_price > $item['refundedCost']['total']['value']) {
+                if (PriceConverter::priceToStore($ticket->base_price) > $item['refundedCost']['total']['value']) {
                     $ticket->setStatus(TicketStatus::yaga_canceled_with_penalty);
-                    $ticket->additionalData->update(['penalty_sum' => $ticket->base_price - $item['refundedCost']['total']['value']]);
+                    $ticket->additionalData()->updateOrCreate([
+                        'provider_id' => Provider::scarlet_sails,
+                        'penalty_sum' => PriceConverter::priceToStore($ticket->base_price) - $item['refundedCost']['total']['value']
+                    ]);
                     $order->setStatus(OrderStatus::yaga_canceled_with_penalty);
                 } else {
                     $ticket->setStatus(TicketStatus::yaga_canceled);
