@@ -180,6 +180,7 @@ class TerminalCurrentOrderController extends ApiController
             $order->payCommissions();
 
         } catch (Exception $exception) {
+            Log::error('terminal current order error: '. $exception->getMessage(). ' '. $exception->getFile(). ' '. $exception->getLine());
             return APIResponse::error($exception->getMessage());
         }
 

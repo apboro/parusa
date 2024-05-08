@@ -29,6 +29,7 @@ use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
 use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeNone;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Log;
 use JsonException;
 
 /**
@@ -206,6 +207,7 @@ class Ticket extends Model implements Statusable
         if ($partner->type_id === PartnerType::promoter) {
             if ($openedShift = $partner->getOpenedShift()) {
                 $dataForTransaction = $this->countPromotersCommission($openedShift);
+                Log::channel('promoters')->info('pay commission to id: '. $partner->id . ' sum:' . $dataForTransaction['promoter_amount']);
                 $this->saveCommissionsInShift($openedShift, $dataForTransaction['promoter_amount']);
             }
         }
@@ -231,6 +233,7 @@ class Ticket extends Model implements Statusable
             $shift->balance = $shift->balance - $commission;
             $shift->sales_total = $shift->sales_total - $this->base_price;
         }
+        Log::channel('promoters')->info('save commissions in shift id: '. $shift->id . ' commission: ' . $commission);
         $shift->save();
     }
 

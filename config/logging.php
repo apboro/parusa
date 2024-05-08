@@ -81,6 +81,11 @@ return [
             'path' => storage_path('logs/city_tour.log'),
             'level' => 'info',
         ],
+        'promoters' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/promoters.log'),
+            'level' => 'info',
+        ],
 
         'qr-codes' => [
             'driver' => 'single',
