@@ -177,7 +177,7 @@ class PartnerCartController extends ApiEditController
         try {
             DB::transaction(static function () use ($ordering, $count, $trip) {
                 // check total quantities
-                if ($trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $count > $trip->tickets_total && !$trip->is_single_ticket) {
+                if ($trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() + $count > $trip->tickets_total) {
                     throw new RuntimeException('Недостаточно свободных мест на теплоходе.');
                 }
                 foreach ($ordering as $ticket) {
