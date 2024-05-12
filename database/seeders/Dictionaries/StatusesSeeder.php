@@ -79,10 +79,12 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::partner_paid => ['name' => 'Оплачен'],
             TicketStatus::partner_returned => ['name' => 'Оформлен возврат'],
             TicketStatus::partner_reserve_canceled => ['name' => 'Отменён'],
+
             TicketStatus::promoter_wait_for_pay => ['name' => 'Промоутер: ожидает оплаты'],
             TicketStatus::promoter_confirmed => ['name' => 'Промоутер: оплата подтверждена'],
             TicketStatus::promoter_paid => ['name' => 'Промоутер: оплачен'],
             TicketStatus::promoter_canceled => ['name' => 'Промоутер: отменён'],
+
             TicketStatus::terminal_creating => ['name' => 'Оформление'],
             TicketStatus::terminal_creating_from_reserve => ['name' => 'Оформление'],
             TicketStatus::terminal_wait_for_pay => ['name' => 'Ожидает оплаты'],
@@ -92,16 +94,23 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::terminal_wait_for_return => ['name' => 'Ожидает возврата'],
             TicketStatus::terminal_returned => ['name' => 'Оформлен возврат'],
             TicketStatus::terminal_canceled => ['name' => 'Отменён'],
+
             TicketStatus::showcase_creating => ['name' => 'Оформление'],
             TicketStatus::showcase_wait_for_pay => ['name' => 'Ожидает оплаты'],
             TicketStatus::showcase_paid => ['name' => 'Оплачен'],
             TicketStatus::showcase_returned => ['name' => 'Оформлен возврат'],
             TicketStatus::showcase_canceled => ['name' => 'Отменён'],
+
             TicketStatus::used => ['name' => 'Использован'],
             TicketStatus::expired => ['name' => 'Просрочен'],
+
             TicketStatus::showcase_paid_single => ['name' => 'ЕдБ оплачен витрина'],
             TicketStatus::partner_paid_single => ['name' => 'ЕдБ оплачен партнер'],
             TicketStatus::terminal_paid_single => ['name' => 'ЕдБ оплачен терминал'],
+            TicketStatus::promoter_paid_single => ['name' => 'Промоутер ЕдБ оплачен'],
+            TicketStatus::api_confirmed_single => ['name' => 'API ЕдБ подтвержден'],
+            TicketStatus::yaga_confirmed_single => ['name' => 'Промоутер ЕдБ подтвержден'],
+
             TicketStatus::api_reserved => ['name' => 'Зарезервирован по Api'],
             TicketStatus::api_confirmed => ['name' => 'Подтвержден по Api'],
             TicketStatus::api_canceled => ['name' => 'Отменён'],

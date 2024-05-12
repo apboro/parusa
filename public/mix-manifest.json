@@ -1,13 +1,13 @@
 {
-    "/js/login.js": "/js/login.js?id=371a967c1e267e13a6a86daab2614317",
-    "/js/admin.js": "/js/admin.js?id=efd47284a691c64b8aad586a3b975043",
-    "/js/partner.js": "/js/partner.js?id=ecf2ec31ae6bc5ea12b5cd333529fbb4",
-    "/js/terminal.js": "/js/terminal.js?id=6e75a6f8e4f5b08814949bf9d9538d76",
-    "/js/controller.js": "/js/controller.js?id=8131c848864a9af27d53740b34b93890",
-    "/js/promoter.js": "/js/promoter.js?id=c03e16d9f46d5e063ce81cf43497f99c",
-    "/js/showcase.js": "/js/showcase.js?id=4b25c48ea2e9c89ef3dda168e874f532",
-    "/js/showcase2.js": "/js/showcase2.js?id=48489c54a289a4156630987dff86a418",
-    "/js/checkout.js": "/js/checkout.js?id=01f731946e25f9bd085c7f1f7c119e08",
-    "/css/app.css": "/css/app.css?id=d4d7b008c5b2bdf56a0e6ffbb7b1fbb0",
-    "/css/select.css": "/css/select.css?id=d5046275a46eec817517768616450513"
+    "/js/login.js": "/js/login.js",
+    "/js/admin.js": "/js/admin.js",
+    "/js/partner.js": "/js/partner.js",
+    "/js/terminal.js": "/js/terminal.js",
+    "/js/controller.js": "/js/controller.js",
+    "/js/promoter.js": "/js/promoter.js",
+    "/js/showcase.js": "/js/showcase.js",
+    "/js/showcase2.js": "/js/showcase2.js",
+    "/js/checkout.js": "/js/checkout.js",
+    "/css/app.css": "/css/app.css",
+    "/css/select.css": "/css/select.css"
 }

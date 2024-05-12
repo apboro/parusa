@@ -89,6 +89,12 @@ class Ticket extends Model implements Statusable
             $this->checkAndSetStatus(TicketStatus::class, TicketStatus::partner_paid_single, WrongTicketStatusException::class, $save);
         } elseif ($status === TicketStatus::showcase_paid && $isSingleTicket) {
             $this->checkAndSetStatus(TicketStatus::class, TicketStatus::showcase_paid_single, WrongTicketStatusException::class, $save);
+        } elseif ($status === TicketStatus::promoter_paid && $isSingleTicket) {
+            $this->checkAndSetStatus(TicketStatus::class, TicketStatus::promoter_paid_single, WrongTicketStatusException::class, $save);
+        } elseif ($status === TicketStatus::api_confirmed && $isSingleTicket) {
+            $this->checkAndSetStatus(TicketStatus::class, TicketStatus::api_confirmed_single, WrongTicketStatusException::class, $save);
+        } elseif ($status === TicketStatus::yaga_confirmed && $isSingleTicket) {
+            $this->checkAndSetStatus(TicketStatus::class, TicketStatus::yaga_confirmed_single, WrongTicketStatusException::class, $save);
         } else {
             $this->checkAndSetStatus(TicketStatus::class, $status, WrongTicketStatusException::class, $save);
         }
