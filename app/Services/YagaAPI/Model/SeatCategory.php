@@ -2,6 +2,7 @@
 
 namespace App\Services\YagaAPI\Model;
 
+use App\Helpers\PriceConverter;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Tickets\TicketRate;
 
@@ -21,11 +22,11 @@ class SeatCategory
                         ],
                         "price" => [
                             "currencyCode" => 'RUB',
-                            "value" => $rate->partner_price
+                            "value" => PriceConverter::priceToStore($rate->partner_price)
                     ],
                         "total" => [
                             "currencyCode" => 'RUB',
-                            "value" => $rate->partner_price,
+                            "value" => PriceConverter::priceToStore($rate->partner_price),
                         ]
                     ],
                     "id" => $rate->grade->id,
