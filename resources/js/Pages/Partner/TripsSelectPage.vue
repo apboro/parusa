@@ -123,6 +123,11 @@
                 </ListTableCell>
                 <ListTableCell>
                     <span :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" @click="pierInfo(trip['pier_id'])">{{ trip['pier'] }}</span>
+                    <div v-if="trip['stops'].length > 0">
+                        <div v-for="stop in trip['stops']">
+                            {{stop.pier.name}} - {{stop.start_at}}
+                        </div>
+                    </div>
                 </ListTableCell>
                 <ListTableCell>
                     {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})

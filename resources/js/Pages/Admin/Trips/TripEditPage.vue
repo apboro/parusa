@@ -35,21 +35,21 @@
                     />
                     <FormNumber
                         :form="form"
-                        :name="'middle_terminal_price_'+[index]"
-                        :placeholder="'Введите цену'"
-                        :title="'Цена кассы'"
+                        :name="'middle_terminal_price_delta_'+[index]"
+                        :placeholder="'Введите число'"
+                        :title="'Скидка от цены кассы, %'"
                     />
                     <FormNumber
                         :form="form"
-                        :name="'middle_partner_price_'+[index]"
-                        :placeholder="'Введите цену'"
-                        :title="'Цена партнёра'"
+                        :name="'middle_partner_price_delta_'+[index]"
+                        :placeholder="'Введите число'"
+                        :title="'Скидка от цены партнера, %'"
                     />
                     <FormNumber
                         :form="form"
-                        :name="'middle_site_price_'+[index]"
-                        :placeholder="'Введите цену'"
-                        :title="'Цена витрины'"
+                        :name="'middle_site_price_delta_'+[index]"
+                        :placeholder="'Введите число'"
+                        :title="'Скидка от цены витрины, %'"
                     />
                 </div>
             </div>

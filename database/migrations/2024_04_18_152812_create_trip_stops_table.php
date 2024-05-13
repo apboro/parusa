@@ -19,9 +19,9 @@ class CreateTripStopsTable extends Migration
             $table->unsignedSmallInteger('stop_pier_id');
             $table->dateTime('stop_at')->nullable();
             $table->dateTime('start_at');
-            $table->unsignedInteger('terminal_price');
-            $table->unsignedInteger('partner_price');
-            $table->unsignedInteger('site_price');
+            $table->unsignedInteger('terminal_price_delta');
+            $table->unsignedInteger('partner_price_delta');
+            $table->unsignedInteger('site_price_delta');
             $table->timestamps();
         });
     }
