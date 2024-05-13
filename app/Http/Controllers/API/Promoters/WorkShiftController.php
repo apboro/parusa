@@ -22,12 +22,9 @@ class WorkShiftController extends Controller
         if (!$current->terminalId())
             return APIResponse::error('Доступ запрещён');
 
-        $currentDateTime = Carbon::now();
-        $noonToday = Carbon::today()->setHour(11);
-
         $promoter = Partner::find($request->input('promoterId'));
 
-        $tariff = ($currentDateTime->lessThan($noonToday) && $promoter->profile->auto_change_tariff == 1) ? Tariff::find(1) : $promoter->tariff()->first();
+        $tariff = $promoter->tariff()->first();
 
         if (!$tariff) {
             return APIResponse::error('Для промоутера не задан тариф');

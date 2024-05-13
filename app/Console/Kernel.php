@@ -27,7 +27,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('telescope:prune --hours=96')->daily();
         $schedule->command('close:work-shifts')->dailyAt('1:05');
         $schedule->command('astra-marine:import')->dailyAt('05:30');
-        $schedule->command('change:promoters-tariff')->dailyAt('11:00');
         if (config('app.env') === 'production') {
             $schedule->command('city_tour:refresh')->everyFifteenMinutes();
             $schedule->command('neva:today')->everyFiveMinutes();
