@@ -8,6 +8,7 @@ use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
+use App\Models\Dictionaries\TripStatus;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Exception;
@@ -20,21 +21,30 @@ class TicketQrCodeCheckController extends Controller
     public function getScanData(Request $request)
     {
         $data = $request->all();
-        if (!Str::contains($data[0]['rawValue'], '1|t|')) {
+        if (empty($data['manual']) && !Str::contains($data[0]['rawValue'], '1|t|')) {
             return APIResponse::response(['notValidQrCode' => 'Вы отсканировали неверный QR-код']);
         }
-        $ticketData = explode('|', $data[0]['rawValue']);
-        $ticketNumber = $ticketData[2];
-        $signature = str_replace('"', '', $ticketData[3]);
-        $expectedSignature = md5(config('app.key') . '|1|t|' . $ticketNumber);
+
+        if (empty($data['manual'])) {
+            $ticketData = explode('|', $data[0]['rawValue']);
+            $ticketNumber = $ticketData[2];
+            $signature = str_replace('"', '', $ticketData[3]);
+            $expectedSignature = md5(config('app.key') . '|1|t|' . $ticketNumber);
+            if ($signature != $expectedSignature){
+                return APIResponse::response(['notValidQrCode' => 'Билет не найден>']);
+            }
+        } else {
+            $ticketNumber = $data['ticketNumber'];
+        }
+
         $ticket = Ticket::with(['order', 'trip', 'trip.excursion', 'trip.startPier'])->find($ticketNumber);
 
-        if (($signature == $expectedSignature) && $ticket) {
+        if ($ticket) {
 
             if (!in_array($ticket->status_id, [...TicketStatus::ticket_paid_statuses, TicketStatus::terminal_finishing])) {
                 return APIResponse::response(['tickets' => [$this->makeTicketResource($ticket)], 'notValidTicket' => 'Билет уже использован или возвращен']);
             }
-            if (in_array($ticket->trip->status_id, [3, 4])) {
+            if (in_array($ticket->trip->status_id, [TripStatus::finished, TripStatus::cancelled])) {
                 return APIResponse::response(['tickets' => [$this->makeTicketResource($ticket)], 'notValidTicket' => 'Рейс по этому билету завершен']);
             }
 
@@ -44,13 +54,14 @@ class TicketQrCodeCheckController extends Controller
                 ->whereIn('status_id', [...TicketStatus::ticket_paid_statuses, TicketStatus::terminal_finishing])
                 ->transform(function (Ticket $ticket) {
                     return $this->makeTicketResource($ticket);
-                });
+                })->values();
 
             return APIResponse::response(['tickets' => $orderTickets]);
         } else {
             return APIResponse::response(['notValidQrCode' => 'Билет не найден']);
         }
     }
+
 
     private function makeTicketResource(Ticket $ticket)
     {
@@ -69,6 +80,7 @@ class TicketQrCodeCheckController extends Controller
             'pier' => $ticket->trip->startPier->name,
             'order_type' => $ticket->order->type->name,
             'promocode' => $ticket->order->promocode->first()?->name,
+            'last_changed_at' => $ticket->updated_at->format('d.m.Y H:i'),
         ];
     }
 

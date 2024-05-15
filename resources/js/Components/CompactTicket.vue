@@ -57,11 +57,12 @@ export default {
 </script>
 
 <template>
-    <GuiText bold v-if="data.notValidTicket">{{ data.notValidTicket }}</GuiText>
+
+    <GuiHeading flex justify-center mb-15 bold v-if="data.notValidTicket">{{ data.notValidTicket }}</GuiHeading>
 
     <div v-if="data.tickets.length > 0">
         <GuiHeading bold> ЗАКАЗ </GuiHeading>
-        <GuiValue :title="'Номер билета:'">{{ data.tickets[0].order_id }}</GuiValue>
+        <GuiValue :title="'Номер заказа:'">{{ data.tickets[0].order_id }}</GuiValue>
         <GuiValue :title="'Экскурсия:'">{{ data.tickets[0].excursion_name }}</GuiValue>
         <GuiValue :title="'Начало рейса:'">{{ data.tickets[0].trip_start_time }}</GuiValue>
         <GuiValue :title="'Номер рейса:'">{{ data.tickets[0].trip_id }}</GuiValue>
@@ -71,13 +72,14 @@ export default {
         <GuiValue v-if="data.tickets[0].promocode" :title="'Промокод:'">{{ data.tickets[0].promocode }}</GuiValue>
 
         <GuiHeading bold> БИЛЕТЫ </GuiHeading>
-        <ListTable :titles="['Номер заказа','Статус билета','Тип билета']" class="list-table-check">
+        <ListTable :titles="['Номер билета','Статус билета','Тип билета']" class="list-table-check">
             <ListTableRow v-for="ticket in data.tickets">
                 <ListTableCell :nowrap="true">
                     <InputCheckbox :label="ticket.ticket_id.toString()" v-model="selected" :value="ticket.ticket_id" small></InputCheckbox>
                 </ListTableCell>
-                <ListTableCell :nowrap="true">
-                    {{ ticket.ticket_status }}
+                <ListTableCell :nowrap="true" flex column>
+                    {{ ticket.ticket_status }} <br>
+                    <span v-if="ticket.ticket_status === 'Использован'">{{ ticket.last_changed_at }}</span>
                 </ListTableCell>
                 <ListTableCell>
                     {{ ticket.type }}
