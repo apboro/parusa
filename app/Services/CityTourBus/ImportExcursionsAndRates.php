@@ -67,9 +67,10 @@ class ImportExcursionsAndRates
                                 'base_price' => $grade['price'],
                                 'min_price' => $grade['price'],
                                 'max_price' => $grade['price'],
-                                'commission_type' => 'fixed',
-                                'commission_value' => 100,
+                                'commission_type' => 'percents',
+                                'commission_value' => 10,
                                 'site_price' => $grade['price'],
+                                'partner_price' => $grade['price'],
                             ]
                         );
                     }
