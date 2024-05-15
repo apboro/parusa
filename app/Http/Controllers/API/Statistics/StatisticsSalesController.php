@@ -67,11 +67,8 @@ class StatisticsSalesController extends ApiController
         $returnAmountTotal = 0;
 
         foreach ($orders as $order) {
-            /** @var Order $order */
             foreach ($order->tickets as $ticket) {
-                /** @var Ticket $ticket */
-
-                $soldAmount = in_array($ticket->status_id, TicketStatus::ticket_paid_statuses) ? $ticket->base_price : 0;
+                $soldAmount = in_array($ticket->status_id, TicketStatus::ticket_had_paid_statuses) ? $ticket->base_price : 0;
                 $soldAmountTotal += $soldAmount;
 
                 $returnedAmount = $ticket->status_id === TicketStatus::showcase_returned ? $ticket->base_price : 0;
@@ -92,7 +89,7 @@ class StatisticsSalesController extends ApiController
         }
 
         return APIResponse::list(
-            new LengthAwarePaginator($result, 100, 999),
+            new LengthAwarePaginator($result, 1000, 999),
             null,
             $filters,
             $this->defaultFilters,

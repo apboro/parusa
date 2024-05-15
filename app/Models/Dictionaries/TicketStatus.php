@@ -128,6 +128,7 @@ class TicketStatus extends AbstractDictionary
         self::yaga_confirmed,
         self::promoter_paid,
         self::yaga_canceled_with_penalty,
+        self::used
     ];
 
     public const ticket_reserved_statuses = [
