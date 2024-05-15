@@ -19,28 +19,4 @@ class AdditionalDataTicket extends Model
         return $this->hasOne(Menu::class, 'id', 'menu_id');
     }
 
-    /**
-     * Convert base_price from store value to real price.
-     *
-     * @param int|null $value
-     *
-     * @return  float
-     */
-    public function getPenaltySumAttribute(?int $value): ?float
-    {
-        return $value !== null ? PriceConverter::storeToPrice($value) : null;
-    }
-
-    /**
-     * Convert base_price to store value.
-     *
-     * @param float|null $value
-     *
-     * @return  void
-     */
-    public function setPenaltySumAttribute(?float $value): void
-    {
-        $this->attributes['penalty_sum'] = $value !== null ? PriceConverter::priceToStore($value) : null;
-    }
-
 }
