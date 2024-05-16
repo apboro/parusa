@@ -94,7 +94,7 @@ class ShowcaseOrderController extends ApiEditController
                     ->whereHas('rates', function (Builder $query) use ($isPartnerSite) {
                         $query->where('grade_id', '!=', TicketGrade::guide);
                         if ($isPartnerSite) {
-                            $query->where('site_price', '>', 0);
+                            $query->where('partner_price', '>', 0);
                         } else {
                             $query->where('base_price', '>', 0);
                         }
@@ -262,7 +262,7 @@ class ShowcaseOrderController extends ApiEditController
                         'trip_id' => $trip->id,
                         'grade_id' => $gradeId,
                         'status_id' => TicketStatus::showcase_creating,
-                        'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
+                        'base_price' => $isPartnerSite ? $rate->partner_price : $rate->site_price ?? $rate->base_price,
                         'provider_id' => $trip->provider_id,
                     ]);
                     if ($backwardTrip) {
