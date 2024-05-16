@@ -79,7 +79,7 @@ class TicketsRegistryController extends ApiController
                 'status' => $ticket->status->name,
                 'commission_type' => $commissionType ?? null,
                 'commission_amount' => $ticket->transaction !== null ? $ticket->transaction->amount : null,
-                'trip_date' => $ticket->trip->start_at->format('d.m.Y'),
+                'trip_date' => $ticket->trip->start_at->format('d.m.y'),
                 'trip_time' => $ticket->trip->start_at->format('H:i'),
                 'trip_id' => $ticket->trip_id,
                 'excursion' => $ticket->trip->excursion->name,
@@ -93,6 +93,7 @@ class TicketsRegistryController extends ApiController
                 'buyer_email' => $ticket->order->email,
                 'buyer_phone' => $ticket->order->phone,
                 'return_up_to' => null,
+                'last_changed_at' => $ticket->updated_at->format('d.m.y H:i'),
             ];
         });
 
