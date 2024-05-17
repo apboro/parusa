@@ -113,7 +113,7 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
         try {
             $order->payCommissions();
         } catch (Exception $exception) {
-            Log::error($exception->getMessage());
+            Log::error('processShowcase_pay_commissions error:' . $exception->getMessage());
         }
     }
 }

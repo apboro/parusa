@@ -13,12 +13,6 @@ use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
 use App\SberbankAcquiring\Connection;
 use App\SberbankAcquiring\Helpers\Currency;
-
-// use App\SberbankAcquiring\Helpers\MeasurementUnit;
-// use App\SberbankAcquiring\Helpers\PaymentMethodType;
-// use App\SberbankAcquiring\Helpers\PaymentObject;
-// use App\SberbankAcquiring\Helpers\TaxSystem;
-// use App\SberbankAcquiring\Helpers\TaxType;
 use App\SberbankAcquiring\HttpClient\CurlClient;
 use App\SberbankAcquiring\Options;
 use App\SberbankAcquiring\Sber;
