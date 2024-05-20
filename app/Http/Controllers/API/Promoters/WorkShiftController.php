@@ -44,6 +44,7 @@ class WorkShiftController extends Controller
 
         return APIResponse::success('Смена открыта', ['start_at' => Carbon::parse($workShift->start_at)->format('Y-m-d H:i:s')]);
     }
+
     public function openSelfPay(Request $request)
     {
         $current = Currents::get($request);
@@ -79,6 +80,22 @@ class WorkShiftController extends Controller
             ->whereNull('end_at')
             ->first();
 
+        if (!$workShift) {
+            return APIResponse::error('Смена не найдена');
+        }
+
+        $current = Currents::get($request);
+
+        if ($current->terminalId() && $current->terminalId() !== $workShift->terminal_id)
+        {
+            $addr = $workShift->terminal->pier->info->address;
+            return APIResponse::error("Смена была открыта на другой кассе: № $workShift->terminal_id ($addr)");
+        }
+
+        if ($request->input('payTaxi') > 500 || (($workShift->taxi + $request->input('payTaxi')) > 500))  {
+            return APIResponse::error('Оплата такси не должна превышать 500 руб. за смену');
+        }
+
         $sumToPay = $request->input('sumToPay');
 
         $workShift->paid_out = $workShift->paid_out + $sumToPay;
@@ -95,6 +112,18 @@ class WorkShiftController extends Controller
         $workShift = WorkShift::query()
             ->where('partner_id', $request->partnerId)
             ->whereNull('end_at')->first();
+
+        if (!$workShift) {
+            return APIResponse::error('Смена не найдена');
+        }
+
+        $current = Currents::get($request);
+
+        if ($current->terminalId() && $current->terminalId() !== $workShift->terminal_id)
+        {
+            $addr = $workShift->terminal->pier->info->address;
+            return APIResponse::error("Смена была открыта на другой кассе: № $workShift->terminal_id ($addr)");
+        }
 
         $workShift->pay_for_time = $workShift->getPayForTime();
         $workShift->pay_for_out = $workShift->tariff->pay_for_out;

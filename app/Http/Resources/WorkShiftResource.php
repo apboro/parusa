@@ -30,6 +30,7 @@ class WorkShiftResource extends JsonResource
             'tariff_id' => $this->tariff_id,
             'partner_id' => $this->partner_id,
             'tariff' => $this->tariff,
+            'address' => $this->terminal->pier->info->address
         ];
     }
 }

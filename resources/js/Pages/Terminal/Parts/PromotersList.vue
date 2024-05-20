@@ -30,7 +30,10 @@
                 </ListTableCell>
                 <ListTableCell :class="'w-15'">
                     <GuiButton v-if="!partner.open_shift" @click="openShift(partner)">открыть смену</GuiButton>
-                    <GuiValue v-else>Смена открыта <br>{{ partner.open_shift.start_at }}</GuiValue>
+                    <GuiValue v-else>
+                        Смена открыта <br>{{ partner.open_shift.start_at }}
+                        <p>На кассе № {{partner.open_shift.terminal_id}} ({{partner.open_shift.address}})</p>
+                    </GuiValue>
                 </ListTableCell>
             </ListTableRow>
         </ListTable>
