@@ -52,7 +52,8 @@ class AstraMarineOrder
     {
         try {
             $orders = $this->getOrdersQueryData();
-            $orderNumber =  strlen((string)$this->order->id) > 5 ? 'ALP' .$this->order->id : 'ALP0' .$this->order->id;
+            $orderNumber = strlen((string)$this->order->id) > 5 ? 'ALP' . $this->order->id : 'ALP0' . $this->order->id;
+            Log::channel('astra-marine')->notice('register order request: ' . json_encode($orders));
             $response = $this->astraMarineRepository->registerOrder([
                 "sessionID" => md5($this->order->phone),
                 "orderID" => $orderNumber,
@@ -116,9 +117,16 @@ class AstraMarineOrder
                 if ($ticket) {
                     $this->tickets->forget($this->tickets->search($ticket));
                     $ticket->additionalData()->create([
-                            'provider_id' => Provider::astra_marine,
-                            'provider_qr_code' => $barcode
+                        'provider_id' => Provider::astra_marine,
+                        'provider_qr_code' => $barcode
                     ]);
+                } else {
+                    $ticket = $this->tickets->first();
+                    $ticket->additionalData()->create([
+                        'provider_id' => Provider::astra_marine,
+                        'provider_qr_code' => $barcode
+                    ]);
+                    $this->tickets->forget($this->tickets->search($ticket));
                 }
             }
         }
