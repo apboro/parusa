@@ -61,7 +61,7 @@ class CheckoutInitPayController extends ApiController
 
         // create order
         $orderId = $order->id . ' (' . Carbon::now()->format('d.m.Y H:i:s') . ')';
-        $finishedUrl = config('showcase.showcase_payment_page') . '?order=' . $secret . '&status=finished';
+        $finishedUrl = config('showcase.showcase_payment_page') . '?order=' . $order->id . '&status=finished';
         $phone = preg_replace('/[^\d+]/', '', $order->phone);
 
 //        $data = [

@@ -170,22 +170,10 @@ class CheckoutController extends ApiController
      */
     protected function handleResponse(Request $request): JsonResponse
     {
-        $secret = $request->input('order');
-
-        try {
-            $container = Crypt::decrypt($secret);
-            $container = json_decode($container, true, 512, JSON_THROW_ON_ERROR);
-        } catch (Exception $exception) {
-            return APIResponse::error('Заказ не найден.');
-        }
-
-        // check "credentials"
-        if ($container['ip'] !== $request->ip()) {
-            return APIResponse::error('Ошибка сессии.');
-        }
+        $orderId = $request->input('order');
 
         // check order
-        $order = $this->getOrder($container['id'] ?? null);
+        $order = $this->getOrder($orderId ?? null);
         if ($order === null) {
             return APIResponse::error('Заказ не найден.');
         }
@@ -193,34 +181,20 @@ class CheckoutController extends ApiController
             return APIResponse::error('Заказ не был корректно передан в оплату.');
         }
 
-        // check order status
-        $isProduction = config('sber.sber_acquiring_production');
-        $connection = new Connection([
-            'token' => config('sber.sber_acquiring_token'),
-            'userName' => config('sber.sber_acquiring_user'),
-            'password' => config('sber.sber_acquiring_password'),
-        ], new CurlClient(), $isProduction);
-        $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
-        $sber = new Sber($connection, $options);
+        $client = new \YooKassa\Client();
+        $client->setAuth('367216', env('UKASSA_SECRET_KEY'));
 
+        $paymentId = $order->external_id;
         try {
-            $response = $sber->getOrderStatus($order->external_id);
-        } catch (Exception $exception) {
-            Log::channel('sber_payments')->error(sprintf('Order [%s] get status client error: %s', $order->id, $exception->getMessage()));
-            return APIResponse::error($exception->getMessage());
+            $response = $client->getPaymentInfo($paymentId);
+        } catch (\Exception $e) {
+            Log::channel('sber_payments')->error(sprintf('Order [%s] get status client error: %s', $order->id, $e->getMessage()));
+            return APIResponse::error($e->getMessage());
         }
 
-        if (!$response->isSuccess()) {
-            Log::channel('sber_payments')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->errorMessage()));
-            return APIResponse::error($response->errorMessage());
-        }
-
-        if (!\App\SberbankAcquiring\OrderStatus::isDeposited($response['orderStatus'] ?? 0)) {
-            // perform paying error handling
-            $error = !empty($response['actionCodeDescription']) ? $response['actionCodeDescription'] : 'Оплата не прошла';
-            Log::channel('sber_payments')->info(sprintf('Order [%s] payment unsuccessful: %s', $order->id, $error));
-
-            return APIResponse::error($error, [$response->all()]);
+        if ($response['status'] !== 'succeeded') {
+            Log::channel('sber_payments')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->getStatus()));
+            return APIResponse::error('Оплата не прошла', $response->getStatus());
         }
 
         // set order status
