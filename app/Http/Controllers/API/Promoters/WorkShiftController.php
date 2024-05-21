@@ -19,8 +19,9 @@ class WorkShiftController extends Controller
     public function open(Request $request)
     {
         $current = Currents::get($request);
-        if (!$current->terminalId())
+        if (!$current->terminalId()) {
             return APIResponse::error('Доступ запрещён');
+        }
 
         $promoter = Partner::find($request->input('promoterId'));
 
