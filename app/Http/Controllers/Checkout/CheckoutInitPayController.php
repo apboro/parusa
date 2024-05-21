@@ -93,6 +93,8 @@ class CheckoutInitPayController extends ApiController
             ->setMetadata([
                 'cms_name'       => 'Алые Паруса',
                 'order_id'       => $order->id,
+                'referralCookie'   => $request->cookie('referralLink'),
+                'existingCookieHash' => $request->cookie('qrCodeHash'),
                 'language'       => 'ru',
             ]);
 

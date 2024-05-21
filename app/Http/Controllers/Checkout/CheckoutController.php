@@ -204,15 +204,6 @@ class CheckoutController extends ApiController
             Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
             // add payment
-            $payment = new Payment();
-            $payment->gate = 'sber';
-            $payment->order_id = $order->id;
-            $payment->status_id = PaymentStatus::sale;
-            $payment->fiscal = '';
-            $payment->total = $response['amount'] / 100 ?? null;
-            $payment->by_card = $response['amount'] / 100 ?? null;
-            $payment->by_cash = 0;
-            $payment->save();
 
             $existingCookieHash = $request->cookie('qrCodeHash');
 
