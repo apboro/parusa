@@ -5,8 +5,10 @@ namespace App\Services\AstraMarine;
 use App\Exceptions\AstraMarine\AstraMarineNoTicketException;
 use App\Http\APIResponse;
 use App\Models\Dictionaries\Provider;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\Ships\Seats\Seat;
+use App\Models\Tickets\Ticket;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
@@ -106,6 +108,7 @@ class AstraMarineOrder
 
     public function saveTicketsBarcodes(array $orderedTickets): void
     {
+        $ticketExample = $this->tickets?->first();
         foreach ($orderedTickets['orderedSeats'] as $orderedTicket) {
             foreach ($orderedTicket['barCodes'] as $barcode) {
                 $ticket = $this->tickets->first(function ($ticket) use ($orderedTicket) {
@@ -121,12 +124,15 @@ class AstraMarineOrder
                         'provider_qr_code' => $barcode
                     ]);
                 } else {
-                    $ticket = $this->tickets->first();
+                    $ticket = $this->tickets?->first();
+                    if (!$ticket) {
+                        $ticket = $this->makeTicketForVIP($ticketExample);
+                    }
                     $ticket->additionalData()->create([
                         'provider_id' => Provider::astra_marine,
                         'provider_qr_code' => $barcode
                     ]);
-                    $this->tickets->forget($this->tickets->search($ticket));
+                    $this->tickets?->forget($this->tickets?->search($ticket));
                 }
             }
         }
@@ -170,6 +176,19 @@ class AstraMarineOrder
     public function getOrder()
     {
         return $this->astraMarineRepository->getOrder(["orderID" => $this->order->additionalData->provider_order_id]);
+    }
+
+    public function makeTicketForVIP(Ticket $ticketExample)
+    {
+        return $this->order->tickets()->create([
+            'status_id' => $ticketExample->status_id,
+            'order_id' => $ticketExample->order_id,
+            'trip_id' => $ticketExample->trip_id,
+            'grade_id' => $ticketExample->grade_id,
+            'base_price' => 0,
+            'provider_id' => Provider::astra_marine,
+            'seat_id' => $ticketExample->seat_id
+        ]);
     }
 
 }
