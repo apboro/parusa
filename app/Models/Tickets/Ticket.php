@@ -213,19 +213,25 @@ class Ticket extends Model implements Statusable
         if ($partner->type_id === PartnerType::promoter) {
             if ($openedShift = $partner->getOpenedShift()) {
                 $dataForTransaction = $this->countPromotersCommission($openedShift);
-                Log::channel('promoters')->info('pay commission to id: '. $partner->id . ' sum:' . $dataForTransaction['promoter_amount']);
-                $this->saveCommissionsInShift($openedShift, $dataForTransaction['promoter_amount']);
+                Log::channel('promoters')->info('pay commission to id: '. $partner->id . ' sum:' . $dataForTransaction['partner_amount']);
+                $this->saveCommissionsInShift($openedShift, $dataForTransaction['partner_amount']);
             }
+        }
+
+        if ($partner->name === 'Афиша'){
+            $dataForTransaction['partner_amount'] = 0.1 * $this->base_price;
+            $dataForTransaction['partner_commission'] = 10;
+            $dataForTransaction['commission_type'] = 'percent';
         }
 
         $partner->account->attachTransaction(new AccountTransaction([
             'type_id' => AccountTransactionType::tickets_sell_commission,
             'status_id' => AccountTransactionStatus::accepted,
             'timestamp' => Carbon::now(),
-            'amount' => $dataForTransaction['promoter_amount'] ?? $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100),
+            'amount' => $dataForTransaction['partner_amount'] ?? $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100),
             'ticket_id' => $this->id,
-            'commission_type' => $rate->commission_type,
-            'commission_value' => $dataForTransaction['promoter_commission'] ?? $rate->commission_value,
+            'commission_type' => $dataForTransaction['commission_type'] ?? $rate->commission_type,
+            'commission_value' => $dataForTransaction['partner_commission'] ?? $rate->commission_value,
             'commission_delta' => $dataForTransaction['commission_delta'] ?? 0,
         ]));
     }
@@ -251,8 +257,9 @@ class Ticket extends Model implements Statusable
         $promoterAmount = $promoterCommission * $this->base_price / 100;
 
         return [
-            'promoter_commission' => $promoterCommission,
-            'promoter_amount' => $promoterAmount,
+            'partner_commission' => $promoterCommission,
+            'commission_type' => 'percent',
+            'partner_amount' => $promoterAmount,
             'commission_delta' => $shift->commission_delta
         ];
     }

@@ -119,13 +119,15 @@ class YagaOrderApiController
             }
         }
 
-        $newTickets = (new CreateTicketsFromYaga($data, $trip, $rate))->execute();
+        DB::transaction(function () use ($trip, $data, &$order, $rate) {
+            $newTickets = (new CreateTicketsFromYaga($data, $trip, $rate))->execute();
 
-        if (empty($newTickets)) {
-            return response()->json('Не удалось оформить билеты');
-        }
+            if (empty($newTickets)) {
+                return response()->json('Не удалось оформить билеты');
+            }
 
-        $order = (new CreateOrderFromYaga($data, $newTickets))->execute();
+            $order = (new CreateOrderFromYaga($data, $newTickets))->execute();
+        });
 
         return response()->json($order);
     }
@@ -253,6 +255,7 @@ class YagaOrderApiController
 
                 $order->setStatus(OrderStatus::yaga_confirmed);
                 $order->tickets->each(fn(Ticket $ticket) => $ticket->setStatus(TicketStatus::yaga_confirmed));
+                $order->payCommissions();
             });
         } catch (Exception $e) {
             Log::channel('yaga')->error($e);

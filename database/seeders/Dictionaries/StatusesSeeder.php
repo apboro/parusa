@@ -109,7 +109,7 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::terminal_paid_single => ['name' => 'ЕдБ оплачен терминал'],
             TicketStatus::promoter_paid_single => ['name' => 'Промоутер ЕдБ оплачен'],
             TicketStatus::api_confirmed_single => ['name' => 'API ЕдБ подтвержден'],
-            TicketStatus::yaga_confirmed_single => ['name' => 'Промоутер ЕдБ подтвержден'],
+            TicketStatus::yaga_confirmed_single => ['name' => 'Афиша ЕдБ подтвержден'],
 
             TicketStatus::api_reserved => ['name' => 'Зарезервирован по Api'],
             TicketStatus::api_confirmed => ['name' => 'Подтвержден по Api'],

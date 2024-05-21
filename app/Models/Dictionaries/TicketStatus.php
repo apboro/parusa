@@ -127,7 +127,11 @@ class TicketStatus extends AbstractDictionary
         self::api_confirmed,
         self::yaga_confirmed,
         self::promoter_paid,
+        self::yaga_canceled,
         self::yaga_canceled_with_penalty,
+        self::yaga_confirmed,
+        self::yaga_confirmed_single,
+        self::yaga_reserved,
         self::used
     ];
 
