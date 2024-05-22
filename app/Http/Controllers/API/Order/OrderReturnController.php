@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use InvalidArgumentException;
+use YooKassa\Client;
 
 class OrderReturnController extends ApiController
 {
@@ -155,23 +156,24 @@ class OrderReturnController extends ApiController
                     }
                 }
                 if (in_array($order->type_id, OrderType::types_with_sber_payment)) {
-                    // send return request to sber
-                    $isProduction = env('SBER_ACQUIRING_PRODUCTION');
-                    $connection = new Connection([
-                        'token' => env('SBER_ACQUIRING_TOKEN'),
-                        'userName' => env('SBER_ACQUIRING_USER'),
-                        'password' => env('SBER_ACQUIRING_PASSWORD'),
-                    ], new CurlClient(), $isProduction);
-                    $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
-                    $sber = new Sber($connection, $options);
 
-                    $response = $sber->refundOrder($order->external_id, $returnAmount * 100);
+                    $client = new Client();
+                    $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
 
-                    if (!$response->isSuccess()) {
-                        throw new Exception($response->errorMessage());
+                    $response = $client->createRefund([
+                        'payment_id' => $order->external_id,
+                        'amount' => [
+                            'value' => $returnAmount,
+                            'currency' => \YooKassa\Model\CurrencyCode::RUB,
+                        ],
+                    ],
+                        uniqid('', true)
+                    );
+
+                    if (!$response) {
+                        throw new Exception('Не удалось оформить возврат');
                     }
                 }
-
                 // change order and tickets status
                 foreach ($tickets as $ticket) {
                     if ($ticket->seat_id) {
