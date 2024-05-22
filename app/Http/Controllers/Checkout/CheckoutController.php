@@ -200,7 +200,7 @@ class CheckoutController extends ApiController
 
         if ($response['status'] !== 'succeeded') {
             Log::channel('youkassa')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->getStatus()));
-            return APIResponse::error($response->getStatus());
+            return APIResponse::error('Заказ не оплачен. ' . $response->getStatus());
         }
 
         // set order status
@@ -219,39 +219,6 @@ class CheckoutController extends ApiController
             $payment->by_card = $response['amount']['value'] ?? null;
             $payment->by_cash = 0;
             $payment->save();
-
-            $existingCookieHash = $request->cookie('qrCodeHash');
-
-            try {
-                if ($existingCookieHash) {
-                    /** @var QrCode|null $qrCode */
-                    $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
-                    if ($qrCode) {
-                        $order->partner_id = $qrCode->partner_id;
-                        $order->type_id = OrderType::qr_code;
-                        $order->save();
-                        StatisticQrCodes::addPayment($existingCookieHash);
-                    }
-                }
-            } catch (Exception $e) {
-                Log::channel('youkassa')->error('Error with qr statistics: ' . $e->getMessage());
-            }
-
-            $referralCookie = $request->cookie('referralLink');
-
-            try {
-                if ($referralCookie) {
-                    /**@var Partner|null $partner */
-                    $partner = Partner::query()->where('id', $referralCookie)->first();
-                    if ($partner) {
-                        $order->partner_id = $partner->id;
-                        $order->type_id = OrderType::referral_link;
-                        $order->save();
-                    }
-                }
-            } catch (Exception $e) {
-                Log::channel('youkassa')->error('Error with referral statistics: ' . $e->getMessage());
-            }
 
             // Make job to do in background:
             // make fiscal
@@ -329,7 +296,7 @@ class CheckoutController extends ApiController
             )
             ->where('id', $id)
             ->whereIn('status_id', array_merge(OrderStatus::sberpay_statuses, [OrderStatus::showcase_canceled]))
-            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site])
+            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site, OrderType::referral_link])
             ->first();
 
         return $order;

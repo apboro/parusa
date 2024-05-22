@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Checkout;
 
+use App\Helpers\StatisticQrCodes;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\HitSource;
@@ -10,6 +11,8 @@ use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Hit\Hit;
 use App\Models\Order\Order;
+use App\Models\Partner\Partner;
+use App\Models\QrCodes\QrCode;
 use App\Models\Tickets\Ticket;
 use App\SberbankAcquiring\Connection;
 use App\SberbankAcquiring\Helpers\Currency;
@@ -82,11 +85,11 @@ class CheckoutInitPayController extends ApiController
             'returnUrl' => $finishedUrl,
         ));
 
-        $request = $builder->build();
+        $youkassaRequest = $builder->build();
         $idempotenceKey = uniqid('', true);
 
         try {
-            $response = $client->createPayment($request, $idempotenceKey);
+            $response = $client->createPayment($youkassaRequest, $idempotenceKey);
         } catch (Exception $exception) {
             Log::channel('youkassa')->error(sprintf('Order [%s] registration client error: %s', $orderId, $exception->getMessage()));
             return APIResponse::error($exception->getMessage());
@@ -99,8 +102,43 @@ class CheckoutInitPayController extends ApiController
 
         $order->external_id = $response->getId();
         if ($order->status_id != OrderStatus::promoter_wait_for_pay) {
+
             $order->setStatus(OrderStatus::showcase_wait_for_pay, false);
+
+            $existingCookieHash = $request->cookie('qrCodeHash');
+
+            try {
+                if ($existingCookieHash) {
+                    /** @var QrCode|null $qrCode */
+                    $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
+                    if ($qrCode) {
+                        $order->partner_id = $qrCode->partner_id;
+                        $order->type_id = OrderType::qr_code;
+                        $order->save();
+                        StatisticQrCodes::addPayment($existingCookieHash);
+                    }
+                }
+            } catch (Exception $e) {
+                Log::channel('youkassa')->error('Error with qr statistics: ' . $e->getMessage());
+            }
+
+            $referralCookie = $request->cookie('referralLink');
+
+            try {
+                if ($referralCookie) {
+                    /**@var Partner|null $partner */
+                    $partner = Partner::query()->where('id', $referralCookie)->first();
+                    if ($partner) {
+                        $order->partner_id = $partner->id;
+                        $order->type_id = OrderType::referral_link;
+                        $order->save();
+                    }
+                }
+            } catch (Exception $e) {
+                Log::channel('youkassa')->error('Error with referral statistics: ' . $e->getMessage());
+            }
         }
+
         $order->save();
 
         Log::channel('youkassa')->info(sprintf('Order [%s] registered [ID:%s]', $orderId, $order->external_id));

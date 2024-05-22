@@ -32,14 +32,13 @@ class YouKassaNotificationsController
                 exit();
             }
 
-            $order = Order::find($responseObject->getMetadata()['order_id']);
             if ($notificationObject->getEvent() === NotificationEventType::PAYMENT_SUCCEEDED) {
                 $someData = array(
                     'paymentId' => $responseObject->getId(),
                     'paymentStatus' => $responseObject->getStatus(),
                 );
                 Log::channel('youkassa')
-                    ->info('payment id: ' .$responseObject->getId() . ' status: ' . $responseObject->getStatus(). ' order_id: '. $order->id);
+                    ->info('payment id: ' .$responseObject->getId() . ' status: ' . $responseObject->getStatus(). ' order_id: '. $responseObject->getMetadata()->id);
 
                 return response(status: 200);
             } elseif ($notificationObject->getEvent() === NotificationEventType::PAYMENT_WAITING_FOR_CAPTURE) {
