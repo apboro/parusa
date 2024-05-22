@@ -8,6 +8,7 @@ use App\Models\Order\Order;
 use App\Models\Payments\Payment;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use YooKassa\Model\Notification\NotificationEventType;
 use YooKassa\Model\Notification\NotificationFactory;
 
@@ -37,18 +38,8 @@ class YouKassaNotificationsController
                     'paymentId' => $responseObject->getId(),
                     'paymentStatus' => $responseObject->getStatus(),
                 );
-
-                $payment = new Payment();
-                $payment->gate = 'youkassa';
-                $payment->order_id = $order->id;
-                $payment->status_id = PaymentStatus::sale;
-                $payment->fiscal = '';
-                $payment->total = $responseObject->amount->value  ?? null;
-                $payment->by_card = $responseObject->amount->value  ?? null;
-                $payment->by_cash = 0;
-                $payment->save();
-
-                ProcessShowcaseConfirmedOrder::dispatch($order->id);
+                Log::channel('youkassa')
+                    ->info('payment id: ' .$responseObject->getId() . ' status: ' . $responseObject->getStatus(). ' order_id: '. $order->id);
 
                 return response(status: 200);
             } elseif ($notificationObject->getEvent() === NotificationEventType::PAYMENT_WAITING_FOR_CAPTURE) {
@@ -81,7 +72,7 @@ class YouKassaNotificationsController
             // Специфичная логика
             // ...
 
-            $client->setAuth('367216', env('UKASSA_SECRET_KEY'));
+            $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
 
             // Получим актуальную информацию о платеже
             if ($paymentInfo = $client->getPaymentInfo($someData['paymentId'])) {

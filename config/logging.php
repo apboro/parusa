@@ -122,6 +122,11 @@ return [
             'path' => storage_path('logs/sber_payments.log'),
             'level' => 'info',
         ],
+        'youkassa' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/youkassa.log'),
+            'level' => 'info',
+        ],
         'yaga' => [
             'driver' => 'single',
             'path' => storage_path('logs/yaga.log'),

@@ -61,30 +61,11 @@ class CheckoutInitPayController extends ApiController
 
         // create order
         $orderId = $order->id . ' (' . Carbon::now()->format('d.m.Y H:i:s') . ')';
-        $finishedUrl = config('showcase.showcase_payment_page') . '?order=' . $order->id . '&status=finished';
+        $finishedUrl = config('showcase.showcase_payment_page') . '?order=' . $secret. '&status=finished';
         $phone = preg_replace('/[^\d+]/', '', $order->phone);
 
-//        $data = [
-//            'jsonParams' => [
-//                'email' => $order->email ?? 'noreply@city-tours-spb.ru',
-//                'phone' => $phone,
-//            ],
-//        ];
-//        if (config('sber.sber_acquiring_callback_enable')) {
-//            $data['dynamicCallbackUrl'] = route('sberNotification');
-//        }
-//
-//        $isProduction = config('sber.sber_acquiring_production');
-//        $connection = new Connection([
-//            'token' => config('sber.sber_acquiring_token'),
-//            'userName' => config('sber.sber_acquiring_user'),
-//            'password' => config('sber.sber_acquiring_password'),
-//        ], new CurlClient(), $isProduction);
-//        $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
-//        $sber = new Sber($connection, $options);
-//
         $client = new Client();
-        $client->setAuth('367216', env('UKASSA_SECRET_KEY'));
+        $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
         $builder = CreatePaymentRequest::builder();
         $builder->setAmount($order->total())
             ->setCurrency(\YooKassa\Model\CurrencyCode::RUB)
@@ -93,8 +74,6 @@ class CheckoutInitPayController extends ApiController
             ->setMetadata([
                 'cms_name'       => 'Алые Паруса',
                 'order_id'       => $order->id,
-                'referralCookie'   => $request->cookie('referralLink'),
-                'existingCookieHash' => $request->cookie('qrCodeHash'),
                 'language'       => 'ru',
             ]);
 
@@ -106,17 +85,15 @@ class CheckoutInitPayController extends ApiController
         $request = $builder->build();
         $idempotenceKey = uniqid('', true);
 
-
         try {
             $response = $client->createPayment($request, $idempotenceKey);
-//            $response = $sber->registerOrder($orderId, $order->total() * 100, config('showcase.showcase_order_lifetime') * 60, $finishedUrl, $data);
         } catch (Exception $exception) {
-            Log::channel('sber_payments')->error(sprintf('Order [%s] registration client error: %s', $orderId, $exception->getMessage()));
+            Log::channel('youkassa')->error(sprintf('Order [%s] registration client error: %s', $orderId, $exception->getMessage()));
             return APIResponse::error($exception->getMessage());
         }
 
         if ($response->getStatus() !== 'pending') {
-            Log::channel('sber_payments')->error(sprintf('Order [%s] registration error: %s', $orderId, $response->getDescription()));
+            Log::channel('youkassa')->error(sprintf('Order [%s] registration error: %s', $orderId, $response->getDescription()));
             return APIResponse::error($response->getDescription());
         }
 
@@ -126,7 +103,7 @@ class CheckoutInitPayController extends ApiController
         }
         $order->save();
 
-        Log::channel('sber_payments')->info(sprintf('Order [%s] registered [ID:%s]', $orderId, $order->external_id));
+        Log::channel('youkassa')->info(sprintf('Order [%s] registered [ID:%s]', $orderId, $order->external_id));
 
         $order->tickets->map(function (Ticket $ticket) {
             // P.S. All tickets are valid for now

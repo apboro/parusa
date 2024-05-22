@@ -76,7 +76,7 @@ class CheckoutOrderController extends ApiEditController
             ]);
         }
 
-        Log::channel('sber_payments')->info(sprintf('Order [%s] cancelled by customer [ID:%s]', $order->id, $order->external_id));
+        Log::channel('youkassa')->info(sprintf('Order [%s] cancelled by customer [ID:%s]', $order->id, $order->external_id));
 
         return APIResponse::success('Заказ расформирован.', [
             'back_link' => $backLink,

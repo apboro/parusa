@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ProcessShowcaseConfirmedOrder;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\PaymentStatus;
 use App\Models\Order\Order;
 use App\Models\Payments\Payment;
@@ -43,7 +44,7 @@ class SyncShowcasePayWaiting extends Command
         $now = Carbon::now();
 
         $orders = Order::query()
-            ->where('status_id', OrderStatus::showcase_wait_for_pay)
+            ->whereIn('status_id', [OrderStatus::showcase_wait_for_pay, OrderStatus::promoter_wait_for_pay])
             ->where('updated_at', '<', $now->clone()->addMinutes(-10))
             ->get();
 
@@ -51,32 +52,26 @@ class SyncShowcasePayWaiting extends Command
             return 0;
         }
 
-        // check order status
-        $isProduction = env('SBER_ACQUIRING_PRODUCTION');
-        $connection = new Connection([
-            'token' => env('SBER_ACQUIRING_TOKEN'),
-            'userName' => env('SBER_ACQUIRING_USER'),
-            'password' => env('SBER_ACQUIRING_PASSWORD'),
-        ], new CurlClient(), $isProduction);
-        $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
-        $sber = new Sber($connection, $options);
+        $client = new \YooKassa\Client();
+        $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
 
         foreach ($orders as $order) {
             /** @var Order $order */
             if ($order->external_id !== null) {
+                $paymentId = $order->external_id;
                 try {
-                    $response = $sber->getOrderStatus($order->external_id);
+                    $response = $client->getPaymentInfo($paymentId);
                 } catch (Exception $exception) {
-                    Log::channel('sber_payments')->error($exception->getMessage());
+                    Log::channel('youkassa')->error($exception->getMessage());
                     continue;
                 }
-                if ($response->isSuccess() && \App\SberbankAcquiring\OrderStatus::isDeposited($response['orderStatus'] ?? 0)) {
+                if ($response['status'] === 'succeeded') {
                     // set order status
-                    $order->setStatus(OrderStatus::showcase_confirmed);
+                    $order->status_id = $order->type_id === OrderType::promoter_sale ? OrderStatus::promoter_confirmed : OrderStatus::showcase_confirmed;
 
                     // add payment
                     $payment = new Payment();
-                    $payment->gate = 'sber';
+                    $payment->gate = 'youkassa';
                     $payment->order_id = $order->id;
                     $payment->status_id = PaymentStatus::sale;
                     $payment->fiscal = '';

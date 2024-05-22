@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use JsonException;
+use YooKassa\Client;
 
 class ShowcaseOrderInfoController extends ApiEditController
 {
@@ -69,43 +70,40 @@ class ShowcaseOrderInfoController extends ApiEditController
             return APIResponse::error('Время, отведенное на оплату заказа истекло, заказ расформирован.');
         }
 
-        // check if order is already paid
-        // check order status
-        $isProduction = config('sber.sber_acquiring_production');
-        $connection = new Connection([
-            'token' => config('sber.sber_acquiring_token'),
-            'userName' => config('sber.sber_acquiring_user'),
-            'password' => config('sber.sber_acquiring_password'),
-        ], new CurlClient(), $isProduction);
-        $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
-        $sber = new Sber($connection, $options);
+        $client = new Client();
+        $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
 
         if ($order->hasStatus(OrderStatus::showcase_wait_for_pay) || $order->hasStatus(OrderStatus::promoter_wait_for_pay)) {
             $checkFailed = false;
+
+            $client = new \YooKassa\Client();
+            $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
+
+            $paymentId = $order->external_id;
             try {
-                $response = $sber->getOrderStatus($order->external_id);
+                $response = $client->getPaymentInfo($paymentId);
             } catch (Exception $exception) {
-                Log::channel('sber_payments')->error(sprintf('Order [%s] get status client error: %s', $order->id, $exception->getMessage()));
+                Log::channel('youkassa')->error(sprintf('Order [%s] get status client error: %s', $order->id, $exception->getMessage()));
                 $checkFailed = true;
             }
             if (!$checkFailed && isset($response)) {
-                if ($response->isSuccess() && \App\SberbankAcquiring\OrderStatus::isDeposited($response['orderStatus'] ?? 0)) {
+                if ($response['status'] === 'succeeded') {
                     // set order status
                     $newOrderStatus = $order->type_id === OrderType::promoter_sale ? OrderStatus::promoter_confirmed : OrderStatus::showcase_confirmed;
                     $order->setStatus($newOrderStatus);
-                    Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
+                    Log::channel('youkassa')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
                     // add payment
                     $payment = Payment::query()->where('gate', 'sber')->where('order_id', $order->id)->first();
                     if ($payment === null) {
                         $payment = new Payment();
                     }
-                    $payment->gate = 'sber';
+                    $payment->gate = 'youkassa';
                     $payment->order_id = $order->id;
                     $payment->status_id = PaymentStatus::sale;
                     $payment->fiscal = '';
-                    $payment->total = $response['amount'] / 100 ?? null;
-                    $payment->by_card = $response['amount'] / 100 ?? null;
+                    $payment->total = $response['amount']['value'] ?? null;
+                    $payment->by_card = $response['amount']['value'] ?? null;
                     $payment->by_cash = 0;
                     $payment->save();
 
@@ -125,17 +123,10 @@ class ShowcaseOrderInfoController extends ApiEditController
                             StatisticQrCodes::addPayment($existingCookieHash);
                         }
                     } catch (Exception $e) {
-                        Log::channel('sber_payments')->error('Error with qrstatistics: ' . $e->getMessage());
+                        Log::channel('youkassa')->error('Error with qrstatistics: ' . $e->getMessage());
                     }
-
                 } else {
-                    if (!$response->isSuccess()) {
-                        Log::channel('sber_payments')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->errorMessage()));
-                    }
-                    if (!\App\SberbankAcquiring\OrderStatus::isDeposited($response['orderStatus'] ?? 0)) {
-                        $error = !empty($response['actionCodeDescription']) ? $response['actionCodeDescription'] : 'Оплата не прошла';
-                        Log::channel('sber_payments')->info(sprintf('Order [%s] payment unsuccessful: %s', $order->id, $error));
-                    }
+                    Log::channel('youkassa')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->getStatus()));
                 }
             }
         }
@@ -149,8 +140,8 @@ class ShowcaseOrderInfoController extends ApiEditController
                 'order_id' => $order->id,
                 'order_status' => $order->status->name,
                 'is_created' => $order->hasStatus(OrderStatus::showcase_creating) || $order->hasStatus(OrderStatus::promoter_wait_for_pay),
-                'is_paying' => $order->hasStatus(OrderStatus::showcase_wait_for_pay) || $order->hasStatus(OrderStatus::promoter_wait_for_pay) ,
-                'is_confirmed' => $order->hasStatus(OrderStatus::showcase_confirmed) || $order->hasStatus(OrderStatus::promoter_confirmed) ,
+                'is_paying' => $order->hasStatus(OrderStatus::showcase_wait_for_pay) || $order->hasStatus(OrderStatus::promoter_wait_for_pay),
+                'is_confirmed' => $order->hasStatus(OrderStatus::showcase_confirmed) || $order->hasStatus(OrderStatus::promoter_confirmed),
                 'is_payed' => $order->hasStatus(OrderStatus::showcase_paid) || $order->hasStatus(OrderStatus::promoter_paid),
                 'is_actual' => $expires > $now,
                 'payment_page' => config('showcase.showcase_payment_page') . '?order=' . $secret,

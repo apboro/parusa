@@ -162,18 +162,24 @@ class CheckoutController extends ApiController
         ])->withCookie(cookie(self::COOKIE_NAME, json_encode($container, JSON_THROW_ON_ERROR)));
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return JsonResponse
-     * @throws JsonException
-     */
     protected function handleResponse(Request $request): JsonResponse
     {
-        $orderId = $request->input('order');
+        $secret = $request->input('order');
+
+        try {
+            $container = Crypt::decrypt($secret);
+            $container = json_decode($container, true, 512, JSON_THROW_ON_ERROR);
+        } catch (Exception $exception) {
+            return APIResponse::error('Заказ не найден.');
+        }
+
+        // check "credentials"
+        if ($container['ip'] !== $request->ip()) {
+            return APIResponse::error('Ошибка сессии.');
+        }
 
         // check order
-        $order = $this->getOrder($orderId ?? null);
+        $order = $this->getOrder($container['id'] ?? null);
         if ($order === null) {
             return APIResponse::error('Заказ не найден.');
         }
@@ -182,28 +188,37 @@ class CheckoutController extends ApiController
         }
 
         $client = new \YooKassa\Client();
-        $client->setAuth('367216', env('UKASSA_SECRET_KEY'));
+        $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
 
         $paymentId = $order->external_id;
         try {
             $response = $client->getPaymentInfo($paymentId);
-        } catch (\Exception $e) {
-            Log::channel('sber_payments')->error(sprintf('Order [%s] get status client error: %s', $order->id, $e->getMessage()));
-            return APIResponse::error($e->getMessage());
+        } catch (Exception $exception) {
+            Log::channel('youkassa')->error(sprintf('Order [%s] get status client error: %s', $order->id, $exception->getMessage()));
+            return APIResponse::error($exception->getMessage());
         }
 
         if ($response['status'] !== 'succeeded') {
-            Log::channel('sber_payments')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->getStatus()));
-            return APIResponse::error('Оплата не прошла', $response->getStatus());
+            Log::channel('youkassa')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->getStatus()));
+            return APIResponse::error($response->getStatus());
         }
 
         // set order status
         if ($order->status_id === OrderStatus::showcase_wait_for_pay || $order->status_id === OrderStatus::promoter_wait_for_pay) {
             $newOrderStatus = $order->type_id === OrderType::promoter_sale ? OrderStatus::promoter_confirmed : OrderStatus::showcase_confirmed;
             $order->setStatus($newOrderStatus);
-            Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
+            Log::channel('youkassa')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
             // add payment
+            $payment = new Payment();
+            $payment->gate = 'youkassa';
+            $payment->order_id = $order->id;
+            $payment->status_id = PaymentStatus::sale;
+            $payment->fiscal = '';
+            $payment->total = $response['amount']['value'] ?? null;
+            $payment->by_card = $response['amount']['value'] ?? null;
+            $payment->by_cash = 0;
+            $payment->save();
 
             $existingCookieHash = $request->cookie('qrCodeHash');
 
@@ -219,7 +234,7 @@ class CheckoutController extends ApiController
                     }
                 }
             } catch (Exception $e) {
-                Log::channel('sber_payments')->error('Error with qr statistics: ' . $e->getMessage());
+                Log::channel('youkassa')->error('Error with qr statistics: ' . $e->getMessage());
             }
 
             $referralCookie = $request->cookie('referralLink');
@@ -235,7 +250,7 @@ class CheckoutController extends ApiController
                     }
                 }
             } catch (Exception $e) {
-                Log::channel('sber_payments')->error('Error with referral statistics: ' . $e->getMessage());
+                Log::channel('youkassa')->error('Error with referral statistics: ' . $e->getMessage());
             }
 
             // Make job to do in background:
@@ -243,7 +258,7 @@ class CheckoutController extends ApiController
             // send tickets
             // pay commission
             // update order status
-//            ProcessShowcaseConfirmedOrder::dispatch($order->id);
+            ProcessShowcaseConfirmedOrder::dispatch($order->id);
 //            Log::info('Request in checkout controller', [$request]);
 
         }
