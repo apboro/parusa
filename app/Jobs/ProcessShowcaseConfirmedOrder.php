@@ -98,8 +98,12 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             Log::error('ProcessShowcaseConfirmedOrder', [$exception]);
         }
 
-        if (config('sber.sber_acquiring_production')) {
-            CloudPrint::createReceipt($order, $tickets, CloudPrint::payment, $order->payments->first());
+        try {
+            if (config('sber.sber_acquiring_production')) {
+                CloudPrint::createReceipt($order, $tickets, CloudPrint::payment, $order->payments->first());
+            }
+        } catch (Exception $e) {
+            Log::channel('cloud_print')->error($e->getMessage());
         }
 
         // send tickets
