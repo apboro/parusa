@@ -1,11 +1,17 @@
 <template>
     <LoadingProgress :loading="list.is_loading">
         <LayoutFilters>
-            <LayoutFiltersItem :title="'Дата'">
+            <LayoutFiltersItem :title="'Дата от'">
                 <InputDate
-                    v-model="list.filters['date']"
-                    :original="list.filters_original['date']"
-                    :disabled="!!list.search"
+                    v-model="list.filters['date_from']"
+                    :original="list.filters_original['date_from']"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :title="'Дата до'">
+                <InputDate
+                    v-model="list.filters['date_to']"
+                    :original="list.filters_original['date_to']"
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
@@ -53,12 +59,6 @@
                         {{ shift['tariff'] }} %
                     </ListTableCell>
                     <ListTableCell>
-                        {{ shift['pay_per_hour']  > 0 ? shift['pay_per_hour'] + ' руб.': '—' }}
-                    </ListTableCell>
-                    <ListTableCell>
-                        {{ shift['pay_for_time']  > 0 ? shift['pay_for_time'] + ' руб.': '—' }}
-                    </ListTableCell>
-                    <ListTableCell>
                         {{ shift['sales_total'] > 0 ? shift['sales_total'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
@@ -69,6 +69,9 @@
                     </ListTableCell>
                     <ListTableCell>
                         {{ shift['paid_out']  > 0 ? shift['paid_out'] + ' руб.': '—' }}
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{ shift['balance']  > 0 ? shift['balance'] + ' руб.': '—' }}
                     </ListTableCell>
                 </ListTableRow>
             </template>
