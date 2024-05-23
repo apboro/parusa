@@ -63,7 +63,7 @@ class PromotersShiftsRegistryController extends ApiController
                 'id' => $shift->promoter->id,
                 'name' => $shift->promoter->name,
                 'start_at' => $shift->start_at->translatedFormat('d M H:i'),
-                'end_at' => $shift->end_at->translatedFormat('d M H:i'),
+                'end_at' => $shift->end_at?->translatedFormat('d M H:i'),
                 'pay_for_out' => $shift->tariff->pay_for_out,
                 'working_hours' => $shift->getWorkingHours(),
                 'tariff' => $shift->tariff->commission,
