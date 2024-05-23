@@ -25,13 +25,13 @@ class TicketQrCodeCheckController extends Controller
             return APIResponse::response(['notValidQrCode' => 'Вы отсканировали неверный QR-код']);
         }
 
-        if (empty($data['manual'])) {
+        if (!empty($data[0]['rawValue'])) {
             $ticketData = explode('|', $data[0]['rawValue']);
             $ticketNumber = $ticketData[2];
             $signature = str_replace('"', '', $ticketData[3]);
             $expectedSignature = md5(config('app.key') . '|1|t|' . $ticketNumber);
             if ($signature != $expectedSignature){
-                return APIResponse::response(['notValidQrCode' => 'Билет не найден>']);
+                return APIResponse::response(['notValidQrCode' => 'Билет не найден']);
             }
         } else {
             $ticketNumber = $data['ticketNumber'];

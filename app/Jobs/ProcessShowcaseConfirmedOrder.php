@@ -7,6 +7,7 @@ use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\LifePay\CloudPrint;
+use App\LifePay\CloudPrintMock;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\Provider;
@@ -57,7 +58,7 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
                     'tickets',
                     'payments' => function (HasMany $query) {
                         $query
-                            ->where('gate', 'sber')
+                            ->where('gate', 'youkassa')
                             ->latest()
                             ->limit(1);
                     }]
@@ -101,6 +102,8 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
         try {
             if (config('sber.sber_acquiring_production')) {
                 CloudPrint::createReceipt($order, $tickets, CloudPrint::payment, $order->payments->first());
+            } else {
+                CloudPrintMock::createReceipt($order, $tickets, CloudPrint::payment, $order->payments->first());
             }
         } catch (Exception $e) {
             Log::channel('cloud_print')->error($e->getMessage());
