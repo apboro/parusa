@@ -83,6 +83,7 @@ class YagaOrderApiController
         if (!empty($data['venueId']) && $trip->ship->id != $data['venueId']) {
             return response()->json('wrong venueID');
         }
+
         if (!empty($data['eventId']) && $trip->excursion->id != $data['eventId']) {
             return response()->json('wrong eventId');
         }
