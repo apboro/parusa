@@ -65,27 +65,31 @@ class SyncShowcasePayWaiting extends Command
                     Log::channel('youkassa')->error($exception->getMessage());
                     continue;
                 }
-                if ($response['status'] === 'succeeded') {
-                    // set order status
-                    $order->status_id = $order->type_id === OrderType::promoter_sale ? OrderStatus::promoter_confirmed : OrderStatus::showcase_confirmed;
+                try {
+                    if ($response['status'] === 'succeeded') {
+                        // set order status
+                        $order->status_id = $order->type_id === OrderType::promoter_sale ? OrderStatus::promoter_confirmed : OrderStatus::showcase_confirmed;
 
-                    // add payment
-                    $payment = new Payment();
-                    $payment->gate = 'youkassa';
-                    $payment->order_id = $order->id;
-                    $payment->status_id = PaymentStatus::sale;
-                    $payment->fiscal = '';
-                    $payment->total = $response['amount'] / 100 ?? null;
-                    $payment->by_card = $response['amount'] / 100 ?? null;
-                    $payment->by_cash = 0;
-                    $payment->save();
+                        // add payment
+                        $payment = new Payment();
+                        $payment->gate = 'youkassa';
+                        $payment->order_id = $order->id;
+                        $payment->status_id = PaymentStatus::sale;
+                        $payment->fiscal = '';
+                        $payment->total = $response['amount']['value'] ?? null;
+                        $payment->by_card = $response['amount']['value'] ?? null;
+                        $payment->by_cash = 0;
+                        $payment->save();
 
-                    // Make job to do in background:
-                    // make fiscal
-                    // send tickets
-                    // pay commission
-                    // update order status
-                    ProcessShowcaseConfirmedOrder::dispatch($order->id);
+                        // Make job to do in background:
+                        // make fiscal
+                        // send tickets
+                        // pay commission
+                        // update order status
+                        ProcessShowcaseConfirmedOrder::dispatch($order->id);
+                    }
+                } catch (Exception $e) {
+                    Log::channel('youkassa')->error($e->getMessage());
                 }
             }
         }

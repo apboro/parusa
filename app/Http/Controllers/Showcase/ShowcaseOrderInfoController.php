@@ -94,7 +94,7 @@ class ShowcaseOrderInfoController extends ApiEditController
                     Log::channel('youkassa')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
                     // add payment
-                    $payment = Payment::query()->where('gate', 'sber')->where('order_id', $order->id)->first();
+                    $payment = Payment::query()->where('gate', 'youkassa')->where('order_id', $order->id)->first();
                     if ($payment === null) {
                         $payment = new Payment();
                     }
