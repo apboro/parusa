@@ -56,7 +56,7 @@ class PromotersTest extends TestCase
             ->assertStatus(200)
             ->assertJson(fn(AssertableJson $json) => $json->hasAll([
                 'message', 'filters', 'filters_original', 'titles', 'payload', 'pagination', 'list'])
-                ->has('list.0', fn($list) => $list->hasAll('id', 'active', 'name', 'type', 'balance', 'limit', 'open_shift', 'promoter_commission_rate')
+                ->has('list.0', fn($list) => $list->hasAll('id', 'active', 'name', 'type', 'balance', 'limit', 'open_shift', 'promoter_commission_rate', 'pier_name')
                 ));
     }
 
@@ -76,10 +76,11 @@ class PromotersTest extends TestCase
                     'status_id' => 1,
                     'notes' => 'Test notes',
                     'can_send_sms' => false,
-                    'promoter_commission_rate' => 20
+                    'promoter_commission_rate' => 20,
+                    'pay_per_hour'  => 0
                 ]
             ]);
-        $response->dump();
+
         $response->assertJson(function (AssertableJson $json) {
             $json->hasAll(['status', 'message', 'code', 'payload'])
                 ->has('payload', function ($json) {

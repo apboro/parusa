@@ -226,8 +226,6 @@ class CheckoutController extends ApiController
             // pay commission
             // update order status
             ProcessShowcaseConfirmedOrder::dispatch($order->id);
-//            Log::info('Request in checkout controller', [$request]);
-
         }
 
         $orderSecret = json_encode([
@@ -240,7 +238,7 @@ class CheckoutController extends ApiController
         $secret = Crypt::encrypt($orderSecret);
 
         // response OK
-        $backLink = $container['ref'] ?? config('showcase.showcase_ap_page');
+        $backLink = $container['ref'] ?? config('showcase.showcase_ap_page2');
         $query = parse_url($backLink, PHP_URL_QUERY);
         if ($query) {
             $backLink .= '&status=finished&secret='.$secret;
