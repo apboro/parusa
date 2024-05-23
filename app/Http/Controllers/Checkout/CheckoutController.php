@@ -232,7 +232,7 @@ class CheckoutController extends ApiController
             'id' => $order->id,
             'ts' => Carbon::now(),
             'ip' => $request->ip(),
-            'ref' => null,
+            'ref' => $request->input('ref'),
         ], JSON_THROW_ON_ERROR);
 
         $secret = Crypt::encrypt($orderSecret);
