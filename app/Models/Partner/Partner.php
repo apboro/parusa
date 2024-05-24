@@ -15,6 +15,7 @@ use App\Models\Dictionaries\Tariff;
 use App\Models\Excursions\Excursion;
 use App\Models\Model;
 use App\Models\News\News;
+use App\Models\Order\Order;
 use App\Models\Positions\Position;
 use App\Models\QrCodes\QrCode;
 use App\Models\Tickets\TicketPartnerRate;
@@ -205,23 +206,28 @@ class Partner extends Model implements Statusable, Typeable, AsDictionary
         return $this->belongsToMany(Tariff::class, 'promoter_tariff', 'partner_id', 'tariff_id');
     }
 
-    public function scopeActive(Builder $query)
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('status_id', PartnerStatus::active);
     }
 
-    public function scopePromoter(Builder $query)
+    public function scopePromoter(Builder $query): Builder
     {
         return $query->where('type_id', PartnerType::promoter);
     }
 
-    public function scopeHasAutoChangeTariffTrue(Builder $query)
+    public function scopeHasAutoChangeTariffTrue(Builder $query): Builder
     {
         return $query->whereHas('profile', fn ($profiles) => $profiles->where('auto_change_tariff', true));
     }
 
-    public function scopeHasOpenedShift(Builder $query)
+    public function scopeHasOpenedShift(Builder $query): Builder
     {
         return $query->whereHas('workShifts', fn ($workShifts) => $workShifts->whereNull('end_at'));
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'partner_id', 'id');
     }
 }

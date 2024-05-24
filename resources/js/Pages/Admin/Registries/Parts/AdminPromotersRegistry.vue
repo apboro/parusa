@@ -2,16 +2,14 @@
     <LoadingProgress :loading="list.is_loading">
         <LayoutFilters>
             <LayoutFiltersItem :title="'Период'">
-                <InputDate
+                <InputDateTime
                     v-model="list.filters['date_from']"
                     :original="list.filters_original['date_from']"
-                    :disabled="!!list.search"
                     @change="list.load()"
                 />
-                <InputDate
+                <InputDateTime
                     v-model="list.filters['date_to']"
                     :original="list.filters_original['date_to']"
-                    :disabled="!!list.search"
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
@@ -49,19 +47,16 @@
                         {{promoter.name}}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['pay_for_out']  > 0 ? promoter['pay_for_out'] + ' руб.': '—' }}
-                    </ListTableCell>
-                    <ListTableCell>
                         {{promoter['total_hours']  > 0 ? promoter['total_hours'] : '—' }}
-                    </ListTableCell>
-                    <ListTableCell>
-                        {{promoter['pay_for_time']  > 0 ? promoter['pay_for_time'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
                         {{promoter['sales_total']  > 0 ? promoter['sales_total'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['commission']  > 0 ? promoter['commission'] + ' руб.': '—' }}
+                        {{promoter['commission_scarlet_sails']  > 0 ? promoter['commission_scarlet_sails'] + ' руб.': '—' }}
+                    </ListTableCell>
+                    <ListTableCell>
+                        {{promoter['commission_partners']  > 0 ? promoter['commission_partners'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
                         {{promoter['taxi']  > 0 ? promoter['taxi'] + ' руб.': '—' }}
@@ -107,6 +102,7 @@ import IconExclamation from "../../../../Components/Icons/IconExclamation";
 import InputPhone from "@/Components/Inputs/InputPhone.vue";
 import list from "@/Core/List";
 import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu.vue";
+import InputDateTime from "@/Components/Inputs/InputDateTime.vue";
 
 export default {
     props: {
@@ -114,6 +110,7 @@ export default {
     },
 
     components: {
+        InputDateTime,
         GuiActionsMenu,
         InputPhone,
         IconExclamation,
