@@ -44,53 +44,9 @@ class PromotersRegistryController extends ApiController
     {
         Hit::register(HitSource::admin);
 
-        $terminalId = $this->getTerminalId($request);
-
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
-        $query = Partner::query()
-            ->with('workShifts', function ($query) use ($filters, $terminalId) {
-                $query->where('start_at', '>=', $filters['date_from'])
-                    ->where('start_at', '<=', $filters['date_to']);
-                if ($terminalId) {
-                    $query->where('terminal_id', $terminalId);
-                }
-            })
-            ->with('orders', function (HasMany $query) use ($filters, $terminalId) {
-                $query->where('created_at', '>=', $filters['date_from'])
-                    ->where('created_at', '<=', $filters['date_to']);
-                if ($terminalId) {
-                    $query->where('terminal_id', $terminalId);
-                }
-            })
-            ->with('account.transactions', function ($query) use ($filters, $terminalId) {
-                $query->where('created_at', '>=', $filters['date_from'])
-                    ->where('created_at', '<=', $filters['date_to']);
-                if ($terminalId) {
-                    $query->whereHas('ticket', function (Builder $query) use ($filters, $terminalId) {
-                        $query->whereHas('order', function (Builder $query) use ($filters, $terminalId) {
-                            $query->where('terminal_id', $terminalId);
-                        });
-                    });
-                }
-            })
-            ->whereHas('workShifts', function ($q) use ($filters) {
-                $q->where('start_at', '>=', $filters['date_from'])
-                    ->where('start_at', '<=', $filters['date_to']);
-            })
-            ->where('type_id', PartnerType::promoter);
 
-        if ($terminalId) {
-            $query->whereHas('workShifts', fn($q) => $q->where('terminal_id', $terminalId))
-                ->whereHas('orders', function (Builder $query) use ($filters, $terminalId) {
-                    $query->where('terminal_id', $terminalId);
-                });
-        }
-        if ($request->input('search')) {
-            $query->where(function (Builder $query) use ($request) {
-                $query->where('name', 'like', '%' . $request->input('search') . '%')
-                    ->orWhere('id', 'like', $request->input('search') . '%');
-            });
-        }
+        $query = $this->getList($request);
 
         $partners = $query->paginate($request->perPage(25, $this->rememberKey));
 
@@ -158,39 +114,18 @@ class PromotersRegistryController extends ApiController
     function export(ApiListRequest $request): JsonResponse
     {
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
-        $terminalId = $this->getTerminalId($request);
-        $query = Partner::query()
-            ->where('type_id', PartnerType::promoter);
 
-        if ($terminalId) {
-            $query->whereHas('workShifts', fn($q) => $q->where('terminal_id', $terminalId));
-        }
-        if ($request->input('search')) {
-            $query->where('name', 'like', '%' . $request->input('search') . '%')
-                ->orWhere('id', 'like', $request->input('search') . '%');
-        }
-
-        if (!empty($filters['date_from'])) {
-            $query->whereHas('workShifts', function ($query) use ($filters) {
-                $query->where('start_at', '>=', Carbon::parse($filters['date_from']));
-            });
-        }
-        if (!empty($filters['date_to'])) {
-            $query->whereHas('workShifts', function ($query) use ($filters) {
-                $query->where('start_at', '<=', Carbon::parse($filters['date_to']));
-            });
-        }
+        $query = $this->getList($request);
 
         $partners = $query->get();
 
         $titles = [
             'ID',
             'ФИО',
-            'ЗА ВЫХОД',
             'КОЛ-ВО ЧАСОВ',
-            'ОПЛАТА ЗА ВРЕМЯ',
             'КАССА',
-            '% ОТ КАССЫ',
+            '% от кассы, АП',
+            '% от кассы, партнёры',
             'ВСЕГО НАЧИСЛЕНО',
             'ПОЛУЧЕНО',
             'ДОЛГ',
@@ -199,37 +134,29 @@ class PromotersRegistryController extends ApiController
 
         $partners->transform(function (Partner $partner) use ($filters) {
 
-            $filteredWorkshifts = $partner->workShifts->filter(function ($shift) use ($filters) {
-                if (!empty($filters['date_to']))
-                    if (Carbon::parse($shift->start_at) > Carbon::parse($filters['date_to'])->endOfDay())
-                        return false;
-                if (!empty($filters['date_from']))
-                    if (Carbon::parse($shift->start_at) < Carbon::parse($filters['date_from']))
-                        return false;
-                if (!empty($filters['terminal_id']))
-                    if ($shift->terminal_id != $filters['terminal_id'])
-                        return false;
-                return true;
-            });
-
             return [
                 'id' => $partner->id,
                 'name' => $partner->name,
-                'pay_for_out' => $filteredWorkshifts->sum('pay_for_out'),
-                'total_hours' => $filteredWorkshifts->sum(function ($shift) {
+                'total_hours' => $partner->workShifts->sum(function ($shift) {
                     return $shift->getWorkingHours();
                 }),
-                'pay_for_time' => $filteredWorkshifts->sum(function ($shift) {
-                    return $shift->getPayForTime();
+                'sales_total' => $partner->orders->sum(function (Order $order) {
+                    return (int)$order->total();
                 }),
-                'sales_total' => $filteredWorkshifts->sum('sales_total'),
-                'commission' => $filteredWorkshifts->sum('pay_commission'),
-                'total_to_pay_out' => $filteredWorkshifts->sum(function ($shift) {
-                    return $shift->getShiftTotalPay();
+                'commission_scarlet_sails' => $partner->account->transactions->sum(function ($transaction) {
+                    if ($transaction->ticket?->provider_id === Provider::scarlet_sails) {
+                        return $transaction->amount;
+                    }
                 }),
-                'total_paid_out' => $filteredWorkshifts->sum('paid_out'),
-                'balance' => $filteredWorkshifts->last()?->balance,
-                'taxi' => $filteredWorkshifts->sum('taxi')
+                'commission_partners' => $partner->account->transactions->sum(function ($transaction) {
+                    if ($transaction->ticket?->provider_id !== Provider::scarlet_sails) {
+                        return $transaction->amount;
+                    }
+                }),
+                'total_to_pay_out' => $partner->account->transactions->sum('amount'),
+                'total_paid_out' => $partner->workShifts->sum('paid_out'),
+                'balance' => $partner->account->transactions->sum('amount') - $partner->workShifts->sum('paid_out') + $partner->getLastShift()?->balance,
+                'taxi' => $partner->workShifts->sum('taxi')
             ];
         });
 
@@ -239,7 +166,7 @@ class PromotersRegistryController extends ApiController
 
         $spreadsheet->getActiveSheet()->fromArray($titles, '—', 'A1');
         $spreadsheet->getActiveSheet()->fromArray($partners->toArray(), '—', 'A2');
-        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'] as $col) {
+        foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] as $col) {
             $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
         }
 
@@ -253,6 +180,59 @@ class PromotersRegistryController extends ApiController
             'file_name' => 'Промоутеры ' . Carbon::now()->format('Y-m-d H:i'),
             'type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
+    }
+
+    private function getList($request)
+    {
+        $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
+        $terminalId = $this->getTerminalId($request);
+
+        $query = Partner::query()
+            ->with('workShifts', function ($query) use ($filters, $terminalId) {
+                $query->where('start_at', '>=', $filters['date_from'])
+                    ->where('start_at', '<=', $filters['date_to']);
+                if ($terminalId) {
+                    $query->where('terminal_id', $terminalId);
+                }
+            })
+            ->with('orders', function (HasMany $query) use ($filters, $terminalId) {
+                $query->where('created_at', '>=', $filters['date_from'])
+                    ->where('created_at', '<=', $filters['date_to']);
+                if ($terminalId) {
+                    $query->where('terminal_id', $terminalId);
+                }
+            })
+            ->with('account.transactions', function ($query) use ($filters, $terminalId) {
+                $query->where('created_at', '>=', $filters['date_from'])
+                    ->where('created_at', '<=', $filters['date_to']);
+                if ($terminalId) {
+                    $query->whereHas('ticket', function (Builder $query) use ($filters, $terminalId) {
+                        $query->whereHas('order', function (Builder $query) use ($filters, $terminalId) {
+                            $query->where('terminal_id', $terminalId);
+                        });
+                    });
+                }
+            })
+            ->whereHas('workShifts', function ($q) use ($filters) {
+                $q->where('start_at', '>=', $filters['date_from'])
+                    ->where('start_at', '<=', $filters['date_to']);
+            })
+            ->where('type_id', PartnerType::promoter);
+
+        if ($terminalId) {
+            $query->whereHas('workShifts', fn($q) => $q->where('terminal_id', $terminalId))
+                ->whereHas('orders', function (Builder $query) use ($filters, $terminalId) {
+                    $query->where('terminal_id', $terminalId);
+                });
+        }
+        if ($request->input('search')) {
+            $query->where(function (Builder $query) use ($request) {
+                $query->where('name', 'like', '%' . $request->input('search') . '%')
+                    ->orWhere('id', 'like', $request->input('search') . '%');
+            });
+        }
+
+        return $query;
     }
 
 }

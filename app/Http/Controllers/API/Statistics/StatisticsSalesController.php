@@ -47,7 +47,7 @@ class StatisticsSalesController extends ApiController
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $query = Order::query()
-            ->with(['tickets', 'tickets.trip.excursion'])
+            ->with(['tickets', 'tickets.trip.excursion', 'tickets.order', 'tickets.order.promocode'])
             ->whereIn('status_id', OrderStatus::order_had_paid_statuses)
             ->where('type_id', OrderType::site);
 

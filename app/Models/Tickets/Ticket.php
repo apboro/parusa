@@ -427,7 +427,6 @@ class Ticket extends Model implements Statusable
 
     public function getPrice(): float|int
     {
-        $this->loadMissing(['order', 'order.tickets']);
         if ($this->base_price == 0){
             return 0;
         }
