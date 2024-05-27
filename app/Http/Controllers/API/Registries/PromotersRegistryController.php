@@ -58,8 +58,8 @@ class PromotersRegistryController extends ApiController
                 'total_hours' => $partner->workShifts->sum(function ($shift) {
                     return $shift->getWorkingHours();
                 }),
-                'sales_total' => $partner->orders->sum(function (Order $order) {
-                    return (int)$order->total();
+                'sales_total' => (int)$partner->orders->sum(function (Order $order) {
+                    return $order->total();
                 }),
                 'commission_scarlet_sails' => $partner->account->transactions->sum(function ($transaction) {
                     if ($transaction->ticket?->provider_id === Provider::scarlet_sails) {
@@ -196,14 +196,16 @@ class PromotersRegistryController extends ApiController
                 }
             })
             ->with('orders', function (HasMany $query) use ($filters, $terminalId) {
-                $query->where('created_at', '>=', $filters['date_from'])
+                $query->with(['tickets', 'promocode'])
+                ->where('created_at', '>=', $filters['date_from'])
                     ->where('created_at', '<=', $filters['date_to']);
                 if ($terminalId) {
                     $query->where('terminal_id', $terminalId);
                 }
             })
             ->with('account.transactions', function ($query) use ($filters, $terminalId) {
-                $query->where('created_at', '>=', $filters['date_from'])
+                $query->with('ticket')
+                    ->where('created_at', '>=', $filters['date_from'])
                     ->where('created_at', '<=', $filters['date_to']);
                 if ($terminalId) {
                     $query->whereHas('ticket', function (Builder $query) use ($filters, $terminalId) {
