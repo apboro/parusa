@@ -40,7 +40,6 @@ class PromoterPayOutController extends ApiController
 
         $query = WorkShift::query()
             ->where('partner_id', $request->id)
-            ->whereNotNull('paid_out')
             ->when($filters['date_from'], function ($query) use ($filters) {
                 $query->whereDate('start_at', '>=', $filters['date_from']);
             })->when($request->date_to, function ($query) use ($filters) {
@@ -52,6 +51,7 @@ class PromoterPayOutController extends ApiController
         $payOuts->transform(function (WorkShift $workShift) {
              return [
                  'start_at' =>$workShift->start_at->translatedFormat('D, d M Y'),
+                 'to_pay' => $workShift->pay_total,
                  'paid_out' => $workShift->paid_out,
              ];
         });
@@ -60,6 +60,7 @@ class PromoterPayOutController extends ApiController
             $payOuts,
             [
                 'start_at' => 'Дата',
+                'to_pay' => 'Начисления',
                 'pay_out' => 'Выплата',
             ],
             $filters,

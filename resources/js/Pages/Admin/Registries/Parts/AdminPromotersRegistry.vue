@@ -50,25 +50,25 @@
                         {{promoter['total_hours']  > 0 ? promoter['total_hours'] : '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['sales_total']  > 0 ? promoter['sales_total'] + ' руб.': '—' }}
+                        {{promoter['sales_total']  > 0 ? promoter['sales_total'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['commission_scarlet_sails']  > 0 ? promoter['commission_scarlet_sails'] + ' руб.': '—' }}
+                        {{promoter['commission_scarlet_sails']  > 0 ? promoter['commission_scarlet_sails'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['commission_partners']  > 0 ? promoter['commission_partners'] + ' руб.': '—' }}
+                        {{promoter['commission_partners']  > 0 ? promoter['commission_partners'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
                         {{promoter['taxi']  > 0 ? promoter['taxi'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['total_to_pay_out']  > 0 ? promoter['total_to_pay_out'] + ' руб.': '—' }}
+                        {{promoter['total_to_pay_out']  > 0 ? promoter['total_to_pay_out'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['total_paid_out']  > 0 ? promoter['total_paid_out'] + ' руб.': '—' }}
+                        {{promoter['total_paid_out']  > 0 ? promoter['total_paid_out'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['balance']  > 0 ? promoter['balance'] + ' руб.': '—' }}
+                        {{promoter['balance']  > 0 ? promoter['balance'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
 
                 </ListTableRow>

@@ -177,8 +177,6 @@ class TerminalCurrentOrderController extends ApiController
                 $order->setStatus(OrderStatus::terminal_paid);
             });
 
-            $order->payCommissions();
-
         } catch (Exception $exception) {
             Log::error('terminal current order error: '. $exception->getMessage(). ' '. $exception->getFile(). ' '. $exception->getLine());
             return APIResponse::error($exception->getMessage());
@@ -300,14 +298,16 @@ class TerminalCurrentOrderController extends ApiController
                         NevaTravelOrderPaidEvent::dispatch($order);
                         CityTourOrderPaidEvent::dispatch($order);
                         AstraMarineOrderPaidEvent::dispatch($order);
+
+                        $order->payCommissions();
                     }
                 }
             }
         } catch (Exception $exception) {
-            Log::channel('lifepos_payments')->error('error in TerminalCurrentOrderController: ' . $exception->getMessage() .' '.$exception->getFile() . ' '. $exception->getLine()
-            . ' order id: ' . $order->id
-            . ' order external_id: ' . $order->external_id
-            . ' payments array from lifePos: ' . json_encode($payments ?? null));
+            Log::channel('lifepos_payments')->error('error in TerminalCurrentOrderController: ' . $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine()
+                . ' order id: ' . $order->id
+                . ' order external_id: ' . $order->external_id
+                . ' payments array from lifePos: ' . json_encode($payments ?? null));
         }
 
         return APIResponse::response([

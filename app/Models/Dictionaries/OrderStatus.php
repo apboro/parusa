@@ -90,6 +90,7 @@ class OrderStatus extends AbstractDictionary
     public const partner_commission_pay_statuses = [
         self::partner_paid,
         self::terminal_paid,
+        self::terminal_finishing,
         self::showcase_paid,
         self::promoter_paid,
         self::api_confirmed,

@@ -77,7 +77,11 @@ export default {
                     </ListTableCell>
 
                     <ListTableCell>
-                        {{payout.paid_out}} руб.
+                        {{ payout.to_pay ? payout.to_pay + 'руб.' : '—' }}
+                    </ListTableCell>
+
+                    <ListTableCell>
+                        {{ payout.paid_out ? payout.paid_out + 'руб.' : '—' }}
                     </ListTableCell>
 
                 </ListTableRow>

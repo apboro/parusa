@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\Provider;
@@ -52,6 +53,14 @@ class PromotersRegistryController extends ApiController
 
         $partners->transform(function (Partner $partner) use ($filters) {
 
+            $totalToPay = $partner->account->transactions->sum(function($transaction) {
+                if ($transaction->type_id === AccountTransactionType::tickets_sell_commission) {
+                    return $transaction->amount;
+                } else if ($transaction->type_id === AccountTransactionType::tickets_sell_commission_return) {
+                    return -$transaction->amount;
+                }
+            });
+
             return [
                 'id' => $partner->id,
                 'name' => $partner->name,
@@ -63,17 +72,25 @@ class PromotersRegistryController extends ApiController
                 }),
                 'commission_scarlet_sails' => $partner->account->transactions->sum(function ($transaction) {
                     if ($transaction->ticket?->provider_id === Provider::scarlet_sails) {
-                        return $transaction->amount;
+                        if ($transaction->type_id === AccountTransactionType::tickets_sell_commission) {
+                            return $transaction->amount;
+                        } else if ($transaction->type_id === AccountTransactionType::tickets_sell_commission_return) {
+                            return -$transaction->amount;
+                        }
                     }
                 }),
                 'commission_partners' => $partner->account->transactions->sum(function ($transaction) {
                     if ($transaction->ticket?->provider_id !== Provider::scarlet_sails) {
-                        return $transaction->amount;
+                        if ($transaction->type_id === AccountTransactionType::tickets_sell_commission) {
+                            return $transaction->amount;
+                        } else if ($transaction->type_id === AccountTransactionType::tickets_sell_commission_return) {
+                            return -$transaction->amount;
+                        }
                     }
                 }),
-                'total_to_pay_out' => $partner->account->transactions->sum('amount'),
+                'total_to_pay_out' => $totalToPay,
                 'total_paid_out' => $partner->workShifts->sum('paid_out'),
-                'balance' => $partner->account->transactions->sum('amount') - $partner->workShifts->sum('paid_out') + $partner->getLastShift()?->balance,
+                'balance' => $totalToPay - $partner->workShifts->sum('paid_out'),
                 'taxi' => $partner->workShifts->sum('taxi')
             ];
         });
@@ -197,7 +214,7 @@ class PromotersRegistryController extends ApiController
             })
             ->with('orders', function (HasMany $query) use ($filters, $terminalId) {
                 $query->with(['tickets', 'promocode'])
-                ->where('created_at', '>=', $filters['date_from'])
+                    ->where('created_at', '>=', $filters['date_from'])
                     ->where('created_at', '<=', $filters['date_to']);
                 if ($terminalId) {
                     $query->where('terminal_id', $terminalId);
