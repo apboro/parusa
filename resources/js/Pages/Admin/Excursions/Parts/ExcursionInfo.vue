@@ -47,6 +47,9 @@
         <GuiContainer w-100 mt-30>
             <GuiValueArea :title="'Краткое описание экскурсии'" v-text="data['announce']"/>
             <GuiValueArea :title="'Полное описание экскурсии'" v-text="data['description']"/>
+                <GuiValueArea :title="'Ссылка на облако'">
+                    <a :href="info.data['disk_url']">{{info.data['disk_url']}}</a>
+                </GuiValueArea>
         </GuiContainer>
 
         <GuiContainer w-100 mt-30>

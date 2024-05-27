@@ -40,6 +40,7 @@ class ExcursionEditController extends ApiEditController
         'trip_images' => 'Карта маршрута',
         'is_single_ticket' => 'Единый билет',
         'reverse_excursion_id' => 'Обратная экскурсия',
+        'disk_url' => 'Ссылка на облако'
     ];
 
     /**
@@ -82,6 +83,7 @@ class ExcursionEditController extends ApiEditController
                 'duration' => $excursion->info->duration,
                 'description' => $excursion->info->description,
                 'announce' => $excursion->info->announce,
+                'disk_url' => $excursion->disk_url,
             ],
             $this->rules,
             $this->titles,
@@ -122,6 +124,7 @@ class ExcursionEditController extends ApiEditController
         $excursion->setAttribute('use_seat_scheme', $data['use_seat_scheme'] ?? false);
         $excursion->setAttribute('is_single_ticket', $data['is_single_ticket'] ?? false);
         $excursion->setAttribute('reverse_excursion_id', $data['reverse_excursion_id'] ?? null);
+        $excursion->setAttribute('disk_url', $data['disk_url'] ?? null);
         $excursion->setStatus($data['status_id'], false);
         $excursion->save();
 

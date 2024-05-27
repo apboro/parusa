@@ -53,6 +53,7 @@ class ExcursionViewController extends ApiController
             'excursion_type' => $excursion->type?->name ?? "Нет",
             'excursion_provider_id' => $excursion->provider_id,
             'provider' => $excursion->provider->name,
+            'disk_url' => $excursion->disk_url,
         ];
 
         // send response
