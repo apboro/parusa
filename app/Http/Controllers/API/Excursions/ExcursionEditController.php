@@ -40,7 +40,7 @@ class ExcursionEditController extends ApiEditController
         'trip_images' => 'Карта маршрута',
         'is_single_ticket' => 'Единый билет',
         'reverse_excursion_id' => 'Обратная экскурсия',
-        'disk_url' => 'Ссылка на облако'
+        'disk_url' => 'Меню ресторана'
     ];
 
     /**

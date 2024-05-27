@@ -14,7 +14,7 @@
                 </GuiContainer>
                 <GuiValueArea :title="'Краткое описание экскурсии'" v-text="info.data['announce']"/>
                 <GuiValueArea :title="'Полное описание экскурсии'" v-text="info.data['description']"/>
-                <GuiValueArea :title="'Ссылка на облако'">
+                <GuiValueArea :title="'Меню ресторана'">
                     <a :href="info.data['disk_url']">{{info.data['disk_url']}}</a>
                 </GuiValueArea>
                 <GuiValueArea :title="'Карта маршрута'" v-if="info.data['map_images'] && info.data['map_images'][0]">
