@@ -73,7 +73,7 @@ class ShowcaseOrderInfoController extends ApiEditController
         $client = new Client();
         $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
 
-        if ($order->hasStatus(OrderStatus::showcase_wait_for_pay) || $order->hasStatus(OrderStatus::promoter_wait_for_pay)) {
+        if (in_array($order->status_id, [OrderStatus::showcase_wait_for_pay, OrderStatus::promoter_wait_for_pay, OrderStatus::partner_wait_for_pay])) {
             $checkFailed = false;
 
             $client = new \YooKassa\Client();
@@ -136,13 +136,13 @@ class ShowcaseOrderInfoController extends ApiEditController
 
         return response()->json([
             'order' => [
-                'order_from_promoter' => $order->partner?->type_id === PartnerType::promoter,
+                'order_from_promoter' => in_array($order->type_id, [OrderType::promoter_sale, OrderType::partner_sale]),
                 'order_id' => $order->id,
                 'order_status' => $order->status->name,
-                'is_created' => $order->hasStatus(OrderStatus::showcase_creating) || $order->hasStatus(OrderStatus::promoter_wait_for_pay),
-                'is_paying' => $order->hasStatus(OrderStatus::showcase_wait_for_pay) || $order->hasStatus(OrderStatus::promoter_wait_for_pay),
+                'is_created' => $order->hasStatus(OrderStatus::showcase_creating),
+                'is_paying' => in_array($order->status_id, [OrderStatus::showcase_wait_for_pay, OrderStatus::promoter_wait_for_pay, OrderStatus::partner_wait_for_pay]),
                 'is_confirmed' => $order->hasStatus(OrderStatus::showcase_confirmed) || $order->hasStatus(OrderStatus::promoter_confirmed),
-                'is_payed' => $order->hasStatus(OrderStatus::showcase_paid) || $order->hasStatus(OrderStatus::promoter_paid),
+                'is_payed' => in_array($order->status_id, [OrderStatus::showcase_paid, OrderStatus::promoter_paid, OrderStatus::partner_paid_by_link]),
                 'is_actual' => $expires > $now,
                 'payment_page' => config('showcase.showcase_payment_page') . '?order=' . $secret,
                 'lifetime' => $expires > $now ? $expires->diffInSeconds($now) : null,

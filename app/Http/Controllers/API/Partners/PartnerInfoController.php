@@ -78,6 +78,7 @@ class PartnerInfoController extends ApiController
             'can_reserve' => $current->partner()->profile->can_reserve_tickets,
             'can_send_sms' => $current->partner()->profile->can_send_sms,
             'new_news' => News::query()->sent()->count() - $partner->news()->count(),
+            'last_order_status' => $partner->orders->sortByDesc('created_at')->first()?->status->name,
         ]);
     }
 }

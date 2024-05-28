@@ -76,6 +76,8 @@ class StatusesSeeder extends GenericSeeder
 
         TicketStatus::class => [
             TicketStatus::partner_reserve => ['name' => 'Забронирован'],
+            TicketStatus::partner_wait_for_pay => ['name' => 'Ожидает оплаты'],
+            TicketStatus::partner_paid_by_link => ['name' => 'Оплачен'],
             TicketStatus::partner_paid => ['name' => 'Оплачен'],
             TicketStatus::partner_returned => ['name' => 'Оформлен возврат'],
             TicketStatus::partner_reserve_canceled => ['name' => 'Отменён'],
@@ -125,13 +127,17 @@ class StatusesSeeder extends GenericSeeder
         OrderStatus::class => [
             OrderStatus::partner_reserve => ['name' => 'Бронь'],
             OrderStatus::partner_paid => ['name' => 'Оплачен'],
+            OrderStatus::partner_paid_by_link => ['name' => 'Оплачен'],
+            OrderStatus::partner_wait_for_pay => ['name' => 'Ожидает оплаты'],
             OrderStatus::partner_returned => ['name' => 'Оформлен возврат'],
             OrderStatus::partner_partial_returned => ['name' => 'Оформлен частичный возврат'],
             OrderStatus::partner_reserve_canceled => ['name' => 'Отменён'],
+
             OrderStatus::promoter_wait_for_pay => ['name' => 'Промоутер: ожидает оплаты'],
             OrderStatus::promoter_confirmed => ['name' => 'Промоутер: оплата подтверждена'],
             OrderStatus::promoter_paid => ['name' => 'Промоутер: оплачен'],
             OrderStatus::promoter_canceled => ['name' => 'Промоутер: отменен'],
+
             OrderStatus::terminal_creating => ['name' => 'Новый'],
             OrderStatus::terminal_creating_from_reserve => ['name' => 'Новый'],
             OrderStatus::terminal_wait_for_pay => ['name' => 'Ожидает оплаты'],
@@ -142,6 +148,7 @@ class StatusesSeeder extends GenericSeeder
             OrderStatus::terminal_returned => ['name' => 'Оформлен возврат'],
             OrderStatus::terminal_partial_returned => ['name' => 'Оформлен частичный возврат'],
             OrderStatus::terminal_wait_for_return => ['name' => 'Ожидает возврата'],
+
             OrderStatus::showcase_creating => ['name' => 'Оформление'],
             OrderStatus::showcase_wait_for_pay => ['name' => 'Ожидает оплаты'],
             OrderStatus::showcase_confirmed => ['name' => 'Оплата подтверждена'],
@@ -149,6 +156,7 @@ class StatusesSeeder extends GenericSeeder
             OrderStatus::showcase_returned => ['name' => 'Оформлен возврат'],
             OrderStatus::showcase_partial_returned => ['name' => 'Оформлен частичный возврат'],
             OrderStatus::showcase_canceled => ['name' => 'Отменён'],
+
             OrderStatus::done => ['name' => 'Выполнен'],
             OrderStatus::api_reserved => ['name' => 'Зарезервирован по Api'],
             OrderStatus::api_confirmed => ['name' => 'Подтвержден по Api'],

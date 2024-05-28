@@ -66,20 +66,24 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             ->where('id', $this->orderId)
             ->first();
 
-        if ($order === null || !in_array($order->status_id, [OrderStatus::showcase_confirmed, OrderStatus::promoter_confirmed])) {
+        if ($order === null || !in_array($order->status_id, [OrderStatus::showcase_confirmed, OrderStatus::promoter_confirmed, OrderStatus::partner_paid_by_link])) {
             return;
         }
 
         $tickets = [];
 
         // update order status
+        $newOrderStatus = OrderStatus::showcase_confirmed;
+        $newTicketStatus = TicketStatus::showcase_paid;
+
         if ($order->type_id === OrderType::promoter_sale){
             $newOrderStatus = OrderStatus::promoter_paid;
             $newTicketStatus = TicketStatus::promoter_paid;
-        } else {
-            $newOrderStatus = OrderStatus::showcase_paid;
-            $newTicketStatus = TicketStatus::showcase_paid;
+        } else if ($order->type_id === OrderType::partner_sale){
+            $newOrderStatus = OrderStatus::partner_paid_by_link;
+            $newTicketStatus = TicketStatus::partner_paid_by_link;
         }
+
         $order->setStatus($newOrderStatus);
         $order->tickets->map(function (Ticket $ticket) use (&$tickets, $newTicketStatus) {
             $ticket->setStatus($newTicketStatus);

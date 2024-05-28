@@ -101,12 +101,9 @@ class CheckoutInitPayController extends ApiController
         }
 
         $order->external_id = $response->getId();
-        if ($order->status_id != OrderStatus::promoter_wait_for_pay) {
-
-            $order->setStatus(OrderStatus::showcase_wait_for_pay, false);
+        if (!in_array($order->status_id, [OrderStatus::promoter_wait_for_pay, OrderStatus::partner_wait_for_pay])) {
 
             $existingCookieHash = $request->cookie('qrCodeHash');
-
             try {
                 if ($existingCookieHash) {
                     /** @var QrCode|null $qrCode */
@@ -123,7 +120,6 @@ class CheckoutInitPayController extends ApiController
             }
 
             $referralCookie = $request->cookie('referralLink');
-
             try {
                 if ($referralCookie) {
                     /**@var Partner|null $partner */
@@ -142,13 +138,6 @@ class CheckoutInitPayController extends ApiController
         $order->save();
 
         Log::channel('youkassa')->info(sprintf('Order [%s] registered [ID:%s]', $orderId, $order->external_id));
-
-        $order->tickets->map(function (Ticket $ticket) {
-            // P.S. All tickets are valid for now
-            if ($ticket->status_id != TicketStatus::promoter_wait_for_pay) {
-                $ticket->setStatus(TicketStatus::showcase_wait_for_pay);
-            }
-        });
 
         return APIResponse::success('Перенаправление на оплату...', [
             'form_url' => $response->getConfirmation()['_confirmation_url'],
@@ -170,8 +159,8 @@ class CheckoutInitPayController extends ApiController
                 ['status', 'tickets', 'tickets.grade', 'tickets.trip', 'tickets.trip.startPier', 'tickets.trip.startPier.info', 'tickets.trip.excursion', 'tickets.trip.excursion.info']
             )
             ->where('id', $id)
-            ->whereIn('status_id', [OrderStatus::promoter_wait_for_pay, OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::showcase_paid, OrderStatus::showcase_canceled])
-            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site])
+            ->whereIn('status_id', array_merge(OrderStatus::sberpay_statuses, [OrderStatus::showcase_canceled]))
+            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site, OrderType::partner_sale, OrderType::referral_link])
             ->first();
 
         return $order;

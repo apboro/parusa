@@ -24,6 +24,8 @@ class TicketStatus extends AbstractDictionary
      */
 
     public const partner_reserve = 1;
+    public const partner_wait_for_pay = 2;
+    public const partner_paid_by_link = 3;
     public const partner_paid = 11;
     public const partner_returned = 21;
     public const partner_reserve_canceled = 22;
@@ -71,6 +73,8 @@ class TicketStatus extends AbstractDictionary
     public const ticket_countable_statuses = [
         self::partner_reserve,
         self::partner_paid,
+        self::partner_paid_by_link,
+        self::partner_wait_for_pay,
         self::terminal_creating,
         self::terminal_wait_for_pay,
         self::terminal_finishing,
@@ -91,6 +95,7 @@ class TicketStatus extends AbstractDictionary
 
     public const ticket_printable_statuses = [
         self::partner_paid,
+        self::partner_paid_by_link,
         self::terminal_finishing,
         self::terminal_paid,
         self::showcase_paid,
@@ -104,6 +109,7 @@ class TicketStatus extends AbstractDictionary
 
     public const ticket_paid_statuses = [
         self::partner_paid,
+        self::partner_paid_by_link,
         self::terminal_paid,
         self::showcase_paid,
         self::showcase_paid_single,
@@ -116,6 +122,7 @@ class TicketStatus extends AbstractDictionary
 
     public const ticket_had_paid_statuses = [
         self::partner_paid,
+        self::partner_paid_by_link,
         self::partner_returned,
         self::terminal_paid,
         self::terminal_returned,
@@ -136,6 +143,7 @@ class TicketStatus extends AbstractDictionary
     ];
 
     public const ticket_reserved_statuses = [
+        self::partner_wait_for_pay,
         self::partner_reserve,
         self::yaga_reserved,
         self::promoter_wait_for_pay
@@ -144,6 +152,7 @@ class TicketStatus extends AbstractDictionary
     public const ticket_returnable_statuses = [
         self::showcase_paid,
         self::partner_paid,
+        self::partner_paid_by_link,
         self::terminal_paid,
         self::terminal_wait_for_return,
         self::showcase_paid_single,

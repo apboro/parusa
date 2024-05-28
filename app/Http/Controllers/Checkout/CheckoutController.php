@@ -102,9 +102,7 @@ class CheckoutController extends ApiController
         $validThrough = $ts->clone()->addMinutes(config('showcase.showcase_order_lifetime'));
         $now = Carbon::now();
 
-        if ($order->hasStatus(OrderStatus::showcase_creating)
-            || $order->hasStatus(OrderStatus::showcase_wait_for_pay)
-            || $order->hasStatus(OrderStatus::promoter_wait_for_pay)) {
+        if (in_array($order->status_id, OrderStatus::sberpay_statuses)) {
             if ($validThrough < $now) {
                 return APIResponse::error('Время, отведенное на оплату заказа, закончилось. Заказ расформирован.', [
                     'back_link' => $container['ref'] ?? null,
@@ -204,8 +202,14 @@ class CheckoutController extends ApiController
         }
 
         // set order status
-        if ($order->status_id === OrderStatus::showcase_wait_for_pay || $order->status_id === OrderStatus::promoter_wait_for_pay) {
-            $newOrderStatus = $order->type_id === OrderType::promoter_sale ? OrderStatus::promoter_confirmed : OrderStatus::showcase_confirmed;
+        if (in_array($order->status_id, [OrderStatus::showcase_wait_for_pay, OrderStatus::promoter_wait_for_pay, OrderStatus::partner_wait_for_pay])) {
+
+            $newOrderStatus = match ($order->type_id) {
+                OrderType::promoter_sale => OrderStatus::promoter_confirmed,
+                OrderType::partner_sale => OrderStatus::partner_paid_by_link,
+                default => OrderStatus::showcase_confirmed,
+            };
+
             $order->setStatus($newOrderStatus);
             Log::channel('youkassa')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
@@ -238,12 +242,12 @@ class CheckoutController extends ApiController
         $secret = Crypt::encrypt($orderSecret);
 
         // response OK
-        $backLink = $container['ref'] ?? config('showcase.showcase_ap_page2');
+        $backLink = $container['ref'] ?? config('showcase.showcase_ap_page');
         $query = parse_url($backLink, PHP_URL_QUERY);
         if ($query) {
-            $backLink .= '&status=finished&secret='.$secret;
+            $backLink .= '&status=finished&secret=' . $secret;
         } else {
-            $backLink .= '?status=finished&secret='.$secret;
+            $backLink .= '?status=finished&secret=' . $secret;
         }
 
         return APIResponse::success('Заказ оплачен. Высылаем чек и билеты на электронную почту.', [
@@ -294,7 +298,7 @@ class CheckoutController extends ApiController
             )
             ->where('id', $id)
             ->whereIn('status_id', array_merge(OrderStatus::sberpay_statuses, [OrderStatus::showcase_canceled]))
-            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site, OrderType::referral_link])
+            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site, OrderType::referral_link, OrderType::partner_sale])
             ->first();
 
         return $order;
