@@ -114,7 +114,7 @@ class YagaScheduleApiController
         $shipsInActiveTrips = Trip::activeScarletSails()->distinct()->pluck('ship_id')->toArray();
 
         $ship = Ship::where('id', $request->input('venueId'))->first();
-        $grades = TicketGrade::where('provider_id', Provider::scarlet_sails)->get();
+        $grades = TicketGrade::whereIn('provider_id', [Provider::scarlet_sails, Provider::neva_travel])->get();
         $halls = [];
 
         if ($request->input('hallId') && is_string($request->input('hallId'))){
@@ -224,7 +224,7 @@ class YagaScheduleApiController
         $shipsInActiveTrips = Trip::activeScarletSails()->distinct()->pluck('ship_id')->toArray();
         $shipsQuery = Ship::query()
             ->whereIn('id', $shipsInActiveTrips)
-            ->where('provider_id', Provider::scarlet_sails)
+            ->whereIn('provider_id', [Provider::scarlet_sails, Provider::neva_travel])
             ->where('status_id', ShipStatus::active)
             ->when(!empty($venuesArr), function ($ship) use ($venuesArr) {
                 $ship->whereIn('id', $venuesArr);

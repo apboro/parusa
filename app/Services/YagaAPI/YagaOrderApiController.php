@@ -4,6 +4,9 @@ namespace App\Services\YagaAPI;
 
 use App\Actions\CreateOrderFromYaga;
 use App\Actions\CreateTicketsFromYaga;
+use App\Events\NevaTravelCancelOrderEvent;
+use App\Events\NevaTravelOrderPaidEvent;
+use App\Events\NewNevaTravelOrderEvent;
 use App\Helpers\PriceConverter;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\Provider;
@@ -130,6 +133,8 @@ class YagaOrderApiController
             $order = (new CreateOrderFromYaga($data, $newTickets))->execute();
         });
 
+        NewNevaTravelOrderEvent::dispatch($order);
+
         return response()->json($order);
     }
 
@@ -200,6 +205,8 @@ class YagaOrderApiController
             default => 'UNDEFINED_ORDER_STATUS'
         };
 
+        NevaTravelCancelOrderEvent::dispatch($order);
+
         return response()->json([
             "id" => $order->id,
             "orderNumber" => $order->id,
@@ -229,6 +236,8 @@ class YagaOrderApiController
             default => 'UNDEFINED_ORDER_STATUS'
         };
 
+        NevaTravelCancelOrderEvent::dispatch($order);
+
         return response()->json([
             "id" => $order->id,
             "orderNumber" => $order->id,
@@ -253,7 +262,6 @@ class YagaOrderApiController
 
         try {
             DB::transaction(static function () use (&$order) {
-
                 $order->setStatus(OrderStatus::yaga_confirmed);
                 $order->tickets->each(fn(Ticket $ticket) => $ticket->setStatus(TicketStatus::yaga_confirmed));
                 $order->payCommissions();
@@ -261,6 +269,8 @@ class YagaOrderApiController
         } catch (Exception $e) {
             Log::channel('yaga')->error($e);
         }
+
+        NevaTravelOrderPaidEvent::dispatch($order);
 
         return response()->json(['id' => $order->id, 'orderNumber' => $order->id, 'status' => 'APPROVED', 'specificFields' => (object)[]]);
     }

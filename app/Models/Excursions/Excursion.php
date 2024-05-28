@@ -223,7 +223,7 @@ class Excursion extends Model implements Statusable, AsDictionary
     {
         return $query->where('status_id', ExcursionStatus::active)
             ->where('only_site', false)
-            ->where('provider_id', Provider::scarlet_sails)
+            ->whereIn('provider_id', [Provider::scarlet_sails, Provider::neva_travel])
             ->whereHas('ratesLists', function ($ratesLists) use ($dateFrom, $dateTo) {
                 $ratesLists->whereDate('start_at', '<=', $dateFrom)
                     ->whereDate('end_at', '>=', $dateTo);
