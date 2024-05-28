@@ -64,9 +64,6 @@ class   PartnerMakeOrderController extends ApiEditController
                 $successMessage = 'Бронь оформлена';
                 break;
             case 'sms':
-                if (!$partner->profile->can_send_sms) {
-                    return APIResponse::error('Ошибка. Неверное действие.');
-                }
                 $status_id = OrderStatus::partner_wait_for_pay;
                 $successMessage = 'Ссылка на оплату отправлена';
                 break;
