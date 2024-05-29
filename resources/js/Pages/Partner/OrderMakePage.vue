@@ -101,9 +101,6 @@
 
             <GuiContainer w-90 mt-30 inline text-right mobile-partner__button-bottom>
                 <GuiButton style="font-size: 12px" @click="clear" :color="'red'" :disabled="!canOrder">Очистить</GuiButton>
-                <GuiButton style="font-size: 12px" @click="reserve" :color="'green'" :disabled="!canOrder" v-if="data.data['can_reserve']">
-                    Оформить бронь
-                </GuiButton>
                 <GuiButton style="font-size: 12px" @click="sms" :color="'green'" v-if="form.values.phone != null && canOrder">Ссылка на оплату в СМС</GuiButton>
                 <GuiButton style="font-size: 12px" @click="order" :color="'green'" :disabled="!canOrder">Оплатить с лицевого счёта</GuiButton>
             </GuiContainer>
