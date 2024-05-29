@@ -130,6 +130,7 @@ class Account extends Model
 
         $transaction->account_id = $this->id;
         $this->amount += $type->sign * $transaction->amount;
+        $transaction->timestamp = Carbon::now();
 
         $account = $this;
 

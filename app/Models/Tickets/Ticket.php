@@ -227,7 +227,6 @@ class Ticket extends Model implements Statusable
         $partner->account->attachTransaction(new AccountTransaction([
             'type_id' => AccountTransactionType::tickets_sell_commission,
             'status_id' => AccountTransactionStatus::accepted,
-            'timestamp' => Carbon::now(),
             'amount' => $dataForTransaction['partner_amount'] ?? $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100),
             'ticket_id' => $this->id,
             'commission_type' => $dataForTransaction['commission_type'] ?? $rate->commission_type,
