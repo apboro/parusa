@@ -135,7 +135,7 @@ class CheckoutInitPayController extends ApiController
             }
         }
 
-        $order->external_id = $response['orderId'];
+        $order->external_id = $response->getId();
         if ($order->status_id != OrderStatus::promoter_wait_for_pay) {
             $order->setStatus(OrderStatus::showcase_wait_for_pay, false);
         }
