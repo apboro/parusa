@@ -256,6 +256,8 @@ class TerminalCurrentOrderController extends ApiController
                             continue;
                         }
 
+                        $order->payCommissions();
+
                         // add payment
                         // search existing payment to update
                         if (!empty($receivedPayment['guid'])) {
@@ -298,8 +300,6 @@ class TerminalCurrentOrderController extends ApiController
                         NevaTravelOrderPaidEvent::dispatch($order);
                         CityTourOrderPaidEvent::dispatch($order);
                         AstraMarineOrderPaidEvent::dispatch($order);
-
-                        $order->payCommissions();
                     }
                 }
             }
