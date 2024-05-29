@@ -135,9 +135,20 @@ class CheckoutInitPayController extends ApiController
             }
         }
 
+        $order->external_id = $response['orderId'];
+        if ($order->status_id != OrderStatus::promoter_wait_for_pay) {
+            $order->setStatus(OrderStatus::showcase_wait_for_pay, false);
+        }
         $order->save();
 
-        Log::channel('youkassa')->info(sprintf('Order [%s] registered [ID:%s]', $orderId, $order->external_id));
+        Log::channel('sber_payments')->info(sprintf('Order [%s] registered [ID:%s]', $orderId, $order->external_id));
+
+        $order->tickets->map(function (Ticket $ticket) {
+            // P.S. All tickets are valid for now
+            if ($ticket->status_id != TicketStatus::promoter_wait_for_pay) {
+                $ticket->setStatus(TicketStatus::showcase_wait_for_pay);
+            }
+        });
 
         return APIResponse::success('Перенаправление на оплату...', [
             'form_url' => $response->getConfirmation()['_confirmation_url'],
