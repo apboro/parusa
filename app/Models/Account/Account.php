@@ -114,7 +114,7 @@ class Account extends Model
         if (!$this->exists && (!$this->partner_id || !$this->save())) {
             throw new AccountException('Лицевой счёт не присоединен к партнёру. Невозможно добавить операцию.');
         }
-        if ($transaction->exists) {
+        if ($transaction->exists()) {
             throw new AccountException('Повторное прикрепление операции к лицевому счёту невозможно.');
         }
 
