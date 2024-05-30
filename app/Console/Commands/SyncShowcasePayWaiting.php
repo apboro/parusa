@@ -69,6 +69,7 @@ class SyncShowcasePayWaiting extends Command
                     if ($response['status'] === 'succeeded') {
                         // set order status
                         $order->status_id = $order->type_id === OrderType::promoter_sale ? OrderStatus::promoter_confirmed : OrderStatus::showcase_confirmed;
+                        $order->save();
 
                         // add payment
                         $payment = new Payment();
