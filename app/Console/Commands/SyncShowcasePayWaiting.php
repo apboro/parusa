@@ -45,7 +45,7 @@ class SyncShowcasePayWaiting extends Command
 
         $orders = Order::query()
             ->whereIn('status_id', [OrderStatus::showcase_wait_for_pay, OrderStatus::promoter_wait_for_pay])
-            ->where('updated_at', '>', now()->subMinutes(10))
+            ->where('updated_at', '>', now()->subMinutes(30))
             ->get();
 
         if ($orders->count() === 0) {
