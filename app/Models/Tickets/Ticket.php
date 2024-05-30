@@ -221,7 +221,7 @@ class Ticket extends Model implements Statusable
         if ($partner->name === 'Афиша'){
             $dataForTransaction['partner_amount'] = 0.1 * $this->base_price;
             $dataForTransaction['partner_commission'] = 10;
-            $dataForTransaction['commission_type'] = 'percent';
+            $dataForTransaction['commission_type'] = 'percents';
         }
 
         $partner->account->attachTransaction(new AccountTransaction([
@@ -257,7 +257,7 @@ class Ticket extends Model implements Statusable
 
         return [
             'partner_commission' => $promoterCommission,
-            'commission_type' => 'percent',
+            'commission_type' => 'percents',
             'partner_amount' => $promoterAmount,
             'commission_delta' => $shift->commission_delta
         ];
