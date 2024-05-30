@@ -133,7 +133,7 @@ class YagaOrderApiController
             $order = (new CreateOrderFromYaga($data, $newTickets))->execute();
         });
 
-        NewNevaTravelOrderEvent::dispatch($order);
+        NewNevaTravelOrderEvent::dispatch(Order::find($order['id']));
 
         return response()->json($order);
     }
