@@ -295,7 +295,9 @@ class TerminalCurrentOrderController extends ApiController
                             $ticket->setStatus(TicketStatus::terminal_finishing);
                         });
 
-                        $order->payCommissions();
+                        if ($payment->wasRecentlyCreated) {
+                            $order->payCommissions();
+                        }
 
                         NevaTravelOrderPaidEvent::dispatch($order);
                         CityTourOrderPaidEvent::dispatch($order);
