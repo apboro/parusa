@@ -177,6 +177,8 @@ class TerminalCurrentOrderController extends ApiController
                 $order->setStatus(OrderStatus::terminal_paid);
             });
 
+            $order->payCommissions();
+
         } catch (Exception $exception) {
             Log::error('terminal current order error: '. $exception->getMessage(). ' '. $exception->getFile(). ' '. $exception->getLine());
             return APIResponse::error($exception->getMessage());
@@ -279,7 +281,6 @@ class TerminalCurrentOrderController extends ApiController
                         $payment->position_id = $current->positionId();
                         $payment->save();
 
-
                         if ($receivedPayment['fiscal_document']['guid']) {
                             $receipt = LifePosSales::getFiscal($receivedPayment['fiscal_document']['guid']);
                             if (isset($receipt['sources']['print_view'])) {
@@ -295,11 +296,10 @@ class TerminalCurrentOrderController extends ApiController
                             $ticket->setStatus(TicketStatus::terminal_finishing);
                         });
 
-                        $order->payCommissions();
-
                         NevaTravelOrderPaidEvent::dispatch($order);
                         CityTourOrderPaidEvent::dispatch($order);
                         AstraMarineOrderPaidEvent::dispatch($order);
+
                     }
                 }
             }
