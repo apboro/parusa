@@ -64,7 +64,7 @@ class NevaTravelIntegrationTest extends TestCase
         $cartOrderId = $this->positionOrderingTicket->id;
         $response = $this->actingAs($this->positionOrderingTicket->position->user)
             ->withCookies([
-                'current_user_role' => $this->positionOrderingTicket->position->roles()->save(Role::find(2))->id,
+                'current_user_role' => Role::admin,
                 'current_user_position' => $this->positionOrderingTicket->position_id,
                 'current_user_terminal' => $this->positionOrderingTicket->terminal_id,
             ])->post('/api/order/terminal/make',
@@ -80,7 +80,7 @@ class NevaTravelIntegrationTest extends TestCase
                         "phone" => "+7 (666) 666-66-66"
                     ]
                 ]);
-        $response->dump();
+
         $response->assertStatus(200);
         $response->assertJson([
             'message' => 'Заказ отправлен в оплату.',

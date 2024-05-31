@@ -24,6 +24,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ApiOrderConfirmController extends Controller
 {
@@ -60,6 +61,7 @@ class ApiOrderConfirmController extends Controller
                 $order->payCommissions();
             });
         } catch (\Exception $e) {
+            Log::channel('apiv1')->error($e->getMessage(). ' ' . $e->getFile(). ' ' . $e->getLine());
             return APIResponse::error($e->getMessage());
         }
 

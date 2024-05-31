@@ -10,7 +10,7 @@ use App\Http\APIv1\Controllers\ApiShipsController;
 use App\Http\APIv1\Controllers\ApiTripsController;
 
 //all routes must have name with 'api.v1'
-Route::middleware(['auth:sanctum', 'checkPartner'])->group(function (){
+Route::middleware(['auth:sanctum', 'checkPartner', 'logRequest'])->group(function (){
     Route::get('api/v1/excursions', ApiExcursionsController::class)->name('api.v1.excursions');
     Route::get('api/v1/trips', ApiTripsController::class)->name('api.v1.trips');
     Route::get('api/v1/piers', ApiPiersController::class)->name('api.v1.piers');
