@@ -63,7 +63,7 @@ class OrdersRegistryItemController extends ApiController
         if ($current->isStaffTerminal()) {
             $returnable = $order->hasStatus(OrderStatus::terminal_paid) || $order->hasStatus(OrderStatus::terminal_partial_returned);
         } else if ($current->isRepresentative()) {
-            $returnable = in_array($order->status_id, [OrderStatus::partner_paid, OrderStatus::partner_partial_returned]);
+            $returnable = in_array($order->status_id, [OrderStatus::partner_paid, OrderStatus::api_confirmed, OrderStatus::partner_partial_returned]);
         } else if ($current->isStaffAdmin()) {
             $returnable = in_array($order->status_id,[OrderStatus::showcase_paid,
                     OrderStatus::showcase_partial_returned, OrderStatus::promoter_paid, OrderStatus::partner_paid_by_link]);
