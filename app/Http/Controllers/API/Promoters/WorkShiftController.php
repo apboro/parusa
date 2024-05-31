@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Promoters;
 use App\Helpers\WorkShiftPdf;
 use App\Http\APIResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\Tariff;
 use App\Models\Dictionaries\WorkShiftStatus;
 use App\Models\Partner\Partner;
@@ -61,14 +62,17 @@ class WorkShiftController extends Controller
             return APIResponse::error('Не задан тариф');
         }
 
-        $workShift = WorkShift::create([
-            'partner_id' => $promoter->id,
-            'tariff_id' => $tariff->id,
-            'terminal_id' => 1,
-            'start_at' => now(),
-            'status_id' => WorkShiftStatus::active,
-            'balance' => $promoter->getLastShift()?->balance,
-        ]);
+        $workShift = $promoter->getOpenedShift();
+        if (!$workShift) {
+            $workShift = WorkShift::create([
+                'partner_id' => $promoter->id,
+                'tariff_id' => $tariff->id,
+                'terminal_id' => 1,
+                'start_at' => now(),
+                'status_id' => WorkShiftStatus::active,
+                'balance' => $promoter->getLastShift()?->balance,
+            ]);
+        }
 
         return APIResponse::success('Смена открыта', ['start_at' => Carbon::parse($workShift->start_at)->format('Y-m-d H:i:s')]);
     }
@@ -116,6 +120,14 @@ class WorkShiftController extends Controller
 
         if (!$workShift) {
             return APIResponse::error('Смена не найдена');
+        }
+
+        $partner = Partner::find($request->partnerId);
+
+        $hasUnclosedOrders = $partner->orders()->where('status_id', OrderStatus::terminal_finishing)->exists();
+
+        if ($hasUnclosedOrders){
+            return APIResponse::error('На кассе есть не закрытый заказ.');
         }
 
         $current = Currents::get($request);
