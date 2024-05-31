@@ -140,7 +140,8 @@ class OrderReturnController extends ApiController
         } else if ($current->isStaffAdmin()) {
             // Returning tickets bought
             try {
-                if (in_array($order->type_id, OrderType::types_with_sber_payment) && $order->external_id === null) {
+                if (in_array($order->type_id, OrderType::types_with_sber_payment)
+                    && $order->external_id === null) {
                     throw new Exception('Отсутствует внешний ID заказа');
                 }
                 $tickets = [];
