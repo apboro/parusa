@@ -70,7 +70,7 @@
                                 <span>{{ trip['ship'] }}</span>
                             </td>
                             <td data-label="Время в пути:"><span class="ap-not-brake">{{ trip['duration'] }} мин.</span></td>
-                            <td data-label="Стоимость за взрослого:"><span class="ap-not-brake">{{ trip['price'] }} руб.</span></td>
+                            <td data-label="Стоимость за взрослого:"><span class="ap-not-brake">от {{ trip['price'] }} руб.</span></td>
                             <td>
                                 <ShowcaseV2Button @click="select(trip)">Купить билеты</ShowcaseV2Button>
                             </td>
@@ -197,7 +197,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "resources/js/Pages/Showcase/variables";
+@import "/resources/js/Pages/Showcase/variables";
 
 .ap-showcase__search {
     box-sizing: border-box;
