@@ -21,6 +21,12 @@ class ApiTripsController extends Controller
     public function __invoke(ApiGetTripsRequest $request): JsonResponse
     {
         $trips = Trip::query()
+            ->with(['excursion',
+                'excursion.images',
+                'excursion.info',
+                'excursion.ratesLists',
+                'excursion.ratesLists.rates',
+                'excursion.ratesLists.rates.grade'])
             ->withCount(['tickets' => function (Builder $query) {
                 $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
             }])

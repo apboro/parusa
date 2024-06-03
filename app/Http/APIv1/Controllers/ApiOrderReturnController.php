@@ -15,11 +15,12 @@ use App\Models\Order\Order;
 use App\Models\Ships\Seats\TripSeat;
 use App\Models\Tickets\Ticket;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class ApiOrderReturnController extends Controller
 {
-    public function __invoke(ApiOrderReturnRequest $request)
+    public function __invoke(ApiOrderReturnRequest $request): \Illuminate\Http\JsonResponse
     {
         $order = Order::with('tickets')->where('id', $request->order_id)->first();
 
@@ -52,8 +53,9 @@ class ApiOrderReturnController extends Controller
                     }
                 });
             });
-        } catch (\Exception $exception) {
-            return APIResponse::error($exception->getMessage());
+        } catch (\Exception $e) {
+            Log::channel('apiv1')->error($e->getMessage(). ' ' . $e->getFile(). ' ' . $e->getLine());
+            return APIResponse::error($e->getMessage());
         }
 
         return APIResponse::success('Заказ отменен', unsetPayload: true);

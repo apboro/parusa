@@ -44,8 +44,8 @@ class SyncShowcasePayWaiting extends Command
         $now = Carbon::now();
 
         $orders = Order::query()
-            ->whereIn('status_id', [OrderStatus::showcase_wait_for_pay, OrderStatus::promoter_wait_for_pay])
-            ->where('updated_at', '>', now()->subMinutes(10))
+            ->whereIn('status_id', [OrderStatus::showcase_wait_for_pay, OrderStatus::promoter_wait_for_pay, OrderStatus::promoter_confirmed])
+            ->where('updated_at', '>', now()->subMinutes(30))
             ->get();
 
         if ($orders->count() === 0) {
@@ -69,6 +69,7 @@ class SyncShowcasePayWaiting extends Command
                     if ($response['status'] === 'succeeded') {
                         // set order status
                         $order->status_id = $order->type_id === OrderType::promoter_sale ? OrderStatus::promoter_confirmed : OrderStatus::showcase_confirmed;
+                        $order->save();
 
                         // add payment
                         $payment = new Payment();

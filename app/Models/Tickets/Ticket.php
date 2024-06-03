@@ -221,13 +221,12 @@ class Ticket extends Model implements Statusable
         if ($partner->name === 'Афиша'){
             $dataForTransaction['partner_amount'] = 0.1 * $this->base_price;
             $dataForTransaction['partner_commission'] = 10;
-            $dataForTransaction['commission_type'] = 'percent';
+            $dataForTransaction['commission_type'] = 'percents';
         }
 
         $partner->account->attachTransaction(new AccountTransaction([
             'type_id' => AccountTransactionType::tickets_sell_commission,
             'status_id' => AccountTransactionStatus::accepted,
-            'timestamp' => Carbon::now(),
             'amount' => $dataForTransaction['partner_amount'] ?? $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100),
             'ticket_id' => $this->id,
             'commission_type' => $dataForTransaction['commission_type'] ?? $rate->commission_type,
@@ -258,7 +257,7 @@ class Ticket extends Model implements Statusable
 
         return [
             'partner_commission' => $promoterCommission,
-            'commission_type' => 'percent',
+            'commission_type' => 'percents',
             'partner_amount' => $promoterAmount,
             'commission_delta' => $shift->commission_delta
         ];

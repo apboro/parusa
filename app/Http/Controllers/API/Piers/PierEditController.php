@@ -108,7 +108,7 @@ class PierEditController extends ApiEditController
 
         $pier->setAttribute('name', $data['name']);
         $pier->setStatus($data['status_id'], false);
-        $pier->provider_id = Provider::scarlet_sails;
+        $pier->provider_id = $pier->provider_id ?? Provider::scarlet_sails;
         $pier->save();
 
         $info = $pier->info;

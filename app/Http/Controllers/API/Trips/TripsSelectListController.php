@@ -170,6 +170,7 @@ class TripsSelectListController extends ApiController
                 'chained' => $trip->getAttribute('chains_count') > 0,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
+                'provider_id' => $trip->provider_id,
             ];
         });
 

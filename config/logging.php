@@ -76,6 +76,11 @@ return [
             'path' => storage_path('logs/astra-marine.log'),
             'level' => 'info',
         ],
+        'apiv1' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/apiv1.log'),
+            'level' => 'info',
+        ],
         'city_tour' => [
             'driver' => 'single',
             'path' => storage_path('logs/city_tour.log'),

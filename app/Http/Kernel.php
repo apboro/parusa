@@ -7,6 +7,7 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\HandleShowcaseCors;
 use App\Http\Middleware\CheckPartnerMiddleware;
+use App\Http\Middleware\LogApiv1Middleware;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\ExternalProtect;
@@ -102,6 +103,7 @@ class Kernel extends HttpKernel
         'verified' => EnsureEmailIsVerified::class,
         'allow' => Allow::class,
         'external.protect' => ExternalProtect::class,
-        'checkPartner' => CheckPartnerMiddleware::class
+        'checkPartner' => CheckPartnerMiddleware::class,
+        'logRequest' => LogApiv1Middleware::class
     ];
 }

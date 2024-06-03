@@ -11,6 +11,7 @@ use App\Models\Dictionaries\TripStatus;
 use App\Models\Hit\Hit;
 use App\Models\Positions\PositionOrderingTicket;
 use App\Models\Sails\Trip;
+use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -95,6 +96,12 @@ class OrderBackwardTicketsController extends ApiController
         $requestWithOneTicket = $request->input('ticketId');
         $ticketIds = collect($request->input('tickets'))->pluck('id')->toArray();
         $ticketIds[] = $requestWithOneTicket;
+
+        $tickets = $current->position()->ordering()->get();
+        $ticketsHasBackwards = $tickets->filter(fn (PositionOrderingTicket $ticket) => $ticket->parent_ticket_id);
+        if ($ticketsHasBackwards->isNotEmpty()){
+            return APIResponse::error('У этого билета уже есть обратный билет');
+        }
         foreach (array_filter($ticketIds) as $ticketId) {
             $ticketFromCart = PositionOrderingTicket::where('id', $ticketId)->first();
             $current->position()

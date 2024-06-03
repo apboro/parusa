@@ -73,7 +73,7 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
         $tickets = [];
 
         // update order status
-        $newOrderStatus = OrderStatus::showcase_confirmed;
+        $newOrderStatus = OrderStatus::showcase_paid;
         $newTicketStatus = TicketStatus::showcase_paid;
 
         if ($order->type_id === OrderType::promoter_sale){
