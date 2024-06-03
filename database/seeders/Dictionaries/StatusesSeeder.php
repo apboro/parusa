@@ -85,6 +85,7 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::promoter_wait_for_pay => ['name' => 'Промоутер: ожидает оплаты'],
             TicketStatus::promoter_confirmed => ['name' => 'Промоутер: оплата подтверждена'],
             TicketStatus::promoter_paid => ['name' => 'Промоутер: оплачен'],
+            TicketStatus::promoter_self_paid => ['name' => 'Оплачен касса промоутера'],
             TicketStatus::promoter_canceled => ['name' => 'Промоутер: отменён'],
 
             TicketStatus::terminal_creating => ['name' => 'Оформление'],
@@ -136,6 +137,7 @@ class StatusesSeeder extends GenericSeeder
             OrderStatus::promoter_wait_for_pay => ['name' => 'Промоутер: ожидает оплаты'],
             OrderStatus::promoter_confirmed => ['name' => 'Промоутер: оплата подтверждена'],
             OrderStatus::promoter_paid => ['name' => 'Промоутер: оплачен'],
+            OrderStatus::promoter_self_paid => ['name' => 'Оплачен касса промоутера'],
             OrderStatus::promoter_canceled => ['name' => 'Промоутер: отменен'],
 
             OrderStatus::terminal_creating => ['name' => 'Новый'],

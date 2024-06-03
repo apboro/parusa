@@ -151,6 +151,7 @@ class OrderReturnController extends ApiController
                     if (in_array($ticket->id, $ticketsToReturnIds, true)) {
                         if (!in_array($ticket->status_id, [
                             TicketStatus::showcase_paid,
+                            TicketStatus::promoter_self_paid,
                             TicketStatus::showcase_paid_single,
                             TicketStatus::used,
                             TicketStatus::promoter_paid,
