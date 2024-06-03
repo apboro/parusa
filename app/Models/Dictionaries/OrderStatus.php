@@ -68,6 +68,7 @@ class OrderStatus extends AbstractDictionary
     public const yaga_canceled_with_penalty = 135;
 
     public const order_returnable_statuses = [
+        self::promoter_self_paid,
         self::partner_paid,
         self::partner_paid_by_link,
         self::partner_partial_returned,
