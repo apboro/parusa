@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Showcase;
 
 use App\Actions\CreateOrderFromShowcase;
+use App\Actions\GetNevaTripPriceAction;
 use App\Events\AstraMarineNewOrderEvent;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
@@ -15,6 +16,7 @@ use App\Http\Middleware\ExternalProtect;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\SeatStatus;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
@@ -247,6 +249,10 @@ class ShowcaseOrderController extends ApiEditController
             throw new NoTicketsForTripException();
         }
 
+        if ($trip->provider_id === Provider::neva_travel){
+            $nevaRates = (new GetNevaTripPriceAction())->run($trip, true);
+        }
+
         $tickets = [];
         $backwardTickets = [];
         foreach ($data['rate'] as $gradeId => $grade) {
@@ -257,12 +263,17 @@ class ShowcaseOrderController extends ApiEditController
                 if ($rate === null) {
                     throw new NoTicketsForTripException();
                 }
+                if ($trip->provider_id === Provider::neva_travel){
+                    $nevaPrice = collect($nevaRates ?? [])->where('grade_id', $rate->grade_id)->first()['base_price'];
+                }
+
+
                 for ($i = 1; $i <= $grade['quantity']; $i++) {
                     $ticket = new Ticket([
                         'trip_id' => $trip->id,
                         'grade_id' => $gradeId,
                         'status_id' => TicketStatus::showcase_creating,
-                        'base_price' => $isPartnerSite ? $rate->partner_price : $rate->site_price ?? $rate->base_price,
+                        'base_price' => $nevaPrice ?? ($isPartnerSite ? $rate->partner_price : $rate->site_price) ?? $rate->base_price,
                         'provider_id' => $trip->provider_id,
                     ]);
                     if ($backwardTrip) {

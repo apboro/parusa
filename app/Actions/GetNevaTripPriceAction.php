@@ -10,7 +10,7 @@ use App\Services\NevaTravel\NevaTravelRepository;
 class GetNevaTripPriceAction
 {
 
-    public function run(Trip $trip): array
+    public function run(Trip $trip, bool $forShowcase = false): array
     {
         $ticketGrades = TicketGrade::where('provider_id', Provider::neva_travel)->get();
         $neva = new NevaTravelRepository();
@@ -20,16 +20,27 @@ class GetNevaTripPriceAction
             if (is_iterable($price)) {
                 $grade = $ticketGrades->where('external_grade_name', $grade)->first();
                 if ($price['full_price'] > 0)
-                    $prices[] = [
-                        'id' => $grade->id,
-                        'name' => $grade->name,
-                        'preferential' => false,
-                        'value' => $price['full_price'] / 100 ?? null
-                    ];
+                    if ($forShowcase) {
+                        $prices[] = [
+                            'grade_id' => $grade->id,
+                            'name' => $grade->name,
+                            'preferential' => false,
+                            'base_price' => $price['full_price'] / 100 ?? null
+                        ];
+                    } else {
+                        $prices[] = [
+                            'id' => $grade->id,
+                            'name' => $grade->name,
+                            'preferential' => false,
+                            'value' => $price['full_price'] / 100 ?? null
+                        ];
+                    }
             }
         }
 
         return $prices;
     }
+
+
 
 }
