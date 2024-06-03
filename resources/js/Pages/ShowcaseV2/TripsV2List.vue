@@ -197,7 +197,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "/resources/js/Pages/Showcase/variables";
+@import "variables";
 
 .ap-showcase__search {
     box-sizing: border-box;
