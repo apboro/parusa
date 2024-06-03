@@ -24,7 +24,8 @@
                     <div style="color: red;" v-if="ticket['backward_price']">обратный</div>
                 </td>
                 <td>{{ ticket['pier'] }}</td>
-                <td>{{ ticket['grade'] }}<br><span v-if="ticket['seat_number']">Место: {{ticket['seat_number']}}</span></td>
+                <td>{{ ticket['grade'] }}<br><span
+                    v-if="ticket['seat_number']">Место: {{ ticket['seat_number'] }}</span></td>
                 <td>{{ ticket['backward_price'] ?? ticket['min_price'] }} -
                     {{ ticket['backward_price'] ?? ticket['max_price'] }}
                 </td>
@@ -54,8 +55,9 @@
                     <td colspan="3" class="text-red text-sm mt-5">Продажа билетов на этот рейс не осуществляется</td>
                 </template>
                 <td class="va-middle">
-                    <GuiActionsMenu v-if="ticket['reverse_excursion_id'] !== null && ticket['backward_price'] === null && !ticket['ticket_provider_id']"
-                                    :title="null">
+                    <GuiActionsMenu
+                        v-if="ticket['reverse_excursion_id'] !== null && ticket['backward_price'] === null && !ticket['ticket_provider_id']"
+                        :title="null">
                         <span class="link" @click="remove(ticket['id'])">Удалить билет</span>
                         <span v-if="!ticket['backward_price']" class="link"
                               @click="callGetBackwardTrips(ticket['trip_id'], ticket['id'])">Оформить обратный билет</span>
@@ -72,9 +74,10 @@
         </table>
 
         <GuiContainer mt-20 mb-10 bold right>
-            <GuiHeading mb-5 >Итого к оплате: {{ total }}</GuiHeading>
-            <GuiButton v-if="data.tickets.filter(ticket => ticket.ticket_provider_id !== null && ticket.reverse_excursion_id !== null).length > 0"
-                       @click="callGetBackwardTrips(data.ticketTrip, null, data.tickets)">Оформить
+            <GuiHeading mb-5>Итого к оплате: {{ total }}</GuiHeading>
+            <GuiButton
+                v-if="data.tickets.filter(ticket => ticket.ticket_provider_id !== null && ticket.reverse_excursion_id !== null).length > 0"
+                @click="callGetBackwardTrips(data.ticketTrip, null, data.tickets)">Оформить
                 обратный рейс
             </GuiButton>
         </GuiContainer>
@@ -166,7 +169,7 @@ export default {
             let total = 0;
             this.data['tickets'].map(ticket => {
                 if (ticket['available'] && !isNaN(ticket['base_price'])) {
-                    total += this.multiply(ticket['backward_price'] ??  this.form.values['tickets.' + ticket['id'] + '.price'], this.form.values['tickets.' + ticket['id'] + '.quantity']);
+                    total += this.multiply(ticket['backward_price'] ?? this.form.values['tickets.' + ticket['id'] + '.price'], this.form.values['tickets.' + ticket['id'] + '.quantity']);
                 }
             });
             return this.multiply(total, 1) + ' руб.';
@@ -191,14 +194,19 @@ export default {
     },
 
     methods: {
-        ifBackwardTicketOrHaveSeatScheme(ticket){
+        ifBackwardTicketOrHaveSeatScheme(ticket) {
             return (ticket['backward_price'] !== null || ticket['seat_id'] !== null);
         },
         update() {
             this.form.reset();
             this.data['tickets'].map(ticket => {
-                this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'], `numeric|min:${ticket['min_price']}|max:${ticket['max_price']}`, 'Цена', true);
-                this.form.set('tickets.' + ticket['id'] + '.quantity', ticket['quantity'], 'integer|min:0', 'Количество', true);
+                if (ticket['ticket_provider_id'] !== 10) {
+                    this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'], `numeric|min:${ticket['min_price']}|max:${ticket['max_price']}`, 'Цена', true);
+                    this.form.set('tickets.' + ticket['id'] + '.quantity', ticket['quantity'], 'integer|min:0', 'Количество', true);
+                } else {
+                    this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'], `numeric|`, 'Цена', true);
+                    this.form.set('tickets.' + ticket['id'] + '.quantity', ticket['quantity'], 'integer|min:0', 'Количество', true);
+                }
             });
             this.form.set('partner_id', null, 'required_if:without_partner,false', 'ID промоутера', true);
             this.form.set('without_partner', false, null, 'Без промоутера', true);

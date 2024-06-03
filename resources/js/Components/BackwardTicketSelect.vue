@@ -46,7 +46,7 @@ export default {
                 });
         },
 
-        addBackwardTicket($backTripId){
+        addBackwardTicket($backTripId) {
             this.returning_progress = true;
             axios.post('/api/order/backward/add_backward_tickets', {
                 ticketId: this.ticketId,
@@ -54,8 +54,13 @@ export default {
                 back_trip_id: $backTripId
             }).then(() => {
                 this.$emit('update')
-            })
-            this.returning_progress = false;
+            }).catch(error => {
+                this.backward_trips = null;
+                this.$toast.error(error.response.data.message, 5000);
+            }).finally(() =>
+                this.returning_progress = false
+            )
+
         }
     }
 }
@@ -64,18 +69,24 @@ export default {
 
 <template>
     <GuiContainer v-if="backward_trips && backward_trips.length" mb-50>
-        <ListTable :titles="['Отправление', '№ Рейса', 'Экскурсия', 'Осталось билетов', 'Статусы движение / продажа', '']">
+        <ListTable
+            :titles="['Отправление', '№ Рейса', 'Экскурсия', 'Осталось билетов', 'Статусы движение / продажа', '']">
             <ListTableRow v-for="trip in backward_trips">
                 <ListTableCell>
                     <div>
                         <b>
-                            <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['start_time'] }}</router-link>
+                            <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">
+                                {{ trip['start_time'] }}
+                            </router-link>
                         </b>
                     </div>
                     <div>{{ trip['start_date'] }}</div>
                 </ListTableCell>
                 <ListTableCell>
-                    <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{ trip['id'] }}</router-link>
+                    <router-link :class="'link'" :to="{name: 'trip-view', params: {id: trip['id']}}">{{
+                            trip['id']
+                        }}
+                    </router-link>
                 </ListTableCell>
                 <ListTableCell>
                     {{ trip['excursion'] }}

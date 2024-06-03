@@ -231,6 +231,10 @@
                 this.$refs.date.addDays(increment);
             },
             addToOrder(trip) {
+                if (trip['provider_id'] === 10) {
+                    console.log(trip)
+                    axios.post('/api/trip/prices', {trip: trip}).then(response => console.log(response))
+                }
                 if (trip['excursion_use_seat_scheme'] && trip['trip_with_seats'] && trip['seats'].length > 0) {
                     this.$refs.select_scheme_popup.handle(trip);
                 } else {
