@@ -159,15 +159,13 @@ class PartnerCartController extends ApiEditController
                 }
                 /** @var PositionOrderingTicket $ticket */
                 $ticket = $current->position()->ordering()
-                    ->where([
-                        'trip_id' => $trip->id,
-                        'grade_id' => $grade_id,
-                        'terminal_id' => $current->terminalId()])
                     ->firstOrNew([
                         'position_id' => $current->positionId(),
                         'trip_id' => $trip->id,
                         'grade_id' => $grade_id,
-                        'terminal_id' => $current->terminalId()]);
+                        'terminal_id' => $current->terminalId()
+                    ],
+                    ['base_price' => $ticket['base_price']]);
 
                 $ticket->quantity += $quantity;
                 $count += $quantity;
