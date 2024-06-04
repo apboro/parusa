@@ -69,7 +69,7 @@ class TerminalInfoController extends ApiController
         }
 
         return APIResponse::response([
-            'order_amount' => PriceConverter::storeToPrice($orderAmount ?? 0),
+            'order_amount' => $orderAmount ?? 0,
             'current' => $processing ? $processing->status->name : 'Создание заказа',
         ]);
     }

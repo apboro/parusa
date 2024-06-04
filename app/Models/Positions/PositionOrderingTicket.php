@@ -3,6 +3,7 @@
 namespace App\Models\Positions;
 
 use App\Actions\GetNevaTripPriceAction;
+use App\Helpers\PriceConverter;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Model;
@@ -50,6 +51,30 @@ class PositionOrderingTicket extends Model
     public function trip(): BelongsTo
     {
         return $this->belongsTo(Trip::class);
+    }
+
+    /**
+     * Convert base_price from store value to real price.
+     *
+     * @param int|null $value
+     *
+     * @return  float
+     */
+    public function getBasePriceAttribute(?int $value): ?float
+    {
+        return $value !== null ? PriceConverter::storeToPrice($value) : null;
+    }
+
+    /**
+     * Convert base_price to store value.
+     *
+     * @param float|null $value
+     *
+     * @return  void
+     */
+    public function setBasePriceAttribute(?float $value): void
+    {
+        $this->attributes['base_price'] = $value !== null ? PriceConverter::priceToStore($value) : null;
     }
 
     /**

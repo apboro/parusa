@@ -141,7 +141,6 @@ class OrderTicketReplacementController extends ApiController
                 } catch (Exception $exception) {
                     Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
                 }
-
             });
         } catch (Exception $exception) {
             return APIResponse::error($exception->getMessage());
