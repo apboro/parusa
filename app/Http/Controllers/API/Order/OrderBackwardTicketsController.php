@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Actions\GetNevaComboPriceAction;
 use App\Actions\GetNevaTripPriceAction;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Arr;
 
 class OrderBackwardTicketsController extends ApiController
 {
@@ -106,14 +108,14 @@ class OrderBackwardTicketsController extends ApiController
             return APIResponse::error('У этого билета уже есть обратный билет');
         }
 
-//        $rates = (new GetNevaTripPriceAction())->run($trip);
-//        $ad = $trip->additionalData;
-//        $discount = Combo::whereIn('combo.')
+        $backwardPrices = (new GetNevaComboPriceAction())->run($trip);
 
         foreach (array_filter($ticketIds) as $ticketId) {
 
             $ticketFromCart = PositionOrderingTicket::where('id', $ticketId)->first();
-
+            $backwardPrice = collect($backwardPrices)->filter(function ($price) use ($ticketFromCart) {
+                return $price['grade_id'] == $ticketFromCart->grade_id;
+            });
             $current->position()
                 ->ordering()
                 ->create([
@@ -123,7 +125,7 @@ class OrderBackwardTicketsController extends ApiController
                     'grade_id' => $ticketFromCart->grade_id,
                     'parent_ticket_id' => $ticketFromCart->id,
                     'quantity' => $ticketFromCart->quantity,
-                    'base_price' => $ticketFromCart->base_price,
+                    'base_price' => $backwardPrice->first()['price'],
                 ]);
         }
 
