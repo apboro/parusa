@@ -37,7 +37,7 @@ class Venue
     {
         $this->pier = Trip::query()->activeScarletSails()->where('ship_id', $ship->id)->first()->startPier;
         $this->id = $ship->id;
-        $this->name = $ship->name;
+        $this->name = 'Причал "'. Trip::query()->activeScarletSails()->where('ship_id', $ship->id)->first()->startPier->name . '", теплоход '. $ship->name;
         $this->cityId = 1;
         $this->description = $ship->description;
         $this->urls = [];
