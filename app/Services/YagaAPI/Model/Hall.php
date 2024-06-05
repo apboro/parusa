@@ -3,6 +3,7 @@
 namespace App\Services\YagaAPI\Model;
 
 use App\Models\Dictionaries\TicketGrade;
+use App\Models\Sails\Trip;
 use App\Models\Ships\Ship;
 use Illuminate\Support\Collection;
 
@@ -22,7 +23,7 @@ class Hall
     {
         return [
             "id" => $this->ship->id,
-            "name" => $this->ship->name,
+            "name" => 'Причал "'. Trip::query()->activeScarletSails()->where('ship_id', $this->ship->id)->first()->startPier->name . '", теплоход '. $this->ship->name,
             "venueId" => $this->ship->id,
             "levels" => (new Level($this->grades))->getResource()
         ];
