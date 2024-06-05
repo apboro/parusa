@@ -17,6 +17,7 @@ use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Hit\Hit;
 use App\Models\Order\Order;
@@ -61,7 +62,6 @@ class OrderInstantPayController extends ApiController
                 $current->partner()->account->attachTransaction(new AccountTransaction([
                     'type_id' => AccountTransactionType::tickets_buy,
                     'status_id' => AccountTransactionStatus::accepted,
-                    'timestamp' => Carbon::now(),
                     'amount' => $order->total(),
                     'order_id' => $order->id,
                     'committer_id' => $current->positionId(),
@@ -70,9 +70,10 @@ class OrderInstantPayController extends ApiController
                 // update order statuses
                 foreach ($order->tickets as $ticket) {
                     /** @var Ticket $ticket */
-                    $ticket->setStatus(TicketStatus::promoter_paid);
+                    $ticket->setStatus(TicketStatus::promoter_self_paid);
                 }
-                $order->setStatus(OrderStatus::promoter_paid);
+                $order->setStatus(OrderStatus::promoter_self_paid);
+                $order->setType(OrderType::terminal_partner);
 
                 NevaTravelOrderPaidEvent::dispatch($order);
                 CityTourOrderPaidEvent::dispatch($order);

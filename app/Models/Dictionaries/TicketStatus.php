@@ -34,6 +34,7 @@ class TicketStatus extends AbstractDictionary
     public const promoter_wait_for_pay = 26;
     public const promoter_confirmed = 27;
     public const promoter_paid = 28;
+    public const promoter_self_paid = 24;
     public const promoter_canceled = 29;
     public const promoter_paid_single = 30;
 

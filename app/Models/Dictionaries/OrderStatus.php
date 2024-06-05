@@ -34,6 +34,7 @@ class OrderStatus extends AbstractDictionary
     public const promoter_wait_for_pay = 26;
     public const promoter_confirmed = 27;
     public const promoter_paid = 28;
+    public const promoter_self_paid = 24;
     public const promoter_canceled = 29;
 
     public const terminal_creating = 31;
@@ -67,6 +68,7 @@ class OrderStatus extends AbstractDictionary
     public const yaga_canceled_with_penalty = 135;
 
     public const order_returnable_statuses = [
+        self::promoter_self_paid,
         self::partner_paid,
         self::partner_paid_by_link,
         self::partner_partial_returned,
