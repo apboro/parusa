@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Actions\GetNevaTripPriceAction;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\Combo;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
@@ -88,8 +90,9 @@ class OrderBackwardTicketsController extends ApiController
     {
         $current = Currents::get($request);
 
-        if (null === ($tripId = $request->input('back_trip_id')) ||
-            null === ($trip = Trip::where('id', $tripId)->first())) {
+        $trip = Trip::where('id', $request->input('back_trip_id'))->first();
+
+        if (!$trip){
             return APIResponse::notFound('Рейс не найден');
         }
 
@@ -102,8 +105,15 @@ class OrderBackwardTicketsController extends ApiController
         if ($ticketsHasBackwards->isNotEmpty()){
             return APIResponse::error('У этого билета уже есть обратный билет');
         }
+
+//        $rates = (new GetNevaTripPriceAction())->run($trip);
+//        $ad = $trip->additionalData;
+//        $discount = Combo::whereIn('combo.')
+
         foreach (array_filter($ticketIds) as $ticketId) {
+
             $ticketFromCart = PositionOrderingTicket::where('id', $ticketId)->first();
+
             $current->position()
                 ->ordering()
                 ->create([
@@ -112,7 +122,8 @@ class OrderBackwardTicketsController extends ApiController
                     'trip_id' => $trip->id,
                     'grade_id' => $ticketFromCart->grade_id,
                     'parent_ticket_id' => $ticketFromCart->id,
-                    'quantity' => $ticketFromCart->quantity
+                    'quantity' => $ticketFromCart->quantity,
+                    'base_price' => $ticketFromCart->base_price,
                 ]);
         }
 
