@@ -4,10 +4,12 @@ namespace App\Http\Controllers\API\Order;
 
 use App\Actions\GetNevaComboPriceAction;
 use App\Actions\GetNevaTripPriceAction;
+use App\Helpers\PriceConverter;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Combo;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
@@ -108,14 +110,19 @@ class OrderBackwardTicketsController extends ApiController
             return APIResponse::error('У этого билета уже есть обратный билет');
         }
 
-        $backwardPrices = (new GetNevaComboPriceAction())->run($trip);
+        if ($trip->provider_id === Provider::neva_travel) {
+            $nevaBackwardPrices = (new GetNevaComboPriceAction())->run($trip);
+        }
 
         foreach (array_filter($ticketIds) as $ticketId) {
 
             $ticketFromCart = PositionOrderingTicket::where('id', $ticketId)->first();
-            $backwardPrice = collect($backwardPrices)->filter(function ($price) use ($ticketFromCart) {
-                return $price['grade_id'] == $ticketFromCart->grade_id;
-            });
+            if (!empty($nevaBackwardPrices)){
+                $nevaBackwardPrice = collect($nevaBackwardPrices)->filter(function ($price) use ($ticketFromCart) {
+                    return $price['grade_id'] == $ticketFromCart->grade_id;
+                });
+            }
+
             $current->position()
                 ->ordering()
                 ->create([
@@ -125,7 +132,7 @@ class OrderBackwardTicketsController extends ApiController
                     'grade_id' => $ticketFromCart->grade_id,
                     'parent_ticket_id' => $ticketFromCart->id,
                     'quantity' => $ticketFromCart->quantity,
-                    'base_price' => $backwardPrice->first()['price'],
+                    'base_price' => isset($nevaBackwardPrice) ? PriceConverter::storeToPrice($nevaBackwardPrice->first()['price']) : null,
                 ]);
         }
 

@@ -119,6 +119,10 @@ class PositionOrderingTicket extends Model
 
     public function getBackwardPrice(): ?float
     {
+        if ($this->base_price){
+            return $this->base_price;
+        }
+
         $trip = $this->parentTicket->trip;
 
         $rateList = $trip->getRate();
