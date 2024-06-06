@@ -87,6 +87,7 @@ class TicketStatus extends AbstractDictionary
         self::used,
         self::promoter_wait_for_pay,
         self::promoter_paid,
+        self::promoter_self_paid,
         self::promoter_confirmed,
         self::api_reserved,
         self::api_confirmed,
@@ -104,6 +105,7 @@ class TicketStatus extends AbstractDictionary
         self::terminal_paid_single,
         self::partner_paid_single,
         self::promoter_paid,
+        self::promoter_self_paid,
         self::api_confirmed,
         self::yaga_confirmed
     ];
@@ -117,6 +119,7 @@ class TicketStatus extends AbstractDictionary
         self::terminal_paid_single,
         self::partner_paid_single,
         self::promoter_paid,
+        self::promoter_self_paid,
         self::api_confirmed,
         self::yaga_confirmed,
     ];
@@ -135,6 +138,7 @@ class TicketStatus extends AbstractDictionary
         self::api_confirmed,
         self::yaga_confirmed,
         self::promoter_paid,
+        self::promoter_self_paid,
         self::yaga_canceled,
         self::yaga_canceled_with_penalty,
         self::yaga_confirmed,
@@ -161,7 +165,8 @@ class TicketStatus extends AbstractDictionary
         self::partner_paid_single,
         self::used,
         self::api_confirmed,
-        self::promoter_paid
+        self::promoter_paid,
+        self::promoter_self_paid
     ];
 
     public const ticket_cancelled_statuses = [
