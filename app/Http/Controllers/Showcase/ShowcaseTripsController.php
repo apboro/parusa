@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Showcase;
 
+use App\Actions\GetNevaComboPriceAction;
 use App\Actions\GetNevaTripPriceAction;
+use App\Helpers\PriceConverter;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Http\Middleware\ExternalProtect;
@@ -221,8 +223,11 @@ class ShowcaseTripsController extends ApiController
 
         if ($trip->provider_id === Provider::neva_travel){
             $nevaRates = (new GetNevaTripPriceAction())->run($trip, true);
+            $nevaBackwardPrices = (new GetNevaComboPriceAction())->run($trip);
             foreach ($nevaRates as &$rate) {
-                $rate['backward_price'] = $rates->where('grade_id', $rate['grade_id'])->first()['backward_price'];
+                $rate['backward_price'] = PriceConverter::storeToPrice(collect($nevaBackwardPrices)->filter(function ($price) use ($rate) {
+                    return $price['grade_id'] == $rate['grade_id'];
+                })->first()['price']);
             }
         }
 
