@@ -235,15 +235,14 @@ class Ticket extends Model implements Statusable
         ]));
     }
 
-    public function saveCommissionsInShift(WorkShift $shift, int $commission, $opened = true): void
+    public function saveCommissionsInShift(WorkShift $shift, int $commission, $opened = true, $refund = false): void
     {
         if ($opened) {
             $shift->pay_commission = $shift->pay_commission + $commission;
-            $shift->sales_total = $shift->sales_total + $this->base_price;
         } else {
-            $shift->balance = $shift->balance - $commission;
-            $shift->sales_total = $shift->sales_total - $this->base_price;
+            $shift->balance = $shift->balance + $commission;
         }
+        $shift->sales_total = $refund ? $shift->sales_total - $this->base_price : $shift->sales_total + $this->base_price;
         Log::channel('promoters')->info('save commissions in shift id: '. $shift->id . ' commission: ' . $commission);
         $shift->save();
     }
@@ -331,10 +330,10 @@ class Ticket extends Model implements Statusable
         }
         if ($partner->type_id === PartnerType::promoter) {
             if ($openedShift = $partner->getOpenedShift()) {
-                $this->saveCommissionsInShift($openedShift, -$transaction->amount);
+                $this->saveCommissionsInShift($openedShift, -$transaction->amount, refund: true);
             } else {
                 $lastShift = $partner->getLastShift();
-                $this->saveCommissionsInShift($lastShift, $transaction->amount, false);
+                $this->saveCommissionsInShift($lastShift, -$transaction->amount, false, true);
             }
         }
 
