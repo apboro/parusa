@@ -90,12 +90,14 @@ class OrderStatus extends AbstractDictionary
         self::showcase_paid,
         self::showcase_partial_returned,
         self::promoter_paid,
+        self::promoter_self_paid,
         self::api_confirmed,
         self::yaga_confirmed
     ];
 
     public const partner_commission_pay_statuses = [
         self::partner_paid,
+        self::promoter_self_paid,
         self::partner_paid_by_link,
         self::terminal_paid,
         self::terminal_finishing,
@@ -117,6 +119,7 @@ class OrderStatus extends AbstractDictionary
 
     public const order_had_paid_statuses = [
         self::partner_paid,
+        self::promoter_self_paid,
         self::partner_paid_by_link,
         self::partner_returned,
         self::partner_partial_returned,
