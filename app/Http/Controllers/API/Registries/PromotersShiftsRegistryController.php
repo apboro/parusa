@@ -16,7 +16,8 @@ use Illuminate\Http\JsonResponse;
 class PromotersShiftsRegistryController extends ApiController
 {
     protected array $defaultFilters = [
-        'date' => null,
+        'date_from' => null,
+        'date_to' => null,
         'terminal_id' => null,
     ];
     protected array $rememberFilters = [
@@ -24,7 +25,8 @@ class PromotersShiftsRegistryController extends ApiController
 
     public function __construct()
     {
-        $this->defaultFilters['date'] = Carbon::now()->startOfDay()->format('Y-m-d\TH:i');
+        $this->defaultFilters['date_from'] = Carbon::now()->startOfMonth()->format('Y-m-d\TH:i');
+        $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d\TH:i');
     }
 
     protected string $rememberKey = CookieKeys::promoters_shifts_list;
@@ -38,7 +40,8 @@ class PromotersShiftsRegistryController extends ApiController
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
         $query = WorkShift::query()
             ->with(['promoter', 'tariff'])
-            ->whereDate('created_at', $filters['date']);
+            ->whereDate('created_at', '>=', $filters['date_from'])
+            ->whereDate('created_at', '<=', $filters['date_to']);
 
         if ($terminalId) {
             $query->where('terminal_id', $terminalId);
@@ -59,24 +62,25 @@ class PromotersShiftsRegistryController extends ApiController
             return [
                 'id' => $shift->promoter->id,
                 'name' => $shift->promoter->name,
-                'start_at' => $shift->start_at,
-                'end_at' => $shift->end_at,
+                'start_at' => $shift->start_at->translatedFormat('d M H:i'),
+                'end_at' => $shift->end_at?->translatedFormat('d M H:i'),
                 'pay_for_out' => $shift->tariff->pay_for_out,
                 'working_hours' => $shift->getWorkingHours(),
-                'tariff' => $shift->tariff->name,
+                'tariff' => $shift->tariff->commission,
                 'pay_per_hour' => $shift->tariff->pay_per_hour,
                 'pay_for_time' => $shift->getPayForTime(),
                 'sales_total' => $shift->sales_total,
                 'pay_commission' => $shift->pay_commission,
                 'pay_total' => $shift->getShiftTotalPay(),
                 'paid_out' => $shift->paid_out,
+                'balance' => $shift->balance,
             ];
         });
 
 
         return APIResponse::list(
             $workShifts,
-            ['ID', 'ФИО', 'Начало смены', 'Конец смены', 'За выход', 'Кол-во часов', 'Тариф', 'Почасовка', 'Оплата за время', 'Касса', '% от кассы', 'Всего начислено', 'Получено'],
+            ['ID', 'ФИО', 'Начало смены', 'Конец смены', 'За выход', 'Кол-во часов', 'Тариф', 'Касса', '% от кассы', 'Всего начислено', 'Получено', 'Долг'],
             $filters,
             $this->defaultFilters,
             [

@@ -2,6 +2,7 @@
 
 namespace App\LifePos;
 
+use App\Events\AstraMarineCancelOrderEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelCancelOrderEvent;
 use App\Helpers\Fiscal;
@@ -13,7 +14,6 @@ use App\Models\Payments\Payment;
 use App\Models\POS\Terminal;
 use App\Models\Positions\StaffPositionInfo;
 use App\Models\Tickets\Ticket;
-use App\NevaTravel\NevaOrder;
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Client;
@@ -147,6 +147,7 @@ class LifePosSync
             if ($isReturned) {
                 NevaTravelCancelOrderEvent::dispatch($order);
                 CityTourOrderPaidEvent::dispatch($order);
+                AstraMarineCancelOrderEvent::dispatch($order);
             }
         }
 

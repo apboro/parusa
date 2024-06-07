@@ -115,7 +115,7 @@
             </GuiContainer>
 
             <GuiContainer ml-20>
-                <GuiButton v-if="!is_replacement" @clicked="replaceTickets" :color="'red'">Оформить перенос рейса</GuiButton>
+                <GuiButton v-if="!is_replacement && canReplace" @clicked="replaceTickets" :color="'red'">Оформить перенос рейса</GuiButton>
                 <GuiButton v-if="is_replacement" @clicked="replaceTickets(true)">Отменить</GuiButton>
             </GuiContainer>
         </div>
@@ -204,6 +204,9 @@ export default {
                 return [{caption: 'Реестр броней', to: {name: 'reserves-registry'}}];
             }
             return [{caption: 'Реестр заказов', to: {name: 'orders-registry'}}];
+        },
+        canReplace(){
+            return this.info.data.tickets.filter(ticket => ticket.provider_id === 10 && ticket.isBackward).length === 0
         }
     },
 

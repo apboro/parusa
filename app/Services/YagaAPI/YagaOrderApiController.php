@@ -4,7 +4,12 @@ namespace App\Services\YagaAPI;
 
 use App\Actions\CreateOrderFromYaga;
 use App\Actions\CreateTicketsFromYaga;
+use App\Events\NevaTravelCancelOrderEvent;
+use App\Events\NevaTravelOrderPaidEvent;
+use App\Events\NewNevaTravelOrderEvent;
+use App\Helpers\PriceConverter;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
@@ -35,7 +40,9 @@ class YagaOrderApiController
             return response()->json('В запросе нет sessionId', 400);
         }
 
-        $trip = Trip::with(['excursion', 'excursion.ratesLists', 'tickets'])->where('id', $data['sessionId'])->first();
+        $trip = Trip::query()->activeScarletSails()
+            ->where('id', $data['sessionId'])
+            ->first();
 
         if (!$trip) {
             return response()->json('Рейс не найден', 400);
@@ -79,6 +86,7 @@ class YagaOrderApiController
         if (!empty($data['venueId']) && $trip->ship->id != $data['venueId']) {
             return response()->json('wrong venueID');
         }
+
         if (!empty($data['eventId']) && $trip->excursion->id != $data['eventId']) {
             return response()->json('wrong eventId');
         }
@@ -115,13 +123,17 @@ class YagaOrderApiController
             }
         }
 
-        $newTickets = (new CreateTicketsFromYaga($data, $trip, $rate))->execute();
+        DB::transaction(function () use ($trip, $data, &$order, $rate) {
+            $newTickets = (new CreateTicketsFromYaga($data, $trip, $rate))->execute();
 
-        if (empty($newTickets)) {
-            return response()->json('Не удалось оформить билеты');
-        }
+            if (empty($newTickets)) {
+                return response()->json('Не удалось оформить билеты');
+            }
 
-        $order = (new CreateOrderFromYaga($data, $newTickets))->execute();
+            $order = (new CreateOrderFromYaga($data, $newTickets))->execute();
+        });
+
+        NewNevaTravelOrderEvent::dispatch(Order::find($order['id']));
 
         return response()->json($order);
     }
@@ -161,25 +173,39 @@ class YagaOrderApiController
     {
         $order = Order::with(['status', 'tickets', 'tickets.trip'])->find($request->id);
 
-        if ($order->hasStatus(OrderStatus::yaga_confirmed)) {
-            foreach ($order->tickets as $ticket) {
-                if ($ticket->trip->start_at > now()->addMinutes($ticket->trip->cancellation_time)) {
+        if (!$request->cancelItems) {
+            if ($order->hasStatus(OrderStatus::yaga_confirmed)) {
+                foreach ($order->tickets as $ticket) {
                     $ticket->setStatus(TicketStatus::yaga_canceled);
+                }
+                $order->setStatus(OrderStatus::yaga_canceled);
+            }
+        } else {
+            foreach ($request->cancelItems as $item) {
+                $ticket = $order->tickets->find($item['ticketId']);
+                if (PriceConverter::priceToStore($ticket->base_price) > $item['refundedCost']['total']['value']) {
+                    $ticket->setStatus(TicketStatus::yaga_canceled_with_penalty);
+                    $ticket->additionalData()->updateOrCreate([
+                        'provider_id' => Provider::scarlet_sails,
+                        'penalty_sum' => PriceConverter::priceToStore($ticket->base_price) - $item['refundedCost']['total']['value']
+                    ]);
+                    $order->setStatus(OrderStatus::yaga_canceled_with_penalty);
                 } else {
-                    return response()->json(['message' => 'Срок для отмены заказа прошёл']);
+                    $ticket->setStatus(TicketStatus::yaga_canceled);
+                    $order->setStatus(OrderStatus::yaga_canceled);
                 }
             }
-            $order->setStatus(OrderStatus::yaga_canceled);
-        } else {
-            return response()->json(['message' => 'Неверный статус для отмены']);
         }
+
         $statusId = $order->status_id;
         $status = match ($statusId) {
             OrderStatus::yaga_confirmed => 'APPROVED',
             OrderStatus::yaga_reserved => 'RESERVED',
-            OrderStatus::yaga_canceled => 'CANCELLED',
+            OrderStatus::yaga_canceled, OrderStatus::yaga_canceled_with_penalty => 'CANCELLED',
             default => 'UNDEFINED_ORDER_STATUS'
         };
+
+        NevaTravelCancelOrderEvent::dispatch($order);
 
         return response()->json([
             "id" => $order->id,
@@ -210,6 +236,8 @@ class YagaOrderApiController
             default => 'UNDEFINED_ORDER_STATUS'
         };
 
+        NevaTravelCancelOrderEvent::dispatch($order);
+
         return response()->json([
             "id" => $order->id,
             "orderNumber" => $order->id,
@@ -234,13 +262,15 @@ class YagaOrderApiController
 
         try {
             DB::transaction(static function () use (&$order) {
-
                 $order->setStatus(OrderStatus::yaga_confirmed);
                 $order->tickets->each(fn(Ticket $ticket) => $ticket->setStatus(TicketStatus::yaga_confirmed));
+                $order->payCommissions();
             });
         } catch (Exception $e) {
             Log::channel('yaga')->error($e);
         }
+
+        NevaTravelOrderPaidEvent::dispatch($order);
 
         return response()->json(['id' => $order->id, 'orderNumber' => $order->id, 'status' => 'APPROVED', 'specificFields' => (object)[]]);
     }

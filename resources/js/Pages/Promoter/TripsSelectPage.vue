@@ -118,7 +118,7 @@
                     <div><span :style="{fontSize: '13px'}">{{ trip['start_date'] }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
-                    <div :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" @click="excursionInfo(trip['excursion_id'])"><b>{{ trip['excursion'] }}</b></div>
+                    <div :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'"><b>{{ trip['excursion'] }}</b></div>
                     <div><span :style="{fontSize: '13px'}">{{ trip['programs'] && trip['programs'].length ? trip['programs'].join(', ') : '' }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
@@ -128,7 +128,10 @@
                     {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})
                 </ListTableCell>
                 <ListTableCell>
-                    <table v-if="trip['rates'] && trip['rates'].length > 0"  class="inner-table">
+                    <div v-if="trip['trip_with_seats']">
+                        от {{ minimalTicketPrice(trip) }} руб.
+                    </div>
+                    <table v-else-if="trip['rates'] && trip['rates'].length > 0" class="inner-table">
                         <tr v-for="rate in trip['rates']">
                             <td class="pr-15 no-wrap">{{ rate['name'] }}</td>
                             <td class="no-wrap">{{ rate['value'] }} руб.</td>
@@ -213,6 +216,12 @@
               this.list.filters['excursion_id'] = null;
               this.list.filters['program_id'] = null;
             },
+            minimalTicketPrice(trip){
+                const minObject = trip.rates.reduce((min, current) => {
+                    return min.value < current.value ? min : current;
+                });
+                return minObject.value;
+            },
             dateChanged(value) {
                 if (value !== null) {
                     this.list.load();
@@ -222,10 +231,22 @@
                 this.$refs.date.addDays(increment);
             },
             addToOrder(trip) {
-                if (trip['ship_has_scheme'] && trip['seats'].length > 0) {
-                    this.$refs.select_scheme_popup.handle(trip);
+                if (trip['provider_id'] === 10) {
+                    axios.post('/api/trip/prices', {trip: trip})
+                        .then(response => trip['rates'] = response.data.data)
+                        .then(() => {
+                            if (trip['trip_with_seats'] && trip['seats'].length > 0) {
+                                this.$refs.select_scheme_popup.handle(trip);
+                            } else {
+                                this.$refs.select_popup.handle(trip);
+                            }
+                        })
                 } else {
-                    this.$refs.select_popup.handle(trip);
+                    if (trip['trip_with_seats'] && trip['seats'].length > 0) {
+                        this.$refs.select_scheme_popup.handle(trip);
+                    } else {
+                        this.$refs.select_popup.handle(trip);
+                    }
                 }
             },
             excursionInfo(excursion_id) {

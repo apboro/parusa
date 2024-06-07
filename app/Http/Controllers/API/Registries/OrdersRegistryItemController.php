@@ -63,9 +63,10 @@ class OrdersRegistryItemController extends ApiController
         if ($current->isStaffTerminal()) {
             $returnable = $order->hasStatus(OrderStatus::terminal_paid) || $order->hasStatus(OrderStatus::terminal_partial_returned);
         } else if ($current->isRepresentative()) {
-            $returnable = $order->hasStatus(OrderStatus::partner_paid) || $order->hasStatus(OrderStatus::partner_partial_returned);
+            $returnable = in_array($order->status_id, [OrderStatus::partner_paid, OrderStatus::api_confirmed, OrderStatus::partner_partial_returned]);
         } else if ($current->isStaffAdmin()) {
-            $returnable = $order->hasStatus(OrderStatus::showcase_paid) || $order->hasStatus(OrderStatus::showcase_partial_returned) || $order->hasStatus(OrderStatus::promoter_paid);
+            $returnable = in_array($order->status_id,[OrderStatus::showcase_paid,
+                    OrderStatus::showcase_partial_returned, OrderStatus::promoter_paid, OrderStatus::partner_paid_by_link]);
         } else {
             $returnable = false;
         }
@@ -113,6 +114,9 @@ class OrdersRegistryItemController extends ApiController
             'can_buy' => $current->isRepresentative() || $current->isStaffTerminal(),
             'can_return' => $current->isRepresentative() || $current->isStaffAdmin(), // terminal users can not return tickets from CRM yet -> || $current->isStaffTerminal(),
             'returnable' => $returnable,
+            'cant_partly_return' => $order->tickets->contains(function (Ticket $ticket) {
+               return $ticket->provider_id !== Provider::scarlet_sails;
+            }),
             'is_actual' => in_array($order->status_id, OrderStatus::order_returnable_statuses, true),
             'is_printable' => in_array($order->status_id, OrderStatus::order_printable_statuses, true)
                 && $order->tickets()->whereIn('status_id', TicketStatus::ticket_printable_statuses)->count() > 0,

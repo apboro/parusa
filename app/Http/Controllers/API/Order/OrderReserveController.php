@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Events\AstraMarineCancelOrderEvent;
 use App\Events\CityTourCancelOrderEvent;
 use App\Events\NevaTravelCancelOrderEvent;
 use App\Http\APIResponse;
@@ -56,6 +57,7 @@ class OrderReserveController extends ApiController
 
             NevaTravelCancelOrderEvent::dispatch($order);
             CityTourCancelOrderEvent::dispatch($order);
+            AstraMarineCancelOrderEvent::dispatch($order);
 
             foreach ($order->tickets as $ticket) {
                 $ticket->setStatus(TicketStatus::partner_reserve_canceled);

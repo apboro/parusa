@@ -30,14 +30,15 @@
                 </ListTableCell>
                 <ListTableCell :class="'w-15'">
                     <GuiButton v-if="!partner.open_shift" @click="openShift(partner)">открыть смену</GuiButton>
-                    <GuiValue v-else>Смена открыта <br>{{ formatDate(partner.open_shift.start_at) }}</GuiValue>
+                    <GuiValue v-else>
+                        Смена открыта <br>{{ partner.open_shift.start_at }}
+                        <p>На кассе № {{partner.open_shift.terminal_id}} ({{partner.open_shift.address}})</p>
+                    </GuiValue>
                 </ListTableCell>
             </ListTableRow>
         </ListTable>
 
         <GuiMessage v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
-
-        <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
 
     </LayoutPage>
 </template>
@@ -125,19 +126,6 @@ export default {
     },
 
     methods: {
-        formatDate(dateString) {
-            const parsedDate = new Date(dateString.replace(/-/g, '/'));
-            const options = {
-                weekday: 'short',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-            };
-
-            return new Intl.DateTimeFormat('ru-RU', options).format(parsedDate);
-        },
         commissionPercent(partner) {
             return partner['open_shift']['tariff']['commission'] + partner['open_shift']['commission_delta'];
         },

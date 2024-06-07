@@ -24,13 +24,17 @@ class OrderStatus extends AbstractDictionary
      */
 
     public const partner_reserve = 1;
+    public const partner_wait_for_pay = 2;
+    public const partner_paid_by_link = 3;
     public const partner_paid = 11;
     public const partner_returned = 21;
     public const partner_partial_returned = 22;
     public const partner_reserve_canceled = 23;
+
     public const promoter_wait_for_pay = 26;
     public const promoter_confirmed = 27;
     public const promoter_paid = 28;
+    public const promoter_self_paid = 24;
     public const promoter_canceled = 29;
 
     public const terminal_creating = 31;
@@ -57,12 +61,16 @@ class OrderStatus extends AbstractDictionary
     public const api_confirmed = 105;
     public const api_canceled = 110;
     public const api_returned = 115;
+
     public const yaga_reserved = 120;
     public const yaga_confirmed = 125;
     public const yaga_canceled = 130;
+    public const yaga_canceled_with_penalty = 135;
 
     public const order_returnable_statuses = [
+        self::promoter_self_paid,
         self::partner_paid,
+        self::partner_paid_by_link,
         self::partner_partial_returned,
         self::terminal_paid,
         self::terminal_partial_returned,
@@ -70,25 +78,29 @@ class OrderStatus extends AbstractDictionary
         self::showcase_paid,
         self::showcase_partial_returned,
         self::api_confirmed,
-        self::yaga_confirmed,
         self::promoter_paid
     ];
 
     public const order_printable_statuses = [
         self::partner_paid,
+        self::partner_paid_by_link,
         self::partner_partial_returned,
         self::terminal_paid,
         self::terminal_partial_returned,
         self::showcase_paid,
         self::showcase_partial_returned,
         self::promoter_paid,
+        self::promoter_self_paid,
         self::api_confirmed,
         self::yaga_confirmed
     ];
 
     public const partner_commission_pay_statuses = [
         self::partner_paid,
+        self::promoter_self_paid,
+        self::partner_paid_by_link,
         self::terminal_paid,
+        self::terminal_finishing,
         self::showcase_paid,
         self::promoter_paid,
         self::api_confirmed,
@@ -96,14 +108,19 @@ class OrderStatus extends AbstractDictionary
 
     ];
 
-    public const partial_returned_statuses = [
+    public const returned_statuses = [
         self::partner_partial_returned,
         self::terminal_partial_returned,
-        self::showcase_partial_returned
+        self::showcase_partial_returned,
+        self::partner_returned,
+        self::terminal_returned,
+        self::showcase_returned
     ];
 
     public const order_had_paid_statuses = [
         self::partner_paid,
+        self::promoter_self_paid,
+        self::partner_paid_by_link,
         self::partner_returned,
         self::partner_partial_returned,
         self::terminal_finishing,
@@ -117,9 +134,11 @@ class OrderStatus extends AbstractDictionary
         self::promoter_paid,
         self::api_confirmed,
         self::yaga_confirmed,
+        self::yaga_canceled_with_penalty,
     ];
 
     public const order_reserved_statuses = [
+        self::partner_wait_for_pay,
         self::partner_reserve,
     ];
 
@@ -132,6 +151,8 @@ class OrderStatus extends AbstractDictionary
     ];
 
     public const sberpay_statuses = [
+        self::partner_paid_by_link,
+        self::partner_wait_for_pay,
         self::showcase_creating,
         self::showcase_paid,
         self::showcase_confirmed,
@@ -144,5 +165,6 @@ class OrderStatus extends AbstractDictionary
         self::yaga_reserved,
         self::yaga_confirmed,
         self::yaga_canceled,
+        self::yaga_canceled_with_penalty,
     ];
 }

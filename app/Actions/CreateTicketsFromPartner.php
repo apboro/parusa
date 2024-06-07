@@ -33,6 +33,7 @@ class CreateTicketsFromPartner
 
                 $ticketStatus = match ($orderStatus) {
                     OrderStatus::partner_reserve => TicketStatus::partner_reserve,
+                    OrderStatus::partner_wait_for_pay => TicketStatus::partner_wait_for_pay,
                     OrderStatus::partner_paid => $ordering->trip->excursion->is_single_ticket ? TicketStatus::partner_paid_single : TicketStatus::partner_paid,
                     default => throw new WrongOrderStatusException(),
                 };

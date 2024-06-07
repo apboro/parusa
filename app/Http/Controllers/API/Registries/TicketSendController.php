@@ -9,9 +9,11 @@ use App\Models\Dictionaries\TicketStatus;
 use App\Models\Tickets\Ticket;
 use App\Models\User\Helpers\Currents;
 use App\Notifications\TicketNotification;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class TicketSendController extends ApiController
@@ -25,17 +27,18 @@ class TicketSendController extends ApiController
      */
     public function send(Request $request): JsonResponse
     {
-        $ticket = $this->ticket($request);
-
-        if ($ticket === null) {
-            return APIResponse::error('Билет не найден');
+        try {
+            $ticket = $this->ticket($request);
+            if ($ticket === null) {
+                return APIResponse::error('Билет не найден');
+            }
+            if ($ticket->order->email === null) {
+                return APIResponse::error('Не задан адрес получателя');
+            }
+            Notification::sendNow(new EmailReceiver($ticket->order->email, $ticket->order->name), new TicketNotification($ticket));
+        } catch (Exception $e) {
+            Log::channel('tickets_sending')->error($e->getMessage() . ' ' . $e->getFile() . ' ' . $e->getLine());
         }
-
-        if ($ticket->order->email === null) {
-            return APIResponse::error('Не задан адрес получателя');
-        }
-
-        Notification::sendNow(new EmailReceiver($ticket->order->email, $ticket->order->name), new TicketNotification($ticket));
 
         return APIResponse::success("Билет отправлен на почту {$ticket->order->email}");
     }

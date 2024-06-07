@@ -12,9 +12,9 @@
         <InputNumber :placeholder="'Введите сумму для выплаты'" v-model="sumToPay"/>
         <p v-if="sumToPay > totalToPay" style="color: red">Максимум {{ totalToPay }} руб.</p>
         <br>
-        <GuiText mb-10> На такси: </GuiText>
+        <GuiText mb-10> На такси:</GuiText>
         <InputNumber :placeholder="'Введите сумму'" v-model="payTaxi"/>
-
+        <p v-if="payTaxi > 500" style="color: red">Максимум 500 руб.</p>
     </PopUp>
 </template>
 
@@ -66,6 +66,8 @@ export default {
                 this.sumToPay = null;
                 this.payTaxi = null;
                 this.$toast.success(response.data['message']);
+            }).catch(error => {
+                this.$toast.error(error.response.data['message']);
             }).finally(() => {
                 this.$refs.popup.process(false);
             });

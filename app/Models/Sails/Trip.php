@@ -399,10 +399,10 @@ class Trip extends Model implements Statusable
             ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
             ->whereHas('excursion', fn($excursions) => $excursions->where('status_id', ExcursionStatus::active)->where('only_site', false))
-            ->where('provider_id', Provider::scarlet_sails)
+            ->whereIn('provider_id', [Provider::scarlet_sails, Provider::neva_travel])
             ->whereHas('excursion.ratesLists', function (Builder $query) {
-                $query->whereDate('start_at', '<=', now())
-                    ->whereDate('end_at', '>=', now());
+                $query->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
+                    ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)');
             });
     }
 

@@ -96,6 +96,18 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+            <LayoutFiltersItem :class="'w-25'" :title="'Поставщик'">
+                <DictionaryDropDown
+                    :dictionary="'providers'"
+                    :fresh="true"
+                    v-model="list.filters['provider_id']"
+                    :original="list.filters_original['provider_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
         </LayoutFilters>
 
 

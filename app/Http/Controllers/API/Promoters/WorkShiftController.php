@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Promoters;
 use App\Helpers\WorkShiftPdf;
 use App\Http\APIResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\Tariff;
 use App\Models\Dictionaries\WorkShiftStatus;
 use App\Models\Partner\Partner;
@@ -19,29 +20,33 @@ class WorkShiftController extends Controller
     public function open(Request $request)
     {
         $current = Currents::get($request);
-        if (!$current->terminalId())
+        if (!$current->terminalId()) {
             return APIResponse::error('Доступ запрещён');
-
-        $currentDateTime = Carbon::now();
-        $noonToday = Carbon::today()->setHour(11);
+        }
 
         $promoter = Partner::find($request->input('promoterId'));
 
-        $tariff = ($currentDateTime->lessThan($noonToday) && $promoter->profile->auto_change_tariff == 1) ? Tariff::find(1) : $promoter->tariff()->first();
+        $tariff = $promoter->tariff()->first();
 
         if (!$tariff) {
             return APIResponse::error('Для промоутера не задан тариф');
         }
-        $workShift = WorkShift::create([
-            'partner_id' => $promoter->id,
-            'tariff_id' => $tariff->id,
-            'terminal_id' => $current->terminalId(),
-            'start_at' => now(),
-            'status_id' => WorkShiftStatus::active,
-        ]);
+
+        $workShift = $promoter->getOpenedShift();
+        if (!$workShift) {
+            $workShift = WorkShift::create([
+                'partner_id' => $promoter->id,
+                'tariff_id' => $tariff->id,
+                'terminal_id' => $current->terminalId(),
+                'start_at' => now(),
+                'status_id' => WorkShiftStatus::active,
+                'balance' => $promoter->getLastShift()?->balance,
+            ]);
+        }
 
         return APIResponse::success('Смена открыта', ['start_at' => Carbon::parse($workShift->start_at)->format('Y-m-d H:i:s')]);
     }
+
     public function openSelfPay(Request $request)
     {
         $current = Currents::get($request);
@@ -57,13 +62,17 @@ class WorkShiftController extends Controller
             return APIResponse::error('Не задан тариф');
         }
 
-        $workShift = WorkShift::create([
-            'partner_id' => $promoter->id,
-            'tariff_id' => $tariff->id,
-            'terminal_id' => 1,
-            'start_at' => now(),
-            'status_id' => WorkShiftStatus::active,
-        ]);
+        $workShift = $promoter->getOpenedShift();
+        if (!$workShift) {
+            $workShift = WorkShift::create([
+                'partner_id' => $promoter->id,
+                'tariff_id' => $tariff->id,
+                'terminal_id' => 1,
+                'start_at' => now(),
+                'status_id' => WorkShiftStatus::active,
+                'balance' => $promoter->getLastShift()?->balance,
+            ]);
+        }
 
         return APIResponse::success('Смена открыта', ['start_at' => Carbon::parse($workShift->start_at)->format('Y-m-d H:i:s')]);
     }
@@ -76,13 +85,29 @@ class WorkShiftController extends Controller
             ->whereNull('end_at')
             ->first();
 
+        if (!$workShift) {
+            return APIResponse::error('Смена не найдена');
+        }
+
+        $current = Currents::get($request);
+
+        if ($current->terminalId() && $current->terminalId() !== $workShift->terminal_id)
+        {
+            $addr = $workShift->terminal->pier->info->address;
+            return APIResponse::error("Смена была открыта на другой кассе: № $workShift->terminal_id ($addr)");
+        }
+
+        if ($request->input('payTaxi') > 500 || (($workShift->taxi + $request->input('payTaxi')) > 500))  {
+            return APIResponse::error('Оплата такси не должна превышать 500 руб. за смену');
+        }
+
         $sumToPay = $request->input('sumToPay');
 
         $workShift->paid_out = $workShift->paid_out + $sumToPay;
-        $workShift->balance = $request->input('totalToPay') - $sumToPay;
+
         $workShift->taxi = $workShift->taxi + $request->input('payTaxi');
 
-        $this->save($workShift);
+        $workShift->save();
 
         return APIResponse::success('Выплата записана.');
     }
@@ -92,23 +117,35 @@ class WorkShiftController extends Controller
         $workShift = WorkShift::query()
             ->where('partner_id', $request->partnerId)
             ->whereNull('end_at')->first();
-        $this->save($workShift, true);
 
-        return APIResponse::success('Смена закрыта');
-    }
+        if (!$workShift) {
+            return APIResponse::error('Смена не найдена');
+        }
 
-    public function save(WorkShift $workShift, bool $close = false)
-    {
+        $partner = Partner::find($request->partnerId);
+
+        $hasUnclosedOrders = $partner->orders()->where('status_id', OrderStatus::terminal_finishing)->exists();
+
+        if ($hasUnclosedOrders){
+            return APIResponse::error('На кассе есть не закрытый заказ.');
+        }
+
+        $current = Currents::get($request);
+
+        if ($current->terminalId() && $current->terminalId() !== $workShift->terminal_id)
+        {
+            $addr = $workShift->terminal->pier->info->address;
+            return APIResponse::error("Смена была открыта на другой кассе: № $workShift->terminal_id ($addr)");
+        }
+
         $workShift->pay_for_time = $workShift->getPayForTime();
         $workShift->pay_for_out = $workShift->tariff->pay_for_out;
         $workShift->pay_total = $workShift->getShiftTotalPay();
-        $workShift->balance = ($workShift->pay_total + $workShift->promoter->getLastShift()?->balance) - $workShift->paid_out;
-
-        if ($close) {
-            $workShift->end_at = now();
-        }
-
+        $workShift->end_at = now();
+        $workShift->balance = ($workShift->pay_total + $workShift->balance) - $workShift->paid_out;
         $workShift->save();
+
+        return APIResponse::success('Смена закрыта');
     }
 
     public function print(Request $request): JsonResponse

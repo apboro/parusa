@@ -28,6 +28,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Rubium\RedSms\Facades\RedSms;
 
 class   PartnerMakeOrderController extends ApiEditController
 {
@@ -61,6 +62,10 @@ class   PartnerMakeOrderController extends ApiEditController
                 }
                 $status_id = OrderStatus::partner_reserve;
                 $successMessage = 'Бронь оформлена';
+                break;
+            case 'sms':
+                $status_id = OrderStatus::partner_wait_for_pay;
+                $successMessage = 'Ссылка на оплату отправлена';
                 break;
             case 'order':
                 $status_id = OrderStatus::partner_paid;
@@ -114,14 +119,27 @@ class   PartnerMakeOrderController extends ApiEditController
                 }
                 $order = (new CreateOrderFromPartner($current))->execute($tickets['tickets'], $data, $status_id);
 
+                if ($status_id === OrderStatus::partner_wait_for_pay) {
+                    try {
+                        $result = RedSms::send($order->phone, 'Оплатить - ' . config('app.url') . '/ext/order/payment/' . $order->hash);
+                        if (!$result){
+                            throw new Exception('Не удалось отправить СМС');
+                        }
+                    } catch (Exception $e){
+                        Log::error('SMS send error:' . $e->getMessage(). ' ' . $e->getFile() . ' ' .$e->getLine());
+                        throw new Exception('Не удалось отправить СМС');
+                    }
+                }
+
                 NewNevaTravelOrderEvent::dispatch($order);
-                NevaTravelOrderPaidEvent::dispatch($order);
-
                 NewCityTourOrderEvent::dispatch($order);
-                CityTourOrderPaidEvent::dispatch($order);
-
                 AstraMarineNewOrderEvent::dispatch($order);
-                AstraMarineOrderPaidEvent::dispatch($order);
+
+                if ($status_id === OrderStatus::partner_paid){
+                    NevaTravelOrderPaidEvent::dispatch($order);
+                    CityTourOrderPaidEvent::dispatch($order);
+                    AstraMarineOrderPaidEvent::dispatch($order);
+                }
 
                 // attach order_id to transaction
                 if ($status_id === OrderStatus::partner_paid) {
@@ -129,6 +147,7 @@ class   PartnerMakeOrderController extends ApiEditController
                 }
                 // pay commissions
                 $order->payCommissions();
+
                 // clear cart
                 PositionOrderingTicket::query()->where('position_id', $position->id)->delete();
             });

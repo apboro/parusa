@@ -21,19 +21,19 @@ use Illuminate\Support\Facades\Log;
 class ImportTrips
 {
     private Collection $seatCategories;
-    private Collection $ticketGrades;
+    private Collection $ships;
+    private Collection $piers;
 
     public function __construct(private $astraApiData = new AstraMarineRepository())
     {
         $this->seatCategories = SeatCategory::all();
         $this->ticketGrades = TicketGrade::all();
+        $this->ships = Ship::all();
+        $this->piers = Pier::all();
     }
 
     public function run(): void
     {
-
-        $ships = Ship::all();
-        $piers = Pier::all();
         $trips = Trip::query()
             ->with(['additionalData'])
             ->where('start_at', '>=', now())
@@ -52,7 +52,7 @@ class ImportTrips
             "getTicketType" => true,
             "seatsByGroups" => true,
             "dateFrom" => now()->toIso8601String(),
-            "dateTo" => now()->addDays(7)->toIso8601String()
+            "dateTo" => now()->addDays(14)->toIso8601String()
         ]);
 
         foreach ($astraTrips['body']['events'] as $astraTrip) {
@@ -61,7 +61,6 @@ class ImportTrips
             });
 
             if ($findExcursion) {
-                Log::info('import trips for: ' . $findExcursion->name, [$astraTrip]);
                 $findExcursion->use_seat_scheme = !$astraTrip['eventFreeSeating'];
                 if ($findExcursion->isDirty('use_seat_scheme')) {
                     $findExcursion->save();
@@ -72,9 +71,9 @@ class ImportTrips
                     $trip->start_at = Carbon::parse($astraTrip['eventDateTime']);
                     $trip->end_at = Carbon::parse($astraTrip['eventDateTime'])->addMinutes($astraTrip['eventDuration']);
                     $trip->excursion_id = $findExcursion->id;
-                    $trip->start_pier_id = $piers->firstWhere('external_id', $astraTrip['pierID'])->id ?? $this->importPier($astraTrip);
-                    $trip->end_pier_id = $piers->firstWhere('external_id', $astraTrip['endPointID'])->id ?? $this->importPier($astraTrip);
-                    $trip->ship_id = $ships->firstWhere('external_id', $astraTrip['venueID'])->id ?? $this->importShip($astraTrip);
+                    $trip->start_pier_id = $this->piers->firstWhere('external_id', $astraTrip['pierID'])->id ?? $this->importPier($astraTrip);
+                    $trip->end_pier_id = $this->piers->firstWhere('external_id', $astraTrip['endPointID'])->id ?? $this->importPier($astraTrip);
+                    $trip->ship_id = $this->ships->firstWhere('external_id', $astraTrip['venueID'])->id ?? $this->importShip($astraTrip);
                     $trip->cancellation_time = 60;
                     $trip->provider_id = Provider::astra_marine;
                 }
@@ -84,9 +83,13 @@ class ImportTrips
                 $trip->save();
 
                 $trip->additionalData()
-                    ->firstOrCreate([
+                    ->updateOrCreate([
                         'provider_trip_id' => $astraTrip['eventID'],
-                        'provider_id' => Provider::astra_marine]);
+                        'provider_id' => Provider::astra_marine,
+                    ],
+                        [
+                            'with_seats' => $astraTrip['eventFreeSeating'] == false
+                        ]);
                 $trip->loadMissing('ship');
 
                 if (config('app.env') == 'local' || $trip->wasRecentlyCreated) {
@@ -99,38 +102,44 @@ class ImportTrips
 
     public function importPier(array $data): int
     {
-        $pier = Pier::create([
-            'name' => rtrim(explode('|', $data['pierName'])[0] ?? $data['pierName']),
-            'external_id' => $data['pierID'],
-            'provider_id' => Provider::astra_marine,
-        ]);
+        $pier = Pier::firstOrCreate(
+            ['external_id' => $data['pierID'], 'provider_id' => Provider::astra_marine],
+            [
+                'name' => rtrim(explode('|', $data['pierName'])[0] ?? $data['pierName']),
+            ]);
 
         $info = $pier->info;
         $info->address = explode('|', $data['pierName'])[0] ?? $data['pierName'];
         $info->save();
+
+        if ($pier->wasRecentlyCreated) {
+            $this->piers->push($pier);
+        }
 
         return $pier->id;
     }
 
     public function importShip(array $data): int
     {
-        $ship = Ship::create([
-            'name' => ucfirst($data['venueName']),
-            'status_id' => 1,
-            'owner' => 'Astra Marine',
-            'capacity' => $data['availableSeats'],
-            'external_id' => $data['venueID'],
-            'provider_id' => Provider::astra_marine,
-            'ship_has_seats_scheme' => $data['eventFreeSeating'] == false,
-            'scheme_name' => strtolower($data['venueName'])
-        ]);
+        $ship = Ship::updateOrCreate(
+            ['external_id' => $data['venueID'], 'provider_id' => Provider::astra_marine],
+            ['name' => ucfirst($data['venueName']),
+                'status_id' => 1,
+                'owner' => 'Astra Marine',
+                'capacity' => $data['availableSeats'],
+                'ship_has_seats_scheme' => true,
+                'scheme_name' => strtolower($data['venueName']) === 'meteor' ? 'astra_meteor' : strtolower($data['venueName']),
+            ]);
+
+        if ($ship->wasRecentlyCreated) {
+            $this->ships->push($ship);
+        }
 
         return $ship->id;
     }
 
     public function importSeatCategories(array $astraTrip, int $shipId): void
     {
-        Log::info('import seatCategories for shipId: ' . $shipId, [$astraTrip]);
         foreach ($astraTrip['seatCategories'][0] as $seatCategory) {
             $categoryDetails = $this->astraApiData->getSeatsOnEvent([
                 'seatCategoryId' => $seatCategory['seatCategoryID'],
@@ -153,7 +162,10 @@ class ImportTrips
                 $seatCategory->provider_id = Provider::astra_marine;
                 $seatCategory->provider_category_id = $categoryDetails['seats'][0]['seatCategoryID'];
                 $seatCategory->save();
+
+                $this->seatCategories->push($seatCategory);
             }
+
             if (!$astraTrip['eventFreeSeating']) {
                 $this->importSeats($categoryDetails['seats'], $shipId);
             }
@@ -162,8 +174,6 @@ class ImportTrips
 
     public function importSeats(array $seats, int $shipId): void
     {
-        Log::info('import seats for shipId: ' . $shipId, [$seats]);
-        $this->seatCategories = SeatCategory::all();
         foreach ($seats as $seat) {
             Seat::updateOrCreate(
                 [
@@ -185,12 +195,12 @@ class ImportTrips
                     'eventID' => $astraTrip['eventID'],
                     'seatCategoryID' => $category['seatCategoryID'],
                     'ticketTypeID' => $type['ticketTypeID'],
-                    "paymentTypeID" => "000000001",
+                    "paymentTypeID" => "000000002",
                 ])['body'];
 
                 foreach ($seatsPrices['seatPrices'] as $price) {
                     $grade = TicketGrade::updateOrCreate([
-                        'name' => explode('|', $price['seatCategoryName'])[0] . ' ' . rtrim(explode('|', $price['priceTypeName'])[0]) .' '. $price['priceTypeDescription'],
+                        'name' => explode('|', $price['seatCategoryName'])[0] . ' ' . rtrim(explode('|', $price['priceTypeName'])[0]) . ' ' . $price['priceTypeDescription'],
                         'provider_id' => Provider::astra_marine,
                         'provider_ticket_type_id' => $type['ticketTypeID'],
                         'provider_category_id' => $category['seatCategoryID'],
@@ -214,22 +224,24 @@ class ImportTrips
     public function importPrice(Trip $trip, array $price, array $category): void
     {
         $rateList = $this->createOrUpdateRateList($trip);
-        TicketRate::updateOrCreate([
-            'rate_id' => $rateList->id,
-            'grade_id' => TicketGrade::query()
-                ->where('provider_price_type_id', $price['priceTypeID'])
-                ->where('provider_category_id', $category['seatCategoryID'])
-                ->first()?->id
-        ],
-            [
-                'base_price' => $price['priceTypeValueBoxOffice'],
-                'min_price' => $price['priceTypeValueBoxOffice'],
-                'max_price' => $price['priceTypeValueBoxOffice'],
-                'commission_type' => 'percents',
-                'commission_value' => 10,
-                'site_price' => $price['priceTypeValueBoxOffice'],
-                'partner_price' => $price['priceTypeValueBoxOffice']
-            ]);
+        if ($price['priceTypeValueRetail'] != 0) {
+            TicketRate::updateOrCreate([
+                'rate_id' => $rateList->id,
+                'grade_id' => TicketGrade::query()
+                    ->where('provider_price_type_id', $price['priceTypeID'])
+                    ->where('provider_category_id', $category['seatCategoryID'])
+                    ->first()?->id
+            ],
+                [
+                    'base_price' => $price['priceTypeValueRetail'],
+                    'min_price' => $price['priceTypeValueRetail'],
+                    'max_price' => $price['priceTypeValueRetail'],
+                    'commission_type' => 'percents',
+                    'commission_value' => 15,
+                    'site_price' => $price['priceTypeValueRetail'],
+                    'partner_price' => $price['priceTypeValueRetail']
+                ]);
+        }
     }
 
     public function createOrUpdateRateList($trip): TicketsRatesList

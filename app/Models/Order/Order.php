@@ -94,14 +94,20 @@ class Order extends Model implements Statusable, Typeable
     protected static function boot()
     {
         parent::boot();
-        static::creating(static function (self $approvement) {
+        static::creating(static function (self $order) {
 
-        $hash = Str::random(16);
+        $hash = Str::random();
 
         while (Order::where('hash', $hash)->exists()) {
-            $hash = Str::random(16);
+            $hash = Str::random();
         }
-            $approvement->hash = $hash;
+            $order->hash = $hash;
+        });
+
+        static::saving(function ($order) {
+            if (empty($order->email)){
+                $order->email = 'noreply@city-tours-spb.ru';
+            }
         });
     }
 

@@ -50,8 +50,13 @@ class OrderNotification extends Notification implements ShouldQueue
 
         $tickets = $this->order->tickets()->whereIn('status_id', TicketStatus::ticket_printable_statuses)->get();
 
-        foreach ($tickets as $ticket) {
-            $message->attachData(TicketPdf::a4($ticket), "Билет N{$ticket->id}.pdf");
+        if ($tickets->count() > 7) {
+            $message->line('Уважаемый клиент, пройдите по ссылке для скачивания билетов:');
+            $message->line(route('external.order.print', $this->order->hash));
+        } else {
+            foreach ($tickets as $ticket) {
+                $message->attachData(TicketPdf::a4($ticket), "Билет N{$ticket->id}.pdf");
+            }
         }
 
         return $message;

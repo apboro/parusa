@@ -4,6 +4,7 @@ use App\Http\Controllers\API\Trips\PromoterTripsSelectListController;
 use App\Http\Controllers\API\Trips\TripChainInfoController;
 use App\Http\Controllers\API\Trips\TripDeleteController;
 use App\Http\Controllers\API\Trips\TripEditController;
+use App\Http\Controllers\API\Trips\TripPricesController;
 use App\Http\Controllers\API\Trips\TripPropertiesController;
 use App\Http\Controllers\API\Trips\TripSeatsController;
 use App\Http\Controllers\API\Trips\TripsListController;
@@ -26,3 +27,4 @@ Route::post('/trips/select', [TripsSelectListController::class, 'list'])->middle
 Route::post('/trips/promoter/select', [PromoterTripsSelectListController::class, 'list'])->middleware(['allow:partner']);
 
 Route::post('/trip/seats', TripSeatsController::class)->middleware(['allow:staff_admin,staff_office_manager,staff_piers_manager,partner,staff_terminal']);
+Route::post('/trip/prices', TripPricesController::class)->middleware(['allow:staff_admin,staff_office_manager,staff_piers_manager,partner,staff_terminal']);

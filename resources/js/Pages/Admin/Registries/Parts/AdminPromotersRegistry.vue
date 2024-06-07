@@ -2,16 +2,14 @@
     <LoadingProgress :loading="list.is_loading">
         <LayoutFilters>
             <LayoutFiltersItem :title="'Период'">
-                <InputDate
+                <InputDateTime
                     v-model="list.filters['date_from']"
                     :original="list.filters_original['date_from']"
-                    :disabled="!!list.search"
                     @change="list.load()"
                 />
-                <InputDate
+                <InputDateTime
                     v-model="list.filters['date_to']"
                     :original="list.filters_original['date_to']"
-                    :disabled="!!list.search"
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
@@ -31,6 +29,11 @@
                 <LayoutFiltersItem :title="'Поиск промоутера по ID, ФИО'">
                     <InputSearch v-model="list.search" @change="list.load()"/>
                 </LayoutFiltersItem>
+                <div style="display: flex; align-items: flex-end; margin-left: 10px;">
+                    <GuiActionsMenu :title="null">
+                        <span class="link" @click="excelExport">Экспорт в Excel</span>
+                    </GuiActionsMenu>
+                </div>
             </template>
         </LayoutFilters>
 
@@ -44,31 +47,28 @@
                         {{promoter.name}}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['pay_for_out']  > 0 ? promoter['pay_for_out'] + ' руб.': '—' }}
-                    </ListTableCell>
-                    <ListTableCell>
                         {{promoter['total_hours']  > 0 ? promoter['total_hours'] : '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['pay_for_time']  > 0 ? promoter['pay_for_time'] + ' руб.': '—' }}
+                        {{promoter['sales_total']  > 0 ? promoter['sales_total'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['sales_total']  > 0 ? promoter['sales_total'] + ' руб.': '—' }}
+                        {{promoter['commission_scarlet_sails']  > 0 ? promoter['commission_scarlet_sails'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['commission']  > 0 ? promoter['commission'] + ' руб.': '—' }}
+                        {{promoter['commission_partners']  > 0 ? promoter['commission_partners'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
                         {{promoter['taxi']  > 0 ? promoter['taxi'] + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['total_to_pay_out']  > 0 ? promoter['total_to_pay_out'] + ' руб.': '—' }}
+                        {{promoter['total_to_pay_out']  > 0 ? promoter['total_to_pay_out'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['total_paid_out']  > 0 ? promoter['total_paid_out'] + ' руб.': '—' }}
+                        {{promoter['total_paid_out']  > 0 ? promoter['total_paid_out'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
                     <ListTableCell>
-                        {{promoter['balance']  > 0 ? promoter['balance'] + ' руб.': '—' }}
+                        {{promoter['balance']  > 0 ? promoter['balance'].toLocaleString() + ' руб.': '—' }}
                     </ListTableCell>
 
                 </ListTableRow>
@@ -77,6 +77,7 @@
         <GuiMessage border v-else-if="list.is_loaded">Ничего не найдено</GuiMessage>
         <GuiValue v-if="list.payload.total_to_pay_out" :title="'Всего начислено:'"> {{ list.payload.total_to_pay_out }} руб.</GuiValue>
         <GuiValue v-if="list.payload.total_paid_out" :title="'Всего выплачено:'"> {{ list.payload.total_paid_out }} руб.</GuiValue>
+        <GuiValue v-if="list.payload.total_earned" :title="'Кассы итого:'"> {{ list.payload.total_earned }} руб.</GuiValue>
 
         <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
     </LoadingProgress>
@@ -100,6 +101,8 @@ import InputDate from "@/Components/Inputs/InputDate";
 import IconExclamation from "../../../../Components/Icons/IconExclamation";
 import InputPhone from "@/Components/Inputs/InputPhone.vue";
 import list from "@/Core/List";
+import GuiActionsMenu from "@/Components/GUI/GuiActionsMenu.vue";
+import InputDateTime from "@/Components/Inputs/InputDateTime.vue";
 
 export default {
     props: {
@@ -107,6 +110,8 @@ export default {
     },
 
     components: {
+        InputDateTime,
+        GuiActionsMenu,
         InputPhone,
         IconExclamation,
         InputDate,
@@ -143,6 +148,43 @@ export default {
 
         highlightPartial(text) {
             return this.$highlight(String(text), String(this.list.search));
+        },
+        excelExport() {
+            this.$dialog.show('Экспортировать ' + this.list.pagination.total + ' записей в Excel?',
+                null,
+                'blue',
+                [
+                    this.$dialog.button('yes', 'Экспортировать', 'blue'),
+                    this.$dialog.button('no', 'Отмена', 'default'),
+                ]
+            )
+                .then(result => {
+                    if (result === 'yes') {
+                        this.is_exporting = true;
+                        let options = {
+                            filters: this.list.filters,
+                            search: this.list.search,
+                        }
+                        axios.post('/api/registries/promoters/export', options)
+                            .then(response => {
+                                let file = atob(response.data.data['file']);
+                                let byteNumbers = new Array(file.length);
+                                for (let i = 0; i < file.length; i++) {
+                                    byteNumbers[i] = file.charCodeAt(i);
+                                }
+                                let byteArray = new Uint8Array(byteNumbers);
+                                let blob = new Blob([byteArray], {type: response.data.data['type']});
+
+                                saveAs(blob, response.data.data['file_name'], {autoBom: true});
+                            })
+                            .catch(error => {
+                                this.$toast.error(error.response.data['message']);
+                            })
+                            .finally(() => {
+                                this.is_exporting = false;
+                            });
+                    }
+                });
         },
 
     },

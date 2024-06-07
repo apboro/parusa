@@ -12,7 +12,6 @@
             <FormCheckBox :form="form" :name="'only_site'" :hide-title="true"/>
             <FormCheckBox :form="form" :name="'use_seat_scheme'" :hide-title="true"/>
             <FormCheckBox :form="form" :name="'is_single_ticket'" :hide-title="true"/>
-<!--            <FormCheckBox v-model="showReverseExcursion" onchange="showReverseExcursion = !showReverseExcursion" :form="form" :name="'Билет туда и обратно'" :hide-title="true"/>-->
             <FormDictionary :form="form" :name="'reverse_excursion_id'" :dictionary="'excursions'" :search="true" :fresh="true" :placeholder="'Нет'" :has-null="true"/>
             <FormDictionary :form="form" :name="'excursion_type_id'" :dictionary="'excursion_types'" :fresh="true" :placeholder="'Нет'" :has-null="true"/>
 
@@ -23,6 +22,7 @@
             <FormText :form="form" :name="'announce'"/>
             <FormText :form="form" :name="'description'"/>
             <FormImages :form="form" :name="'trip_images'"/>
+            <FormString :form="form" name="disk_url"/>
         </GuiContainer>
 
         <GuiContainer mt-30>

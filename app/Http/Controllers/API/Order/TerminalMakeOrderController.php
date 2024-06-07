@@ -25,6 +25,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TerminalMakeOrderController extends ApiEditController
 {
@@ -116,7 +117,7 @@ class TerminalMakeOrderController extends ApiEditController
 
         try {
 
-            DB::transaction(static function () use (&$order, $tickets, $current, $data, $partnerId) {
+//            DB::transaction(static function () use (&$order, $tickets, $current, $data, $partnerId) {
                 // create order
 
                 $order = (new CreateOrderFromTerminal($current))->execute($tickets, $data, $partnerId);
@@ -138,8 +139,9 @@ class TerminalMakeOrderController extends ApiEditController
                 }
 
                 $order->setStatus(OrderStatus::terminal_wait_for_pay);
-            });
+//            });
         } catch (Exception $exception) {
+            Log::error('terminal make order error: '. $exception->getMessage().' '. $exception->getFile(). ' '. $exception->getLine());
             return APIResponse::error($exception->getMessage().' '. $exception->getFile(). ' '. $exception->getLine());
         }
 

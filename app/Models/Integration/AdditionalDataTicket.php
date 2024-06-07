@@ -2,6 +2,7 @@
 
 namespace App\Models\Integration;
 
+use App\Helpers\PriceConverter;
 use App\Models\Ships\Menu;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,4 +18,5 @@ class AdditionalDataTicket extends Model
     {
         return $this->hasOne(Menu::class, 'id', 'menu_id');
     }
+
 }

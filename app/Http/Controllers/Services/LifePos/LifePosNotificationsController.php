@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Services\LifePos;
 
+use App\Events\AstraMarineCancelOrderEvent;
 use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourCancelOrderEvent;
 use App\Events\CityTourOrderPaidEvent;
@@ -140,7 +141,7 @@ class LifePosNotificationsController extends ApiController
                     $order->tickets->map(function (Ticket $ticket) {
                         $ticket->setStatus(TicketStatus::terminal_finishing);
                     });
-                    Log::channel('neva')->info('terminal_finishing');
+
                     NevaTravelOrderPaidEvent::dispatch($order);
                     CityTourOrderPaidEvent::dispatch($order);
                     AstraMarineOrderPaidEvent::dispatch($order);
@@ -154,7 +155,6 @@ class LifePosNotificationsController extends ApiController
                     });
                     $order->setStatus(OrderStatus::terminal_paid);
 
-                    Log::channel('neva')->info('terminal_paid');
                     NevaTravelOrderPaidEvent::dispatch($order);
                     CityTourOrderPaidEvent::dispatch($order);
                     AstraMarineOrderPaidEvent::dispatch($order);
@@ -252,6 +252,7 @@ class LifePosNotificationsController extends ApiController
 
             NevaTravelCancelOrderEvent::dispatch($order);
             CityTourCancelOrderEvent::dispatch($order);
+            AstraMarineCancelOrderEvent::dispatch($order);
 
         } else {
             Log::channel('lifepos_payments')->error(sprintf('LifePos [SaleRefund:%s] - order not found', $input['guid']));

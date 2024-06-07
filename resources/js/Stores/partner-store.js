@@ -14,6 +14,7 @@ export default {
         can_reserve: false,
         order_amount: 0,
         new_news: 0,
+        last_order_status: null
     }),
 
     mutations: {
@@ -44,6 +45,9 @@ export default {
         setNewNews(state, value) {
             state.new_news = value;
         },
+        setLastOrderStatus(state, value) {
+            state.last_order_status = value;
+        },
     },
 
     actions: {
@@ -58,6 +62,7 @@ export default {
                         commit('setCanReserve', Boolean(response.data.data.can_reserve));
                         commit('setReserves', response.data.data.reserves);
                         commit('setOrderAmount', response.data.data.order_amount);
+                        commit('setLastOrderStatus', response.data.data.last_order_status);
                         commit('setTotal', response.data.data.total);
                         commit('setPartnerType', response.data.data.partner_type);
                         commit('setNewNews', response.data.data.new_news)

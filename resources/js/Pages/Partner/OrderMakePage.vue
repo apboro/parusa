@@ -95,16 +95,14 @@
                 <FormPhone :form="form" :name="'phone'" required/>
             </GuiContainer>
 
-            <GuiContainer w-30 mt-30 inline mobile-partner__button-top>
-                <GuiButton @click="back">Вернуться к подбору билетов</GuiButton>
+            <GuiContainer w-10 mt-30 inline mobile-partner__button-top>
+                <GuiButton style="font-size: 12px" @click="back">Вернуться к подбору билетов</GuiButton>
             </GuiContainer>
 
-            <GuiContainer w-70 mt-30 inline text-right mobile-partner__button-bottom>
-                <GuiButton @click="clear" :color="'red'" :disabled="!canOrder">Очистить</GuiButton>
-                <GuiButton @click="reserve" :color="'green'" :disabled="!canOrder" v-if="data.data['can_reserve']">
-                    Оформить бронь
-                </GuiButton>
-                <GuiButton @click="order" :color="'green'" :disabled="!canOrder">Оплатить с лицевого счёта</GuiButton>
+            <GuiContainer w-90 mt-30 inline text-right mobile-partner__button-bottom>
+                <GuiButton style="font-size: 12px" @click="clear" :color="'red'" :disabled="!canOrder">Очистить</GuiButton>
+                <GuiButton style="font-size: 12px" @click="sms" :color="'green'" v-if="form.values.phone != null && canOrder">Ссылка на оплату в СМС</GuiButton>
+                <GuiButton style="font-size: 12px" @click="order" :color="'green'" :disabled="!canOrder">Оплатить с лицевого счёта</GuiButton>
             </GuiContainer>
         </template>
         <template v-else>
@@ -217,6 +215,25 @@ export default {
     },
 
     methods: {
+        sms() {
+            if (!this.canOrder) {
+                return;
+            }
+            this.$dialog.show('Оформить заказ и отправить смс с ссылкой на оплату?', 'question', 'orange', [
+                this.$dialog.button('ok', 'Продолжить', 'orange'),
+                this.$dialog.button('cancel', 'Отмена'),
+            ], 'center')
+                .then((result) => {
+                    if (result === 'ok') {
+                        this.form.options['mode'] = 'sms';
+                        this.form.save()
+                            .then(() => {
+                                this.$store.dispatch('partner/refresh');
+                                this.$router.push({name: 'order-info', params: {id: this.form.payload['order_id']}});
+                            });
+                    }
+                });
+        },
         load(name = null, email = null, phone = null) {
             this.data.load()
                 .then(data => {

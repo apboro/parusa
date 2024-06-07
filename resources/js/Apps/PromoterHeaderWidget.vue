@@ -67,6 +67,7 @@ export default {
             axios.post('/api/promoters/open_work_shift')
                 .then(response => {
                     this.$toast.success(response.data['message']);
+                    this.$store.dispatch('promoter/refresh');
                     this.list.load()
                 })
                 .catch(error => {

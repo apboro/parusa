@@ -5,7 +5,8 @@ export default {
     data: () => ({
         selectedSeats: [],
         seatCategory: null,
-        categoryColors: {'Standard': '#ACD08F', 'VIP-8': '#318F82', 'VIP-5': '#318F82'},
+        categoryColors: {'Standard': '#ACD08F', 'VIP-8': '#318F82', 'VIP-5': '#318F82', 'Business Class': '#f6a68c',
+        'Comfort': '#179485', 'Comfort+': '#90B3DF'},
     }),
 
     methods: {
@@ -21,7 +22,6 @@ export default {
         },
 
         handleClick(seatNumber) {
-            console.log(seatNumber)
             let seat = this.seats.find(el => el.seat_number == seatNumber);
 
             if (!seat || (seat.status && [5, 10].includes(seat.status.id))) {
@@ -72,6 +72,8 @@ export default {
                     return 'class_business';
                 case 'Comfort':
                     return 'class_comfort';
+                case 'Comfort+':
+                    return 'class_comfort_plus';
             }
         },
         handleSelectSeat(data) {

@@ -141,8 +141,6 @@ class ProcessOrders extends Command
                         $ticket->setStatus(TicketStatus::showcase_canceled);
                     });
 
-                    NevaTravelCancelOrderEvent::dispatch($order);
-                    CityTourCancelOrderEvent::dispatch($order);
                     AstraMarineCancelOrderEvent::dispatch($order);
                 });
             } catch (Exception $exception) {

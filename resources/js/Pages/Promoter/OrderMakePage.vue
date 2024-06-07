@@ -104,7 +104,7 @@
                     обязательной.
                 </GuiHint>
                 <FormString :form="form" :name="'name'"/>
-                <FormString :form="form" :name="'email'" required/>
+                <FormString :form="form" :name="'email'"/>
                 <FormPhone :form="form" :name="'phone'" required/>
             </GuiContainer>
 
@@ -307,7 +307,7 @@ export default {
             if (!this.canOrder) {
                 return;
             }
-            this.$dialog.show('Оформить заказ и оплатить с лицевого счёта?', 'question', 'orange', [
+            this.$dialog.show('Оформить заказ?', 'question', 'orange', [
                 this.$dialog.button('ok', 'Продолжить', 'orange'),
                 this.$dialog.button('cancel', 'Отмена'),
             ], 'center')

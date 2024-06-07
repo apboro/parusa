@@ -73,7 +73,7 @@ class CreateOrderFromPromoter
             // calc base price if not set
             if ($ticket->base_price === null || $ticket->backward_price !== null) {
                 $ticket->base_price = $ticket->backward_price ?? $ticket->getCurrentPrice();
-            } else if ($ticket->base_price < $rate->min_price || $ticket->base_price > $rate->max_price) {
+            } else if ($ticket->base_price < $rate->min_price || $ticket->base_price > $rate->max_price && $ticket->trip->provider_id !== Provider::neva_travel) {
                 throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Неверно указана цена билета.');
             }
         }

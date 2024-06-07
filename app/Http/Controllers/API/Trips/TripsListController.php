@@ -26,6 +26,7 @@ class TripsListController extends ApiController
     protected array $defaultFilters = [
         'date' => null,
         'status_id' => null,
+        'provider_id' => null,
         'excursion_id' => null,
         'start_pier_id' => null,
         'excursion_type_id' => null
@@ -33,6 +34,7 @@ class TripsListController extends ApiController
 
     protected array $rememberFilters = [
         'status_id',
+        'provider_id',
         'excursion_id',
         'start_pier_id',
         'excursion_type_id',
@@ -83,6 +85,9 @@ class TripsListController extends ApiController
             }
             if (!empty($filters['status_id'])) {
                 $query->where('trips.status_id', $filters['status_id']);
+            }
+            if (!empty($filters['provider_id'])) {
+                $query->where('trips.provider_id', $filters['provider_id']);
             }
             if ($startPierId || !empty($filters['start_pier_id'])) {
                 $query->where('start_pier_id', $startPierId ?? $filters['start_pier_id']);

@@ -6,6 +6,7 @@ use App\Exceptions\Tickets\WrongOrderException;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Order\Order;
+use App\Models\Partner\Partner;
 use App\Models\Tickets\Ticket;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,7 @@ class CreateOrderFromYaga
         $order->email = $this->data['customer']['email'];
         $order->name = $this->data['customer']['firstName'] . $this->data['customer']['lastName'];
         $order->phone = $this->data['customer']['phone'];
+        $order->partner_id = Partner::where('name', 'Афиша')->first()?->id;
 
         $tickets = $this->tickets;
         try {

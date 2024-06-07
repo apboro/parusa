@@ -1,7 +1,7 @@
 <template>
     <LayoutPage :title="title" :loading="processing" :breadcrumbs="breadcrumbs">
         <GuiContainer w-70>
-            <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
+            <GuiValue :title="'Статус'">{{ order_status }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
             <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}</GuiValue>
             <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
             <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
@@ -27,7 +27,7 @@
                 </ListTableCell>
                 <ListTableCell>{{ ticket['grade'] }}</ListTableCell>
                 <ListTableCell>{{ ticket['base_price'] }} руб.</ListTableCell>
-                <ListTableCell>{{ ticket['status'] }}</ListTableCell>
+                <ListTableCell>{{ order_status }}</ListTableCell>
                 <ListTableCell v-if="isReserve" class="va-middle">
                     <div>
                         <GuiIconButton :title="'Удалить из брони'" :border="false" :color="'red'" @click="removeTicketFromReserve(ticket)">
@@ -66,7 +66,7 @@
                 <GuiContainer>
                     <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
                     <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning" @clicked="emailOrder">Отправить на почту</GuiButton>
-                    <GuiButton v-if="info.data['can_send_sms']" @clicked="sendSMS">Отправить по СМС</GuiButton>
+                    <GuiButton v-if="info.data['is_printable'] && info.data['can_send_sms']" @clicked="sendSMS">Отправить по СМС</GuiButton>
                     <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
                     <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
                     </GuiButton>
@@ -111,6 +111,7 @@ import FormString from "@/Components/Form/FormString";
 import FormPhone from "@/Components/Form/FormPhone";
 import IconEdit from "@/Components/Icons/IconEdit";
 import {saveAs} from "file-saver";
+import {mapState} from "vuex";
 
 export default {
     components: {
@@ -149,6 +150,7 @@ export default {
     }),
 
     computed: {
+        ...mapState('partner', {order_status: state => state.last_order_status}),
         title() {
             return (this.info.data['is_reserve'] ? 'Бронь' : 'Заказ') + ' №' + this.orderId;
         },

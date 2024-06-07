@@ -2,6 +2,9 @@
 
 namespace App\Models\Positions;
 
+use App\Actions\GetNevaTripPriceAction;
+use App\Helpers\PriceConverter;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Model;
 use App\Models\Sails\Trip;
@@ -10,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Arr;
 
 /**
  * @property int $id
@@ -50,6 +54,30 @@ class PositionOrderingTicket extends Model
     }
 
     /**
+     * Convert base_price from store value to real price.
+     *
+     * @param int|null $value
+     *
+     * @return  float
+     */
+    public function getBasePriceAttribute(?int $value): ?float
+    {
+        return $value !== null ? PriceConverter::storeToPrice($value) : null;
+    }
+
+    /**
+     * Convert base_price to store value.
+     *
+     * @param float|null $value
+     *
+     * @return  void
+     */
+    public function setBasePriceAttribute(?float $value): void
+    {
+        $this->attributes['base_price'] = $value !== null ? PriceConverter::priceToStore($value) : null;
+    }
+
+    /**
      * Grade of ticket.
      *
      * @return  BelongsTo
@@ -66,6 +94,9 @@ class PositionOrderingTicket extends Model
      */
     public function getPrice(): ?float
     {
+        if ($this->base_price){
+            return $this->base_price;
+        }
         $rateList = $this->trip->getRate();
 
         return $rateList?->rates()->where('grade_id', $this->grade_id)->value('base_price');
@@ -77,6 +108,10 @@ class PositionOrderingTicket extends Model
      */
     public function getPartnerPrice(): ?float
     {
+        if ($this->base_price){
+            return $this->base_price;
+        }
+
         $rateList = $this->trip->getRate();
 
         return $rateList?->rates()->where('grade_id', $this->grade_id)->value('partner_price');
@@ -84,6 +119,10 @@ class PositionOrderingTicket extends Model
 
     public function getBackwardPrice(): ?float
     {
+        if ($this->base_price){
+            return $this->base_price;
+        }
+
         $trip = $this->parentTicket->trip;
 
         $rateList = $trip->getRate();

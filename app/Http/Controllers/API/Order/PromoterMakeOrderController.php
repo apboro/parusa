@@ -55,7 +55,7 @@ class PromoterMakeOrderController extends ApiEditController
             return APIResponse::error('Нельзя оформить заказ без билетов.');
         }
 
-        $rules = ['email' => 'email|required', 'phone' => 'required'];
+        $rules = ['email' => 'nullable|email', 'phone' => 'required'];
         $titles = ['email' => 'Email', 'phone' => 'Телефон'];
         for ($i = 0; $i < $count; $i++) {
             $rules["tickets.$i.quantity"] = 'nullable|integer|min:0|bail';

@@ -102,9 +102,7 @@ class CheckoutController extends ApiController
         $validThrough = $ts->clone()->addMinutes(config('showcase.showcase_order_lifetime'));
         $now = Carbon::now();
 
-        if ($order->hasStatus(OrderStatus::showcase_creating)
-            || $order->hasStatus(OrderStatus::showcase_wait_for_pay)
-            || $order->hasStatus(OrderStatus::promoter_wait_for_pay)) {
+        if (in_array($order->status_id, OrderStatus::sberpay_statuses)) {
             if ($validThrough < $now) {
                 return APIResponse::error('Время, отведенное на оплату заказа, закончилось. Заказ расформирован.', [
                     'back_link' => $container['ref'] ?? null,
@@ -162,12 +160,6 @@ class CheckoutController extends ApiController
         ])->withCookie(cookie(self::COOKIE_NAME, json_encode($container, JSON_THROW_ON_ERROR)));
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return JsonResponse
-     * @throws JsonException
-     */
     protected function handleResponse(Request $request): JsonResponse
     {
         $secret = $request->input('order');
@@ -193,85 +185,44 @@ class CheckoutController extends ApiController
             return APIResponse::error('Заказ не был корректно передан в оплату.');
         }
 
-        // check order status
-        $isProduction = config('sber.sber_acquiring_production');
-        $connection = new Connection([
-            'token' => config('sber.sber_acquiring_token'),
-            'userName' => config('sber.sber_acquiring_user'),
-            'password' => config('sber.sber_acquiring_password'),
-        ], new CurlClient(), $isProduction);
-        $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
-        $sber = new Sber($connection, $options);
+        $client = new \YooKassa\Client();
+        $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
 
+        $paymentId = $order->external_id;
         try {
-            $response = $sber->getOrderStatus($order->external_id);
+            $response = $client->getPaymentInfo($paymentId);
         } catch (Exception $exception) {
-            Log::channel('sber_payments')->error(sprintf('Order [%s] get status client error: %s', $order->id, $exception->getMessage()));
+            Log::channel('youkassa')->error(sprintf('Order [%s] get status client error: %s', $order->id, $exception->getMessage()));
             return APIResponse::error($exception->getMessage());
         }
 
-        if (!$response->isSuccess()) {
-            Log::channel('sber_payments')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->errorMessage()));
-            return APIResponse::error($response->errorMessage());
-        }
-
-        if (!\App\SberbankAcquiring\OrderStatus::isDeposited($response['orderStatus'] ?? 0)) {
-            // perform paying error handling
-            $error = !empty($response['actionCodeDescription']) ? $response['actionCodeDescription'] : 'Оплата не прошла';
-            Log::channel('sber_payments')->info(sprintf('Order [%s] payment unsuccessful: %s', $order->id, $error));
-
-            return APIResponse::error($error, [$response->all()]);
+        if ($response['status'] !== 'succeeded') {
+            Log::channel('youkassa')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->getStatus()));
+            return APIResponse::error('Заказ не оплачен. ' . $response->getStatus());
         }
 
         // set order status
-        if ($order->status_id === OrderStatus::showcase_wait_for_pay || $order->status_id === OrderStatus::promoter_wait_for_pay) {
-            $newOrderStatus = $order->type_id === OrderType::promoter_sale ? OrderStatus::promoter_confirmed : OrderStatus::showcase_confirmed;
+        if (in_array($order->status_id, [OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::promoter_wait_for_pay, OrderStatus::partner_wait_for_pay])) {
+
+            $newOrderStatus = match ($order->type_id) {
+                OrderType::promoter_sale => OrderStatus::promoter_confirmed,
+                OrderType::partner_sale => OrderStatus::partner_paid_by_link,
+                default => OrderStatus::showcase_confirmed,
+            };
+
             $order->setStatus($newOrderStatus);
-            Log::channel('sber_payments')->info(sprintf('Order [%s] payment confirmed', $order->id));
+            Log::channel('youkassa')->info(sprintf('Order [%s] payment confirmed', $order->id));
 
             // add payment
             $payment = new Payment();
-            $payment->gate = 'sber';
+            $payment->gate = 'youkassa';
             $payment->order_id = $order->id;
             $payment->status_id = PaymentStatus::sale;
             $payment->fiscal = '';
-            $payment->total = $response['amount'] / 100 ?? null;
-            $payment->by_card = $response['amount'] / 100 ?? null;
+            $payment->total = $response['amount']['value'] ?? null;
+            $payment->by_card = $response['amount']['value'] ?? null;
             $payment->by_cash = 0;
             $payment->save();
-
-            $existingCookieHash = $request->cookie('qrCodeHash');
-
-            try {
-                if ($existingCookieHash) {
-                    /** @var QrCode|null $qrCode */
-                    $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
-                    if ($qrCode) {
-                        $order->partner_id = $qrCode->partner_id;
-                        $order->type_id = OrderType::qr_code;
-                        $order->save();
-                        StatisticQrCodes::addPayment($existingCookieHash);
-                    }
-                }
-            } catch (Exception $e) {
-                Log::channel('sber_payments')->error('Error with qr statistics: ' . $e->getMessage());
-            }
-
-            $referralCookie = $request->cookie('referralLink');
-
-            try {
-                if ($referralCookie) {
-                    /**@var Partner|null $partner */
-                    $partner = Partner::query()->where('id', $referralCookie)->first();
-                    if ($partner) {
-                        $order->partner_id = $partner->id;
-                        $order->type_id = OrderType::referral_link;
-                        $order->save();
-                    }
-                }
-            } catch (Exception $e) {
-                Log::channel('sber_payments')->error('Error with referral statistics: ' . $e->getMessage());
-            }
 
             // Make job to do in background:
             // make fiscal
@@ -279,8 +230,6 @@ class CheckoutController extends ApiController
             // pay commission
             // update order status
             ProcessShowcaseConfirmedOrder::dispatch($order->id);
-//            Log::info('Request in checkout controller', [$request]);
-
         }
 
         $orderSecret = json_encode([
@@ -296,9 +245,9 @@ class CheckoutController extends ApiController
         $backLink = $container['ref'] ?? config('showcase.showcase_ap_page');
         $query = parse_url($backLink, PHP_URL_QUERY);
         if ($query) {
-            $backLink .= '&status=finished&secret='.$secret;
+            $backLink .= '&status=finished&secret=' . $secret;
         } else {
-            $backLink .= '?status=finished&secret='.$secret;
+            $backLink .= '?status=finished&secret=' . $secret;
         }
 
         return APIResponse::success('Заказ оплачен. Высылаем чек и билеты на электронную почту.', [
@@ -349,7 +298,7 @@ class CheckoutController extends ApiController
             )
             ->where('id', $id)
             ->whereIn('status_id', array_merge(OrderStatus::sberpay_statuses, [OrderStatus::showcase_canceled]))
-            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site])
+            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site, OrderType::referral_link, OrderType::partner_sale])
             ->first();
 
         return $order;

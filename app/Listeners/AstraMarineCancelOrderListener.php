@@ -16,9 +16,7 @@ class AstraMarineCancelOrderListener
     public function handle(AstraMarineCancelOrderEvent $event): void
     {
         if ($event->order->tickets()->where('provider_id', Provider::astra_marine)->first()) {
-            if (in_array($event->order->status_id, OrderStatus::order_printable_statuses)) {
-                (new AstraMarineOrder($event->order))->cancel();
-            }
+            (new AstraMarineOrder($event->order))->cancel();
         }
     }
 }

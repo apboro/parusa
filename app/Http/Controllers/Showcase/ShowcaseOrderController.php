@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Showcase;
 
 use App\Actions\CreateOrderFromShowcase;
+use App\Actions\GetNevaTripPriceAction;
 use App\Events\AstraMarineNewOrderEvent;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
@@ -15,6 +16,7 @@ use App\Http\Middleware\ExternalProtect;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\SeatStatus;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
@@ -58,6 +60,10 @@ class ShowcaseOrderController extends ApiEditController
             return response()->json(['message' => 'Ошибка сессии.'], 400);
         }
 
+        if (!$request->data['email']){
+            return APIResponse::error('Не указан email');
+        }
+
         list($user, $domain) = explode('@', $request->data['email']);
         if (!checkdnsrr($domain, 'MX')) {
             return APIResponse::error('Указан несуществующий email');
@@ -90,7 +96,7 @@ class ShowcaseOrderController extends ApiEditController
                     ->whereHas('rates', function (Builder $query) use ($isPartnerSite) {
                         $query->where('grade_id', '!=', TicketGrade::guide);
                         if ($isPartnerSite) {
-                            $query->where('site_price', '>', 0);
+                            $query->where('partner_price', '>', 0);
                         } else {
                             $query->where('base_price', '>', 0);
                         }
@@ -109,7 +115,7 @@ class ShowcaseOrderController extends ApiEditController
 
         $flat = $request->input('data');
         $data = Arr::undot($flat);
-        if (!$trip->ship->ship_has_seats_scheme) {
+        if (!$trip->additionalData?->with_seats) {
             $tickets = $this->createTickets($data, $trip, $backwardTrip, $isPartnerSite);
         } else {
             $tickets = $this->createTicketsWithScheme($data, $request, $trip);
@@ -243,6 +249,10 @@ class ShowcaseOrderController extends ApiEditController
             throw new NoTicketsForTripException();
         }
 
+        if ($trip->provider_id === Provider::neva_travel){
+            $nevaRates = (new GetNevaTripPriceAction())->run($trip, true);
+        }
+
         $tickets = [];
         $backwardTickets = [];
         foreach ($data['rate'] as $gradeId => $grade) {
@@ -253,12 +263,17 @@ class ShowcaseOrderController extends ApiEditController
                 if ($rate === null) {
                     throw new NoTicketsForTripException();
                 }
+                if ($trip->provider_id === Provider::neva_travel){
+                    $nevaPrice = collect($nevaRates ?? [])->where('grade_id', $rate->grade_id)->first()['base_price'];
+                }
+
+
                 for ($i = 1; $i <= $grade['quantity']; $i++) {
                     $ticket = new Ticket([
                         'trip_id' => $trip->id,
                         'grade_id' => $gradeId,
                         'status_id' => TicketStatus::showcase_creating,
-                        'base_price' => $isPartnerSite ? $rate->base_price : $rate->site_price,
+                        'base_price' => $nevaPrice ?? ($isPartnerSite ? $rate->partner_price : $rate->site_price) ?? $rate->base_price,
                         'provider_id' => $trip->provider_id,
                     ]);
                     if ($backwardTrip) {

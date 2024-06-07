@@ -154,7 +154,7 @@ class TripsSelectListController extends ApiController
                 'pier' => $trip->startPier->name,
                 'ship' => $trip->ship->name,
                 'capacity' => $trip->ship->capacity,
-                'ship_has_scheme' => $trip->ship->ship_has_seats_scheme,
+                'trip_with_seats' => $trip->additionalData?->with_seats,
                 'excursion_use_seat_scheme' => $trip->excursion->use_seat_scheme,
                 'shipId' => $trip->ship->id,
                 'scheme_name' => $trip->ship->scheme_name,
@@ -171,6 +171,7 @@ class TripsSelectListController extends ApiController
                 'chained' => $trip->getAttribute('chains_count') > 0,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
+                'provider_id' => $trip->provider_id,
                 'stops' => StopResource::collection($trip->stops),
             ];
         });

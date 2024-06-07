@@ -136,7 +136,8 @@
                                                         v-html="highlight(ticket['buyer_phone'])"/></div>
             </ListTableCell>
             <ListTableCell>
-                {{ ticket['status'] }}
+                {{ ticket['status'] }}<br>
+                {{ ticket['status'] === 'Использован' ? ticket['last_changed_at'] : null }}
             </ListTableCell>
             <ListTableCell>
                 <span v-if="ticket['return_up_to'] === null">—</span>
