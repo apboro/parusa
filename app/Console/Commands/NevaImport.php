@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\NevaTravel\ImportCombos;
 use App\Services\NevaTravel\ImportPiers;
 use App\Services\NevaTravel\ImportPrograms;
 use App\Services\NevaTravel\ImportProgramsPrices;
@@ -52,6 +53,9 @@ class NevaImport extends Command
 
         (new ImportProgramsPrices())->run();
         $this->info('Prices imported');
+
+        (new ImportCombos())->run();
+        $this->info('Combos imported');
 
         $endDate = Carbon::now()->setDay(1)->month(12);
         (new ImportTrips($endDate))->run();

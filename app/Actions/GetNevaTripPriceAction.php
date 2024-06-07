@@ -32,7 +32,8 @@ class GetNevaTripPriceAction
                             'id' => $grade->id,
                             'name' => $grade->name,
                             'preferential' => false,
-                            'value' => $price['full_price'] / 100 ?? null
+                            'value' => $price['full_price'] / 100 ?? null,
+                            'external_grade_name' => $grade->external_grade_name,
                         ];
                     }
             }
