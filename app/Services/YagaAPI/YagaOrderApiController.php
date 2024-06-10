@@ -48,13 +48,13 @@ class YagaOrderApiController
             return response()->json('Рейс не найден', 400);
         }
 
-        if (!empty($data['venueId']) && $trip->ship->id != $data['venueId']) {
+        if (!empty($data['venueId']) && $trip->start_pier_id != $data['venueId']) {
             return response()->json();
         }
         if (!empty($data['eventId']) && $trip->excursion->id != $data['eventId']) {
             return response()->json();
         }
-        if (!empty($data['hallId']) && $trip->ship->id != $data['hallId']) {
+        if (!empty($data['hallId']) && $trip->start_pier_id != $data['hallId']) {
             return response()->json();
         }
         if (!empty($data['sessionTime']) && $trip->start_at->timestamp != $data['sessionTime']) {
@@ -83,14 +83,14 @@ class YagaOrderApiController
             return response()->json('Рейс не найден');
         }
 
-        if (!empty($data['venueId']) && $trip->ship->id != $data['venueId']) {
+        if (!empty($data['venueId']) && $trip->start_pier_id != $data['venueId']) {
             return response()->json('wrong venueID');
         }
 
         if (!empty($data['eventId']) && $trip->excursion->id != $data['eventId']) {
             return response()->json('wrong eventId');
         }
-        if (!empty($data['hallId']) && $trip->ship->id != $data['hallId']) {
+        if (!empty($data['hallId']) && $trip->start_pier_id != $data['hallId']) {
             return response()->json('wrong hallId');
         }
 

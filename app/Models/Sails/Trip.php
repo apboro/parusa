@@ -387,14 +387,14 @@ class Trip extends Model implements Statusable
         return $seatsGradesQuery->get();
     }
 
-    public function provider()
+    public function provider(): HasOne
     {
         return $this->hasOne(Provider::class, 'id', 'provider_id');
     }
 
-    public function scopeActiveScarletSails(Builder $query)
+    public function scopeActiveScarletSails(Builder $query): Builder
     {
-        return $query->with(['excursion', 'excursion.info', 'ship', 'provider', 'excursion.ratesLists', 'tickets', 'excursion.provider'])
+        return $query->with(['excursion', 'excursion.info', 'ship', 'provider', 'excursion.ratesLists', 'tickets', 'excursion.provider', 'startPier', 'startPier.info'])
             ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
             ->whereHas('excursion', fn($excursions) => $excursions->where('status_id', ExcursionStatus::active)->where('only_site', false))
