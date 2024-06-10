@@ -21,7 +21,6 @@
                         :dictionary="'piers'"
                         :fresh="true"
                         :search="true"
-                        @change="startPierChanged(index)"
                     />
                     <FormDateTime
                         :form="form"

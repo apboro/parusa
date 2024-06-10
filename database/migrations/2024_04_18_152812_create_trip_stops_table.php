@@ -18,11 +18,13 @@ class CreateTripStopsTable extends Migration
             $table->unsignedInteger('trip_id');
             $table->unsignedSmallInteger('stop_pier_id');
             $table->dateTime('stop_at')->nullable();
-            $table->dateTime('start_at');
+            $table->dateTime('start_at')->nullable();
             $table->unsignedInteger('terminal_price_delta');
             $table->unsignedInteger('partner_price_delta');
             $table->unsignedInteger('site_price_delta');
             $table->timestamps();
+
+            $table->foreign('trip_id')->references('id')->on('trips')->onDelete('cascade');
         });
     }
 

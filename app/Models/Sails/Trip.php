@@ -388,7 +388,7 @@ class Trip extends Model implements Statusable
         return $seatsGradesQuery->get();
     }
 
-    public function provider()
+    public function provider(): HasOne
     {
         return $this->hasOne(Provider::class, 'id', 'provider_id');
     }
@@ -406,7 +406,7 @@ class Trip extends Model implements Statusable
             });
     }
 
-    public function stops()
+    public function stops(): HasMany
     {
         return $this->hasMany(TripStop::class, 'trip_id', 'id');
     }

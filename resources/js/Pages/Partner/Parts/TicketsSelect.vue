@@ -9,6 +9,19 @@
            ]"
            ref="popup"
     >
+
+        <FormDropdown v-if="trip.stops.length > 0"
+                      :title="'Выберите причал'"
+                      :name="'pier_id'"
+                      :form="form"
+                      :identifier="'id'"
+                      :show="'name'"
+                      :placeholder="'Нет'"
+                      :fresh="true"
+                      :options="stops"
+                      @change="handleChangePier"
+        />
+
         <table class="tickets-select-table">
             <thead>
             <tr>
@@ -30,11 +43,14 @@
                 </td>
                 <td>
                     <span class="tickets-select-table__mobile-title">Количество</span>
-                    <FormNumber :form="form" :name="'tickets.' + key + '.quantity'" :quantity="true" :readonly=true :hide-title="true" :min="0"/>
+                    <FormNumber :form="form" :name="'tickets.' + key + '.quantity'" :quantity="true" :readonly=true
+                                :hide-title="true" :min="0"/>
                 </td>
                 <td class="pl-10 pt-15">
                     <span class="tickets-select-table__mobile-title">Стоимость</span>
-                    {{ multiply(form.values['tickets.' + key + '.base_price'], form.values['tickets.' + key + '.quantity']) }} руб.
+                    {{
+                        multiply(form.values['tickets.' + key + '.base_price'], form.values['tickets.' + key + '.quantity'])
+                    }} руб.
                 </td>
             </tr>
             <tr>
@@ -55,9 +71,13 @@
 import form from "@/Core/Form";
 import FormNumber from "@/Components/Form/FormNumber";
 import PopUp from "@/Components/PopUp";
+import RadioSelect from "@/Components/Inputs/Helpers/RadioSelect.vue";
+import FormDropdown from "@/Components/Form/FormDropdown.vue";
 
 export default {
     components: {
+        FormDropdown,
+        RadioSelect,
         PopUp,
         FormNumber,
     },
@@ -66,6 +86,7 @@ export default {
         form: form(null, '/api/cart/partner/add'),
         tripId: null,
         iterator: [],
+        trip: null,
     }),
 
     computed: {
@@ -82,6 +103,9 @@ export default {
                 count += this.form.values['tickets.' + key + '.quantity'];
             });
             return count;
+        },
+        stops() {
+            return this.trip.stops.map(stop => ({id: stop.pier.id, name: stop.pier.name}))
         }
     },
 
@@ -92,6 +116,22 @@ export default {
     methods: {
         multiply(a, b) {
             return Math.ceil(a * b * 100) / 100;
+        },
+
+        handleChangePier() {
+            let index = 0;
+            this.trip['rates'].map(grade => {
+                this.form.set('tickets.' + index + '.base_price', Number(grade['value']), null);
+                index++;
+            });
+
+            for (let i = 0; i < this.iterator.length; i++) {
+                let currentPrice = this.form.values['tickets.' + i + '.base_price'];
+
+                let price_delta = currentPrice * this.trip.stops.find(stop => stop.pier.id === this.form.values.pier_id)['partner_price'] / 100;
+
+                this.form.values['tickets.' + i + '.base_price'] = currentPrice - price_delta;
+            }
         },
 
         handle(trip) {
@@ -107,6 +147,10 @@ export default {
                 this.iterator.push(index);
                 index++;
             })
+            if (trip['stops'].length > 0) {
+                this.form.set('pier_id', trip['stops'][0]['pier']['id']);
+            }
+            this.trip = trip;
             this.form.load();
             this.$refs.popup.show();
         },

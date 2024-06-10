@@ -153,8 +153,9 @@ class TripEditController extends ApiEditController
         if (!$trip->exists) {
             $trip = $this->fillTrip($trip, $data, Carbon::parse($data['start_at']), Carbon::parse($data['end_at']));
             $trip->save();
-            if (!empty($request->middle_piers)){
+            if (!empty($request->middle_piers)) {
                 $this->addStopsFromRequest($request->middle_piers, $trip->id, $data);
+                $this->addTripStartPierAsStop($trip);
             }
 
             $message = 'Рейс добавлен';
@@ -309,7 +310,9 @@ class TripEditController extends ApiEditController
                 $newTrip->end_at = $newTrip->start_at->clone()->addMinutes($duration);
                 $newTrip->save();
                 $tripIds[] = $newTrip->id;
-                $this->addStopsInChain($stops, $newTrip);
+                if ($stops->isNotEmpty()) {
+                    $this->addStopsInChain($stops, $newTrip);
+                }
             }
         }
 
@@ -348,26 +351,38 @@ class TripEditController extends ApiEditController
 
     private function addStopsFromRequest(array $stops, int $tripId, $data)
     {
-        foreach ($stops as $stopIndex){
-            $stopIndex +=1;
+        foreach ($stops as $stopIndex) {
+            $stopIndex += 1;
             TripStop::create([
                 'trip_id' => $tripId,
-                'stop_pier_id' => $data['middle_pier_id_'. $stopIndex] ?? null,
-                'start_at' => $data['middle_start_at_'. $stopIndex] ?? null,
-                'terminal_price_delta' => $data['middle_terminal_price_delta_'. $stopIndex] ?? null,
-                'partner_price_delta' => $data['middle_partner_price_delta_'. $stopIndex] ?? null,
-                'site_price_delta' => $data['middle_site_price_delta_'. $stopIndex] ?? null,
+                'stop_pier_id' => $data['middle_pier_id_' . $stopIndex] ?? null,
+                'start_at' => $data['middle_start_at_' . $stopIndex] ?? null,
+                'terminal_price_delta' => $data['middle_terminal_price_delta_' . $stopIndex] ?? null,
+                'partner_price_delta' => $data['middle_partner_price_delta_' . $stopIndex] ?? null,
+                'site_price_delta' => $data['middle_site_price_delta_' . $stopIndex] ?? null,
             ]);
         }
     }
 
+    private function addTripStartPierAsStop(Trip $trip)
+    {
+        TripStop::create([
+            'trip_id' => $trip->id,
+            'stop_pier_id' => $trip->start_pier_id,
+            'start_at' => $trip->start_at,
+            'terminal_price_delta' => 0,
+            'partner_price_delta' => 0,
+            'site_price_delta' => 0,
+        ]);
+    }
+
     private function addStopsInChain(Collection $stops, Trip $trip): void
     {
-        foreach ($stops as $stop){
+        foreach ($stops as $stop) {
             TripStop::create([
                 'trip_id' => $trip->id,
                 'stop_pier_id' => $stop->stop_pier_id,
-                'start_at' => $trip->start_at->clone()->toDateString() .' '. $stop->start_at->toTimeString(),
+                'start_at' => $stop->start_at ? $trip->start_at->clone()->toDateString() . ' ' . $stop->start_at->toTimeString() : null,
                 'terminal_price_delta' => $stop->terminal_price_delta,
                 'partner_price_delta' => $stop->partner_price_delta,
                 'site_price_delta' => $stop->site_price_delta,

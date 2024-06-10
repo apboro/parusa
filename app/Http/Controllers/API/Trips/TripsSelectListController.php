@@ -172,7 +172,7 @@ class TripsSelectListController extends ApiController
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
                 'provider_id' => $trip->provider_id,
-                'stops' => StopResource::collection($trip->stops),
+                'stops' => StopResource::collection($trip->stops->sortBy('start_at')),
             ];
         });
 
