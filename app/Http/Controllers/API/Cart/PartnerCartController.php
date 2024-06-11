@@ -76,7 +76,6 @@ class PartnerCartController extends ApiEditController
                 'excursion' => $trip->excursion->name,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
-                'pier' => $trip->startPier->name,
                 'grade' => $ticket->grade->name,
                 'seat' => $ticket->seat,
                 'base_price' => $price = $ticket->getPartnerPrice() ?? $ticket->getPrice(),
@@ -85,6 +84,7 @@ class PartnerCartController extends ApiEditController
                 'backward_price' => $ticket->parent_ticket_id !== null ? $ticket->getBackwardPrice() : null,
                 'quantity' => $ticket->quantity,
                 'available' => ($price !== null) && $trip->hasStatus(TripSaleStatus::selling, 'sale_status_id') && ($trip->start_at > Carbon::now() || $trip->excursion->is_single_ticket = 1),
+                'pier' => $ticket->startPier?->name ?? $trip->startPier->name,
             ];
         });
 
@@ -163,7 +163,8 @@ class PartnerCartController extends ApiEditController
                         'position_id' => $current->positionId(),
                         'trip_id' => $trip->id,
                         'grade_id' => $grade_id,
-                        'terminal_id' => $current->terminalId()
+                        'terminal_id' => $current->terminalId(),
+                        'start_pier_id' => $data['start_pier_id'] ?? null
                     ],
                     ['base_price' => $ticket['base_price']]);
 

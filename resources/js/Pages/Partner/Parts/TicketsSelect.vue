@@ -10,9 +10,9 @@
            ref="popup"
     >
 
-        <FormDropdown v-if="trip.stops.length > 0"
+        <FormDropdown v-if="trip.stops?.length > 0"
                       :title="'Выберите причал'"
-                      :name="'pier_id'"
+                      :name="'start_pier_id'"
                       :form="form"
                       :identifier="'id'"
                       :show="'name'"
@@ -128,7 +128,7 @@ export default {
             for (let i = 0; i < this.iterator.length; i++) {
                 let currentPrice = this.form.values['tickets.' + i + '.base_price'];
 
-                let price_delta = currentPrice * this.trip.stops.find(stop => stop.pier.id === this.form.values.pier_id)['partner_price'] / 100;
+                let price_delta = currentPrice * this.trip.stops.find(stop => stop.pier.id === this.form.values.start_pier_id)['partner_price'] / 100;
 
                 this.form.values['tickets.' + i + '.base_price'] = currentPrice - price_delta;
             }
@@ -148,7 +148,7 @@ export default {
                 index++;
             })
             if (trip['stops'].length > 0) {
-                this.form.set('pier_id', trip['stops'][0]['pier']['id']);
+                this.form.set('start_pier_id', trip['stops'][0]['pier']['id']);
             }
             this.trip = trip;
             this.form.load();

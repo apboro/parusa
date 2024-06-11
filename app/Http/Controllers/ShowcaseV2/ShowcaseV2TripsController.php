@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ShowcaseV2;
 
 use App\Http\Controllers\Showcase\ShowcaseTripsController;
 use App\Http\Middleware\ExternalProtect;
+use App\Http\Resources\StopResource;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketGrade;
@@ -135,6 +136,7 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
                 'duration' => $trip->excursion->info->duration,
                 'price' => $adultPrice ?? null,
                 'status' => $trip->status->name,
+                'stops' => StopResource::collection($trip->stops->sortBy('start_at'))
             ];
         });
 

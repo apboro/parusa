@@ -8,6 +8,7 @@ use App\Helpers\PriceConverter;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Http\Middleware\ExternalProtect;
+use App\Http\Resources\StopResource;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
@@ -153,6 +154,7 @@ class ShowcaseTripsController extends ApiController
                 'duration' => $trip->excursion->info->duration,
                 'price' => $adultPrice ?? null,
                 'status' => $trip->status->name,
+                'stops' => StopResource::collection($trip->stops->sortBy('start_at'))
             ];
         });
 
@@ -259,6 +261,7 @@ class ShowcaseTripsController extends ApiController
                 }),
                 'tickets_left' => $trip->tickets_total - $ticketsCountable - $ticketsReserved,
                 'rates' => $nevaRates ?? array_values($rates->toArray()),
+                'stops' => StopResource::collection($trip->stops->sortBy('start_at'))
             ],
         ]);
     }

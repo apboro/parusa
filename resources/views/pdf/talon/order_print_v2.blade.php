@@ -28,7 +28,9 @@ use App\Models\Tickets\Ticket;
 <body style="box-sizing: border-box; margin: 0; padding: 0.5pt; width: 226pt;">
 
 @foreach($tickets as $ticket)
-        <?php /** @var $loop */ ?>
+        <?php /** @var $loop */
+        $startPier = $ticket->startPier ?? $ticket->trip->startPier;
+        ?>
     <div
         style="left: 1pt; top: 1pt;position: relative; overflow: hidden; width: 220pt; height: 335pt; margin: 0; page-break-inside: avoid;<?php echo !$loop->last ? 'page-break-after: always;' : ''; ?>">
         <div style="position: absolute; top: 0; left: 100%; transform-origin: top left; transform: rotate(90deg)">
@@ -46,7 +48,7 @@ use App\Models\Tickets\Ticket;
             <div style="width: 223pt; height: 222pt;position: absolute; top: 0; left: 90pt;">
                 <div style="width: 223pt; height: 90pt; margin: 0 auto; border-bottom: 1px solid #5e5e5e; font-size: 0">
                     <div style="position: absolute; left: 0; top: 0;">
-                        <img src="{{ $ticket->trip->startPier->info->mapLinkQr() }}" alt="qr-link"
+                        <img src="{{ $startPier->info->mapLinkQr() }}" alt="qr-link"
                              style="width: 55pt; height: 55pt;margin: 5pt 0 0;">
                     </div>
                     <div style="position: absolute; left: 65pt; top: 2pt; width: 155pt;">
@@ -55,10 +57,10 @@ use App\Models\Tickets\Ticket;
                     </div>
                     <div style="position: absolute; top: 65pt; left: 0; width: 100%;">
                         <div style="margin: 0;font-family: 'Proxima Nova',serif;font-size: 8pt;line-height: 8pt;">
-                            Адрес причала: {{ $ticket->trip->startPier->info->address }}
+                            Адрес причала: {{ $startPier->info->address }}
                         </div>
                         <div style="margin: 0;font-family: 'Proxima Nova',serif;font-size: 8pt;line-height: 8pt;">
-                            Телефон причала: {{ $ticket->trip->startPier->info->phone }}
+                            Телефон причала: {{ $startPier->info->phone }}
                         </div>
                     </div>
                 </div>
@@ -75,7 +77,10 @@ use App\Models\Tickets\Ticket;
                     </div>
                     <div style="position:absolute; left: 95pt; top: 30pt; font-size: 7pt">Экскурсия</div>
                     <div
-                        style="position:absolute; left: 90pt; top: 43pt; width: 133pt; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->trip->start_at->format('d.m.Y,  H:i') }}</div>
+                        style="position:absolute; left: 90pt; top: 43pt; width: 133pt; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">
+                        {{ $ticket->trip->stops?->where('stop_pier_id', $ticket->start_pier_id)
+                        ->first()?->start_at ?? $ticket->trip->start_at->format('d.m.Y,  H:i') }}
+                    </div>
                     <div style="position:absolute; left: 95pt; top: 55pt; font-size: 7pt;">Дата поездки</div>
                     <div
                         style="position:absolute; left: 90pt; top: 68pt; width: 133pt; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->grade->name }}</div>
@@ -98,7 +103,6 @@ use App\Models\Tickets\Ticket;
                 </div>
             </div>
         </div>
-    </div>
     </div>
 @endforeach
 </body>

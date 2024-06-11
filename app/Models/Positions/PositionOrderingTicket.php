@@ -7,6 +7,7 @@ use App\Helpers\PriceConverter;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Model;
+use App\Models\Piers\Pier;
 use App\Models\Sails\Trip;
 use App\Models\Ships\Seats\Seat;
 use Carbon\Carbon;
@@ -177,5 +178,10 @@ class PositionOrderingTicket extends Model
     public function seat()
     {
         return $this->hasOne(Seat::class, 'id', 'seat_id');
+    }
+
+    public function startPier(): HasOne
+    {
+        return $this->hasOne(Pier::class, 'id', 'start_pier_id');
     }
 }

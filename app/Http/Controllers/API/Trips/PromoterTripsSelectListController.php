@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Http\Resources\StopResource;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PartnerType;
@@ -176,7 +177,8 @@ class PromoterTripsSelectListController extends ApiController
                 'chained' => $trip->getAttribute('chains_count') > 0,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
-                'provider_id' => $trip->provider_id
+                'provider_id' => $trip->provider_id,
+                'stops' => StopResource::collection($trip->stops->sortBy('start_at'))
             ];
         });
 

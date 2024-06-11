@@ -34,9 +34,17 @@
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Причал:</span>
-                            <span class="ap-showcase__trip-info-line-link" @click="showPierInfo">{{
+                            <span v-if="trip.stops?.length === 0" class="ap-showcase__trip-info-line-link" @click="showPierInfo">{{
                                     trip['pier']
                                 }}</span>
+                            <ShowcaseInputDropDown v-else
+                                                   v-model="form.values.start_pier_id"
+                                                   :options="stops"
+                                                   :original="stops"
+                                                   :identifier="'id'"
+                                                   :show="'name'"
+                                                   @change="handleChangePier"
+                            />
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Продолжительность:</span>
@@ -273,9 +281,11 @@ import seatMethods from "@/Mixins/seatMethods.vue";
 import CategoriesBox from "@/Pages/Parts/Seats/CategoriesBox.vue";
 import SelectedTickets from "@/Pages/Parts/Seats/SelectedTickets.vue";
 import ShowcaseV2PopUp from "@/Pages/ShowcaseV2/Components/ShowcaseV2PopUp.vue";
+import ShowcaseInputDropDown from "@/Pages/Showcase/Components/ShowcaseInputDropDown.vue";
 
 export default {
     components: {
+        ShowcaseInputDropDown,
         ShowcaseV2PopUp,
         SelectedTickets,
         CategoriesBox,
@@ -304,6 +314,7 @@ export default {
         debug: {type: Boolean, default: false},
         session: {type: String, required: true},
     },
+    original_rates: null,
 
     emits: ['select', 'order'],
     mixins: [seatMethods],
@@ -354,6 +365,9 @@ export default {
                 this.agreement_promocode = value;
                 this.agreement_promocode_valid = true;
             }
+        },
+        stops() {
+            return this.trip.stops.map(stop => ({id: stop.pier.id, name: stop.pier.name}))
         },
     },
 
@@ -409,6 +423,16 @@ export default {
         getFilteredGrades(categoryId) {
             return this.trip['seat_tickets_grades'].filter(el => el.seat_category_id === categoryId)
         },
+
+        handleChangePier() {
+
+            for (let rate of this.trip['rates']){
+                let currentRatePrice = rate['base_price'];
+                let price_delta = currentRatePrice * this.trip.stops.find(stop => stop.pier.id === this.form.values.start_pier_id)['partner_price'] / 100;
+                rate['base_price'] = currentRatePrice - price_delta;
+            }
+        },
+
         handleSelectBackwardTrip($event) {
             if (!this.checkedBackward) {
                 this.activeBackward = false;
@@ -449,6 +473,15 @@ export default {
             this.form.set('phone', null, 'required', 'Телефон', true);
             this.form.set('promocode', null, null, 'Промокод', true);
             this.form.load();
+            if (this.stops?.length > 0) {
+                if (!this.original_rates){
+                    this.original_rates = this.trip['rates'];
+                } else {
+                    console.log(this.original_rates)
+                    this.trip['rates'] = this.original_rates;
+                }
+                this.form.values.start_pier_id = this.stops[0]['id'];
+            }
         },
 
         multiply(a, b) {

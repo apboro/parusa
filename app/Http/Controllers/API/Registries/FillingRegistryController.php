@@ -87,7 +87,7 @@ class FillingRegistryController extends ApiController
                 'trip_time' => $ticket->trip->start_at->format('H:i'),
                 'trip_id' => $ticket->trip_id,
                 'excursion' => $ticket->trip->excursion->name,
-                'pier' => $ticket->trip->startPier->name,
+                'pier' => $ticket->startPier?->name ?? $ticket->trip->startPier->name,
                 'return_up_to' => null,
             ];
         });

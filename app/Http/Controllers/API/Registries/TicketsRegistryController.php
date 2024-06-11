@@ -83,7 +83,7 @@ class TicketsRegistryController extends ApiController
                 'trip_time' => $ticket->trip->start_at->format('H:i'),
                 'trip_id' => $ticket->trip_id,
                 'excursion' => $ticket->trip->excursion->name,
-                'pier' => $ticket->trip->startPier->name,
+                'pier' => $ticket->startPier?->name ?? $ticket->trip->startPier->name,
                 'order_type' => $ticket->order->type->name,
                 'partner' => $ticket->order->partner->name ?? null,
                 'sale_by' => $ticket->order->position ? $ticket->order->position->user->profile->compactName : null,

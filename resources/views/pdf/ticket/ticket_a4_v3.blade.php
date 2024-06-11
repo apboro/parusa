@@ -6,7 +6,8 @@ use App\Models\Common\Image;
 /** @var Ticket $ticket */
 /** @var Image|null $image */
 
-$image = $ticket->trip->startPier->mapImages[0] ?? null;
+$startPier = $ticket->startPier ?? $ticket->trip->startPier;
+$image = $startPier->mapImages[0] ?? null;
 
 ?>
 
@@ -44,8 +45,8 @@ $image = $ticket->trip->startPier->mapImages[0] ?? null;
 
                                         <td>
                                             <h1 style="font-family:'Reforma Grotesk',serif;font-size: 42pt;margin: 0;text-transform: uppercase;text-align: right">Посадочный билет</h1>
-                                            <div style="font-family: 'Proxima Nova',serif;text-align: right;font-size: 10pt;line-height: 10pt;">Адрес причала: <i>{{ $ticket->trip->startPier->info->address }}</i></div>
-                                            <div style="font-family: 'Proxima Nova',serif;text-align: right;font-size: 10pt;line-height: 10pt;">Телефон причала: <i>{{ $ticket->trip->startPier->info->phone }}</i></div>
+                                            <div style="font-family: 'Proxima Nova',serif;text-align: right;font-size: 10pt;line-height: 10pt;">Адрес причала: <i>{{ $startPier->info->address }}</i></div>
+                                            <div style="font-family: 'Proxima Nova',serif;text-align: right;font-size: 10pt;line-height: 10pt;">Телефон причала: <i>{{ $startPier->info->phone }}</i></div>
                                         </td>
                                     </tr>
                                 </table>
@@ -53,7 +54,7 @@ $image = $ticket->trip->startPier->mapImages[0] ?? null;
                             <td style="text-align: right; width: 60pt;">
                                 <div style="margin: 0;height: 80pt;">
                                     <div style="text-align: right">
-                                        <img src="{{ $ticket->trip->startPier->info->mapLinkQr() }}" alt="qr-link" style="width: 60pt; height: 60pt;margin: 20pt 0 0;">
+                                        <img src="{{ $startPier->info->mapLinkQr() }}" alt="qr-link" style="width: 60pt; height: 60pt;margin: 20pt 0 0;">
                                     </div>
                                 </div>
                             </td>
@@ -82,7 +83,8 @@ $image = $ticket->trip->startPier->mapImages[0] ?? null;
                                     </tr>
                                     <tr>
                                         <td style="vertical-align: top; padding-right: 3pt;">Дата поездки</td>
-                                        <td style="vertical-align: top; border-bottom: 1px solid #5e5e5e;">{{ $ticket->trip->start_at->format('d.m.Y,  H:i') }}</td>
+                                        <td style="vertical-align: top; border-bottom: 1px solid #5e5e5e;">{{ $ticket->trip->stops?->where('stop_pier_id', $ticket->start_pier_id)
+->first()?->start_at ?? $ticket->trip->start_at->format('d.m.Y,  H:i') }}</td>
                                     </tr>
                                     <tr>
                                         <td style="vertical-align: top; padding-right: 3pt;">Тип билета</td>
@@ -126,7 +128,7 @@ $image = $ticket->trip->startPier->mapImages[0] ?? null;
                     <div><b>Причал отправления на карте:</b></div>
                     <div>Номер офиса: <b>+7-812-640-43-43</b></div>
                 </td>
-                <td style="width: 70%; text-align: right">Чтобы открыть причал на карте перейдите по ссылке<br/> <a href="{{ $ticket->trip->startPier->info->map_link }}" target="_blank">открыть причал на карте</a></td>
+                <td style="width: 70%; text-align: right">Чтобы открыть причал на карте перейдите по ссылке<br/> <a href="{{ $startPier->info->map_link }}" target="_blank">открыть причал на карте</a></td>
             </tr>
             <tr>
                 <td colspan="7">

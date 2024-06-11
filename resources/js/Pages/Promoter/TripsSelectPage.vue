@@ -122,7 +122,15 @@
                     <div><span :style="{fontSize: '13px'}">{{ trip['programs'] && trip['programs'].length ? trip['programs'].join(', ') : '' }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
-                    <span :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" @click="pierInfo(trip['pier_id'])">{{ trip['pier'] }}</span>
+                    <span v-if="trip['stops'] && trip['stops'].length === 0" :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" @click="pierInfo(trip['pier_id'])">
+                        {{ trip['pier'] }}
+                    </span>
+                    <div v-else>
+                        <div v-for="stop in trip['stops']">
+                            {{stop.pier.name}} <span v-if="stop.start_at"> - {{stop.start_at}}</span>
+                        </div>
+                    </div>
+                    <div>{{ trip['ship'] }}</div>
                 </ListTableCell>
                 <ListTableCell>
                     {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})
