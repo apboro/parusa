@@ -24,6 +24,7 @@ class StopResource extends JsonResource
            'partner_price' => $this->partner_price_delta,
            'duration' => $this->start_at->diffInMinutes($this->trip->end_at),
            'site_price' => $this->site_price_delta,
+           'not_formatted_start_at' => $this->start_at->toIso8601String()
        ];
     }
 }

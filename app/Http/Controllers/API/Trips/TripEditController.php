@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Trips;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Http\Resources\StopResource;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
@@ -33,6 +34,7 @@ class TripEditController extends ApiEditController
 
     protected array $titles = [
         'start_at' => 'Дата и время отправления',
+        'middle_start_at_0' => 'Дата и время отправления',
         'middle_start_at_1' => 'Дата и время отправления',
         'middle_start_at_2' => 'Дата и время отправления',
         'middle_start_at_3' => 'Дата и время отправления',
@@ -104,6 +106,7 @@ class TripEditController extends ApiEditController
                 'chain_trips_start_at' => $chainStart ? Carbon::parse($chainStart)->format('d.m.Y') : null,
                 'chain_trips_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('d.m.Y') : null,
                 'chain_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('Y-m-d\TH:i') : null,
+                'middlePiers' => StopResource::collection($trip->stops->filter(fn ($stop) => $stop->stop_pier_id !== $trip->start_pier_id)->sortBy('start_at')),
             ]
         );
     }
@@ -215,6 +218,11 @@ class TripEditController extends ApiEditController
             $toSetStartAt = $editTrip->start_at->hours($newStartAt->hour)->minutes($newStartAt->minute)->seconds(0)->milliseconds(0);
             $toSetEndAt = $editTrip->end_at->hours($newEndAt->hour)->minutes($newEndAt->minute)->seconds(0)->milliseconds(0);
             $editTrip = $this->fillTrip($editTrip, $data, $toSetStartAt, $toSetEndAt);
+            $editTrip->stops()->delete();
+            if (!empty($request->middle_piers)) {
+                $this->addStopsFromRequest($request->middle_piers, $editTrip->id, $data);
+                $this->addTripStartPierAsStop($trip);
+            }
             $editTrip->save();
         }
         // reattach edited to new chain
@@ -351,16 +359,19 @@ class TripEditController extends ApiEditController
 
     private function addStopsFromRequest(array $stops, int $tripId, $data)
     {
-        foreach ($stops as $stopIndex) {
-            $stopIndex += 1;
-            TripStop::create([
-                'trip_id' => $tripId,
-                'stop_pier_id' => $data['middle_pier_id_' . $stopIndex] ?? null,
-                'start_at' => $data['middle_start_at_' . $stopIndex] ?? null,
-                'terminal_price_delta' => $data['middle_terminal_price_delta_' . $stopIndex] ?? null,
-                'partner_price_delta' => $data['middle_partner_price_delta_' . $stopIndex] ?? null,
-                'site_price_delta' => $data['middle_site_price_delta_' . $stopIndex] ?? null,
-            ]);
+        try {
+            foreach ($stops as $stopIndex => $stub) {
+                TripStop::create([
+                    'trip_id' => $tripId,
+                    'stop_pier_id' => $data['middle_pier_id_' . $stopIndex] ?? null,
+                    'start_at' => $data['middle_start_at_' . $stopIndex] ?? null,
+                    'terminal_price_delta' => $data['middle_terminal_price_delta_' . $stopIndex] ?? null,
+                    'partner_price_delta' => $data['middle_partner_price_delta_' . $stopIndex] ?? null,
+                    'site_price_delta' => $data['middle_site_price_delta_' . $stopIndex] ?? null,
+                ]);
+            }
+        } catch (\Exception $e){
+            throw new \Exception('Не все поля корректно заполнены');
         }
     }
 

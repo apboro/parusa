@@ -12,6 +12,12 @@
             <GuiValue :title="'Теплоход'">{{ data['ship'] }}</GuiValue>
             <GuiValue :title="'Экскурсия'">{{ data['excursion'] }}</GuiValue>
         </GuiContainer>
+
+        <GuiContainer v-for="(pier, index) in middle_piers" w-50 mt-30 mobile-100>
+            <GuiValue :title="'Промежуточный причал ' + [index +1]"> {{ pier.pier.name }}</GuiValue>
+            <GuiValue :title="'Время отправления'">{{ pier.start_at}} </GuiValue>
+        </GuiContainer>
+
         <GuiContainer w-50 mt-30 mobile-100>
             <GuiValue :title="'Статус движения'">
                 <span class="link" v-if="editable" @click="statusChange">{{ data['status'] }}</span>
@@ -100,6 +106,9 @@ export default {
         blocked() {
             return this.data['tickets_sold'] || this.data['tickets_reserved'];
         },
+        middle_piers(){
+            return this.data.middle_piers;
+        }
     },
 
     data: () => ({

@@ -15,7 +15,7 @@
                 <div style="background: rgb(250 247 247);; margin: 10px 0 10px 0;">
                     <FormDictionary
                         :form="form"
-                        :title="'Промежуточный причал '+ [++index]"
+                        :title="'Промежуточный причал '+ [index + 1]"
                         :placeholder="'Выберите причал'"
                         :name="'middle_pier_id_'+[index]"
                         :dictionary="'piers'"
@@ -285,13 +285,18 @@ export default {
                         this.form.update('start_pier_id', Number(query['pier']));
                         this.form.update('end_pier_id', Number(query['pier']));
                     }
-                    /**
-                     * For future use:
-                     * if(typeof query['excursion'] !== "undefined" && query['excursion'] !== null) {
-                     *   response.values['excursion_id'] = Number(query['excursion']);
-                     * }
-                     */
+
                     return;
+                }
+                this.middle_piers = response.payload.middlePiers;
+                if (this.middle_piers.length > 0){
+                    this.middle_piers.forEach((pier, index) => {
+                        this.form.set('middle_pier_id_'+ index, pier.pier.id);
+                        this.form.set('middle_start_at_'+ index, pier.not_formatted_start_at);
+                        this.form.set('middle_terminal_price_delta_'+ index, pier.terminal_price);
+                        this.form.set('middle_partner_price_delta_'+ index, pier.partner_price);
+                        this.form.set('middle_site_price_delta_'+ index, pier.site_price);
+                    });
                 }
                 this.edit_from = response.values['start_at'];
                 this.edit_to = response.values['start_at'];
