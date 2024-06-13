@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TripEditController extends ApiEditController
 {
@@ -371,6 +372,7 @@ class TripEditController extends ApiEditController
                 ]);
             }
         } catch (\Exception $e){
+            Log::error($e->getMessage(). ' '. $e->getFile(). ' '. $e->getLine());
             throw new \Exception('Не все поля корректно заполнены');
         }
     }
