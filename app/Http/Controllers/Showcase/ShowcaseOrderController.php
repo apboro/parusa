@@ -78,6 +78,7 @@ class ShowcaseOrderController extends ApiEditController
 
         /** @var Trip $trip */
         $tripQuery = Trip::query()
+            ->with(['stops'])
             ->where(function (Builder $trip) use ($now) {
                 $trip->where('start_at', '>', $now)
                     ->orWhere(function (Builder $trip) use ($now) {
@@ -267,14 +268,23 @@ class ShowcaseOrderController extends ApiEditController
                     $nevaPrice = collect($nevaRates ?? [])->where('grade_id', $rate->grade_id)->first()['base_price'];
                 }
 
+                if (!empty($data['start_pier_id']) && $trip->start_pier_id !== $data['start_pier_id']) {
+                    $stop = $trip->stops->where('stop_pier_id', $data['start_pier_id'])->first();
+                    if ($stop) {
+                        $currentPrice = ($isPartnerSite ? $rate->partner_price : $rate->site_price) ?? $rate->base_price;
+                        $priceDelta = $currentPrice * ($isPartnerSite ? $stop->partner_price_delta : $stop->site_price_delta)/100;
+                        $stopPrice = $currentPrice - $priceDelta;
+                    }
+                }
 
                 for ($i = 1; $i <= $grade['quantity']; $i++) {
                     $ticket = new Ticket([
                         'trip_id' => $trip->id,
                         'grade_id' => $gradeId,
                         'status_id' => TicketStatus::showcase_creating,
-                        'base_price' => $nevaPrice ?? ($isPartnerSite ? $rate->partner_price : $rate->site_price) ?? $rate->base_price,
+                        'base_price' => $stopPrice ?? $nevaPrice ?? ($isPartnerSite ? $rate->partner_price : $rate->site_price) ?? $rate->base_price,
                         'provider_id' => $trip->provider_id,
+                        'start_pier_id' => $stop->stop_pier_id ?? null,
                     ]);
                     if ($backwardTrip) {
                         $backwardTicket = new Ticket([

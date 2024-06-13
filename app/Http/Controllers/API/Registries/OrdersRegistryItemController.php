@@ -84,20 +84,27 @@ class OrdersRegistryItemController extends ApiController
             'partner' => $order->partner->name ?? null,
             'position' => $order->position ? $order->position->user->profile->fullName : null,
             'tickets' => $order->tickets->map(function (Ticket $ticket) {
+                if ($ticket->trip->stops->isNotEmpty()){
+                    $stop = $ticket->trip->stops->where('stop_pier_id', $ticket['start_pier_id'])->first();
+                    $startTime = $stop?->start_at?->format('H:i');
+                    $startDate = $stop?->start_at?->format('d.m.Y');
+                    $pier = $stop?->pier->name;
+                }
+
                 return [
                     'id' => $ticket->id,
                     'provider_id' => $ticket->provider_id,
                     'base_price' => $ticket->getPrice(),
                     'trip_id' => $ticket->trip_id,
-                    'trip_start_date' => $ticket->trip->start_at->format('d.m.Y'),
-                    'trip_start_time' => $ticket->trip->start_at->format('H:i'),
+                    'trip_start_date' => $startDate ?? $ticket->trip->start_at->format('d.m.Y'),
+                    'trip_start_time' => $startTime ?? $ticket->trip->start_at->format('H:i'),
                     'excursion' => $ticket->trip->excursion->name,
                     'is_single_ticket' => $ticket->trip->excursion->is_single_ticket,
                     'reverse_excursion_id' => $ticket->trip->excursion->reverse_excursion_id,
                     'excursion_id' => $ticket->trip->excursion->id,
                     'transferable' => in_array($ticket->status_id, TicketStatus::ticket_paid_statuses, true) && $ticket->provider_id !== Provider::city_tour,
                     'isBackward' => $ticket->isBackward(),
-                    'pier' => $ticket->startPier?->name ?? $ticket->trip->startPier->name,
+                    'pier' => $pier ?? $ticket->trip->startPier->name,
                     'grade' => $ticket->grade->name,
                     'status' => $ticket->status->name,
                     'returnable' => in_array($ticket->status_id, TicketStatus::ticket_returnable_statuses, true),

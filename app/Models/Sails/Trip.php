@@ -34,7 +34,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $id
  * @property string $name
  * @property Carbon $start_at
- * @property Carbon $end_at
  * @property int $start_pier_id
  * @property int $end_pier_id
  * @property int $ship_id

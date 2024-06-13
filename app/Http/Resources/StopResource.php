@@ -19,8 +19,10 @@ class StopResource extends JsonResource
        return [
            'pier' => $this->pier,
            'start_at' => $this->start_at?->format('H:i'),
+           'full_start_at' => $this->start_at?->translatedFormat('j F Y') . ' г.',
            'terminal_price' => $this->terminal_price_delta,
            'partner_price' => $this->partner_price_delta,
+           'duration' => $this->start_at->diffInMinutes($this->trip->end_at),
            'site_price' => $this->site_price_delta,
        ];
     }

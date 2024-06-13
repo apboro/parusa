@@ -126,6 +126,7 @@ class CheckoutController extends ApiController
                 'grade' => $ticket->grade->name,
                 'grade_id' => $ticket->grade_id,
                 'base_price' => $ticket->base_price,
+                'start_pier_id' => $ticket->start_pier_id,
             ];
         });
 
@@ -139,16 +140,25 @@ class CheckoutController extends ApiController
                 'email' => $order->email,
                 'phone' => $order->phone,
                 'tickets' => $tickets,
-                'trips' => $trips->map(function (Trip $trip) {
+                'trips' => $trips->map(function (Trip $trip) use ($tickets){
+                    if ($trip->stops->isNotEmpty()){
+                        $ticket = $tickets->where('trip_id', $trip->id)->first();
+                        $stop = $trip->stops->where('stop_pier_id', $ticket['start_pier_id'])->first();
+                        $startTime = $stop?->start_at?->format('H:i');
+                        $startDate = $stop?->start_at?->format('d.m.Y');
+                        $pier = $stop?->pier->name;
+                        $pierId = $stop?->pier->id;
+                        $duration = $stop?->start_at->diffInMinutes($trip->end_at);
+                    }
                     return [
                         'id' => $trip->id,
-                        'start_date' => $trip->start_at->format('d.m.Y'),
-                        'start_time' => $trip->start_at->format('H:i'),
-                        'pier' => $trip->startPier->name,
-                        'pier_id' => $trip->start_pier_id,
+                        'start_date' => $startDate ?? $trip->start_at->format('d.m.Y'),
+                        'start_time' => $startTime ?? $trip->start_at->format('H:i'),
+                        'pier' => $pier ?? $trip->startPier->name,
+                        'pier_id' => $pierId ?? $trip->start_pier_id,
                         'excursion' => $trip->excursion->name,
                         'excursion_id' => $trip->excursion_id,
-                        'duration' => $trip->excursion->info->duration,
+                        'duration' => $duration ?? $trip->excursion->info->duration,
                         'images' => $trip->excursion->images->map(function (Image $image) {
                             return $image->url;
                         }),
