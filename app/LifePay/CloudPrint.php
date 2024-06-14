@@ -40,7 +40,7 @@ class CloudPrint
             'customer_name' => $order->name,
             'order_number' => (string)$order->id,
             'card_amount' => 0,
-            'payment_place' => $order->terminal->pier->info->address,
+            'payment_place' => $order->terminal?->pier?->info?->address ?? 'Адмиралтейская наб. д. 16',
             'purchase' => [
                 'products' => [],
             ],
