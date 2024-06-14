@@ -40,7 +40,6 @@ class CloudPrint
             'customer_name' => $order->name,
             'order_number' => (string)$order->id,
             'card_amount' => 0,
-            'payment_place' => $order->terminal?->pier?->info?->address ?? 'Адмиралтейская наб. д. 16',
             'purchase' => [
                 'products' => [],
             ],
@@ -67,7 +66,7 @@ class CloudPrint
             $request = json_encode($receipt);
             $curl = curl_init();
 
-                curl_setopt($curl, CURLOPT_URL, env('CLOUD_PRINT_URL') . 'create-receipt');
+            curl_setopt($curl, CURLOPT_URL, env('CLOUD_PRINT_URL') . 'create-receipt');
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($curl, CURLOPT_POST, true);
