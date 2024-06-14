@@ -64,7 +64,7 @@ class OrderReturnController extends ApiController
             $query->where('partner_id', $current->partnerId());
         } else if ($current->isStaff() && $current->role() && $current->terminalId() !== null && $current->role()->matches(Role::terminal)) {
             $query->where('terminal_id', $current->terminalId());
-        } else if (!$current->isStaffAdmin()) {
+        } else if (!$current->isStaffAdmin() && !$current->isStaffPromoterManager()) {
             return APIResponse::error('Неверно заданы параметры');
         }
 
@@ -137,7 +137,7 @@ class OrderReturnController extends ApiController
             }
             $successMessage = 'Возврат оформлен.';
 
-        } else if ($current->isStaffAdmin()) {
+        } else if ($current->isStaffAdmin() || $current->isStaffPromoterManager()) {
             // Returning tickets bought
             try {
                 if (in_array($order->type_id, OrderType::types_with_sber_payment)
