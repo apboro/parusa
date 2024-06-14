@@ -1,6 +1,6 @@
 /*!
-  * vue-router v4.3.2
-  * (c) 2024 Eduardo San Martin Morote
+  * vue-router v4.2.5
+  * (c) 2023 Eduardo San Martin Morote
   * @license MIT
   */
 
@@ -144,37 +144,37 @@
  */
 
 /**
-* @vue/compiler-core v3.4.27
+* @vue/compiler-core v3.4.19
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
 
 /**
-* @vue/compiler-dom v3.4.27
+* @vue/compiler-dom v3.4.19
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
 
 /**
-* @vue/reactivity v3.4.27
+* @vue/reactivity v3.4.19
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
 
 /**
-* @vue/runtime-core v3.4.27
+* @vue/runtime-core v3.4.19
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
 
 /**
-* @vue/runtime-dom v3.4.27
+* @vue/runtime-dom v3.4.19
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
 
 /**
-* @vue/shared v3.4.27
+* @vue/shared v3.4.19
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
