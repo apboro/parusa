@@ -136,7 +136,7 @@ class TripsListController extends ApiController
                 'has_return_trip' => $trip->excursion->has_return_trip,
                 'trip_provider' => $trip->excursion->additionalData?->provider_id,
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
-                'stops' => StopResource::collection($trip->stops),
+                'stops' => StopResource::collection($trip->stops->filter(fn ($stop) => $stop->stop_pier_id !== $trip->start_pier_id)->sortBy('start_at')),
             ];
         });
 

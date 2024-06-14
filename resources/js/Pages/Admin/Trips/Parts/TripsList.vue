@@ -133,14 +133,14 @@
                     {{ trip['excursion'] }}
                 </ListTableResponsiveCell>
                 <ListTableResponsiveCell :mobile-title="list.titles[3]">
-                    <div>{{ trip['pier'] }}</div>
-
-                    <div v-if="trip['stops'].length > 0">
+                    <span v-if="trip['stops'].length === 0">
+                        {{ trip['pier'] }}
+                    </span>
+                    <div v-else>
                         <div v-for="stop in trip['stops']">
-                            {{stop.pier.name}} - {{stop.start_at}}
+                            {{stop.pier.name}} <span v-if="stop.start_at"> - {{stop.start_at}}</span>
                         </div>
                     </div>
-
                     <div>{{ trip['ship'] }}</div>
                 </ListTableResponsiveCell>
                 <ListTableResponsiveCell :mobile-title="list.titles[4]">
