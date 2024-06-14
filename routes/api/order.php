@@ -29,7 +29,7 @@ Route::post('/order/terminal/save_unconfirmed', [TerminalCurrentOrderController:
 Route::post('/order/send_sms', [OrderSMSController::class, 'sendSMS'])->middleware(['allow:staff_terminal,staff_admin,partner']);
 Route::post('/order/send_payment_link_sms', [OrderSMSController::class, 'sendPaymentLinkSMS'])->middleware(['allow:staff_admin,partner']);
 
-Route::post('/order/return', [OrderReturnController::class, 'return']);
+Route::post('/order/return', [OrderReturnController::class, 'return'])->middleware(['allow:staff_admin,staff_promoter_manager']);
 
 Route::post('/order/reserve/remove', [OrderReserveController::class, 'remove']);
 Route::post('/order/reserve/cancel', [OrderReserveController::class, 'cancel']);

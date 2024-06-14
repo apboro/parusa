@@ -64,7 +64,7 @@ class ImportProgramsPrices
             ],
             ['external_name' =>'child',
             'id'=> TicketGrade::neva_child,
-            'inner_name' => 'Детский (3-10 лет)'
+            'inner_name' => 'Детский (3-11 лет)'
             ],
             ['external_name' =>'infant',
             'id'=> TicketGrade::neva_infant,
