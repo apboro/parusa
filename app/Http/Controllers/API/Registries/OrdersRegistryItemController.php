@@ -67,7 +67,9 @@ class OrdersRegistryItemController extends ApiController
             $returnable = in_array($order->status_id, [OrderStatus::partner_paid, OrderStatus::api_confirmed, OrderStatus::partner_partial_returned]);
         } else if ($current->isStaffAdmin() || $current->isStaffPromoterManager()) {
             $returnable = in_array($order->status_id,[OrderStatus::showcase_paid,
-                    OrderStatus::showcase_partial_returned, OrderStatus::promoter_paid, OrderStatus::partner_paid_by_link, OrderStatus::promoter_self_paid]);
+                    OrderStatus::showcase_partial_returned, OrderStatus::promoter_paid,
+                OrderStatus::partner_paid_by_link, OrderStatus::promoter_self_paid,
+                OrderStatus::partner_paid]);
         } else {
             $returnable = false;
         }
