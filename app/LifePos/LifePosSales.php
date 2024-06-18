@@ -83,7 +83,7 @@ class LifePosSales
                         "opened_by" => ["guid" => $position->staffInfo->external_id ?? null],
                         "opened_at" => $order->created_at,
                         "status" => "Opened",
-                        'additional_attributes' => ['settlement_location' => $order->tickets[0]?->trip?->startPier?->info?->address],
+                        'additional_attributes' => ['settlement_location' => $order->terminal?->pier?->info?->address ?? 'Санкт-Петербург, Адмиралтейская набережная д.16'],
                         "total_sum" => ["value" => $total * 100, "currency" => "RUB"],
                         'positions' => $tickets,
                     ],
