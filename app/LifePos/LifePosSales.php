@@ -149,7 +149,7 @@ class LifePosSales
     public static function cancel(Order $order): void
     {
         if ($order->external_id === null) {
-            throw new RuntimeException('Зтот заказ не связан с продажей.');
+            throw new RuntimeException('Этот заказ не связан с продажей.');
         }
 
         // make connection client
@@ -168,11 +168,18 @@ class LifePosSales
         // send data to LifePos
         try {
             $data = [
-                'json' => [[
-                    "op" => "replace",
-                    "path" => "/status",
-                    "value" => "Canceled",
-                ]],
+                'json' => [
+                    [
+                        "op" => "replace",
+                        "path" => "/status",
+                        "value" => "Canceled",
+                    ],
+                    [
+                        "op" => "replace",
+                        "path" => 'additional_attributes',
+                        "value" => ['settlement_location' => $order->terminal?->pier?->info?->address ?? 'Санкт-Петербург, Адмиралтейская набережная д.16'],
+                    ]
+                ],
             ];
             $result = $client->patch("/v4/orgs/{$orgId}/deals/sales/{$order->external_id}", $data);
         } catch (GuzzleException $exception) {
