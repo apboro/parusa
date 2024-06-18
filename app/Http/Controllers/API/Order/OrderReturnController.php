@@ -196,6 +196,7 @@ class OrderReturnController extends ApiController
                                 ['status_id' => SeatStatus::vacant]);
                     }
                     /** @var Ticket $ticket */
+                    $ticket->refundTicket($current->position());
                     $ticket->refundCommission($current->position());
                     $ticket->setStatus(TicketStatus::showcase_returned, false);
                     $ticket->save();

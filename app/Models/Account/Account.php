@@ -136,6 +136,7 @@ class Account extends Model
 
         DB::transaction(static function () use ($account, $transaction) {
             $transaction->save();
+            $transaction->timestamp = Carbon::now();
             $account->save();
         });
 
