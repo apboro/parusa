@@ -66,7 +66,11 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             ->where('id', $this->orderId)
             ->first();
 
-        if ($order === null || !in_array($order->status_id, [OrderStatus::showcase_confirmed, OrderStatus::promoter_confirmed, OrderStatus::partner_paid_by_link])) {
+        if ($order === null ||
+            !in_array($order->status_id, [
+                OrderStatus::showcase_confirmed,
+                OrderStatus::promoter_confirmed,
+                OrderStatus::partner_wait_for_pay])) {
             return;
         }
 
