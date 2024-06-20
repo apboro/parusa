@@ -202,7 +202,11 @@ class CheckoutController extends ApiController
         }
 
         // set order status
-        if (in_array($order->status_id, [OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::promoter_wait_for_pay, OrderStatus::partner_wait_for_pay])) {
+        if (in_array($order->status_id, [
+            OrderStatus::showcase_creating,
+            OrderStatus::showcase_wait_for_pay,
+            OrderStatus::promoter_wait_for_pay,
+            OrderStatus::partner_wait_for_pay])) {
 
             $newOrderStatus = match ($order->type_id) {
                 OrderType::promoter_sale => OrderStatus::promoter_confirmed,
