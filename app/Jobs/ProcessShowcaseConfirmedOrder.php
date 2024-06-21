@@ -70,7 +70,7 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             !in_array($order->status_id, [
                 OrderStatus::showcase_confirmed,
                 OrderStatus::promoter_confirmed,
-                OrderStatus::partner_wait_for_pay])) {
+                OrderStatus::partner_paid_by_link])) {
             return;
         }
 
