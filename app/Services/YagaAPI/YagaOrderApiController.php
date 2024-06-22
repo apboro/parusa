@@ -272,7 +272,12 @@ class YagaOrderApiController
 
         NevaTravelOrderPaidEvent::dispatch($order);
 
-        return response()->json(['id' => $order->id, 'orderNumber' => $order->id, 'status' => 'APPROVED', 'specificFields' => (object)[]]);
+        return response()->json([
+            'id' => $order->id,
+            'orderNumber' => $order->additionalData?->provider_order_id ?? $order->id,
+            'status' => 'APPROVED',
+            'specificFields' => (object)[]
+        ]);
     }
 
     private function areEnoughTicketsAvailable($trip, $data): bool
