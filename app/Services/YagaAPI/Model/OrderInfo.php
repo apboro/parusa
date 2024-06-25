@@ -39,7 +39,7 @@ class OrderInfo
                 ],
                 "total" => [
                     "currencyCode" => 'RUB',
-                    "value" => PriceConverter::priceToStore($orderTotal * 100)
+                    "value" => PriceConverter::priceToStore($orderTotal)
                 ]
             ],
             "tickets" => (new YagaTicket($this->order))->getResource()

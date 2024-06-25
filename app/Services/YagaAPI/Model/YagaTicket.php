@@ -2,6 +2,7 @@
 
 namespace App\Services\YagaAPI\Model;
 
+use App\Models\Dictionaries\Provider;
 use App\Models\Order\Order;
 
 class YagaTicket
@@ -18,7 +19,7 @@ class YagaTicket
             $tickets[] =
                 [
                     "admission" => true,
-                    "barcode" => $ticket->qrData(),
+                    "barcode" => $ticket->provider_id === Provider::neva_travel ? $ticket->order->additionalData->provider_order_id : $ticket->qrData(),
                     "barcodeType" => 'QR_CODE',
                     "categoryId" => $ticket->grade_id,
                     "categoryName" => $ticket->grade->name,

@@ -140,9 +140,10 @@ class YagaOrderApiController
 
     public function orderInfo(OrderInfoRequest $request): JsonResponse
     {
-        $order = Order::with(['status', 'tickets', 'partner', 'tickets.grade'])
+        $order = Order::with(['status', 'tickets', 'partner', 'tickets.grade', 'tickets.order'])
             ->whereIn('status_id', OrderStatus::yaga_statuses)
-            ->where('id', $request->id)->first();
+            ->where('id', $request->id)
+            ->first();
 
         if (!$order) {
             return response()->json('Заказ не найден');
@@ -250,7 +251,8 @@ class YagaOrderApiController
     {
         $order = Order::with(['status', 'tickets', 'partner'])
             ->whereIn('status_id', OrderStatus::yaga_statuses)
-            ->where('id', $request->id)->first();
+            ->where('id', $request->id)
+            ->first();
 
         if (!$order) {
             return response()->json('Заказ не найден');
@@ -274,7 +276,7 @@ class YagaOrderApiController
 
         return response()->json([
             'id' => $order->id,
-            'orderNumber' => $order->additionalData?->provider_order_id ?? $order->id,
+            'orderNumber' => $order->id,
             'status' => 'APPROVED',
             'specificFields' => (object)[]
         ]);
