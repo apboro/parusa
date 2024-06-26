@@ -19,11 +19,10 @@ Route::middleware(['auth:sanctum'])->prefix('api/yaga/')->group(function (){
     Route::post('reserve', [YagaOrderApiController::class,'reserve']);
     Route::post('approve', [YagaOrderApiController::class,'approve']);
     Route::post('order-info', [YagaOrderApiController::class,'orderInfo']);
-    Route::get('order-status', [YagaOrderApiController::class,'orderStatus']);
-    Route::get('cancel-order', [YagaOrderApiController::class,'cancelOrder']);
-    Route::get('check-promocode', [YagaOrderApiController::class,'checkPromocode']);
-    Route::get('clear-reservation', [YagaOrderApiController::class,'clearReservation']);
-    Route::get('approve', [YagaOrderApiController::class,'approve']);
+    Route::post('order-status', [YagaOrderApiController::class,'orderStatus']);
+    Route::post('cancel-order', [YagaOrderApiController::class,'cancelOrder']);
+    Route::post('clear-reservation', [YagaOrderApiController::class,'clearReservation']);
+    Route::post('approve', [YagaOrderApiController::class,'approve']);
 
 
 });

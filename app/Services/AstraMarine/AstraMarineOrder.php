@@ -3,10 +3,16 @@
 namespace App\Services\AstraMarine;
 
 use App\Exceptions\AstraMarine\AstraMarineNoTicketException;
+use App\Http\APIResponse;
 use App\Models\Dictionaries\Provider;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\Ships\Seats\Seat;
+use App\Models\Tickets\Ticket;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class AstraMarineOrder
 {
@@ -41,19 +47,37 @@ class AstraMarineOrder
         }
     }
 
-    public function registerOrder(): void
+    /**
+     * @throws Exception
+     */
+    public function registerOrder(): null|JsonResponse
     {
-        $orders = $this->getOrdersQueryData();
+        try {
+            $orders = $this->getOrdersQueryData();
+            $orderNumber = strlen((string)$this->order->id) > 5 ? 'ALP' . $this->order->id : 'ALP0' . $this->order->id;
+            Log::channel('astra-marine')->notice('register order request: ' . json_encode($orders));
+            $response = $this->astraMarineRepository->registerOrder([
+                "sessionID" => md5($this->order->phone),
+                "orderID" => $orderNumber,
+                "paymentTypeID" => "000000002",
+                "email" => "info@parus-a.ru",
+                'order' => $orders,
+            ]);
+            if ($response['body']['isOrderRegistred']) {
+                Log::channel('astra-marine')->notice('register order success: ' . json_encode($response['body']));
+                $this->saveTicketsBarcodes($response['body']);
+                $this->order->additionalData()->create(['provider_id' => Provider::astra_marine, 'provider_order_id' => $orderNumber]);
+            } else {
 
-        $response = $this->astraMarineRepository->registerOrder([
-            "sessionID" => md5($this->order->phone),
-            "orderID" => $this->order->id,
-            "paymentTypeID" => "000000002",
-            "email" => "info@parus-a.ru",
-            'order' => $orders,
-        ]);
+                throw new Exception($response['body']['descriptionRegistredOrder']);
+            }
+        } catch (Exception $exception) {
 
-        $this->saveTicketsBarcodes($response['body']);
+            Log::channel('astra-marine')->error($exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
+            throw new Exception($exception->getMessage());
+        }
+
+        return null;
     }
 
     public function getTickets(): Collection|array
@@ -84,42 +108,87 @@ class AstraMarineOrder
 
     public function saveTicketsBarcodes(array $orderedTickets): void
     {
+        $ticketExample = $this->tickets?->first();
         foreach ($orderedTickets['orderedSeats'] as $orderedTicket) {
-            $ticket = $this->tickets->first(function ($ticket) use ($orderedTicket){
-                return $ticket->grade->provider_ticket_type_id == $orderedTicket['ticketTypeID']
-                    && $ticket->grade->provider_category_id == $orderedTicket['seatCategoryID']
-                    && $ticket->grade->provider_price_type_id == $orderedTicket['priceTypeID'];
-            });
-            if ($ticket) {
-                $this->tickets->forget($this->tickets->search($ticket));
-                $ticket->additionalData()->updateOrCreate(['provider_id' => Provider::astra_marine],
-                    ['provider_qr_code' => $orderedTicket['barCodes'][0]]);
+            foreach ($orderedTicket['barCodes'] as $barcode) {
+                $ticket = $this->tickets->first(function ($ticket) use ($orderedTicket) {
+                    return $ticket->grade->provider_ticket_type_id == $orderedTicket['ticketTypeID']
+                        && $ticket->grade->provider_category_id == $orderedTicket['seatCategoryID']
+                        && $ticket->grade->provider_price_type_id == $orderedTicket['priceTypeID'];
+                });
+
+                if ($ticket) {
+                    $this->tickets->forget($this->tickets->search($ticket));
+                    $ticket->additionalData()->create([
+                        'provider_id' => Provider::astra_marine,
+                        'provider_qr_code' => $barcode
+                    ]);
+                } else {
+                    $ticket = $this->tickets?->first();
+                    if (!$ticket) {
+                        $ticket = $this->makeTicketForVIP($ticketExample);
+                    }
+                    $ticket->additionalData()->create([
+                        'provider_id' => Provider::astra_marine,
+                        'provider_qr_code' => $barcode
+                    ]);
+                    $this->tickets?->forget($this->tickets?->search($ticket));
+                }
             }
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function confirmOrder()
     {
-        $this->astraMarineRepository->confirmPayment([
-            'orderID' => $this->order->id,
-            'orderConfirm' => true,
-        ]);
+        try {
+            $response = $this->astraMarineRepository->confirmPayment([
+                'orderID' => $this->order->additionalData->provider_order_id,
+                'orderConfirm' => true,
+            ]);
+
+            Log::channel('astra-marine')->notice('confirm order success: ' . json_encode($response));
+        } catch (Exception $exception) {
+
+            Log::channel('astra-marine')->error('confirm order error: ' . $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
+            throw new Exception($exception->getMessage());
+        }
     }
 
     public function cancel()
     {
-        $order_id_formatted = number_format($this->order->id, 0, '', ' ');
-        $order = explode(' ', $order_id_formatted);
-        $dataOrder = $order[0]."\xC2\xA0".$order[1];
-        $this->astraMarineRepository->returnOrder(["orderID" => $dataOrder]);
+        try {
+            $response = $this->astraMarineRepository->returnOrder(["orderID" => $this->order->additionalData->provider_order_id]);
+
+            if (!$response['body']['isOrderReturned']) {
+                throw new Exception('Не удалось оформить возврат');
+            }
+            Log::channel('astra-marine')->notice('cancel order success: ' . json_encode($response));
+        } catch (Exception $exception) {
+
+            Log::channel('astra-marine')->error('cancel order error: ' . $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
+            throw new Exception($exception->getMessage());
+        }
     }
 
     public function getOrder()
     {
-        $order_id_formatted = number_format($this->order->id, 0, '', ' ');
-        $order = explode(' ', $order_id_formatted);
-        $dataOrder = $order[0]."\xC2\xA0".$order[1];
-        return $this->astraMarineRepository->getOrder(["orderID" => $dataOrder]);
+        return $this->astraMarineRepository->getOrder(["orderID" => $this->order->additionalData->provider_order_id]);
+    }
+
+    public function makeTicketForVIP(Ticket $ticketExample)
+    {
+        return $this->order->tickets()->create([
+            'status_id' => $ticketExample->status_id,
+            'order_id' => $ticketExample->order_id,
+            'trip_id' => $ticketExample->trip_id,
+            'grade_id' => $ticketExample->grade_id,
+            'base_price' => 0,
+            'provider_id' => Provider::astra_marine,
+            'seat_id' => $ticketExample->seat_id
+        ]);
     }
 
 }

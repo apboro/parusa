@@ -22,8 +22,7 @@
                :buttons="[
                {result: 'ok', caption: 'OK', color: 'green', disabled: !selectedGrade || (selectedGrade.menus.length > 0 ? !selectedMenu : false)},
                {result: 'cancel', caption: 'Отмена'},
-           ]" vertical-align-center
-        >
+           ]" vertical-align-center>
             <div v-for="(grade, index) in seatGrades" :key="index">
                 <label v-if="getGradePrice(grade.grade.id)">
                     <input @click="selectedMenu = null" style="margin-top: 10px" type="radio" v-model="selectedGrade"

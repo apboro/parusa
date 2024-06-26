@@ -5,6 +5,8 @@ import GuiContainer from "@/Components/GUI/GuiContainer.vue";
 import TicketInfoPage from "@/Pages/Admin/Registries/TicketInfoPage.vue";
 import CompactTicket from "@/Components/CompactTicket.vue";
 import GuiText from "@/Components/GUI/GuiText.vue";
+import GuiValue from "@/Components/GUI/GuiValue.vue";
+import InputNumber from "@/Components/Inputs/InputNumber.vue";
 
 export default {
     name: "ControllerPage",
@@ -13,9 +15,12 @@ export default {
         data: null,
         message: null,
         paused: false,
+        ticketNumber: null
     }),
 
     components: {
+        InputNumber,
+        GuiValue,
         GuiText,
         CompactTicket,
         TicketInfoPage,
@@ -56,7 +61,18 @@ export default {
                 window.setTimeout(resolve, ms)
             })
         },
-        
+        manualEnter() {
+            axios.post('/api/ticket/qrcode/check', {manual: true, ticketNumber: this.ticketNumber})
+                .then(response => {
+                    if (response.data.data.notValidQrCode) {
+                        this.message = response.data.data.notValidQrCode;
+                    } else {
+                        this.data = response.data.data
+                        this.message = null;
+                    }
+                })
+        },
+
         paintBoundingBox(detectedCodes, ctx) {
             for (const detectedCode of detectedCodes) {
                 const {
@@ -90,7 +106,15 @@ export default {
             <qrcode-stream v-if="!paused" @paused="paused" @detect="onDetect" :track="paintBoundingBox">
                 <div v-if="message !== null" class="validation-failure">{{ message }}</div>
             </qrcode-stream>
+
+            <div v-if="!data">
+                <span>Ввести номер билета вручную</span>
+                <InputNumber :small="true" placeholder="Введите номер билета" v-model="ticketNumber"></InputNumber>
+                <GuiButton style="margin-top: 10px" @clicked="manualEnter">Найти</GuiButton>
+            </div>
+
             <CompactTicket v-if="data" :data="data" @used="used" @close="close"/>
+
         </div>
     </GuiContainer>
 </template>
@@ -113,6 +137,7 @@ export default {
     flex-flow: column nowrap;
     justify-content: center;
 }
+
 .validation-failure {
     color: red;
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\Helpers\Fiscal;
@@ -179,6 +180,7 @@ class TerminalCurrentOrderController extends ApiController
             $order->payCommissions();
 
         } catch (Exception $exception) {
+            Log::error('terminal current order error: '. $exception->getMessage(). ' '. $exception->getFile(). ' '. $exception->getLine());
             return APIResponse::error($exception->getMessage());
         }
 
@@ -279,7 +281,6 @@ class TerminalCurrentOrderController extends ApiController
                         $payment->position_id = $current->positionId();
                         $payment->save();
 
-
                         if ($receivedPayment['fiscal_document']['guid']) {
                             $receipt = LifePosSales::getFiscal($receivedPayment['fiscal_document']['guid']);
                             if (isset($receipt['sources']['print_view'])) {
@@ -297,11 +298,16 @@ class TerminalCurrentOrderController extends ApiController
 
                         NevaTravelOrderPaidEvent::dispatch($order);
                         CityTourOrderPaidEvent::dispatch($order);
+                        AstraMarineOrderPaidEvent::dispatch($order);
+
                     }
                 }
             }
         } catch (Exception $exception) {
-            Log::channel('lifepos_payments')->error('status method error', [$exception]);
+            Log::channel('lifepos_payments')->error('error in TerminalCurrentOrderController: ' . $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine()
+                . ' order id: ' . $order->id
+                . ' order external_id: ' . $order->external_id
+                . ' payments array from lifePos: ' . json_encode($payments ?? null));
         }
 
         return APIResponse::response([

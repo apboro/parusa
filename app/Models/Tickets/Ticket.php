@@ -29,6 +29,7 @@ use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
 use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeNone;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Log;
 use JsonException;
 
 /**
@@ -88,6 +89,12 @@ class Ticket extends Model implements Statusable
             $this->checkAndSetStatus(TicketStatus::class, TicketStatus::partner_paid_single, WrongTicketStatusException::class, $save);
         } elseif ($status === TicketStatus::showcase_paid && $isSingleTicket) {
             $this->checkAndSetStatus(TicketStatus::class, TicketStatus::showcase_paid_single, WrongTicketStatusException::class, $save);
+        } elseif ($status === TicketStatus::promoter_paid && $isSingleTicket) {
+            $this->checkAndSetStatus(TicketStatus::class, TicketStatus::promoter_paid_single, WrongTicketStatusException::class, $save);
+        } elseif ($status === TicketStatus::api_confirmed && $isSingleTicket) {
+            $this->checkAndSetStatus(TicketStatus::class, TicketStatus::api_confirmed_single, WrongTicketStatusException::class, $save);
+        } elseif ($status === TicketStatus::yaga_confirmed && $isSingleTicket) {
+            $this->checkAndSetStatus(TicketStatus::class, TicketStatus::yaga_confirmed_single, WrongTicketStatusException::class, $save);
         } else {
             $this->checkAndSetStatus(TicketStatus::class, $status, WrongTicketStatusException::class, $save);
         }
@@ -206,31 +213,37 @@ class Ticket extends Model implements Statusable
         if ($partner->type_id === PartnerType::promoter) {
             if ($openedShift = $partner->getOpenedShift()) {
                 $dataForTransaction = $this->countPromotersCommission($openedShift);
-                $this->saveCommissionsInShift($openedShift, $dataForTransaction['promoter_amount']);
+                Log::channel('promoters')->info('pay commission to id: '. $partner->id . ' sum:' . $dataForTransaction['partner_amount']);
+                $this->saveCommissionsInShift($openedShift, $dataForTransaction['partner_amount']);
             }
+        }
+
+        if ($partner->name === 'Афиша'){
+            $dataForTransaction['partner_amount'] = 0.1 * $this->base_price;
+            $dataForTransaction['partner_commission'] = 10;
+            $dataForTransaction['commission_type'] = 'percents';
         }
 
         $partner->account->attachTransaction(new AccountTransaction([
             'type_id' => AccountTransactionType::tickets_sell_commission,
             'status_id' => AccountTransactionStatus::accepted,
-            'timestamp' => Carbon::now(),
-            'amount' => $dataForTransaction['promoter_amount'] ?? $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100),
+            'amount' => $dataForTransaction['partner_amount'] ?? $rate->commission_value * ($rate->commission_type === 'fixed' ? 1 : $this->base_price / 100),
             'ticket_id' => $this->id,
-            'commission_type' => $rate->commission_type,
-            'commission_value' => $dataForTransaction['promoter_commission'] ?? $rate->commission_value,
+            'commission_type' => $dataForTransaction['commission_type'] ?? $rate->commission_type,
+            'commission_value' => $dataForTransaction['partner_commission'] ?? $rate->commission_value,
             'commission_delta' => $dataForTransaction['commission_delta'] ?? 0,
         ]));
     }
 
-    public function saveCommissionsInShift(WorkShift $shift, int $commission, $opened = true): void
+    public function saveCommissionsInShift(WorkShift $shift, int $commission, $opened = true, $refund = false): void
     {
         if ($opened) {
             $shift->pay_commission = $shift->pay_commission + $commission;
-            $shift->sales_total = $shift->sales_total + $this->base_price;
         } else {
-            $shift->balance = $shift->balance - $commission;
-            $shift->sales_total = $shift->sales_total - $this->base_price;
+            $shift->balance = $shift->balance + $commission;
         }
+        $shift->sales_total = $refund ? $shift->sales_total - $this->base_price : $shift->sales_total + $this->base_price;
+        Log::channel('promoters')->info('save commissions in shift id: '. $shift->id . ' commission: ' . $commission);
         $shift->save();
     }
 
@@ -242,8 +255,9 @@ class Ticket extends Model implements Statusable
         $promoterAmount = $promoterCommission * $this->base_price / 100;
 
         return [
-            'promoter_commission' => $promoterCommission,
-            'promoter_amount' => $promoterAmount,
+            'partner_commission' => $promoterCommission,
+            'commission_type' => 'percents',
+            'partner_amount' => $promoterAmount,
             'commission_delta' => $shift->commission_delta
         ];
     }
@@ -274,7 +288,6 @@ class Ticket extends Model implements Statusable
         $partner->account->attachTransaction(new AccountTransaction([
             'type_id' => AccountTransactionType::tickets_buy_return,
             'status_id' => AccountTransactionStatus::accepted,
-            'timestamp' => Carbon::now(),
             'amount' => $this->base_price ?? 0,
             'ticket_id' => $this->id,
             'committer_id' => $committer->id ?? null,
@@ -316,10 +329,10 @@ class Ticket extends Model implements Statusable
         }
         if ($partner->type_id === PartnerType::promoter) {
             if ($openedShift = $partner->getOpenedShift()) {
-                $this->saveCommissionsInShift($openedShift, -$transaction->amount);
+                $this->saveCommissionsInShift($openedShift, -$transaction->amount, refund: true);
             } else {
                 $lastShift = $partner->getLastShift();
-                $this->saveCommissionsInShift($lastShift, $transaction->amount, false);
+                $this->saveCommissionsInShift($lastShift, -$transaction->amount, false, true);
             }
         }
 
@@ -411,7 +424,6 @@ class Ticket extends Model implements Statusable
 
     public function getPrice(): float|int
     {
-        $this->loadMissing(['order', 'order.tickets']);
         if ($this->base_price == 0){
             return 0;
         }

@@ -14,8 +14,15 @@
                     </template>
                 </ShowcaseV2LoadingProgress>
             </div>
-            <div class="ap-dialogs__dialog-buttons" v-if="false">
-                <ShowcaseV2Button @click="resolve('close')">Закрыть</ShowcaseV2Button>
+            <div class="ap-dialogs__dialog-buttons" :class="'ap-dialogs__dialog-buttons-' + align">
+                <ShowcaseV2Button v-for="button in buttons"
+                           :color="button.color"
+                           :identifier="button.result"
+                           :disabled="button.disabled"
+                           @clicked="resolve"
+                >
+                    {{ button.caption }}
+                </ShowcaseV2Button>
             </div>
         </div>
     </div>
@@ -34,6 +41,13 @@ export default {
     },
     props: {
         title: {type: String, default: null},
+        message: {type: String, default: null},
+        buttons: {type: Array, default: () => ([{result: 'ok', caption: 'OK'}])},
+        align: {type: String, default: 'center'},
+        manual: {type: Boolean, default: false},
+        resolving: {type: Function, default: null},
+        closeOnOverlay: {type: Boolean, default: false},
+        verticalAlignCenter: {type: Boolean, default: false},
     },
 
     data: () => ({
@@ -208,6 +222,15 @@ export default {
             }
         }
 
+    }
+}
+@media (max-width: 767px) {
+    .dialogs__dialog-wrapper {
+        padding: 0;
+    }
+
+    .dialogs__dialog-title {
+        margin-bottom: 0;
     }
 }
 </style>

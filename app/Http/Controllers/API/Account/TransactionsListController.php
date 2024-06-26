@@ -9,10 +9,13 @@ use App\Http\Requests\APIListRequest;
 use App\Models\Account\AccountTransaction;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\OrderStatus;
 use App\Models\Hit\Hit;
+use App\Models\Order\Order;
 use App\Models\Partner\Partner;
 use App\Models\User\Helpers\Currents;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -56,6 +59,44 @@ class TransactionsListController extends ApiController
         $this->defaultFilters['date_to'] = Carbon::now()->format('Y-m-d');
 
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
+
+        $ordersCollection = Order::query()->with(['tickets', 'promocode'])
+            ->where('partner_id', $id)
+            ->where('status_id', OrderStatus::promoter_self_paid)
+            ->whereDate('created_at', '>=', Carbon::parse($filters['date_from']))
+            ->whereDate('created_at', '<=', Carbon::parse($filters['date_to']))
+            ->get();
+
+        $sumSoldTickets = $ordersCollection->sum(function (Order $order) {
+            return $order->total();
+        });
+
+        $sumCommissionForSelfSoldPlus = $query->clone()
+            ->where('type_id', AccountTransactionType::tickets_sell_commission)
+            ->whereHas('ticket', function (Builder $ticket) use ($filters) {
+                $ticket->whereHas('order', function (Builder $order) use ($filters) {
+                    $order->where('status_id', OrderStatus::promoter_self_paid)
+                        ->whereDate('created_at', '>=', Carbon::parse($filters['date_from']))
+                        ->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+                });
+            })->get()
+            ->sum(function (AccountTransaction $transaction) {
+                return $transaction->amount;
+            });
+        $sumCommissionForSelfSoldMinus = $query->clone()
+            ->where('type_id', AccountTransactionType::tickets_sell_commission_return)
+            ->whereHas('ticket', function (Builder $ticket) use ($filters) {
+                $ticket->whereHas('order', function (Builder $order) use ($filters) {
+                    $order->where('status_id', OrderStatus::promoter_self_paid)
+                        ->whereDate('created_at', '>=', Carbon::parse($filters['date_from']))
+                        ->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
+                });
+            })->get()
+            ->sum(function (AccountTransaction $transaction) {
+                return $transaction->amount;
+            });
+
+        $sumCommissionForSelfSold = $sumCommissionForSelfSoldPlus - $sumCommissionForSelfSoldMinus;
 
         // apply filters
         if (!empty($filters['date_from'])) {
@@ -130,6 +171,9 @@ class TransactionsListController extends ApiController
                 'selected_page_total' => $pageTotal,
                 'selected_total' => $total,
                 'balance' => $account->amount,
+                'sumSoldTickets' => round($sumSoldTickets),
+                'sumCommissionSelfSold' => round($sumCommissionForSelfSold),
+                'payToBase' => round($sumSoldTickets - $sumCommissionForSelfSold),
                 'limit' => $account->limit,
                 'date_from' => $fromDate->format('d.m.Y'),
                 'date_to' => $toDate->format('d.m.Y'),

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Showcase;
 
+use App\Actions\GetNevaTripPriceAction;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Http\Middleware\ExternalProtect;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
@@ -23,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
@@ -216,6 +219,13 @@ class ShowcaseTripsController extends ApiController
                 });
         }
 
+        if ($trip->provider_id === Provider::neva_travel){
+            $nevaRates = (new GetNevaTripPriceAction())->run($trip, true);
+            foreach ($nevaRates as &$rate) {
+                $rate['backward_price'] = $rates->where('grade_id', $rate['grade_id'])->first()['backward_price'];
+            }
+        }
+
         $ticketsCountable = $trip->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count();
         $ticketsReserved = $trip->tickets()->whereIn('status_id', TicketStatus::ticket_reserved_statuses)->count();
 
@@ -226,7 +236,7 @@ class ShowcaseTripsController extends ApiController
                 'pier_id' => $trip->start_pier_id,
                 'start_date' => $trip->start_at->translatedFormat('j F Y') . ' г.',
                 'start_time' => $trip->start_at->format('H:i'),
-                'ship_has_scheme' => $trip->ship->ship_has_seats_scheme,
+                'trip_with_seats' => $trip->additionalData?->with_seats,
                 'capacity' => $trip->ship->capacity,
                 'shipId' => $trip->ship->id,
                 'scheme_name' => $trip->ship->scheme_name,
@@ -243,7 +253,7 @@ class ShowcaseTripsController extends ApiController
                     return $image->url;
                 }),
                 'tickets_left' => $trip->tickets_total - $ticketsCountable - $ticketsReserved,
-                'rates' => array_values($rates->toArray()),
+                'rates' => $nevaRates ?? array_values($rates->toArray()),
             ],
         ]);
     }

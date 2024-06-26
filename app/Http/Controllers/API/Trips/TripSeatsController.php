@@ -24,12 +24,11 @@ class TripSeatsController extends Controller
             $seats = (new AstraMarineRepository())->getSeatsOnEvent(['eventID' => $trip->additionalData?->provider_trip_id]);
             foreach ($seats['body']['seats'] as $seat) {
                 if ($seat['seatStatus'] !== "Свободно") {
-                    TripSeat::updateOrCreate([
+                    TripSeat::query()->updateOrCreate([
                         'trip_id' => $trip->id,
                         'seat_id' => $trip->ship->seats()
                             ->where('provider_seat_id', $seat['seatID'])
-                            ->first()
-                            ->id],
+                            ->first()?->id],
                         ['status_id' => SeatStatus::occupied]
                     );
                 }

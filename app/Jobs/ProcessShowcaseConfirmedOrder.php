@@ -7,6 +7,7 @@ use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelOrderPaidEvent;
 use App\LifePay\CloudPrint;
+use App\LifePay\CloudPrintMock;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\Provider;
@@ -57,7 +58,7 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
                     'tickets',
                     'payments' => function (HasMany $query) {
                         $query
-                            ->where('gate', 'sber')
+                            ->where('gate', 'youkassa')
                             ->latest()
                             ->limit(1);
                     }]
@@ -65,20 +66,28 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             ->where('id', $this->orderId)
             ->first();
 
-        if ($order === null || !in_array($order->status_id, [OrderStatus::showcase_confirmed, OrderStatus::promoter_confirmed])) {
+        if ($order === null ||
+            !in_array($order->status_id, [
+                OrderStatus::showcase_confirmed,
+                OrderStatus::promoter_confirmed,
+                OrderStatus::partner_paid_by_link])) {
             return;
         }
 
         $tickets = [];
 
         // update order status
+        $newOrderStatus = OrderStatus::showcase_paid;
+        $newTicketStatus = TicketStatus::showcase_paid;
+
         if ($order->type_id === OrderType::promoter_sale){
             $newOrderStatus = OrderStatus::promoter_paid;
             $newTicketStatus = TicketStatus::promoter_paid;
-        } else {
-            $newOrderStatus = OrderStatus::showcase_paid;
-            $newTicketStatus = TicketStatus::showcase_paid;
+        } else if ($order->type_id === OrderType::partner_sale){
+            $newOrderStatus = OrderStatus::partner_paid_by_link;
+            $newTicketStatus = TicketStatus::partner_paid_by_link;
         }
+
         $order->setStatus($newOrderStatus);
         $order->tickets->map(function (Ticket $ticket) use (&$tickets, $newTicketStatus) {
             $ticket->setStatus($newTicketStatus);
@@ -98,8 +107,14 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             Log::error('ProcessShowcaseConfirmedOrder', [$exception]);
         }
 
-        if (config('sber.sber_acquiring_production')) {
-            CloudPrint::createReceipt($order, $tickets, CloudPrint::payment, $order->payments->first());
+        try {
+            if (config('sber.sber_acquiring_production')) {
+                CloudPrint::createReceipt($order, $tickets, CloudPrint::payment, $order->payments->first());
+            } else {
+                CloudPrintMock::createReceipt($order, $tickets, CloudPrint::payment, $order->payments->first());
+            }
+        } catch (Exception $e) {
+            Log::channel('cloud_print')->error($e->getMessage());
         }
 
         // send tickets
@@ -113,7 +128,7 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
         try {
             $order->payCommissions();
         } catch (Exception $exception) {
-            Log::error($exception->getMessage());
+            Log::error('processShowcase_pay_commissions error:' . $exception->getMessage());
         }
     }
 }

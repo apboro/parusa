@@ -20,6 +20,8 @@ class WorkShift extends Model
 {
     use HasFactory;
 
+    protected $dates = ['start_at', 'end_at'];
+
     protected $guarded = [];
 
     public function tariff()
@@ -32,6 +34,11 @@ class WorkShift extends Model
         return $this->belongsTo(Partner::class, 'partner_id', 'id');
     }
 
+    public function terminal()
+    {
+        return $this->belongsTo(Terminal::class, 'terminal_id', 'id');
+    }
+
     public function getPayForTime(): int
     {
         if ($this->tariff->pay_per_hour) {
@@ -41,10 +48,11 @@ class WorkShift extends Model
         }
     }
 
-    public function getWorkingHours(): float
+    public function getWorkingHours(): int
     {
         $interval = Carbon::parse($this->start_at)->diff($this->end_at ? Carbon::parse($this->end_at) : now());
-        return round(($interval->days * 24 + $interval->h + $interval->i / 60), 1);
+
+        return round($interval->days * 24 + $interval->h + $interval->i / 60);
     }
 
     public function getShiftTotalPay()

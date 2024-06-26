@@ -22,7 +22,7 @@
             <tr v-for="item in rates">
                 <td>{{ gradeName(item['grade_id']) }}</td>
                 <td style="color: #4a0d8d">{{ item['partner_price'] ? item['partner_price'] + ' руб.' : '—' }}</td>
-                <template v-if="overridable">
+                <template v-if="overridable && item['partner_commission_type'] !== null">
                     <td v-if="item['partner_commission_type'] === 'percents'">{{ item['partner_commission_value'] }}%</td>
                     <td v-else-if="item['partner_commission_type'] === 'fixed'">фикс.</td>
                     <td v-else>—</td>
@@ -31,6 +31,16 @@
                     <td v-else-if="item['partner_commission_type'] === 'fixed'">{{ item['partner_commission_value'] }} руб.</td>
                     <td v-else>—</td>
                 </template>
+                <template v-else>
+                    <td v-if="item['commission_type'] === 'percents'">{{ item['commission_value'] }}%</td>
+                    <td v-else-if="item['commission_type'] === 'fixed'">фикс.</td>
+                    <td v-else>—</td>
+
+                    <td v-if="item['commission_type'] === 'percents'">{{ Math.floor(item['commission_value'] * item['partner_price']) / 100 }} руб.</td>
+                    <td v-else-if="item['commission_type'] === 'fixed'">{{ item['commission_value'] }} руб.</td>
+                    <td v-else>—</td>
+                </template>
+
             </tr>
             </tbody>
         </table>

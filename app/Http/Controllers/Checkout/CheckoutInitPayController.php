@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Checkout;
 
+use App\Helpers\StatisticQrCodes;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\HitSource;
@@ -10,15 +11,11 @@ use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Hit\Hit;
 use App\Models\Order\Order;
+use App\Models\Partner\Partner;
+use App\Models\QrCodes\QrCode;
 use App\Models\Tickets\Ticket;
 use App\SberbankAcquiring\Connection;
 use App\SberbankAcquiring\Helpers\Currency;
-
-// use App\SberbankAcquiring\Helpers\MeasurementUnit;
-// use App\SberbankAcquiring\Helpers\PaymentMethodType;
-// use App\SberbankAcquiring\Helpers\PaymentObject;
-// use App\SberbankAcquiring\Helpers\TaxSystem;
-// use App\SberbankAcquiring\Helpers\TaxType;
 use App\SberbankAcquiring\HttpClient\CurlClient;
 use App\SberbankAcquiring\Options;
 use App\SberbankAcquiring\Sber;
@@ -29,6 +26,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use JsonException;
+use YooKassa\Client;
+use YooKassa\Model\Payment\ConfirmationType;
+use YooKassa\Request\Payments\CreatePaymentRequest;
 
 class CheckoutInitPayController extends ApiController
 {
@@ -64,76 +64,78 @@ class CheckoutInitPayController extends ApiController
 
         // create order
         $orderId = $order->id . ' (' . Carbon::now()->format('d.m.Y H:i:s') . ')';
-        $finishedUrl = config('showcase.showcase_payment_page') . '?order=' . $secret . '&status=finished';
+        $finishedUrl = config('showcase.showcase_payment_page') . '?order=' . $secret. '&status=finished';
         $phone = preg_replace('/[^\d+]/', '', $order->phone);
-        // Нет документации по частичному возврату с корзиной заказов, без неё работает
-        // $count = 1;
-        // $items = $order->tickets->map(function (Ticket $ticket) use (&$count) {
-        //     return [
-        //         'positionId' => $count++,
-        //         'name' => sprintf(
-        //             'Билет N%s (%s) на рейс N%s, %s',
-        //             $ticket->id, mb_strtolower($ticket->grade->name), $ticket->trip->id, $ticket->trip->start_at->format('d.m.Y H:i'),
-        //         ),
-        //         'quantity' => [
-        //             'value' => 1,
-        //             'measure' => MeasurementUnit::pcs,
-        //         ],
-        //         'itemAmount' => (int)($ticket->base_price * 100),
-        //         'itemCode' => $ticket->id,
-        //         'tax' => [
-        //             'taxType' => TaxType::no_vat,
-        //         ],
-        //         'itemPrice' => (int)($ticket->base_price * 100),
-        //         'itemAttributes' => [
-        //             'attributes' => [
-        //                 ['name' => 'paymentMethod', 'value' => PaymentMethodType::full_payment],
-        //                 ['name' => 'paymentObject', 'value' => PaymentObject::service],
-        //             ],
-        //         ],
-        //     ];
-        // });
-        $data = [
-            'jsonParams' => [
-                'email' => $order->email,
-                'phone' => $phone,
-            ],
-            // Нет документации по частичному возврату с корзиной заказов, без неё работает
-            // 'taxSystem' => TaxSystem::simplified_income_minus_expences,
-            // 'orderBundle' => [
-            //     'orderCreationDate' => $order->created_at->format('Y-m-d\TH:i:s'),
-            //     'customerDetails' => [
-            //         'email' => $order->email,
-            //         //'phone' => $phone,
-            //     ],
-            //     'cartItems' => ['items' => $items->toArray()],
-            // ],
-        ];
-        if (config('sber.sber_acquiring_callback_enable')) {
-            $data['dynamicCallbackUrl'] = route('sberNotification');
-        }
 
-        $isProduction = config('sber.sber_acquiring_production');
-        $connection = new Connection([
-            'token' => config('sber.sber_acquiring_token'),
-            'userName' => config('sber.sber_acquiring_user'),
-            'password' => config('sber.sber_acquiring_password'),
-        ], new CurlClient(), $isProduction);
-        $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
-        $sber = new Sber($connection, $options);
+        $client = new Client();
+        $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
+        $builder = CreatePaymentRequest::builder();
+        $builder->setAmount($order->total())
+            ->setCurrency(\YooKassa\Model\CurrencyCode::RUB)
+            ->setCapture(true)
+            ->setDescription('Оплата заказа '. $order->id)
+            ->setMetadata([
+                'cms_name'       => 'Алые Паруса',
+                'order_id'       => $order->id,
+                'language'       => 'ru',
+            ]);
+
+        $builder->setConfirmation(array(
+            'type'      => ConfirmationType::REDIRECT,
+            'returnUrl' => $finishedUrl,
+        ));
+
+        $youkassaRequest = $builder->build();
+        $idempotenceKey = uniqid('', true);
+
         try {
-            $response = $sber->registerOrder($orderId, $order->total() * 100, config('showcase.showcase_order_lifetime') * 60, $finishedUrl, $data);
+            $response = $client->createPayment($youkassaRequest, $idempotenceKey);
         } catch (Exception $exception) {
-            Log::channel('sber_payments')->error(sprintf('Order [%s] registration client error: %s', $orderId, $exception->getMessage()));
+            Log::channel('youkassa')->error(sprintf('Order [%s] registration client error: %s', $orderId, $exception->getMessage()));
             return APIResponse::error($exception->getMessage());
         }
 
-        if (!$response->isSuccess()) {
-            Log::channel('sber_payments')->error(sprintf('Order [%s] registration error: %s', $orderId, $response->errorMessage()));
-            return APIResponse::error($response->errorMessage());
+        if ($response->getStatus() !== 'pending') {
+            Log::channel('youkassa')->error(sprintf('Order [%s] registration error: %s', $orderId, $response->getDescription()));
+            return APIResponse::error($response->getDescription());
         }
 
-        $order->external_id = $response['orderId'];
+        $order->external_id = $response->getId();
+        if (!in_array($order->status_id, [OrderStatus::promoter_wait_for_pay, OrderStatus::partner_wait_for_pay])) {
+
+            $existingCookieHash = $request->cookie('qrCodeHash');
+            try {
+                if ($existingCookieHash) {
+                    /** @var QrCode|null $qrCode */
+                    $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
+                    if ($qrCode) {
+                        $order->partner_id = $qrCode->partner_id;
+                        $order->type_id = OrderType::qr_code;
+                        $order->save();
+                        StatisticQrCodes::addPayment($existingCookieHash);
+                    }
+                }
+            } catch (Exception $e) {
+                Log::channel('youkassa')->error('Error with qr statistics: ' . $e->getMessage());
+            }
+
+            $referralCookie = $request->cookie('referralLink');
+            try {
+                if ($referralCookie) {
+                    /**@var Partner|null $partner */
+                    $partner = Partner::query()->where('id', $referralCookie)->first();
+                    if ($partner) {
+                        $order->partner_id = $partner->id;
+                        $order->type_id = OrderType::referral_link;
+                        $order->save();
+                    }
+                }
+            } catch (Exception $e) {
+                Log::channel('youkassa')->error('Error with referral statistics: ' . $e->getMessage());
+            }
+        }
+
+        $order->external_id = $response->getId();
         if ($order->status_id != OrderStatus::promoter_wait_for_pay) {
             $order->setStatus(OrderStatus::showcase_wait_for_pay, false);
         }
@@ -149,7 +151,7 @@ class CheckoutInitPayController extends ApiController
         });
 
         return APIResponse::success('Перенаправление на оплату...', [
-            'form_url' => $response['formUrl'],
+            'form_url' => $response->getConfirmation()['_confirmation_url'],
         ]);
     }
 
@@ -168,8 +170,8 @@ class CheckoutInitPayController extends ApiController
                 ['status', 'tickets', 'tickets.grade', 'tickets.trip', 'tickets.trip.startPier', 'tickets.trip.startPier.info', 'tickets.trip.excursion', 'tickets.trip.excursion.info']
             )
             ->where('id', $id)
-            ->whereIn('status_id', [OrderStatus::promoter_wait_for_pay, OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::showcase_paid, OrderStatus::showcase_canceled])
-            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site])
+            ->whereIn('status_id', array_merge(OrderStatus::sberpay_statuses, [OrderStatus::showcase_canceled]))
+            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site, OrderType::partner_sale, OrderType::referral_link])
             ->first();
 
         return $order;

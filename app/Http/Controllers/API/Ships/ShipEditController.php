@@ -85,7 +85,7 @@ class ShipEditController extends ApiEditController
         $ship->owner = 'Алые Паруса';
         $ship->status_id = $data['status_id'];
         $ship->description = $data['description'];
-        $ship->ship_has_seats_scheme = $data['ship_has_seats_scheme'];
+        $ship->ship_has_seats_scheme = $data['ship_has_seats_scheme'] ?? false;
         $ship->partner_id = $data['partner_id'];
         $ship->save();
 

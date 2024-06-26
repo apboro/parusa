@@ -56,7 +56,7 @@ use App\Models\Tickets\Ticket;
                         <div style="position: absolute; left: 0; bottom: 0; width: 100%; line-height: 10pt; display: block; font-size: 10pt;">{{ $ticket->trip->excursion->name }}</div>
                     </div>
                     <div style="position:absolute; left: 95pt; top: 30pt; width: 70%; font-size: 7pt; text-align: center;">Экскурсия</div>
-                    <div style="position:absolute; left: 90pt; top: 43pt; width: 100%; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->trip->start_at->format('d.m.Y,  H:i') }}</div>
+                    <div style="position:absolute; left: 90pt; top: 43pt; width: 100%; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->trip->start_at->format('d.m.Y') }}</div>
                     <div style="position:absolute; left: 95pt; top: 55pt; width: 100%; font-size: 7pt; text-align: center;">Дата поездки</div>
                     <div style="position:absolute; left: 90pt; top: 68pt; width: 100%; font-size: 10pt; line-height: 10pt; border-bottom: 1px solid #5e5e5e;">{{ $ticket->grade->name }}</div>
                     <div style="position:absolute; left: 95pt; top: 80pt; width: 100%; font-size: 7pt; text-align: center;">Тип билета</div>

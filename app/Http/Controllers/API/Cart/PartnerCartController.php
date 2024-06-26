@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiEditController;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PartnerType;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Hit\Hit;
@@ -52,8 +53,8 @@ class PartnerCartController extends ApiEditController
             ->get();
         $limits = [];
         $ticketTrip = $tickets->first()?->trip->id;
-        $hasProviderTicket = $tickets->filter(function ($ticket) {
-            return $ticket->trip->provider_id !== null;
+        $hasForeignProvider = $tickets->filter(function ($ticket) {
+            return $ticket->trip->provider_id !== Provider::scarlet_sails;
         })->isNotEmpty();
 
         $tickets = $tickets->map(function (PositionOrderingTicket $ticket) use (&$limits) {
@@ -89,11 +90,12 @@ class PartnerCartController extends ApiEditController
 
         return APIResponse::response([
             'ticketTrip' => $ticketTrip,
-            'hasProviderTickets' => $hasProviderTicket,
+            'hasProviderTickets' => $hasForeignProvider,
             'openshift' => $current->partner()?->type_id === PartnerType::promoter ? $current->partner()->getOpenedShift() : null,
             'tickets' => $tickets,
             'limits' => $limits,
-            'can_reserve' => $current->partner() ? ($current->partner()->profile->can_reserve_tickets && !$hasProviderTicket) : null,
+            'can_send_sms' => $current->partner()->profile->can_send_sms,
+            'can_reserve' => $current->partner() ? ($current->partner()->profile->can_reserve_tickets && $hasForeignProvider === false) : null,
         ], []);
     }
 
@@ -157,15 +159,13 @@ class PartnerCartController extends ApiEditController
                 }
                 /** @var PositionOrderingTicket $ticket */
                 $ticket = $current->position()->ordering()
-                    ->where([
-                        'trip_id' => $trip->id,
-                        'grade_id' => $grade_id,
-                        'terminal_id' => $current->terminalId()])
                     ->firstOrNew([
                         'position_id' => $current->positionId(),
                         'trip_id' => $trip->id,
                         'grade_id' => $grade_id,
-                        'terminal_id' => $current->terminalId()]);
+                        'terminal_id' => $current->terminalId()
+                    ],
+                    ['base_price' => $ticket['base_price']]);
 
                 $ticket->quantity += $quantity;
                 $count += $quantity;

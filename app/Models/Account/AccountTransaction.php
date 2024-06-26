@@ -9,7 +9,9 @@ use App\Interfaces\Statusable;
 use App\Interfaces\Typeable;
 use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
+use App\Models\Order\Order;
 use App\Models\Positions\Position;
+use App\Models\Tickets\Ticket;
 use App\Traits\HasStatus;
 use App\Traits\HasType;
 use App\Models\User\User;
@@ -176,6 +178,11 @@ class AccountTransaction extends Model implements Statusable, Typeable
     public function getAmountAttribute(int $value): float
     {
         return PriceConverter::storeToPrice($value);
+    }
+
+    public function ticket(): BelongsTo
+    {
+        return $this->belongsTo(Ticket::class, 'ticket_id', 'id');
     }
 
     /**

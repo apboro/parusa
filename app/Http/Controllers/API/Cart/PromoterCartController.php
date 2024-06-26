@@ -271,8 +271,7 @@ class PromoterCartController extends ApiEditController
         $ticket = $cartTicketQuery->first();
         if ($ticket->seat_id) {
             TripSeat::query()->where('trip_id', $ticket->trip_id)
-                ->where('seat_number', $ticket->seat->seat_number)
-                ->delete();
+                ->where('seat_id', $ticket->seat_id)->delete();
         }
         $cartTicketQuery->delete();
 

@@ -10,10 +10,13 @@
                     {{ info.data['status'] }}
                 </GuiValue>
                 <GuiContainer mt-15 v-if="info.data['images'] && info.data['images'][0]">
-                    <img class="w-100" :src="info.data['images'][0]" :alt="info.data['name']"/>
+                    <img v-for = "image in info.data['images']" style="margin-bottom: 10px;" class="w-100" :src="image" :alt="info.data['name']"/>
                 </GuiContainer>
                 <GuiValueArea :title="'Краткое описание экскурсии'" v-text="info.data['announce']"/>
                 <GuiValueArea :title="'Полное описание экскурсии'" v-text="info.data['description']"/>
+                <GuiValueArea :title="'Меню ресторана'">
+                    <a :href="info.data['disk_url']">{{info.data['disk_url']}}</a>
+                </GuiValueArea>
                 <GuiValueArea :title="'Карта маршрута'" v-if="info.data['map_images'] && info.data['map_images'][0]">
                     <img class="w-100" :src="info.data['map_images'][0]" :alt="info.data['name']"/>
                 </GuiValueArea>

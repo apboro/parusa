@@ -14,12 +14,12 @@ class Session
             "canPreOrder" => 'PRE_ORDER_ALLOWED',
             "cancelAllowance" => 'CANCEL_ALLOWED',
             "eventId" => $trip->excursion->id,
-            "hallId" => $trip->ship->id,
+            "hallId" => $trip->start_pier_id,
             "id" => $trip->id,
             "organizerId" => Organizer::getStaticResource()['id'],
             "saleCanceling" => $trip->start_at->subHour()->toIso8601ZuluString(),
             "saleClosing" => $trip->start_at->subMinutes(5)->toIso8601ZuluString(),
-            "saleOpening" => $trip->start_at->subDay()->toIso8601ZuluString(),
+            "saleOpening" => $trip->start_at->subMonth()->toIso8601ZuluString(),
             "saleSupported" => true,
             "sessionTime" => [
                 "sessionEnd" => $trip->end_at->toIso8601ZuluString(),
@@ -33,7 +33,7 @@ class Session
                     "type" => 'описание сеанса'
                 ]
             ],
-            "venueId" => $trip->ship->id,
+            "venueId" => $trip->start_pier_id,
         ];
     }
 

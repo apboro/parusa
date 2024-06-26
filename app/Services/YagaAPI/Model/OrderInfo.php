@@ -2,6 +2,7 @@
 
 namespace App\Services\YagaAPI\Model;
 
+use App\Helpers\PriceConverter;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Order\Order;
 
@@ -34,11 +35,11 @@ class OrderInfo
                 ],
                 "price" => [
                     "currencyCode" => 'RUB',
-                    "value" => $orderTotal
+                    "value" => PriceConverter::priceToStore($orderTotal)
                 ],
                 "total" => [
                     "currencyCode" => 'RUB',
-                    "value" => $orderTotal
+                    "value" => PriceConverter::priceToStore($orderTotal)
                 ]
             ],
             "tickets" => (new YagaTicket($this->order))->getResource()

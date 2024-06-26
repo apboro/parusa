@@ -57,6 +57,7 @@ class ExcursionInfoController extends ApiController
             }),
             'duration' => $excursion->info->duration,
             'description' => $excursion->info->description,
+            'disk_url' => $excursion->disk_url,
             'announce' => $excursion->info->announce,
             'map_images' => $excursion->tripImages->map(function (Image $image) {
                 try {

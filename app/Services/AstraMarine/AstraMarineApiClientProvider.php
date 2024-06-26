@@ -63,7 +63,7 @@ class AstraMarineApiClientProvider
     {
         $needTimeoutMethods = ['getSeatsOnEvent', 'registerOrder', 'confirmPayment', 'returnOrder', 'bookingSeat'];
         if (in_array($baseUrl, $needTimeoutMethods) !== false) {
-            return 5;
+            return 15;
         } else {
             return 500;
         }

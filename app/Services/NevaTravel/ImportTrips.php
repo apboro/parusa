@@ -64,8 +64,11 @@ class ImportTrips
                         $trip = Trip::query()
                             ->whereHas('additionalData', function (Builder $query) use ($nevaTrip) {
                                 $query->where('provider_trip_id', $nevaTrip['id']);
-                            })->firstOrNew();
+                            })->first();
 
+                        if (!$trip) {
+                            $trip = new Trip();
+                        }
                         $trip->start_at = Carbon::parse($nevaTrip['departure_date'])->format('Y-m-d H:i:s');
                         $trip->end_at = Carbon::parse($nevaTrip['default_arrival']['arrival_date'])->format('Y-m-d H:i:s');
                         $trip->excursion_id = $findExcursion->id;

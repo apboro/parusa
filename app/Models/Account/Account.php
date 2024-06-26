@@ -114,7 +114,7 @@ class Account extends Model
         if (!$this->exists && (!$this->partner_id || !$this->save())) {
             throw new AccountException('Лицевой счёт не присоединен к партнёру. Невозможно добавить операцию.');
         }
-        if ($transaction->exists) {
+        if (AccountTransaction::where($transaction->getAttributes())->exists()) {
             throw new AccountException('Повторное прикрепление операции к лицевому счёту невозможно.');
         }
 
@@ -130,11 +130,13 @@ class Account extends Model
 
         $transaction->account_id = $this->id;
         $this->amount += $type->sign * $transaction->amount;
+        $transaction->timestamp = Carbon::now();
 
         $account = $this;
 
         DB::transaction(static function () use ($account, $transaction) {
             $transaction->save();
+            $transaction->timestamp = Carbon::now();
             $account->save();
         });
 

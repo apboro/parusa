@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Events\AstraMarineNewOrderEvent;
+use App\Events\AstraMarineOrderPaidEvent;
 use App\Events\CityTourCancelOrderEvent;
+use App\Events\CityTourOrderPaidEvent;
 use App\Events\NevaTravelCancelOrderEvent;
+use App\Events\NevaTravelOrderPaidEvent;
+use App\Events\NewCityTourOrderEvent;
+use App\Events\NewNevaTravelOrderEvent;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Account\AccountTransaction;
@@ -11,6 +17,7 @@ use App\Models\Dictionaries\AccountTransactionStatus;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\OrderType;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Hit\Hit;
 use App\Models\Order\Order;
@@ -22,6 +29,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderInstantPayController extends ApiController
 {
@@ -54,7 +62,6 @@ class OrderInstantPayController extends ApiController
                 $current->partner()->account->attachTransaction(new AccountTransaction([
                     'type_id' => AccountTransactionType::tickets_buy,
                     'status_id' => AccountTransactionStatus::accepted,
-                    'timestamp' => Carbon::now(),
                     'amount' => $order->total(),
                     'order_id' => $order->id,
                     'committer_id' => $current->positionId(),
@@ -63,16 +70,22 @@ class OrderInstantPayController extends ApiController
                 // update order statuses
                 foreach ($order->tickets as $ticket) {
                     /** @var Ticket $ticket */
-                    $ticket->setStatus(TicketStatus::promoter_paid);
+                    $ticket->setStatus(TicketStatus::promoter_self_paid);
                 }
-                $order->setStatus(OrderStatus::promoter_paid);
-            });
+                $order->setStatus(OrderStatus::promoter_self_paid);
+                $order->setType(OrderType::terminal_partner);
 
-            // pay commissions
-            $order->payCommissions();
+                NevaTravelOrderPaidEvent::dispatch($order);
+                CityTourOrderPaidEvent::dispatch($order);
+                AstraMarineOrderPaidEvent::dispatch($order);
+
+                // pay commissions
+                $order->payCommissions();
+            });
 
         } catch (Exception $exception) {
 
+            Log::error($exception);
             return APIResponse::error($exception->getMessage());
         }
 

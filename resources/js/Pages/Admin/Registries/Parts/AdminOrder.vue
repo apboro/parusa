@@ -54,7 +54,7 @@
                     </div>
                 </ListTableCell>
                 <ListTableCell v-if="is_returning" class="va-middle">
-                    <InputCheckbox v-model="to_return" :value="ticket['id']" :disabled="!ticket['returnable']"/>
+                    <InputCheckbox v-model="to_return" :value="ticket['id']" :disabled="info.data.cant_partly_return"/>
                 </ListTableCell>
                 <ListTableCell v-if="is_replacement" class="va-middle">
                     <InputCheckbox v-model="to_replace" :value="ticket['id']"
@@ -163,7 +163,7 @@
                                @clicked="cancelReturn">Отмена
                     </GuiButton>
                     <GuiButton
-                        v-if="!is_replacement && info.data.tickets.filter(ticket=>ticket.transferable === true).length > 0"
+                        v-if="!is_replacement && !info.data.cant_partly_return && info.data.tickets.filter(ticket=>ticket.transferable === true).length > 0"
                         @clicked="replaceTickets" :color="'red'">Оформить перенос рейса
                     </GuiButton>
                     <GuiButton v-if="is_replacement" @clicked="replaceTickets(true)">Отменить</GuiButton>
@@ -275,6 +275,9 @@ export default {
     }),
 
     computed: {
+        tickets(){
+          return this.info.data.tickets.map(ticket => ticket.id);
+        },
         title() {
             return (this.info.data['is_reserve'] ? 'Бронь' : 'Заказ') + ' №' + this.orderId;
         },
@@ -409,7 +412,11 @@ export default {
 
         makeReturn() {
             if (this.is_returning === false) {
+                if (this.info.data.cant_partly_return){
+                    this.to_return = this.tickets;
+                } else {
                 this.to_return = [];
+                }
                 this.is_returning = true;
                 return;
             }

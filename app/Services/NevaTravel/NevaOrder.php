@@ -35,22 +35,31 @@ class NevaOrder
                 Log::channel('neva')->error('Neva API make order error: ', [$result]);
                 throw new RuntimeException('Невозможно оформить заказ на этот рейс.');
             }
-            AdditionalDataOrder::create([
-                'provider_id' => Provider::neva_travel,
-                'order_id' => $this->order->id,
-                'provider_order_uuid' => $result['body']['id'],
-            ]);
+
+            if (!$this->order->additionalData) {
+                $this->order->additionalData()->create([
+                    'provider_id' => Provider::neva_travel,
+                    'order_id' => $this->order->id,
+                    'provider_order_uuid' => $result['body']['id']
+                ]);
+            } else {
+                $this->order->additionalData()->update([
+                    'provider_order_id' => null,
+                    'provider_order_uuid' => $result['body']['id']
+                ]);
+            }
 
             $this->order->save();
             Log::channel('neva')->info('Neva API make order success: ', [$result, $this->order]);
         }
     }
 
-    public function approve()
+    public
+    function approve(): void
     {
         if ($this->checkOrderHasNevaTickets()) {
 
-            if ($this->order->additionalData?->provider_order_id === null) {
+            if ($this->order->refresh()->additionalData->provider_order_id === null) {
 
                 $orderStatus = $this->nevaApiData->getOrderInfo($this->order->additionalData->provider_order_uuid);
 
@@ -70,7 +79,8 @@ class NevaOrder
         }
     }
 
-    public function checkOrderHasNevaTickets()
+    public
+    function checkOrderHasNevaTickets()
     {
         $tickets = $this->order->tickets;
         foreach ($tickets as $ticket) {
@@ -81,25 +91,28 @@ class NevaOrder
         return false;
     }
 
-    private function checkNevaTicketHasBackwardTicket()
+    private
+    function checkNevaTicketHasBackwardTicket()
     {
         return $this->order->tickets->filter(function ($ticket) {
             return $ticket->isBackward();
         })->isNotEmpty();
     }
 
-    public function cancel(): void
+    public
+    function cancel(): void
     {
         if ($this->checkOrderHasNevaTickets()) {
             $result = $this->nevaApiData->cancelOrder(['id' => $this->order->additionalData->provider_order_uuid, 'comment' => 'Клиент потребовал возврат']);
             if (!$result || $result['status'] != 200) {
-                Log::channel('neva')->error('Neva API Approve Error', [$result]);
+                Log::channel('neva')->error('Neva API Cancel Error', [$result]);
                 throw new RuntimeException('Не получилось сделать возврат.');
             }
         }
     }
 
-    public function getOrderInfo()
+    public
+    function getOrderInfo()
     {
         return $this->nevaApiData->getOrderInfo($this->order->additionalData->provider_order_uuid);
     }

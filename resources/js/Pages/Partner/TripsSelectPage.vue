@@ -128,7 +128,10 @@
                     {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})
                 </ListTableCell>
                 <ListTableCell>
-                    <table v-if="trip['rates'] && trip['rates'].length > 0" class="inner-table">
+                    <div v-if="trip['trip_with_seats']">
+                        от {{ minimalTicketPrice(trip) }} руб.
+                    </div>
+                    <table v-else-if="trip['rates'] && trip['rates'].length > 0" class="inner-table">
                         <tr v-for="rate in trip['rates']">
                             <td class="pr-15 no-wrap">{{ rate['name'] }}</td>
                             <td class="no-wrap">{{ rate['value'] }} руб.</td>
@@ -208,6 +211,12 @@
         },
 
         methods: {
+            minimalTicketPrice(trip){
+                const minObject = trip.rates.reduce((min, current) => {
+                    return min.value < current.value ? min : current;
+                });
+                return minObject.value;
+            },
             emptyFilters() {
               this.list.filters['start_pier_id'] = null;
               this.list.filters['excursion_id'] = null;
@@ -222,10 +231,22 @@
                 this.$refs.date.addDays(increment);
             },
             addToOrder(trip) {
-                if (trip['excursion_use_seat_scheme'] && trip['ship_has_scheme'] && trip['seats'].length > 0) {
-                    this.$refs.select_scheme_popup.handle(trip);
+                if (trip['provider_id'] === 10) {
+                    axios.post('/api/trip/prices', {trip: trip})
+                        .then(response => trip['rates'] = response.data.data)
+                        .then(() => {
+                            if (trip['trip_with_seats'] && trip['seats'].length > 0) {
+                                this.$refs.select_scheme_popup.handle(trip);
+                            } else {
+                                this.$refs.select_popup.handle(trip);
+                            }
+                        })
                 } else {
-                    this.$refs.select_popup.handle(trip);
+                    if (trip['trip_with_seats'] && trip['seats'].length > 0) {
+                        this.$refs.select_scheme_popup.handle(trip);
+                    } else {
+                        this.$refs.select_popup.handle(trip);
+                    }
                 }
             },
             excursionInfo(excursion_id) {

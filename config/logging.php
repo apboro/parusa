@@ -76,9 +76,19 @@ return [
             'path' => storage_path('logs/astra-marine.log'),
             'level' => 'info',
         ],
+        'apiv1' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/apiv1.log'),
+            'level' => 'info',
+        ],
         'city_tour' => [
             'driver' => 'single',
             'path' => storage_path('logs/city_tour.log'),
+            'level' => 'info',
+        ],
+        'promoters' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/promoters.log'),
             'level' => 'info',
         ],
 
@@ -115,6 +125,11 @@ return [
         'sber_payments' => [
             'driver' => 'single',
             'path' => storage_path('logs/sber_payments.log'),
+            'level' => 'info',
+        ],
+        'youkassa' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/youkassa.log'),
             'level' => 'info',
         ],
         'yaga' => [

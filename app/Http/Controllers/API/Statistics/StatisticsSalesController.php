@@ -47,7 +47,7 @@ class StatisticsSalesController extends ApiController
         $filters = $request->filters($this->defaultFilters, $this->rememberFilters, $this->rememberKey);
 
         $query = Order::query()
-            ->with(['tickets', 'tickets.trip.excursion'])
+            ->with(['tickets', 'tickets.trip.excursion', 'tickets.order', 'tickets.order.promocode'])
             ->whereIn('status_id', OrderStatus::order_had_paid_statuses)
             ->where('type_id', OrderType::site);
 
@@ -67,14 +67,11 @@ class StatisticsSalesController extends ApiController
         $returnAmountTotal = 0;
 
         foreach ($orders as $order) {
-            /** @var Order $order */
             foreach ($order->tickets as $ticket) {
-                /** @var Ticket $ticket */
-
-                $soldAmount = in_array($ticket->status_id, TicketStatus::ticket_paid_statuses) ? $ticket->base_price : 0;
+                $soldAmount = in_array($ticket->status_id, TicketStatus::ticket_had_paid_statuses) ? $ticket->getPrice() : 0;
                 $soldAmountTotal += $soldAmount;
 
-                $returnedAmount = $ticket->status_id === TicketStatus::showcase_returned ? $ticket->base_price : 0;
+                $returnedAmount = $ticket->status_id === TicketStatus::showcase_returned ? $ticket->getPrice() : 0;
                 $returnAmountTotal += $returnedAmount;
 
                 if (!isset($result[$ticket->trip->excursion_id])) {
@@ -92,7 +89,7 @@ class StatisticsSalesController extends ApiController
         }
 
         return APIResponse::list(
-            new LengthAwarePaginator($result, 100, 999),
+            new LengthAwarePaginator($result, 1000, 999),
             null,
             $filters,
             $this->defaultFilters,

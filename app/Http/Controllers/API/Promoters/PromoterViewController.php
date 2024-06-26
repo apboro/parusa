@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Promoters;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Http\Resources\WorkShiftResource;
 use App\Models\Common\File;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\OrderStatus;
@@ -60,12 +61,12 @@ class PromoterViewController extends ApiController
             'can_send_sms' => $partner->profile->can_send_sms ? 1 : 0,
             'login' => $promoterUser->login,
             'full_name' => $promoterUserProfile->fullName,
-            'open_shift' => $partner->getOpenedShift(),
+            'open_shift' => $partner->getOpenedShift() ? WorkShiftResource::make($partner->getOpenedShift()) : null,
             'payForTime' => isset($payForTime) ? round($payForTime) : null,
             'payForOut' => $openShift->tariff->pay_for_out ?? null,
             'payCommission' => $openShift->pay_commission ?? null, //записывается в методе Ticket->payCommission()
             'paid_out' => $openShift->paid_out ?? null,
-            'balance' => $partner->getLastShift()?->balance ?? null,
+            'balance' => $openShift?->balance ?? null,
             'taxi' => $openShift?->taxi,
             'pay_per_hour' =>  $partner->tariff()->first()?->pay_per_hour,
             'auto_change_tariff' => $partner->profile->auto_change_tariff,

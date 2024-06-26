@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use InvalidArgumentException;
+use YooKassa\Client;
 
 class OrderReturnController extends ApiController
 {
@@ -63,7 +64,7 @@ class OrderReturnController extends ApiController
             $query->where('partner_id', $current->partnerId());
         } else if ($current->isStaff() && $current->role() && $current->terminalId() !== null && $current->role()->matches(Role::terminal)) {
             $query->where('terminal_id', $current->terminalId());
-        } else if (!$current->isStaffAdmin()) {
+        } else if (!$current->isStaffAdmin() && !$current->isStaffPromoterManager()) {
             return APIResponse::error('Неверно заданы параметры');
         }
 
@@ -97,7 +98,10 @@ class OrderReturnController extends ApiController
                     foreach ($order->tickets as $ticket) {
                         /** @var Ticket $ticket */
                         if (in_array($ticket->id, $ticketsToReturnIds, true)) {
-                            if (!in_array($ticket->status_id, [TicketStatus::partner_paid, TicketStatus::partner_paid_single])) {
+                            if (!in_array($ticket->status_id, [
+                                TicketStatus::partner_paid,
+                                TicketStatus::partner_paid_single,
+                            ])) {
                                 throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
                             }
                             $ticket->refundTicket($current->position());
@@ -109,12 +113,12 @@ class OrderReturnController extends ApiController
                     }
 
                     foreach ($order->tickets as $ticket) {
-                        if ($ticket->seat) {
+                        if ($ticket->seat_id) {
                             TripSeat::query()
                                 ->updateOrCreate(
                                     [
-                                        'trip_id' => $ticket->trip->id,
-                                        'seat_id' => $ticket->seat->id
+                                        'trip_id' => $ticket->trip_id,
+                                        'seat_id' => $ticket->seat_id
                                     ],
                                     ['status_id' => SeatStatus::vacant]);
                         }
@@ -129,34 +133,19 @@ class OrderReturnController extends ApiController
                     NevaTravelCancelOrderEvent::dispatch($order);
                     CityTourCancelOrderEvent::dispatch($order);
                     AstraMarineCancelOrderEvent::dispatch($order);
-
-                    if ($order->status_id == OrderStatus::partial_returned_statuses) {
-
-                        NewNevaTravelOrderEvent::dispatch($order);
-                        NevaTravelOrderPaidEvent::dispatch($order);
-
-                        try {
-                            Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
-                        } catch (Exception $exception) {
-                            Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
-                        }
-                    }
-
-                    if ($order->status_id == OrderStatus::partial_returned_statuses) {
-                        NewCityTourOrderEvent::dispatch($order);
-                        CityTourOrderPaidEvent::dispatch($order);
-                    }
-
                 });
             } catch (Exception $exception) {
+                Log::error('return order error ' . $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
                 return APIResponse::error($exception->getMessage());
             }
             $successMessage = 'Возврат оформлен.';
 
-        } else if ($current->isStaffAdmin()) {
+        } else if ($current->isStaffAdmin() || $current->isStaffPromoterManager()) {
             // Returning tickets bought
             try {
-                if ($order->type_id === OrderType::site && $order->external_id === null) {
+                if (in_array($order->type_id, OrderType::types_with_sber_payment)
+                    && $order->external_id === null
+                    && $order->status_id != OrderStatus::partner_paid) {
                     throw new Exception('Отсутствует внешний ID заказа');
                 }
                 $tickets = [];
@@ -164,45 +153,61 @@ class OrderReturnController extends ApiController
                 foreach ($order->tickets as $ticket) {
                     /** @var Ticket $ticket */
                     if (in_array($ticket->id, $ticketsToReturnIds, true)) {
-                        if (!in_array($ticket->status_id, [TicketStatus::showcase_paid, TicketStatus::showcase_paid_single, TicketStatus::used, TicketStatus::promoter_paid])) {
+                        if (!in_array($ticket->status_id, TicketStatus::ticket_returnable_statuses)) {
                             throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
                         }
                         $tickets[] = $ticket;
                         $returnAmount += $ticket->getPrice();
                     }
                 }
-                if ($order->type_id === OrderType::site) {
-                    // send return request to sber
-                    $isProduction = env('SBER_ACQUIRING_PRODUCTION');
-                    $connection = new Connection([
-                        'token' => env('SBER_ACQUIRING_TOKEN'),
-                        'userName' => env('SBER_ACQUIRING_USER'),
-                        'password' => env('SBER_ACQUIRING_PASSWORD'),
-                    ], new CurlClient(), $isProduction);
-                    $options = new Options(['currency' => Currency::RUB, 'language' => 'ru']);
-                    $sber = new Sber($connection, $options);
+                if (in_array($order->type_id, OrderType::types_with_sber_payment)
+                 && $order->status_id != OrderStatus::partner_paid) {
 
-                    $response = $sber->refundOrder($order->external_id, $returnAmount * 100);
+                    $client = new Client();
+                    $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
 
-                    if (!$response->isSuccess()) {
-                        throw new Exception($response->errorMessage());
+                    $response = $client->createRefund([
+                        'payment_id' => $order->external_id,
+                        'amount' => [
+                            'value' => $returnAmount,
+                            'currency' => \YooKassa\Model\CurrencyCode::RUB,
+                        ],
+                    ],
+                        uniqid('', true)
+                    );
+
+                    if (!$response) {
+                        throw new Exception('Не удалось оформить возврат');
                     }
                 }
                 // change order and tickets status
                 foreach ($tickets as $ticket) {
+                    if ($ticket->seat_id) {
+                        TripSeat::query()
+                            ->updateOrCreate(
+                                [
+                                    'trip_id' => $ticket->trip_id,
+                                    'seat_id' => $ticket->seat_id
+                                ],
+                                ['status_id' => SeatStatus::vacant]);
+                    }
                     /** @var Ticket $ticket */
+                    $ticket->refundTicket($current->position());
                     $ticket->refundCommission($current->position());
                     $ticket->setStatus(TicketStatus::showcase_returned, false);
                     $ticket->save();
                     $ticket->return()->save(new TicketReturn(['reason' => $reasonOfReturn]));
                 }
+
+
                 if ($order->tickets()->whereIn('status_id', TicketStatus::ticket_countable_statuses)->count() === 0) {
                     $order->setStatus(OrderStatus::showcase_returned);
                 } else {
                     $order->setStatus(OrderStatus::showcase_partial_returned);
                 }
 
-                if ($order->type_id === OrderType::site) {
+                if (in_array($order->type_id, OrderType::types_with_sber_payment)
+                    && $order->status_id != OrderStatus::partner_paid) {
                     // add transaction
                     $payment = new Payment();
                     $payment->gate = 'sber';
@@ -226,22 +231,7 @@ class OrderReturnController extends ApiController
 
             NevaTravelCancelOrderEvent::dispatch($order);
             CityTourCancelOrderEvent::dispatch($order);
-
-            if ($order->status_id == OrderStatus::partial_returned_statuses) {
-                NewNevaTravelOrderEvent::dispatch($order);
-                NevaTravelOrderPaidEvent::dispatch($order);
-                try {
-
-                    Notification::sendNow(new EmailReceiver($order->email, $order->name), new OrderNotification($order));
-                } catch (Exception $exception) {
-                    Log::channel('tickets_sending')->error(sprintf("Error order [%s] sending tickets [%s]: %s", $order->id, $order->email, $exception->getMessage()));
-                }
-            }
-
-            if ($order->status_id == OrderStatus::partial_returned_statuses) {
-                NewCityTourOrderEvent::dispatch($order);
-                CityTourOrderPaidEvent::dispatch($order);
-            }
+            AstraMarineCancelOrderEvent::dispatch($order);
 
         } else if ($current->isStaff() && $current->role() && $current->terminalId() !== null && $current->role()->matches(Role::terminal)) {
             // Terminal return

@@ -107,7 +107,7 @@ class TerminalCartController extends ApiEditController
 
         return APIResponse::response([
             'ticketTrip' => $ticketTrip,
-            'hasProviderTickets' =>$hasProviderTicket,
+            'hasProviderTickets' => $hasProviderTicket,
             'tickets' => $tickets,
             'limits' => $limits,
             'can_reserve' => $current->partner() ? $current->partner()->profile->can_reserve_tickets : null,
@@ -170,7 +170,7 @@ class TerminalCartController extends ApiEditController
 
         /** @var Trip $trip */
 
-        if (($trip->start_at < $now && $trip->excursion->is_single_ticket=0) || ($rate = $trip->getRate()) === null) {
+        if (($trip->start_at < $now && $trip->excursion->is_single_ticket = 0) || ($rate = $trip->getRate()) === null) {
             return APIResponse::error('Продажа билетов на этот рейс не осуществляется');
         }
 
@@ -203,15 +203,13 @@ class TerminalCartController extends ApiEditController
                 }
                 /** @var PositionOrderingTicket $ticket */
                 $ticket = $current->position()->ordering()
-                    ->where([
-                        'trip_id' => $trip->id,
-                        'grade_id' => $grade_id,
-                        'terminal_id' => $current->terminalId()])
                     ->firstOrNew([
                         'position_id' => $current->positionId(),
                         'trip_id' => $trip->id,
                         'grade_id' => $grade_id,
-                        'terminal_id' => $current->terminalId()]);
+                        'terminal_id' => $current->terminalId()
+                    ],
+                        ['base_price' => $ticket['base_price']]);
 
                 $ticket->quantity += $quantity;
                 $count += $quantity;
@@ -267,9 +265,9 @@ class TerminalCartController extends ApiEditController
 
         $quantity = $request->input('value');
 
-        if ($ticket->parent_ticket_id){
+        if ($ticket->parent_ticket_id) {
             $parentTicket = $current->position()->ordering()->where('id', $ticket->parent_ticket_id)->first();
-            if ($quantity > $parentTicket->quantity){
+            if ($quantity > $parentTicket->quantity) {
                 return APIResponse::error('Обратных билетов не может быть больше, чем прямых.');
             }
         }

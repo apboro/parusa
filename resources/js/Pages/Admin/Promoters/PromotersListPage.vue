@@ -45,6 +45,9 @@
                 <ListTableCell v-else>
                     {{ partner['promoter_commission_rate'] }} %
                 </ListTableCell>
+                <ListTableCell>
+                    {{ partner['pier_name'] }}
+                </ListTableCell>
             </ListTableRow>
         </ListTable>
 
@@ -61,7 +64,6 @@
             </GuiContainer>
         </FormPopUp>
 
-        <Pagination :pagination="list.pagination" @pagination="(page, per_page) => list.load(page, per_page)"/>
     </LayoutPage>
 </template>
 
@@ -154,6 +156,7 @@ export default {
                 'ID': 'ID',
                 'balance': 'Баланс',
                 'commission': 'Ставка',
+                'opened_at': 'Смена открыта'
             }
         },
         showCommissionPopup() {

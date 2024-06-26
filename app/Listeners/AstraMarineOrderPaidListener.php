@@ -16,7 +16,7 @@ class AstraMarineOrderPaidListener
     public function handle(AstraMarineOrderPaidEvent $event): void
     {
         if ($event->order->tickets()->where('provider_id', Provider::astra_marine)->first()) {
-            if (in_array($event->order->status_id, OrderStatus::order_printable_statuses)) {
+            if (in_array($event->order->status_id, OrderStatus::order_had_paid_statuses)) {
                 $astraOrder = new AstraMarineOrder($event->order);
                 $astraOrder->confirmOrder();
             }

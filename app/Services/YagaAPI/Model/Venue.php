@@ -2,6 +2,7 @@
 
 namespace App\Services\YagaAPI\Model;
 
+use App\Models\Piers\Pier;
 use App\Models\Sails\Trip;
 use App\Models\Ships\Ship;
 use Illuminate\Http\Request;
@@ -30,14 +31,15 @@ class Venue
     protected ?string $reservationTimeout;
     protected array $integrations;
     protected object $additional;
+    protected ?Pier $pier;
 
-    public function __construct(Ship $ship)
+    public function __construct(Trip $trip)
     {
-        $this->id = $ship->id;
-        $this->name = $ship->name;
+        $this->pier = $trip->startPier;
+        $this->id = $trip->start_pier_id;
+        $this->name = $trip->startPier->name;
         $this->cityId = 1;
-        $this->address = Trip::activeScarletSails()->where('ship_id', $ship->id)->first()->startPier->info->address;
-        $this->description = $ship->description;
+        $this->description = $trip->startPier->info->description;
         $this->urls = [];
         $this->images = [];
         $this->videos = [];
@@ -60,10 +62,13 @@ class Venue
     public function getResource()
     {
         return [
-            "address" => $this->address,
+            "address" => $this->pier->info->address,
             "cancelAllowance" => $this->cancelAllowance,
             "cityId" => $this->cityId,
-//            "coordinates" => (object)$this->coordinates,
+            "coordinates" => [
+                'latitude' => (float) $this->pier->info->latitude,
+                'longitude' => (float) $this->pier->info->longitude,
+            ],
             "description" => $this->description,
             "id" => $this->id,
 //            "images" => $this->images,

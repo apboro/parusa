@@ -50,7 +50,7 @@ class PartnerInfoController extends ApiController
                 ->leftJoin('ticket_rates', function (JoinClause $join) {
                     $join->on('ticket_rates.rate_id', '=', 'tickets_rates_list.id')
                         ->on('ticket_rates.grade_id', '=', 'position_ordering_tickets.grade_id');
-                })->get(['position_ordering_tickets.id as pot_id', 'parent_ticket_id', 'backward_price_value', 'quantity', 'base_price', 'partner_price']);
+                })->get(['position_ordering_tickets.id as pot_id', 'parent_ticket_id', 'backward_price_value', 'quantity', 'position_ordering_tickets.base_price', 'partner_price']);
 
             $orderAmount = 0;
             $tickets->map(function ($ticket) use ($tickets, &$orderAmount){
@@ -78,6 +78,7 @@ class PartnerInfoController extends ApiController
             'can_reserve' => $current->partner()->profile->can_reserve_tickets,
             'can_send_sms' => $current->partner()->profile->can_send_sms,
             'new_news' => News::query()->sent()->count() - $partner->news()->count(),
+            'last_order_status' => $partner->orders->sortByDesc('created_at')->first()?->status->name,
         ]);
     }
 }

@@ -66,7 +66,7 @@
                 <GuiContainer>
                     <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="downloadOrder">Скачать заказ в PDF</GuiButton>
                     <GuiButton :disabled="!info.data['is_printable'] || !info.data['email'] || is_returning" @clicked="emailOrder">Отправить на почту</GuiButton>
-                    <GuiButton v-if="info.data['can_send_sms']" @clicked="sendSMS">Отправить по СМС</GuiButton>
+                    <GuiButton v-if="info.data['is_printable'] && info.data['can_send_sms']" @clicked="sendSMS">Отправить по СМС</GuiButton>
                     <GuiButton :disabled="!info.data['is_printable'] || is_returning" @clicked="printOrder">Распечатать</GuiButton>
                     <GuiButton v-if="info.data['can_return']" :disabled="!info.data['returnable'] || returning_progress" @clicked="makeReturn" :color="'red'">Оформить возврат
                     </GuiButton>
@@ -111,6 +111,7 @@ import FormString from "@/Components/Form/FormString";
 import FormPhone from "@/Components/Form/FormPhone";
 import IconEdit from "@/Components/Icons/IconEdit";
 import {saveAs} from "file-saver";
+import {mapState} from "vuex";
 
 export default {
     components: {
@@ -149,6 +150,7 @@ export default {
     }),
 
     computed: {
+        ...mapState('partner', {order_status: state => state.last_order_status}),
         title() {
             return (this.info.data['is_reserve'] ? 'Бронь' : 'Заказ') + ' №' + this.orderId;
         },

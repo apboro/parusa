@@ -45,7 +45,7 @@ class DBDump extends Command
         $dir = storage_path('mysql');
         $filename = $db . '_' . Carbon::now()->format('Y_m_d_H_i') . '.sql.gz';
 
-        $command = "$mysqlDump -u $user -p$pass $db | gzip > $dir/$filename";
+        $command = "$mysqlDump --skip-tz-utc -u $user -p$pass $db | gzip > $dir/$filename";
         $this->line("running: $mysqlDump -u $user -p*** $db | gzip> $dir/$filename");
 
         $process = Process::fromShellCommandline($command);
