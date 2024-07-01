@@ -138,7 +138,7 @@ class OrdersRegistryController extends ApiController
                     'date' => $order->created_at->format('d.m.Y, H:i'),
                     'tickets_total' => $order->getAttribute('tickets_count'),
                     'amount' => $order->tickets->sum('base_price'),
-                    'order_total' => $order->tickets->sum('base_price') - $order->promocode[0]?->amount,
+                    'order_total' => $order->total(),
                     'returnable' => $returnable,
                     'payment_unconfirmed' => (bool)$order->payment_unconfirmed,
                     'info' => [
