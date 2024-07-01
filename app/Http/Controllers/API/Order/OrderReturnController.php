@@ -160,6 +160,8 @@ class OrderReturnController extends ApiController
                         $returnAmount += $ticket->getPrice();
                     }
                 }
+
+                Log::channel('youkassa')->info('return order: ' .$order->id .' sum: '. $returnAmount);
                 if (in_array($order->type_id, OrderType::types_with_sber_payment)
                  && $order->status_id != OrderStatus::partner_paid) {
 
