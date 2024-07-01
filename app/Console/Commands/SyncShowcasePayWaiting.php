@@ -66,6 +66,7 @@ class SyncShowcasePayWaiting extends Command
                 $paymentId = $order->external_id;
                 try {
                     $response = $client->getPaymentInfo($paymentId);
+                    Log::channel('youkassa')->info('sync command > try order: '. $order->id. ' status: ' . $response->getStatus());
                 } catch (Exception $exception) {
                     Log::channel('youkassa')->error($exception->getMessage());
                     continue;
