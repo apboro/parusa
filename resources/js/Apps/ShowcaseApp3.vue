@@ -13,26 +13,27 @@
                        :session="session"
                        @close="closeOrder"
             />
-            <TripsV2List v-else
-                :date_from="search_options.date_from"
-                :date_to="search_options.date_to"
-                :programs="search_options.programs"
-                :today="today"
-                :date="trips.date"
-                :dates="search_options.dates"
-                :items="search_options.items"
-                :checked="search_options.checked"
-                :trips="trips.list"
-                :rates="trips.rates"
-                :next_date="trips.next_date"
-                :next_date_caption="trips.next_date_caption"
-                :is-loading="trips.is_loading"
-                :last-search="last_search"
-                :crm_url="crmUrl"
-                :debug="debug"
-                :session="session"
-                @search="loadList"
-                @select="selectTrip"
+            <TripsV3List v-else
+                         :date_from="search_options.date_from"
+                         :date_to="search_options.date_to"
+                         :programs="search_options.programs"
+                         :today="today"
+                         :excursions="excursions"
+                         :date="trips.date"
+                         :dates="search_options.dates"
+                         :items="search_options.items"
+                         :checked="search_options.checked"
+                         :trips="trips.list"
+                         :rates="trips.rates"
+                         :next_date="trips.next_date"
+                         :next_date_caption="trips.next_date_caption"
+                         :is-loading="trips.is_loading"
+                         :last-search="last_search"
+                         :crm_url="crmUrl"
+                         :debug="debug"
+                         :session="session"
+                         @search="loadList"
+                         @select="selectTrip"
             />
 
         </template>
@@ -43,8 +44,8 @@
 import ShowcaseMessage from "@/Pages/Showcase/Components/ShowcaseMessage";
 import ShowcaseLoadingProgress from "@/Pages/Showcase/Components/ShowcaseLoadingProgress";
 import OrderInfo from "@/Pages/Showcase/OrderInfo";
-import TripsV2List from "@/Pages/ShowcaseV2/TripsV2List.vue";
 import TicketsSelectV2 from "@/Pages/ShowcaseV2/TicketsSelectV2.vue";
+import TripsV3List from "@/Pages/ShowcaseV3/TripsV3List.vue";
 
 export default {
     props: {
@@ -53,8 +54,8 @@ export default {
     },
 
     components: {
+        TripsV3List,
         TicketsSelectV2,
-        TripsV2List,
         OrderInfo,
         ShowcaseLoadingProgress,
         ShowcaseMessage,
@@ -64,11 +65,12 @@ export default {
         crm_url_override: null,
         session: null,
         options: {
-            excursions: [9],
+            excursions: [],
             partner: null,
             media: null,
             is_partner_page: true,
         },
+        excursions: null,
         state: {
             is_initializing: true,
             is_loading: false,
@@ -184,8 +186,8 @@ export default {
     },
 
     mounted() {
-        const el = document.querySelector('#ap-showcase2');
-        if(el) {
+        const el = document.querySelector('#ap-showcase3');
+        if (el) {
             el.style.width = '100%';
         }
     },
@@ -229,10 +231,11 @@ export default {
                         this.today = response.data['today']; // Current date
                         this.search_options.date_from = response.data['date_from']; //  Date range start
                         this.search_options.date_to = response.data['date_to']; // Date range end for future use
-                        this.search_options.programs = response.data['programs']; // List of available programs
-                        this.search_options.dates = response.data['dates']; // List of available programs
-                        this.search_options.items = response.data['items']; // List of available programs
-                        this.search_options.checked = response.data['checked']; // List of available programs
+                        this.search_options.programs = response.data['programs'];
+                        this.search_options.dates = response.data['dates'];
+                        this.search_options.items = response.data['items'];
+                        this.search_options.checked = response.data['checked'];
+                        this.excursions = response.data['excursions'];
                         this.session = response.headers['x-ap-external-session'];
                         this.updateState();
                         resolve();

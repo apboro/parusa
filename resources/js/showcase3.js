@@ -15,7 +15,7 @@ window.axios.defaults.withCredentials = true;
 
 import {createApp} from 'vue';
 
-import ShowcaseApp from '@/Apps/ShowcaseApp2.vue';
+import ShowcaseApp from '@/Apps/ShowcaseApp3.vue';
 
 const config = require('config');
 

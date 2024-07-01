@@ -28,10 +28,23 @@
 
                 <div class="ap-showcase__results" v-if="trips.length > 0">
 
+                    <div v-if="excursions.length > 1">
+                        <span>Экскурсия: </span>
+                        <ShowcaseInputDropDown v-model="selected_excursion"
+                                               :options="excursions"
+                                               :original="search_parameters.programs"
+                                               :identifier="'id'" :show="'name'"
+                                               :has-null="true"
+                                               :placeholder="'Все'"/>
+                    </div>
+                    <div v-else>
+                        <span>Экскурсия: {{excursions[0]['name']}}</span>
+                    </div>
+
                     <div v-if="trips[0]['multi_pier_excursion']">
                         <span>Выберите причал: </span>
                         <ShowcaseInputDropDown v-model="search_parameters.programs"
-                                               :options="programs"
+                                               :options="excursions"
                                                :original="search_parameters.programs"
                                                :identifier="'id'" :show="'name'"
                                                :has-null="true"
@@ -43,12 +56,14 @@
                         <div style="display: flex; flex-direction: column">
                             <p>Выберите удобное время:</p>
                             <div v-for="trip in trips">
-                                {{ trip['concatenated_start_at'] }}
+                                <ShowcaseV3TimeButton color="purple" @click="selectTrip(trip)">
+                                    {{ trip['start_time'] }}
+                                </ShowcaseV3TimeButton>
                             </div>
                         </div>
 
                         <TicketsSelectComposeV2 :rates="rates"/>
-                        <TripInfo :trip="trips[0]"/>
+                        <TripInfo v-if="selected_trip" :trip="selected_trip"/>
 
                     </div>
                 </div>
@@ -122,6 +137,7 @@ import PromocodeAgreement from "@/Pages/ShowcaseV3/Parts/PromoceodeAggreement.vu
 import TotalToPay from "@/Pages/ShowcaseV3/Parts/TotalToPay.vue";
 import CommentToPayer from "@/Pages/ShowcaseV3/Parts/CommentToPayer.vue";
 import TripInfo from "@/Pages/ShowcaseV3/Parts/TripInfo.vue";
+import ShowcaseV3TimeButton from "@/Pages/ShowcaseV3/Components/ShowcaseV3TimeButton.vue";
 
 export default {
     components: {
@@ -151,6 +167,7 @@ export default {
         PierInfoV2,
         ShowcaseV2RadioDate,
         ShowcaseV2LoadingProgress,
+        ShowcaseV3TimeButton
     },
 
     props: {
@@ -158,6 +175,7 @@ export default {
         date_to: {type: String, default: null},
         programs: {type: Array, default: null},
         today: {type: String, default: null},
+        excursions: {type: Array, default: []},
 
         date: {type: String, default: null},
         trips: {type: Array, default: null},
@@ -185,6 +203,9 @@ export default {
         },
         total() {
 
+        },
+        selected_trip(){
+          return this.trips[0];
         },
         date_filter: {
             get() {
@@ -218,6 +239,7 @@ export default {
         selectedMenu: null,
         selectedGrade: null,
         tickets: [],
+        selected_excursion: null,
         search_parameters: {
             date: null,
             persons: null,
@@ -236,8 +258,8 @@ export default {
             this.$emit('search', value);
         },
 
-        select(trip) {
-            this.$emit('select', trip['id']);
+        selectTrip(trip) {
+            console.log(trip);
         },
 
         showPierInfo(trip) {
