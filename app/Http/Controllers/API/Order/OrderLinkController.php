@@ -6,6 +6,7 @@ use App\Helpers\OrderPdf;
 use App\Http\APIResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Dictionaries\OrderStatus;
+use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
 use App\Models\Tickets\Ticket;
@@ -40,7 +41,14 @@ class OrderLinkController extends Controller
             ->whereIn('status_id', OrderStatus::sberpay_statuses)
             ->where('hash', $hash)
             ->first();
-        if ($order) {
+
+        if ($order && $order->additionalData?->provider_id !== Provider::scarlet_sails){
+            $linkValidTime = 5;
+        } else {
+            $linkValidTime = 30;
+        }
+
+        if ($order && now() >= $order->created_at->addMinutes($linkValidTime)) {
             $orderSecret = json_encode([
                 'id' => $order->id,
                 'ts' => Carbon::now(),

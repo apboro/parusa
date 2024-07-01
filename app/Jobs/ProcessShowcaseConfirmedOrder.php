@@ -65,7 +65,7 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             )
             ->where('id', $this->orderId)
             ->first();
-
+        Log::channel('youkassa')->info('process job > try order '. $order->id. ' status: '. $order->status_id);
         if ($order === null ||
             !in_array($order->status_id, [
                 OrderStatus::showcase_confirmed,
@@ -104,7 +104,7 @@ class ProcessShowcaseConfirmedOrder implements ShouldQueue
             CityTourOrderPaidEvent::dispatch($order);
             AstraMarineOrderPaidEvent::dispatch($order);
         } catch (Exception $exception) {
-            Log::error('ProcessShowcaseConfirmedOrder', [$exception]);
+            Log::channel('youkassa')->error('ProcessShowcaseConfirmedOrder', [$exception]);
         }
 
         try {

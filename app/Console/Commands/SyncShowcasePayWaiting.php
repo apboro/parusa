@@ -50,7 +50,7 @@ class SyncShowcasePayWaiting extends Command
                 OrderStatus::promoter_confirmed,
                 OrderStatus::partner_wait_for_pay
             ])
-            ->where('updated_at', '>', now()->subMinutes(30))
+            ->where('updated_at', '>', now()->subMinutes(12))
             ->get();
 
         if ($orders->count() === 0) {

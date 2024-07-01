@@ -192,12 +192,12 @@ class CheckoutController extends ApiController
         try {
             $response = $client->getPaymentInfo($paymentId);
         } catch (Exception $exception) {
-            Log::channel('youkassa')->error(sprintf('Order [%s] get status client error: %s', $order->id, $exception->getMessage()));
+            Log::channel('youkassa')->error('Order '. $order->id. 'get status client error: ' .$exception->getMessage());
             return APIResponse::error($exception->getMessage());
         }
 
         if ($response['status'] !== 'succeeded') {
-            Log::channel('youkassa')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->getStatus()));
+            Log::channel('youkassa')->info('Order '. $order->id. ' get status error: ' . $response->getStatus());
             return APIResponse::error('Заказ не оплачен. ' . $response->getStatus());
         }
 
@@ -215,7 +215,7 @@ class CheckoutController extends ApiController
             };
 
             $order->setStatus($newOrderStatus);
-            Log::channel('youkassa')->info(sprintf('Order [%s] payment confirmed', $order->id));
+            Log::channel('youkassa')->info('Order '. $order->id. ' payment confirmed');
 
             // add payment
             $payment = new Payment();
