@@ -175,8 +175,6 @@ class TicketStatus extends AbstractDictionary
         self::terminal_canceled,
         self::showcase_canceled,
         self::api_canceled,
-        self::yaga_canceled,
-        self::yaga_canceled_with_penalty,
     ];
     public const ticket_single_statuses = [
         self::showcase_paid_single,

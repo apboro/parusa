@@ -112,7 +112,7 @@ class OrdersRegistryItemController extends ApiController
                 ];
             }),
             'total' => $order->tickets->sum('base_price'),
-            'order_total' => $order->total(),
+            'order_total' => $order->tickets->sum('base_price') - $order->promocode[0]->amount,
             'tickets_count' => $order->tickets->count(),
             'name' => $order->name,
             'email' => $order->email,
