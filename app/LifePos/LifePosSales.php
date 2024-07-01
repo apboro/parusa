@@ -96,6 +96,7 @@ class LifePosSales
                         ["op" => "replace", "path" => "workplace", "value" => ["guid" => $terminal->workplace_id]],
                         ["op" => "replace", "path" => "status", "value" => "Opened"],
                         ["op" => "replace", "path" => "total_sum", "value" => ["value" => $total * 100, "currency" => "RUB"]],
+                        ["op" => "replace", "path" => "additional_attributes", "value" => ['settlement_location' => $order->terminal?->pier?->info?->address ?? 'Санкт-Петербург, Адмиралтейская набережная д.16']],
                         ["op" => "replace", "path" => "positions", "value" => $tickets],
                     ],
                 ];
