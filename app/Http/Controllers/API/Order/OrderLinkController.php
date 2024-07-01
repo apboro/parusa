@@ -48,7 +48,7 @@ class OrderLinkController extends Controller
             $linkValidTime = 30;
         }
 
-        if ($order && now() >= $order->created_at->addMinutes($linkValidTime)) {
+        if ($order && now() <= $order->created_at->addMinutes($linkValidTime)) {
             $orderSecret = json_encode([
                 'id' => $order->id,
                 'ts' => Carbon::now(),
