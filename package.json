@@ -41,6 +41,7 @@
         "ckeditor5-custom-build": "file:resources/ckeditor5",
         "file-saver": "^2.0.5",
         "mdb-vue-ui-kit": "^3.2.0",
+        "pinia": "^2.1.7",
         "print-js": "^1.6.0",
         "vue-qrcode-reader": "^5.3.4",
         "vuex-persistedstate": "^4.1.0"

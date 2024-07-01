@@ -11,6 +11,23 @@ export default {
         crm_url: {type: String, required: true},
         debug: {type: Boolean, default: false},
         session: {type: String, default: null},
+    },
+    data: () => ({
+        agreement: true,
+        agreement_valid: true,
+        agreement_promocode: true,
+        agreement_promocode_valid: true,
+    }),
+    computed: {
+        agree: {
+            get() {
+                return this.agreement;
+            },
+            set(value) {
+                this.agreement = value;
+                this.agreement_valid = true;
+            }
+        },
     }
 }
 </script>

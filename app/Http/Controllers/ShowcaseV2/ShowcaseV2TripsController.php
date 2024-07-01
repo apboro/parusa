@@ -8,10 +8,8 @@ use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
-use App\Models\Excursions\Excursion;
 use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
-use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
 use Carbon\Carbon;
 use Exception;
@@ -50,23 +48,6 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
             return response()->json(['message' => 'Не задана дата'], 500);
         }
         $date = Carbon::parse($date);
-
-        $rates = Excursion::find($excursionsIDs[0])->rateForDate($date);
-        if ($rates !== null) {
-            $rates = $rates->rates->filter(function (TicketRate $rate) use ($partnerId) {
-                    return ($partnerId === null ? !empty($rate->site_price) : !empty($rate->base_price)) && $rate->grade_id !== TicketGrade::guide;
-                })
-                ->map(function (TicketRate $rate) use ($partnerId) {
-                    return [
-                        'grade_id' => $rate->grade_id,
-                        'name' => $rate->grade->name,
-                        'base_price' => $partnerId === null  ? $rate->site_price : $rate->partner_price ?? $rate->base_price,
-                        'backward_price' => $rate->backward_price_type === 'fixed' ? $rate->backward_price_value : $rate->base_price * ($rate->backward_price_value/100),
-                        'preferential' => $rate->grade->preferential,
-                    ];
-                });
-        }
-
 
         $listQuery = Trip::saleTripQuery($partnerId === null)
             ->with(['status', 'startPier', 'ship', 'excursion', 'excursion.info', 'excursion.programs'])
@@ -142,7 +123,6 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
                 'pier' => $trip->startPier->name,
                 'pier_id' => $trip->start_pier_id,
                 'ship' => $trip->ship->name,
-                'multi_pier_excursion' => $trip->excursion->multi_pier,
                 'excursion' => $trip->excursion->name,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
@@ -160,7 +140,6 @@ class ShowcaseV2TripsController extends ShowcaseTripsController
 
         return response()->json([
             'date' => $date->translatedFormat('j F Y') . ' г.',
-            'rates' => $rates,
             'trips' => array_values($trips->toArray()),
             'next_date' => isset($next) ? $next->format('Y-m-d') : null,
             'next_date_caption' => isset($next) ? $next->translatedFormat('j F Y') . ' г.' : null,

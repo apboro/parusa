@@ -27,18 +27,18 @@
                     class="ap-not-brake">{{ date }}</span></h2>
 
                 <div class="ap-showcase__results" v-if="trips.length > 0">
-
                     <div v-if="excursions.length > 1">
                         <span>Экскурсия: </span>
-                        <ShowcaseInputDropDown v-model="selected_excursion"
+                        <ShowcaseInputDropDown v-model="selected_excursion_id"
                                                :options="excursions"
                                                :original="search_parameters.programs"
-                                               :identifier="'id'" :show="'name'"
-                                               :has-null="true"
-                                               :placeholder="'Все'"/>
+                                               :identifier="'id'"
+                                               :show="'name'"
+                                               :has-null="false"
+                                               @change="handleExcursionChange"/>
                     </div>
                     <div v-else>
-                        <span>Экскурсия: {{excursions[0]['name']}}</span>
+                        <span>Экскурсия: {{ excursions[0]['name'] }}</span>
                     </div>
 
                     <div v-if="trips[0]['multi_pier_excursion']">
@@ -46,25 +46,50 @@
                         <ShowcaseInputDropDown v-model="search_parameters.programs"
                                                :options="excursions"
                                                :original="search_parameters.programs"
-                                               :identifier="'id'" :show="'name'"
+                                               :identifier="'id'"
+                                               :show="'name'"
                                                :has-null="true"
                                                :placeholder="'Все'"/>
                     </div>
-                    <div v-else><span>Причал: {{ trips[0]['pier'] }}</span></div>
-
-                    <div style="display: flex; flex-direction: row">
+                    <div v-else>
+                        <span>Причал: {{ selected_trip ? selected_trip['pier'] : trips[0]['pier'] }}</span>
+                    </div>
+<!--                simple trip-->
+                    <div v-if="showcase3Store.trip && !showcase3Store.trip.trip_with_seats" style="display: flex; flex-direction: row">
                         <div style="display: flex; flex-direction: column">
                             <p>Выберите удобное время:</p>
                             <div v-for="trip in trips">
-                                <ShowcaseV3TimeButton color="purple" @click="selectTrip(trip)">
+                                <ShowcaseV3TimeButton
+                                    :color="showcase3Store.trip.id === trip.id ? 'purple' : 'white'"
+                                    @click="selectTrip(trip)">
                                     {{ trip['start_time'] }}
                                 </ShowcaseV3TimeButton>
                             </div>
                         </div>
+                        <TicketsSelectV3 v-if="showcase3Store.trip"
+                                         :crm_url="crm_url"
+                                         :session="session"
+                                         @changeTickets="handleTicketsChange"/>
+                        <TripInfo :trip="showcase3Store.trip"/>
+                    </div>
 
-                        <TicketsSelectComposeV2 :rates="rates"/>
-                        <TripInfo v-if="selected_trip" :trip="selected_trip"/>
+<!--                scheme trip-->
+                    <div v-else-if="showcase3Store.trip">
+                        <div v-for="trip in trips">
+                            <ShowcaseV3TimeButton
+                                :color="showcase3Store.trip.id === trip.id ? 'purple' : 'white'"
+                                @click="selectTripWithScheme(trip)">
+                                {{ trip['start_time'] }}
+                            </ShowcaseV3TimeButton>
+                        </div>
+                            <DynamicSchemeContainer
+                                :data="this.showcase3Store.trip"
+                                :shipId="this.showcase3Store.trip['shipId']"
+                                :scheme_name="this.showcase3Store.trip['scheme_name']"
+                                :selecting="true"
+                                @selectSeat="handleSelectSeat"/>
 
+                            <SelectedTickets v-if="this.showcase3Store.tickets.length > 0" :tickets="this.showcase3Store.tickets"/>
                     </div>
                 </div>
 
@@ -76,8 +101,25 @@
                     </div>
                 </ShowcaseV2Message>
 
-                <ContactInfo/>
-                <Promocode/>
+                <div v-if="showcase3Store.trip && showcase3Store.trip?.reverse_excursion_id !== null">
+                    <ShowcaseInputCheckbox :name="'choose_back_trip'"
+                                           v-model="checkedBackward"
+                                           :label="'Выбрать обратный рейс со скидкой'"
+                                           :big="true"/>
+                    <div style="text-align: center">
+                        <BackwardTicketSelectShowcase3 v-if="checkedBackward"
+                                                       :trip="this.showcase3Store.trip"
+                                                       :session="session"
+                                                       :crm_url="crm_url"/>
+                    </div>
+                </div>
+
+                <div style="display: flex;">
+                    <ContactInfo/>
+                        <img :src="excursions[0]['excursion_first_image_url']" alt="excursion_image">
+                </div>
+
+                <Promocode v-if="showcase3Store.trip && !showcase3Store.trip.trip_with_seats" @use="promoCode(true)" :message="this.message"/>
                 <Agreement
                     :crm_url="crm_url"
                     :debug="debug"
@@ -86,13 +128,12 @@
                 <PromocodeAgreement/>
 
                 <template v-if="has_error">
-                    <ShowcaseMessage>Ошибка: {{ error_message }}</ShowcaseMessage>
+                    <ShowcaseV2Message>Ошибка: {{ error_message }}</ShowcaseV2Message>
                 </template>
 
-                <TotalToPay/>
+                <TotalToPay v-if="showcase3Store.trip" @pay="order"/>
 
                 <CommentToPayer/>
-
 
             </template>
         </ShowcaseV2LoadingProgress>
@@ -107,6 +148,30 @@
                     :debug="debug"
                     :session="session"
         />
+
+        <ShowcaseV2PopUp ref="category"
+                         :buttons="[
+               {result: 'ok', caption: 'OK', color: 'green', disabled: !selectedGrade || (selectedGrade.menus.length > 0 ? !selectedMenu : false)},
+           ]">
+
+            <div v-for="(grade, index) in seatGrades" :key="index">
+                <label v-if="getGradePrice(grade.grade.id)">
+                    <input @click="selectedMenu = null" style="margin-top: 10px" type="radio"
+                           v-model="selectedGrade"
+                           :value="grade.grade"
+                           :name="'grade-select'"> {{ grade.grade.name }} - {{ getGradePrice(grade.grade.id) }} руб.
+                </label>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center"
+                 v-if="selectedGrade && selectedGrade.menus.length > 0">
+                <span style="margin-top: 20px;">Выберите меню</span>
+                <label v-for="(menu, index) in selectedGrade.menus" :key="index">
+                    <input style="margin-top: 10px;" type="radio" v-model="selectedMenu" :value="menu"
+                           :name="'menu-select'"> {{ menu.name }}
+                </label>
+            </div>
+        </ShowcaseV2PopUp>
+
     </div>
 </template>
 
@@ -119,7 +184,7 @@ import ShowcaseV2InputCheckbox from "@/Pages/ShowcaseV2/Components/ShowcaseV2Inp
 import ShowcaseV2Message from "@/Pages/ShowcaseV2/Components/ShowcaseV2Message.vue";
 import ShowcaseV2Button from "@/Pages/ShowcaseV2/Components/ShowcaseV2Button.vue";
 import ShowcaseInputDropDown from "@/Pages/Showcase/Components/ShowcaseInputDropDown.vue";
-import TicketsSelectComposeV2 from "@/Pages/ShowcaseV3/TicketsSelectComposeV2.vue";
+import TicketsSelectV3 from "@/Pages/ShowcaseV3/TicketsSelectV3.vue";
 import PersonalDataInfo from "@/Pages/Showcase/Parts/PersonalDataInfo.vue";
 import ShowcaseIconSign from "@/Pages/Showcase/Icons/ShowcaseIconSign.vue";
 import ShowcaseFieldWrapper from "@/Pages/Showcase/Components/Helpers/ShowcaseFieldWrapper.vue";
@@ -138,9 +203,20 @@ import TotalToPay from "@/Pages/ShowcaseV3/Parts/TotalToPay.vue";
 import CommentToPayer from "@/Pages/ShowcaseV3/Parts/CommentToPayer.vue";
 import TripInfo from "@/Pages/ShowcaseV3/Parts/TripInfo.vue";
 import ShowcaseV3TimeButton from "@/Pages/ShowcaseV3/Components/ShowcaseV3TimeButton.vue";
+import form from "@/Core/Form";
+import {useShowcase3Store} from "@/Stores/showcase3-store";
+import {mapStores} from "pinia";
+import BackwardTicketSelectShowcase3 from "@/Components/BackwardTicketSelectShowcase3.vue";
+import ShowcaseV2PopUp from "@/Pages/ShowcaseV2/Components/ShowcaseV2PopUp.vue";
+import seatMethods from "@/Mixins/seatMethods.vue";
+import SelectedTickets from "@/Pages/Parts/Seats/SelectedTickets.vue";
+import DynamicSchemeContainer from "@/Pages/Admin/Ships/SeatsSchemes/DynamicSchemeContainer.vue";
 
 export default {
     components: {
+        DynamicSchemeContainer, SelectedTickets,
+        ShowcaseV2PopUp,
+        BackwardTicketSelectShowcase3,
         TripInfo,
         CommentToPayer,
         TotalToPay,
@@ -158,7 +234,7 @@ export default {
         ShowcaseFieldWrapper,
         ShowcaseIconSign,
         PersonalDataInfo,
-        TicketsSelectComposeV2,
+        TicketsSelectV3,
         ShowcaseInputDropDown,
         ShowcaseV2Button,
         ShowcaseV2Message,
@@ -179,7 +255,6 @@ export default {
 
         date: {type: String, default: null},
         trips: {type: Array, default: null},
-        rates: {type: Object, default: null},
         next_date: {type: String, default: null},
         next_date_caption: {type: String, default: null},
         isLoading: {type: Boolean, default: false},
@@ -195,18 +270,10 @@ export default {
         session: {type: String, default: null},
     },
 
-    emits: ['search', 'select'],
+    mixins: [seatMethods],
+    emits: ['search', 'select_trip', 'select_excursion'],
 
     computed: {
-        count() {
-
-        },
-        total() {
-
-        },
-        selected_trip(){
-          return this.trips[0];
-        },
         date_filter: {
             get() {
                 return this.search_parameters.date === null ? this.today : this.search_parameters.date;
@@ -214,7 +281,17 @@ export default {
             set(value) {
                 this.search_parameters.date = value;
             }
-        }
+        },
+        ...mapStores(useShowcase3Store),
+
+    },
+    watch: {
+        checkedBackward(value) {
+            if (value === false) {
+                this.activeBackward = false;
+                this.showcase3Store.backwardTrip = null;
+            }
+        },
     },
 
     data: () => ({
@@ -231,6 +308,7 @@ export default {
         full_price: null,
         message: null,
         status: false,
+        count: null,
         activeBackward: false,
         checkedBackward: true,
         backwardTripId: null,
@@ -239,27 +317,83 @@ export default {
         selectedMenu: null,
         selectedGrade: null,
         tickets: [],
-        selected_excursion: null,
+        selected_excursion_id: null,
+        selected_trip: null,
+        init_trip: null,
         search_parameters: {
             date: null,
             persons: null,
             programs: null,
         },
     }),
+    created() {
+        let url = new URL(window.location.href);
+        url.searchParams.delete('ap-tid');
+        this.form = form(null, this.crm_url + '/showcase/order' + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : ''),
+            {ref: url.toString()});
+        this.form.set('promocode', null);
+    },
 
     mounted() {
         this.search_parameters['date'] = this.lastSearch !== null && typeof this.lastSearch['date'] !== "undefined" ? this.lastSearch['date'] : null;
         this.search_parameters['persons'] = this.lastSearch !== null && typeof this.lastSearch['persons'] !== "undefined" ? this.lastSearch['persons'] : null;
         this.search_parameters['programs'] = this.lastSearch !== null && typeof this.lastSearch['programs'] !== "undefined" ? this.lastSearch['programs'] : null;
+        this.selected_excursion_id = this.excursions[0].id;
     },
 
     methods: {
+        getGradePrice(gradeId) {
+            return this.showcase3Store.trip['rates'].find(e => e.grade_id === gradeId)?.base_price;
+        },
+        getFilteredGrades(categoryId) {
+            return this.showcase3Store.trip['seat_tickets_grades'].filter(el => el.seat_category_id === categoryId)
+        },
+        handleSelectSeat(data) {
+            if (!data.deselect) {
+                let categoryId = this.showcase3Store.trip['seats'].find(el => el.seat_id === data.seatId).category.id;
+                this.seatGrades = this.getFilteredGrades(categoryId);
+
+                this.$refs.category.show().then(() => {
+                    this.showcase3Store.tickets.push({
+                        seatId: data.seatId,
+                        seatNumber: data.seatNumber,
+                        menu: this.selectedMenu,
+                        grade: this.selectedGrade,
+                        price: this.getGradePrice(this.selectedGrade.id)
+                    })
+                })
+            } else {
+                this.showcase3Store.tickets = this.showcase3Store.tickets.filter(ticket => ticket.seatId !== data.seatId);
+            }
+            this.selectedSeats = data.selectedSeats;
+        },
+        handleExcursionChange() {
+            this.showcase3Store.trip = null;
+            this.showcase3Store.ticketsData = [];
+            this.showcase3Store.tickets = [];
+            this.showcase3Store.excursion = this.selected_excursion_id;
+            this.$emit('select_excursion', this.selected_excursion_id)
+        },
+        handleTicketsChange(values) {
+            for (const key of Object.keys(values)) {
+                this.form.set(key, values[key])
+            }
+            this.count = Object.keys.length;
+            if (this.showcase3Store.promocode && this.showcase3Store.promocode.length > 0) {
+                this.promoCode(true);
+            }
+        },
+
         search(value) {
             this.$emit('search', value);
         },
 
         selectTrip(trip) {
-            console.log(trip);
+            this.showcase3Store.trip = trip
+            this.selected_trip = trip;
+        },
+        selectTripWithScheme(trip){
+
         },
 
         showPierInfo(trip) {
@@ -274,12 +408,130 @@ export default {
             this.search_parameters.date = this.next_date;
             this.$emit('search', this.search_parameters);
         },
+        promoCode(force = false) {
+
+            if (!force && !this.status) return;
+
+            let tickets = [];
+            let tripID = this.showcase3Store.trip.id;
+            this.showcase3Store.trip.rates.map(rate => {
+                let ticket = {
+                    trip_id: tripID,
+                    grade_id: rate['grade_id'],
+                    quantity: this.form.values['rate.' + rate['grade_id'] + '.quantity']
+                }
+                tickets.push(ticket);
+            });
+
+            axios.post(this.crm_url + '/showcase_v2/promo-code/use', {
+                    promocode: this.showcase3Store.promocode,
+                    tickets: tickets
+                },
+                {headers: {'X-Ap-External-Session': this.session}}
+            )
+                .then(response => {
+                    this.status = response.data.data['status'];
+                    this.showcase3Store.discount.status = response.data.data['status'];
+                    this.showcase3Store.discount.discount_price = this.status ? response.data.data['discount_price'] : null;
+                    this.showcase3Store.discount.discounted = this.status ? response.data.data['discounted'] : null;
+                    this.showcase3Store.discount.full_price = this.status ? response.data.data['full_price'] : null;
+                    this.message = response.data.data['message'];
+                })
+                .catch(error => {
+                    this.has_error = true;
+                    this.error_message = error.response.data['message'];
+                })
+        },
+        order() {
+            if (this.showcase3Store.trip.trip_with_seats){
+                this.orderWithScheme()
+            }
+            this.agreement_valid = this.agreement;
+            this.agreement_promocode_valid = !this.status || this.agreement_promocode;
+            if (!this.form.validate() || !this.agreement_valid || !this.agreement_promocode_valid || this.count < 1) {
+                return;
+            }
+            this.is_ordering = true;
+            // override form saving to send headers
+            axios.post(this.form.save_url, {
+                data: {
+                    ...this.showcase3Store.ticketsData,
+                    ...this.showcase3Store.contactInfo,
+                    promocode: this.showcase3Store.promocode
+                },
+                trip: this.showcase3Store.trip.id,
+                ref: this.form.options['ref'],
+                backwardTripId: this.showcase3Store.backwardTrip,
+            }, {headers: {'X-Ap-External-Session': this.session}})
+                .then(response => {
+                    // store order secret
+                    const order_id = response.data.payload['order_id'];
+                    const order_secret = response.data.payload['order_secret'];
+                    const payment_page = response.data.payload['payment_page'];
+
+                    localStorage.setItem('ap-showcase-order-id', order_id);
+                    localStorage.setItem('ap-showcase-order-secret', order_secret);
+
+                    // redirect to payment page
+                    setTimeout(() => {
+                        window.location.href = payment_page;
+                    }, 100);
+                })
+                .catch(error => {
+                    this.has_error = true;
+                    this.error_message = error.response.data['message'];
+                })
+                .finally(() => {
+                    this.is_ordering = false;
+                })
+        },
+        orderWithScheme() {
+            this.agreement_valid = this.agreement;
+            this.agreement_promocode_valid = !this.status || this.agreement_promocode;
+            if (!this.agreement_valid || !this.agreement_promocode_valid || this.showcase3Store.tickets.length < 1) {
+                return;
+            }
+            this.is_ordering = true;
+            // override form saving to send headers
+            axios.post(this.crm_url + '/showcase/order', {
+                data: {
+                    ...this.showcase3Store.ticketsData,
+                    ...this.showcase3Store.contactInfo,
+                    promocode: this.showcase3Store.promocode
+                },
+                tickets: this.showcase3Store.tickets,
+                trip: this.showcase3Store.trip.id,
+                ref: this.form.options['ref'],
+                backwardTripId: this.backwardTripId,
+            }, {headers: {'X-Ap-External-Session': this.session}})
+                .then(response => {
+                    // store order secret
+                    const order_id = response.data.payload['order_id'];
+                    const order_secret = response.data.payload['order_secret'];
+                    const payment_page = response.data.payload['payment_page'];
+
+                    localStorage.setItem('ap-showcase-order-id', order_id);
+                    localStorage.setItem('ap-showcase-order-secret', order_secret);
+
+                    // redirect to payment page
+                    setTimeout(() => {
+                        window.location.href = payment_page;
+                    }, 100);
+                })
+                .catch(error => {
+                    this.has_error = true;
+                    this.error_message = error.response.data['message'];
+                })
+                .finally(() => {
+                    this.is_ordering = false;
+                })
+        },
     }
 }
 </script>
 
 <style lang="scss" scoped>
-@import "resources/js/Pages/Showcase/variables";
+@import "variables";
 
 .ap-showcase__search {
     box-sizing: border-box;

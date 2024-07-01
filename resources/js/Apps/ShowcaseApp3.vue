@@ -13,7 +13,7 @@
                        :session="session"
                        @close="closeOrder"
             />
-            <TripsV3List v-else
+            <TripsV3List v-if="!order_secret && state.is_initializing === false"
                          :date_from="search_options.date_from"
                          :date_to="search_options.date_to"
                          :programs="search_options.programs"
@@ -24,7 +24,6 @@
                          :items="search_options.items"
                          :checked="search_options.checked"
                          :trips="trips.list"
-                         :rates="trips.rates"
                          :next_date="trips.next_date"
                          :next_date_caption="trips.next_date_caption"
                          :is-loading="trips.is_loading"
@@ -33,7 +32,8 @@
                          :debug="debug"
                          :session="session"
                          @search="loadList"
-                         @select="selectTrip"
+                         @select_trip="selectTrip"
+                         @select_excursion="handleSelectExcursion"
             />
 
         </template>
@@ -46,8 +46,11 @@ import ShowcaseLoadingProgress from "@/Pages/Showcase/Components/ShowcaseLoading
 import OrderInfo from "@/Pages/Showcase/OrderInfo";
 import TicketsSelectV2 from "@/Pages/ShowcaseV2/TicketsSelectV2.vue";
 import TripsV3List from "@/Pages/ShowcaseV3/TripsV3List.vue";
+import {useShowcase3Store} from "@/Stores/showcase3-store";
+import { mapStores} from "pinia";
 
 export default {
+
     props: {
         crm_url: {type: String, default: 'https://lk.excurr.ru'},
         debug: {type: Boolean, default: false},
@@ -61,6 +64,13 @@ export default {
         ShowcaseMessage,
     },
 
+    computed: {
+        crmUrl() {
+            return this.crm_url_override ? this.crm_url_override : this.crm_url;
+        },
+        ...mapStores(useShowcase3Store),
+    },
+
     data: () => ({
         crm_url_override: null,
         session: null,
@@ -71,6 +81,7 @@ export default {
             is_partner_page: true,
         },
         excursions: null,
+        selected_excursion_id: null,
         state: {
             is_initializing: true,
             is_loading: false,
@@ -132,6 +143,7 @@ export default {
                 this.options.excursions = config['excursions'];
             }
             this.crm_url_override = config['crm_url_override'];
+
         }
 
         // get initial parameters
@@ -179,12 +191,6 @@ export default {
         window.addEventListener('popstate', this.handleNavigation);
     },
 
-    computed: {
-        crmUrl() {
-            return this.crm_url_override ? this.crm_url_override : this.crm_url;
-        },
-    },
-
     mounted() {
         const el = document.querySelector('#ap-showcase3');
         if (el) {
@@ -193,6 +199,11 @@ export default {
     },
 
     methods: {
+        handleSelectExcursion(selected_excursion_id){
+            this.showcase3Store.excursion = selected_excursion_id;
+            this.selected_excursion_id = selected_excursion_id;
+            this.loadList()
+        },
         /**
          * Helper function for url making.
          *
@@ -221,7 +232,7 @@ export default {
          */
         init() {
             return new Promise((resolve, reject) => {
-                axios.post(this.url('/showcase_v2/init'), {
+                axios.post(this.url('/showcase_v3/init'), {
                     is_partner: this.options.is_partner_page,
                     partner_id: this.options.partner,
                     excursions: this.options.excursions,
@@ -236,6 +247,7 @@ export default {
                         this.search_options.items = response.data['items'];
                         this.search_options.checked = response.data['checked'];
                         this.excursions = response.data['excursions'];
+                        this.showcase3Store.excursion = this.excursions[0].id;
                         this.session = response.headers['x-ap-external-session'];
                         this.updateState();
                         resolve();
@@ -282,18 +294,17 @@ export default {
                 this.last_search = (this.last_search === null) ? {date: this.search_options.checked ?? this.today} : this.last_search;
             }
             this.trips.is_loading = true;
-            axios.post(this.url('/showcase_v2/trips'), {
+            axios.post(this.url('/showcase_v3/trips'), {
                 search: this.last_search,
-                excursion_id: this.excursion_id,
-                excursions: this.options.excursions,
+                excursion_id: this.showcase3Store.excursion,
             }, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     this.trips.list = response.data['trips'];
                     this.trips.date = response.data['date'];
-                    this.trips.rates = response.data['rates'];
                     this.trips.next_date = response.data['next_date'];
                     this.trips.next_date_caption = response.data['next_date_caption'];
                     this.search_options.checked = this.last_search.date;
+                    this.showcase3Store.trip = response.data['trips'][0]
                 })
                 .catch(error => {
                     this.state.error_message = error.response.data['message'];

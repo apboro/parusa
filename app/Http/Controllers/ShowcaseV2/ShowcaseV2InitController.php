@@ -6,7 +6,6 @@ use App\Http\Controllers\ApiController;
 use App\Http\Middleware\ExternalProtect;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
-use App\Models\Excursions\Excursion;
 use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use Carbon\Carbon;
@@ -55,8 +54,6 @@ class ShowcaseV2InitController extends ApiController
             'excursions' => $originalKey['excursions'] ?? $request->input('excursions'),
             'media' => $originalKey['media'] ?? $request->input('media'),
         ];
-
-        $excursions = Excursion::whereIn('id', $excursionsIDs)->get(['id', 'name']);
 
         $programs = ExcursionProgram::query()
             ->where(['enabled' => true])
@@ -121,7 +118,6 @@ class ShowcaseV2InitController extends ApiController
             }, $tripsDates),
             'items' => $items,
             'checked' => $checked,
-            'excursions' => $excursions,
         ], 200, [ExternalProtect::HEADER_NAME => Crypt::encrypt(json_encode($originalKey, JSON_THROW_ON_ERROR))]);
     }
 }

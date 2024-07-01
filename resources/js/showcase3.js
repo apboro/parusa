@@ -2,10 +2,12 @@ window._ = require('lodash');
 
 import Promise from "promise-polyfill";
 import ObjectAssign from "es6-object-assign";
+import { createPinia } from 'pinia'
 
 window.Promise = Promise;
 ObjectAssign.polyfill();
 
+const pinia = createPinia();
 const origin = window.location.protocol + "//" + window.location.host;
 window.axios = require('axios');
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -21,6 +23,7 @@ const config = require('config');
 
 const showcaseApp = createApp(ShowcaseApp, {crm_url: config['crm_url'], debug: config['debug']});
 
+showcaseApp.use(pinia);
 document.addEventListener('DOMContentLoaded', () => {
     showcaseApp.mount('#ap-showcase3');
 })

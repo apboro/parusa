@@ -9,9 +9,6 @@ export default {
 
 <template>
     <div class="ap-showcase__notice">
-        <div class="ap-showcase__notice-sign">
-            <ShowcaseIconSign class="ap-showcase__notice-sign-icon"/>
-        </div>
         <div class="ap-showcase__notice-text">
             При получении билетов в кассе необходимо предоставить документ, подтверждающий право на льготу:
             студенческий билет, пенсионное удостоверение и т.д.
