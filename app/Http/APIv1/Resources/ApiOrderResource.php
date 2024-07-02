@@ -12,6 +12,7 @@ class ApiOrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'additional_number' => $this->additionalData?->provider_order_id,
             'status' => $this->status->name,
             'client_name' => $this->name,
             'client_email' => $this->email,
