@@ -60,7 +60,6 @@ class ApiOrderReturnController extends Controller
             NevaTravelCancelOrderEvent::dispatch($order);
             AstraMarineCancelOrderEvent::dispatch($order);
             CityTourCancelOrderEvent::dispatch($order);
-
         } catch (\Exception $e) {
             Log::channel('apiv1')->error($e->getMessage(). ' ' . $e->getFile(). ' ' . $e->getLine());
             return APIResponse::error($e->getMessage());
