@@ -3,6 +3,9 @@
 namespace App\Http\APIv1\Controllers;
 
 
+use App\Events\AstraMarineCancelOrderEvent;
+use App\Events\CityTourCancelOrderEvent;
+use App\Events\NevaTravelCancelOrderEvent;
 use App\Exceptions\Account\AccountException;
 use App\Http\APIResponse;
 use App\Http\APIv1\Requests\ApiOrderReturnRequest;
@@ -53,6 +56,11 @@ class ApiOrderReturnController extends Controller
                     }
                 });
             });
+
+            NevaTravelCancelOrderEvent::dispatch($order);
+            AstraMarineCancelOrderEvent::dispatch($order);
+            CityTourCancelOrderEvent::dispatch($order);
+
         } catch (\Exception $e) {
             Log::channel('apiv1')->error($e->getMessage(). ' ' . $e->getFile(). ' ' . $e->getLine());
             return APIResponse::error($e->getMessage());
