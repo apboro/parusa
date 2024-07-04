@@ -4,7 +4,9 @@ namespace App\Actions;
 
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
+use App\Models\Excursions\Excursion;
 use App\Models\Sails\Trip;
+use App\Models\Tickets\TicketRate;
 use App\Services\NevaTravel\NevaTravelRepository;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +31,16 @@ class GetNevaComboPriceAction
                             'grade_id' => $rate['id'],
                             'price' => $rate['value'] * 100 - $discount
                         ];
+
+                        //update excursion rates for backward ticket
+                        Excursion::where('reverse_excursion_id', $trip->excursion_id)->first()?->rateForDate(now())?->rates->each(function (TicketRate $innerRate) use ($rate, $programId, $discount) {
+                            if ($innerRate->grade_id === $rate['id']){
+                                if ($innerRate->backward_price_value != $rate['value'] - $discount / 100) {
+                                    $innerRate->update(['backward_price_value' => $rate['value'] - $discount / 100]);
+                                    $innerRate->save();
+                                }
+                            }
+                        });
                     }
                 }
             }
