@@ -24,9 +24,10 @@ class GetNevaComboPriceAction
                 foreach ($rates as $rate) {
                     list($name, $stub) = explode('_', $ticket_name);
                     if ($name === $rate['external_grade_name']) {
+                        $discount = $ticket_data['ticket_list'][0]['discount']['value'] == 0 ? $ticket_data['ticket_list'][1]['discount']['value'] : $ticket_data['ticket_list'][0]['discount']['value'];
                         $struct[] = [
                             'grade_id' => $rate['id'],
-                            'price' => $rate['value'] * 100 - $ticket_data['ticket_list'][0]['discount']['value']
+                            'price' => $rate['value'] * 100 - $discount
                         ];
                     }
                 }
