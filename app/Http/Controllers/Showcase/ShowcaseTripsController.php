@@ -224,10 +224,12 @@ class ShowcaseTripsController extends ApiController
         if ($trip->provider_id === Provider::neva_travel){
             $nevaRates = (new GetNevaTripPriceAction())->run($trip, true);
             $nevaBackwardPrices = (new GetNevaComboPriceAction())->run($trip);
-            foreach ($nevaRates as &$rate) {
-                $rate['backward_price'] = PriceConverter::storeToPrice(collect($nevaBackwardPrices)->filter(function ($price) use ($rate) {
-                    return $price['grade_id'] == $rate['grade_id'];
-                })->first()['price']);
+            if (!empty($nevaBackwardPrices)) {
+                foreach ($nevaRates as &$rate) {
+                    $rate['backward_price'] = PriceConverter::storeToPrice(collect($nevaBackwardPrices)->filter(function ($price) use ($rate) {
+                        return $price['grade_id'] == $rate['grade_id'];
+                    })->first()['price']);
+                }
             }
         }
 

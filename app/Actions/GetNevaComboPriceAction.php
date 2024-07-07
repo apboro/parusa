@@ -17,6 +17,9 @@ class GetNevaComboPriceAction
     {
         $programId = $trip->excursion->additionalData->provider_excursion_id;
         $record = DB::table('combos')->whereJsonContains('combo->program_ids', $programId)->whereJsonContains('combo->is_active', true)->get();
+        if ($record->isEmpty()){
+            return [];
+        }
         $combo = json_decode($record[0]->combo, true);
         $rates = (new GetNevaTripPriceAction())->run($trip);
         $prices = $combo['template_prices_table'][0];
