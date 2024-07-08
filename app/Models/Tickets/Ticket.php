@@ -275,7 +275,7 @@ class Ticket extends Model implements Statusable
      */
     public function refundTicket(?Position $committer = null, string $reason = null): void
     {
-        if (!in_array($this->status_id, TicketStatus::ticket_returnable_statuses, true)) {
+        if (!in_array($this->status_id, TicketStatus::ticket_refundable_statuses, true)) {
             return;
         }
 
