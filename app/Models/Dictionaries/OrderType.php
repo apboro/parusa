@@ -46,7 +46,8 @@ class OrderType extends AbstractDictionary
         self::qr_code,
         self::referral_link,
         self::promoter_sale,
-        self::partner_sale
+        self::partner_sale,
+        self::partner_sale_sms
     ];
     /** @var string Referenced table name. */
     protected $table = 'dictionary_order_types';
