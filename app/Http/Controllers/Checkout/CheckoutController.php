@@ -302,7 +302,14 @@ class CheckoutController extends ApiController
             )
             ->where('id', $id)
             ->whereIn('status_id', array_merge(OrderStatus::sberpay_statuses, [OrderStatus::showcase_canceled]))
-            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site, OrderType::referral_link, OrderType::partner_sale])
+            ->whereIn('type_id', [
+                OrderType::promoter_sale,
+                OrderType::qr_code,
+                OrderType::partner_site,
+                OrderType::site,
+                OrderType::referral_link,
+                OrderType::partner_sale,
+                OrderType::partner_sale_sms])
             ->first();
 
         return $order;

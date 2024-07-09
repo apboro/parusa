@@ -38,14 +38,14 @@ class OrderLinkController extends Controller
     public function getPaymentLinkByHash(Request $request, string $hash)
     {
         $order = Order::query()
+            ->with('additionalData')
             ->whereIn('status_id', OrderStatus::sberpay_statuses)
             ->where('hash', $hash)
             ->first();
 
-        if ($order && $order->additionalData?->provider_id !== Provider::scarlet_sails){
+        $linkValidTime = 30;
+        if ($order && $order->additionalData && $order->additionalData->provider_id !== Provider::scarlet_sails) {
             $linkValidTime = 5;
-        } else {
-            $linkValidTime = 30;
         }
 
         if ($order && now() <= $order->created_at->addMinutes($linkValidTime)) {
