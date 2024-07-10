@@ -170,13 +170,19 @@ class TicketStatus extends AbstractDictionary
         self::promoter_self_paid
     ];
 
+    public const ticket_refundable_statuses = [
+        self::partner_paid,
+        self::partner_paid_single,
+        self::api_confirmed_single,
+        self::api_confirmed,
+        self::promoter_self_paid
+    ];
+
     public const ticket_cancelled_statuses = [
         self::partner_reserve_canceled,
         self::terminal_canceled,
         self::showcase_canceled,
         self::api_canceled,
-        self::yaga_canceled,
-        self::yaga_canceled_with_penalty,
     ];
     public const ticket_single_statuses = [
         self::showcase_paid_single,

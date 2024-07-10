@@ -13,6 +13,7 @@ use App\Models\Order\Order;
 use App\Models\Tickets\BackwardTicket;
 use App\Models\Tickets\TicketRate;
 use App\Models\User\Helpers\Currents;
+use App\Models\Dictionaries\OrderStatus;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -80,7 +81,7 @@ class CreateOrderFromPartner
         // prepare order
         $order = new Order();
         $order->setStatus($statusId, false);
-        $order->setType(OrderType::partner_sale, false);
+        $order->setType($statusId === OrderStatus::partner_wait_for_pay ? OrderType::partner_sale_sms : OrderType::partner_sale, false);
         $order->partner_id = $this->current->partnerId();
         $order->position_id = $this->current->positionId();
         $order->terminal_id = null;

@@ -126,7 +126,7 @@ class ProcessOrders extends Command
     {
         $orders = Order::query()
             ->with('tickets')
-            ->whereIn('status_id', [OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay])
+            ->whereIn('status_id', [OrderStatus::showcase_creating, OrderStatus::showcase_wait_for_pay, OrderStatus::partner_wait_for_pay])
             ->where('created_at', '<=', $before)
             ->get();
 

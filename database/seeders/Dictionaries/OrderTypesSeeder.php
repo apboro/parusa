@@ -16,6 +16,7 @@ class OrderTypesSeeder extends GenericSeeder
     protected array $data = [
         OrderType::class => [
             OrderType::partner_sale => ['name' => 'Личный кабинет партнёра'],
+            OrderType::partner_sale_sms => ['name' => 'Личный кабинет партнёра по СМС'],
             OrderType::partner_site => ['name' => 'Витрина на сайте партнера'],
             OrderType::site => ['name' => 'Витрина на сайте компании «Алые паруса»'],
             OrderType::terminal => ['name' => 'Мобильная касса'],

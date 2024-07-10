@@ -176,6 +176,9 @@ class WorkShiftController extends Controller
 
         foreach ($promoters as $promoter) {
             $openedShift = $promoter->getOpenedShift();
+            if (!$openedShift){
+                return APIResponse::error('У промоутера нет открытой смены');
+            }
             $openedShift->commission_delta = $request->input('newCommValue') - $openedShift->tariff->commission;
             $openedShift->save();
         }

@@ -8,7 +8,6 @@ use App\Helpers\PriceConverter;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Http\Middleware\ExternalProtect;
-use App\Http\Resources\StopResource;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
@@ -154,7 +153,6 @@ class ShowcaseTripsController extends ApiController
                 'duration' => $trip->excursion->info->duration,
                 'price' => $adultPrice ?? null,
                 'status' => $trip->status->name,
-                'stops' => StopResource::collection($trip->stops->sortBy('start_at'))
             ];
         });
 
@@ -226,10 +224,12 @@ class ShowcaseTripsController extends ApiController
         if ($trip->provider_id === Provider::neva_travel){
             $nevaRates = (new GetNevaTripPriceAction())->run($trip, true);
             $nevaBackwardPrices = (new GetNevaComboPriceAction())->run($trip);
-            foreach ($nevaRates as &$rate) {
-                $rate['backward_price'] = PriceConverter::storeToPrice(collect($nevaBackwardPrices)->filter(function ($price) use ($rate) {
-                    return $price['grade_id'] == $rate['grade_id'];
-                })->first()['price']);
+            if (!empty($nevaBackwardPrices)) {
+                foreach ($nevaRates as &$rate) {
+                    $rate['backward_price'] = PriceConverter::storeToPrice(collect($nevaBackwardPrices)->filter(function ($price) use ($rate) {
+                        return $price['grade_id'] == $rate['grade_id'];
+                    })->first()['price']);
+                }
             }
         }
 
@@ -261,7 +261,6 @@ class ShowcaseTripsController extends ApiController
                 }),
                 'tickets_left' => $trip->tickets_total - $ticketsCountable - $ticketsReserved,
                 'rates' => $nevaRates ?? array_values($rates->toArray()),
-                'stops' => StopResource::collection($trip->stops->sortBy('start_at'))
             ],
         ]);
     }

@@ -202,12 +202,12 @@ class CheckoutController extends ApiController
         try {
             $response = $client->getPaymentInfo($paymentId);
         } catch (Exception $exception) {
-            Log::channel('youkassa')->error(sprintf('Order [%s] get status client error: %s', $order->id, $exception->getMessage()));
+            Log::channel('youkassa')->error('Order '. $order->id. 'get status client error: ' .$exception->getMessage());
             return APIResponse::error($exception->getMessage());
         }
 
         if ($response['status'] !== 'succeeded') {
-            Log::channel('youkassa')->info(sprintf('Order [%s] get status error: %s', $order->id, $response->getStatus()));
+            Log::channel('youkassa')->info('Order '. $order->id. ' get status error: ' . $response->getStatus());
             return APIResponse::error('Заказ не оплачен. ' . $response->getStatus());
         }
 
@@ -225,7 +225,7 @@ class CheckoutController extends ApiController
             };
 
             $order->setStatus($newOrderStatus);
-            Log::channel('youkassa')->info(sprintf('Order [%s] payment confirmed', $order->id));
+            Log::channel('youkassa')->info('Order '. $order->id. ' payment confirmed');
 
             // add payment
             $payment = new Payment();
@@ -312,7 +312,14 @@ class CheckoutController extends ApiController
             )
             ->where('id', $id)
             ->whereIn('status_id', array_merge(OrderStatus::sberpay_statuses, [OrderStatus::showcase_canceled]))
-            ->whereIn('type_id', [OrderType::promoter_sale, OrderType::qr_code, OrderType::partner_site, OrderType::site, OrderType::referral_link, OrderType::partner_sale])
+            ->whereIn('type_id', [
+                OrderType::promoter_sale,
+                OrderType::qr_code,
+                OrderType::partner_site,
+                OrderType::site,
+                OrderType::referral_link,
+                OrderType::partner_sale,
+                OrderType::partner_sale_sms])
             ->first();
 
         return $order;

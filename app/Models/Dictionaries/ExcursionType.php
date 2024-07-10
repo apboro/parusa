@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExcursionType extends Model
 {
-    use HasFactory;
     const water = 10;
     const earth = 20;
 
     const fire = 30;
     const air = 40;
+
+    const legs = 60;
 
     const combined = 50;
 

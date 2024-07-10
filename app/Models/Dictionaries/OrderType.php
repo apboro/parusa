@@ -13,6 +13,7 @@ class OrderType extends AbstractDictionary
 {
     /** @var int Личный кабинет партнёра */
     public const partner_sale = 1;
+    public const partner_sale_sms = 5;
     public const promoter_sale = 20;
 
     /** @var int Витрина на сайте партнера */
@@ -45,7 +46,8 @@ class OrderType extends AbstractDictionary
         self::qr_code,
         self::referral_link,
         self::promoter_sale,
-        self::partner_sale
+        self::partner_sale,
+        self::partner_sale_sms
     ];
     /** @var string Referenced table name. */
     protected $table = 'dictionary_order_types';

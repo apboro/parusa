@@ -50,7 +50,7 @@ class SyncShowcasePayWaiting extends Command
                 OrderStatus::promoter_confirmed,
                 OrderStatus::partner_wait_for_pay
             ])
-            ->where('updated_at', '>', now()->subMinutes(30))
+            ->where('updated_at', '>', now()->subMinutes(12))
             ->get();
 
         if ($orders->count() === 0) {
@@ -66,6 +66,7 @@ class SyncShowcasePayWaiting extends Command
                 $paymentId = $order->external_id;
                 try {
                     $response = $client->getPaymentInfo($paymentId);
+                    Log::channel('youkassa')->info('sync command > try order: '. $order->id. ' status: ' . $response->getStatus());
                 } catch (Exception $exception) {
                     Log::channel('youkassa')->error($exception->getMessage());
                     continue;
