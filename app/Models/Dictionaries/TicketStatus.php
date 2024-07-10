@@ -163,6 +163,7 @@ class TicketStatus extends AbstractDictionary
         self::showcase_paid_single,
         self::terminal_paid_single,
         self::partner_paid_single,
+        self::api_confirmed_single,
         self::used,
         self::api_confirmed,
         self::promoter_paid,

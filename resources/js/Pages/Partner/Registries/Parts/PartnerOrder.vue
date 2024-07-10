@@ -1,7 +1,7 @@
 <template>
     <LayoutPage :title="title" :loading="processing" :breadcrumbs="breadcrumbs">
         <GuiContainer w-70>
-            <GuiValue :title="'Статус'">{{ order_status }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
+            <GuiValue :title="'Статус'">{{ info.data['status'] }}<b v-if="isReserve"> до {{ info.data['valid_until'] }}</b></GuiValue>
             <GuiValue :title="'Способ продажи'" v-if="!isReserve">{{ info.data['type'] }}</GuiValue>
             <GuiValue v-if="isReserve" :title="'Кем забронировано'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
             <GuiValue v-else-if="info.data['partner']" :title="info.data['position'] ? 'Продавец' : 'Промоутер'">{{ info.data['partner'] }}<span v-if="info.data['position']">, {{ info.data['position'] }}</span></GuiValue>
@@ -27,7 +27,7 @@
                 </ListTableCell>
                 <ListTableCell>{{ ticket['grade'] }}</ListTableCell>
                 <ListTableCell>{{ ticket['base_price'] }} руб.</ListTableCell>
-                <ListTableCell>{{ order_status }}</ListTableCell>
+                <ListTableCell>{{ ticket['status'] }}</ListTableCell>
                 <ListTableCell v-if="isReserve" class="va-middle">
                     <div>
                         <GuiIconButton :title="'Удалить из брони'" :border="false" :color="'red'" @click="removeTicketFromReserve(ticket)">

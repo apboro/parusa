@@ -14,7 +14,7 @@ class ApiTicketRateResource extends JsonResource
         return [
             'grade_id' => $this->grade->id,
             'grade_name' => $this->grade->name,
-            'price' => $this->partner_price,
+            'price' => round($this->partner_price) ?? round($this->base_price),
         ];
     }
 }

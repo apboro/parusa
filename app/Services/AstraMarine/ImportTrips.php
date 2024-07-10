@@ -39,11 +39,18 @@ class ImportTrips
             ->where('start_at', '>=', now())
             ->where('provider_id', Provider::astra_marine)
             ->get();
+
+        $trips->each(fn ($trip) => $trip->update([
+            'status_id' => 4,
+            'sale_status_id' => 3,
+        ]));
+
         $excursions = Excursion::query()
             ->with('additionalData')
             ->where('provider_id', Provider::astra_marine)
             ->where('status_id', 1)
             ->get();
+
 
         if ($excursions->isEmpty())
             return;
@@ -52,7 +59,7 @@ class ImportTrips
             "getTicketType" => true,
             "seatsByGroups" => true,
             "dateFrom" => now()->toIso8601String(),
-            "dateTo" => now()->addDays(14)->toIso8601String()
+            "dateTo" => now()->addDays(21)->toIso8601String()
         ]);
 
         foreach ($astraTrips['body']['events'] as $astraTrip) {

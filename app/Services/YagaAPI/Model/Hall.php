@@ -3,27 +3,27 @@
 namespace App\Services\YagaAPI\Model;
 
 use App\Models\Dictionaries\TicketGrade;
-use App\Models\Ships\Ship;
+use App\Models\Sails\Trip;
 use Illuminate\Support\Collection;
 
 class Hall
 {
 
-    protected ?Ship $ship;
     protected Collection $grades;
+    protected ?Trip $trip;
 
-    public function __construct(Collection $grades, ?Ship $ship = null)
+    public function __construct(Collection $grades, ?Trip $trip = null)
     {
-        $this->ship = $ship;
+        $this->trip = $trip;
         $this->grades = $grades;
     }
 
     public function getResource(): array
     {
         return [
-            "id" => $this->ship->id,
-            "name" => $this->ship->name,
-            "venueId" => $this->ship->id,
+            "id" => $this->trip->start_pier_id,
+            "name" => $this->trip->startPier->name,
+            "venueId" => $this->trip->id,
             "levels" => (new Level($this->grades))->getResource()
         ];
     }

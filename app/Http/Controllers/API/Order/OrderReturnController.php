@@ -98,7 +98,10 @@ class OrderReturnController extends ApiController
                     foreach ($order->tickets as $ticket) {
                         /** @var Ticket $ticket */
                         if (in_array($ticket->id, $ticketsToReturnIds, true)) {
-                            if (!in_array($ticket->status_id, [TicketStatus::partner_paid, TicketStatus::partner_paid_single])) {
+                            if (!in_array($ticket->status_id, [
+                                TicketStatus::partner_paid,
+                                TicketStatus::partner_paid_single,
+                            ])) {
                                 throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
                             }
                             $ticket->refundTicket($current->position());
@@ -141,7 +144,8 @@ class OrderReturnController extends ApiController
             // Returning tickets bought
             try {
                 if (in_array($order->type_id, OrderType::types_with_sber_payment)
-                    && $order->external_id === null) {
+                    && $order->external_id === null
+                    && $order->status_id != OrderStatus::partner_paid) {
                     throw new Exception('Отсутствует внешний ID заказа');
                 }
                 $tickets = [];
@@ -149,20 +153,17 @@ class OrderReturnController extends ApiController
                 foreach ($order->tickets as $ticket) {
                     /** @var Ticket $ticket */
                     if (in_array($ticket->id, $ticketsToReturnIds, true)) {
-                        if (!in_array($ticket->status_id, [
-                            TicketStatus::showcase_paid,
-                            TicketStatus::promoter_self_paid,
-                            TicketStatus::showcase_paid_single,
-                            TicketStatus::used,
-                            TicketStatus::promoter_paid,
-                            TicketStatus::partner_paid_by_link])) {
+                        if (!in_array($ticket->status_id, TicketStatus::ticket_returnable_statuses)) {
                             throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
                         }
                         $tickets[] = $ticket;
                         $returnAmount += $ticket->getPrice();
                     }
                 }
-                if (in_array($order->type_id, OrderType::types_with_sber_payment)) {
+
+                Log::channel('youkassa')->info('return order: ' .$order->id .' sum: '. $returnAmount);
+                if (in_array($order->type_id, OrderType::types_with_sber_payment)
+                 && $order->status_id != OrderStatus::partner_paid) {
 
                     $client = new Client();
                     $client->setAuth(config('youkassa.shop_id'), config('youkassa.secret_key'));
@@ -193,6 +194,7 @@ class OrderReturnController extends ApiController
                                 ['status_id' => SeatStatus::vacant]);
                     }
                     /** @var Ticket $ticket */
+                    $ticket->refundTicket($current->position());
                     $ticket->refundCommission($current->position());
                     $ticket->setStatus(TicketStatus::showcase_returned, false);
                     $ticket->save();
@@ -206,7 +208,8 @@ class OrderReturnController extends ApiController
                     $order->setStatus(OrderStatus::showcase_partial_returned);
                 }
 
-                if (in_array($order->type_id, OrderType::types_with_sber_payment)) {
+                if (in_array($order->type_id, OrderType::types_with_sber_payment)
+                    && $order->status_id != OrderStatus::partner_paid) {
                     // add transaction
                     $payment = new Payment();
                     $payment->gate = 'sber';

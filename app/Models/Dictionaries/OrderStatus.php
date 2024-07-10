@@ -135,6 +135,7 @@ class OrderStatus extends AbstractDictionary
         self::api_confirmed,
         self::yaga_confirmed,
         self::yaga_canceled_with_penalty,
+        self::api_returned
     ];
 
     public const order_reserved_statuses = [

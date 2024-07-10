@@ -142,7 +142,7 @@ class TerminalMakeOrderController extends ApiEditController
             });
         } catch (Exception $exception) {
             Log::error('terminal make order error: '. $exception->getMessage().' '. $exception->getFile(). ' '. $exception->getLine());
-            return APIResponse::error($exception->getMessage().' '. $exception->getFile(). ' '. $exception->getLine());
+            return APIResponse::error('Не удалось оформить заказ. '. $exception->getMessage());
         }
 
         return APIResponse::success($successMessage, ['order_id' => $order->id]);

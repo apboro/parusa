@@ -44,7 +44,12 @@ class SyncShowcasePayWaiting extends Command
         $now = Carbon::now();
 
         $orders = Order::query()
-            ->whereIn('status_id', [OrderStatus::showcase_wait_for_pay, OrderStatus::promoter_wait_for_pay, OrderStatus::promoter_confirmed])
+            ->whereIn('status_id', [
+                OrderStatus::showcase_wait_for_pay,
+                OrderStatus::promoter_wait_for_pay,
+                OrderStatus::promoter_confirmed,
+                OrderStatus::partner_wait_for_pay
+            ])
             ->where('updated_at', '>', now()->subMinutes(30))
             ->get();
 

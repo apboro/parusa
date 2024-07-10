@@ -8,6 +8,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\PartnerType;
 use App\Models\Dictionaries\Provider;
 use App\Models\Hit\Hit;
@@ -215,7 +216,8 @@ class PromotersRegistryController extends ApiController
             ->with('orders', function (HasMany $query) use ($filters, $terminalId) {
                 $query->with(['tickets', 'promocode'])
                     ->where('created_at', '>=', $filters['date_from'])
-                    ->where('created_at', '<=', $filters['date_to']);
+                    ->where('created_at', '<=', $filters['date_to'])
+                    ->whereIn('status_id', OrderStatus::order_printable_statuses);
                 if ($terminalId) {
                     $query->where('terminal_id', $terminalId);
                 }

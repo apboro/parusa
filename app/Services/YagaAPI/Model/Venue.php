@@ -33,13 +33,13 @@ class Venue
     protected object $additional;
     protected ?Pier $pier;
 
-    public function __construct(Ship $ship)
+    public function __construct(Trip $trip)
     {
-        $this->pier = Trip::query()->activeScarletSails()->where('ship_id', $ship->id)->first()->startPier;
-        $this->id = $ship->id;
-        $this->name = 'Причал "'. Trip::query()->activeScarletSails()->where('ship_id', $ship->id)->first()->startPier->name . '", теплоход '. $ship->name;
+        $this->pier = $trip->startPier;
+        $this->id = $trip->start_pier_id;
+        $this->name = $trip->startPier->name;
         $this->cityId = 1;
-        $this->description = $ship->description;
+        $this->description = $trip->startPier->info->description;
         $this->urls = [];
         $this->images = [];
         $this->videos = [];

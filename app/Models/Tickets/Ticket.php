@@ -289,7 +289,6 @@ class Ticket extends Model implements Statusable
         $partner->account->attachTransaction(new AccountTransaction([
             'type_id' => AccountTransactionType::tickets_buy_return,
             'status_id' => AccountTransactionStatus::accepted,
-            'timestamp' => Carbon::now(),
             'amount' => $this->base_price ?? 0,
             'ticket_id' => $this->id,
             'committer_id' => $committer->id ?? null,
