@@ -50,6 +50,8 @@ class ShowcaseV3InitController extends ApiController
                 ->whereHas('ratesLists', function ($ratesLists) {
                     $ratesLists->whereDate('start_at', '<=', now())
                         ->whereDate('end_at', '>=', now());
+                })->whereHas('trips', function ($trips) {
+                    $trips->whereDate('start_at', '=', now());
                 })
                 ->pluck('id')
                 ->toArray();
