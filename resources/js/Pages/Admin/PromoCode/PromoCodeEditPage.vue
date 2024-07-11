@@ -7,7 +7,8 @@
         <GuiContainer mt-30>
             <FormString :form="form" :name="'name'"/>
             <FormString :form="form" :name="'code'"/>
-            <FormNumber :form="form" :name="'amount'"/>
+            <FormNumber :form="form" :name="'amount'" :disabled="this.form.values['percent'] !== null"/>
+            <FormNumber :form="form" :name="'percent'" :disabled="this.form.values['amount'] !== null"/>
             <FormDictionary :form="form" :name="'status_id'" :dictionary="'excursion_statuses'"/>
 
             <GuiValueArea mt-30 :title="'Экскурсии'">

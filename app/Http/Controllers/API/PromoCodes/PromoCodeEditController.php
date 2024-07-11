@@ -18,7 +18,8 @@ class PromoCodeEditController extends ApiEditController
         'name' => 'required',
         'status_id' => 'required',
         'code' => 'required',
-        'amount' => 'required',
+        'amount' => 'required_if:percent,null',
+        'percent' => 'required_if:amount,null',
         'excursions' => 'required',
     ];
 
@@ -26,7 +27,8 @@ class PromoCodeEditController extends ApiEditController
         'name' => 'Название',
         'status_id' => 'Статус',
         'code' => 'Код',
-        'amount' => 'Сумма',
+        'amount' => 'Сумма скидки',
+        'percent' => 'Процент скидки',
         'excursions' => 'Выберите экскурсии',
     ];
 
@@ -55,6 +57,7 @@ class PromoCodeEditController extends ApiEditController
                 'name' => $promoCode->name,
                 'code' => $promoCode->code,
                 'amount' => $promoCode->amount,
+                'percent' => $promoCode->percent,
                 'status_id' => $promoCode->status_id,
                 'excursions' => $promoCode->excursions,
             ],
@@ -107,6 +110,7 @@ class PromoCodeEditController extends ApiEditController
         $promoCode->setAttribute('name', $data['name']);
         $promoCode->setAttribute('code', $data['code']);
         $promoCode->setAttribute('amount', $data['amount']);
+        $promoCode->setAttribute('percent', $data['percent']);
         $promoCode->setStatus($data['status_id'], false);
         $promoCode->save();
 
