@@ -95,7 +95,9 @@
             <GuiHeading mb-30 bold>Промоутер</GuiHeading>
             <FormString :form="form" :name="'partner_id'" :disabled="form.values['without_partner']"/>
             <FormCheckBox :form="form" :name="'without_partner'" @change="withoutPartnerChanged"/>
+            <FormCheckBox :form="form" :name="'use_ekp'" @change="handleChangeEKP"/>
         </GuiContainer>
+
 
         <GuiContainer w-30 mt-30 inline>
             <GuiButton @click="back">Вернуться к подбору билетов</GuiButton>
@@ -194,6 +196,18 @@ export default {
     },
 
     methods: {
+        handleChangeEKP() {
+            if (this.form.values['use_ekp']) {
+                this.data['tickets'].map(ticket => {
+                    this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'] * 0.93, `numeric`, 'Цена', true);
+                });
+            } else {
+                this.data['tickets'].map(ticket => {
+                    this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'], `numeric`, 'Цена', true);
+                });
+            }
+
+        },
         ifBackwardTicketOrHaveSeatScheme(ticket) {
             return (ticket['backward_price'] !== null || ticket['seat_id'] !== null);
         },
@@ -204,12 +218,13 @@ export default {
                     this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'], `numeric|min:${ticket['min_price']}|max:${ticket['max_price']}`, 'Цена', true);
                     this.form.set('tickets.' + ticket['id'] + '.quantity', ticket['quantity'], 'integer|min:0', 'Количество', true);
                 } else {
-                    this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'], `numeric|`, 'Цена', true);
+                    this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'], `numeric`, 'Цена', true);
                     this.form.set('tickets.' + ticket['id'] + '.quantity', ticket['quantity'], 'integer|min:0', 'Количество', true);
                 }
             });
             this.form.set('partner_id', null, 'required_if:without_partner,false', 'ID промоутера', true);
             this.form.set('without_partner', false, null, 'Без промоутера', true);
+            this.form.set('use_ekp', false, null, 'ЕКП', true);
             this.form.set('name', null, null, 'Имя', true);
             this.form.set('email', null, 'email|nullable', 'Email', true);
             this.form.set('phone', null, 'required', 'Телефон', true);
