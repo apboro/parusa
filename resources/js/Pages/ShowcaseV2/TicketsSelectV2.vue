@@ -368,7 +368,7 @@ export default {
             }
         },
         stops() {
-            return this.trip.stops.map(stop => ({id: stop.pier.id, name: stop.pier.name}))
+            return this.trip.stops?.map(stop => ({id: stop.pier.id, name: stop.pier.name}))
         },
         start_date(){
             return this.getStop() ? this.getStop().full_start_at : this.trip['start_date']
@@ -380,7 +380,7 @@ export default {
             return this.getStop() ? this.getStop().duration : this.trip['duration']
         },
         rates() {
-            if (!this.stops || this.stops.length === 0) {
+            if (!this.stops || this.stops?.length === 0) {
                 return this.trip['rates'];
             } else {
                 let computedRates = [];
@@ -446,7 +446,7 @@ export default {
 
     methods: {
         getStop(){
-          return this.trip.stops.find(stop => stop.pier.id === this.form.values.start_pier_id) ?? null;
+          return this.trip.stops?.find(stop => stop.pier.id === this.form.values.start_pier_id) ?? null;
         },
         getGradePrice(gradeId) {
             return this.trip['rates'].find(e => e.grade_id === gradeId)?.base_price;
