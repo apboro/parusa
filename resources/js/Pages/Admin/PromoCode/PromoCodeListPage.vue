@@ -30,7 +30,7 @@
                     {{ promoCode['code'] }}
                 </ListTableCell>
                 <ListTableCell>
-                    {{ promoCode['amount'] }}
+                    {{ promoCode['amount'] ? promoCode['amount'] + ' руб.' : promoCode['percent'] + ' %'}}
                 </ListTableCell>
                 <ListTableCell>
                     <span class="link" @click="showInfo(promoCode)">{{ promoCode['excursions'].length }} (посмотреть)</span>

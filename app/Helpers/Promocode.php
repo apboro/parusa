@@ -127,10 +127,11 @@ class Promocode
             ];
         }
 
+        $discountSum = $promoCode->amount ?? $full_price * $promoCode->percent/100;
         return [
             'full_price' => $full_price,
-            'discount_price' => $full_price - $promoCode->amount, // Refactor on need
-            'discounted' => $promoCode->amount, // Refactor on need
+            'discount_price' => $full_price - $discountSum, // Refactor on need
+            'discounted' => $discountSum, // Refactor on need
             'status' => true,
             'message' => null,
         ];

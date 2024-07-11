@@ -54,13 +54,14 @@ class PromoCodeListController extends ApiController
                 'purchases' => $promoCode->orders()->whereIn('status_id', OrderStatus::partner_commission_pay_statuses)->count(),
                 'status' => $promoCode->status->name,
                 'amount' => $promoCode->amount,
+                'percent' => $promoCode->percent,
                 'excursions' => $promoCode->excursions->sortBy('name')->pluck('name')->toArray(),
             ];
         });
 
         return APIResponse::list(
             $promoCodes,
-            ['Название', 'Промокод', 'Сумма',  'Экскурсии', 'Покупки', 'Статус'],
+            ['Название', 'Промокод', 'Скидка',  'Экскурсии', 'Покупки', 'Статус'],
             $filters,
             $this->defaultFilters,
             []
