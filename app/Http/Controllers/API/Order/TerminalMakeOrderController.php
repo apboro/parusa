@@ -120,7 +120,7 @@ class TerminalMakeOrderController extends ApiEditController
             DB::transaction(static function () use (&$order, $tickets, $current, $data, $partnerId) {
                 // create order
 
-                $order = (new CreateOrderFromTerminal($current))->execute($tickets, $data, $partnerId);
+                $order = (new CreateOrderFromTerminal($current))->execute($tickets, $data, $partnerId, $data['use_ekp']);
 
                 // clear cart
                 PositionOrderingTicket::query()->where(['position_id' => $current->positionId(), 'terminal_id' => $current->terminalId()])->delete();

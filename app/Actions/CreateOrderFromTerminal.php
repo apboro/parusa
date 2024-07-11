@@ -25,7 +25,7 @@ class CreateOrderFromTerminal
 
     }
 
-    public function execute(array $tickets, array $customerData, ?int $partnerId): Order
+    public function execute(array $tickets, array $customerData, ?int $partnerId, ?bool $noCheckMinPrice = false): Order
     {
         if (empty($tickets)) {
             throw new WrongOrderException('Невозможно создать заказ без билетов.');
@@ -72,7 +72,7 @@ class CreateOrderFromTerminal
             // calc base price if not set
             if ($ticket->base_price === null || $ticket->backward_price !== null) {
                 $ticket->base_price = $ticket->backward_price ?? $ticket->getCurrentPrice();
-            } else if ($ticket->base_price < $rate->min_price || $ticket->base_price > $rate->max_price && $ticket->provider_id !== Provider::neva_travel) {
+            } else if (!$noCheckMinPrice && $ticket->base_price < $rate->min_price || $ticket->base_price > $rate->max_price && $ticket->provider_id !== Provider::neva_travel) {
                 throw new WrongOrderException('Невозможно добавить один или несколько билетов в заказ. Неверно указана цена билета.');
             }
         }
