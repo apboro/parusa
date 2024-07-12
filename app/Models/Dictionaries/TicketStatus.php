@@ -122,6 +122,7 @@ class TicketStatus extends AbstractDictionary
         self::promoter_self_paid,
         self::api_confirmed,
         self::yaga_confirmed,
+        self::yaga_confirmed_single
     ];
 
     public const ticket_had_paid_statuses = [
