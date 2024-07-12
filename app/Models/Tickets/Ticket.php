@@ -428,11 +428,11 @@ class Ticket extends Model implements Statusable
             return 0;
         }
         if ($this->order->promocode->isNotEmpty()){
-            return round($this->base_price - $this->order->promocode[0]->amount / $this->order->tickets()->where('base_price', '>', 0)->count(), 2);
+            $discountSum = $this->order->promocode[0]->amount ?? $this->base_price * $this->order->promocode[0]->percent/100;
+            return round($this->base_price - $discountSum / $this->order->tickets()->where('base_price', '>', 0)->count(), 2);
         }
 
         return $this->base_price;
-
     }
 
 }
