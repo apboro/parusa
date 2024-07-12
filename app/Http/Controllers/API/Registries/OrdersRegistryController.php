@@ -131,6 +131,10 @@ class OrdersRegistryController extends ApiController
                 $returnable = false;
             }
 
+            $discountSum = null;
+            if ($order->promocode->isNotEmpty()) {
+                $discountSum = $order->promocode[0]->amount ?? $order->tickets->sum('base_price') * $order->promocode[0]->percent / 100;
+            }
             return
                 [
                     'id' => $order->id,
@@ -138,7 +142,7 @@ class OrdersRegistryController extends ApiController
                     'date' => $order->created_at->format('d.m.Y, H:i'),
                     'tickets_total' => $order->getAttribute('tickets_count'),
                     'amount' => $order->tickets->sum('base_price'),
-                    'order_total' => $order->promocode->isNotEmpty() ? $order->tickets->sum('base_price') - $order->promocode[0]?->amount : $order->total(),
+                    'order_total' => $discountSum ? $order->tickets->sum('base_price') - $discountSum : $order->total(),
                     'returnable' => $returnable,
                     'payment_unconfirmed' => (bool)$order->payment_unconfirmed,
                     'info' => [
