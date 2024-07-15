@@ -2,9 +2,7 @@
 
 namespace App\Models\Positions;
 
-use App\Actions\GetNevaTripPriceAction;
 use App\Helpers\PriceConverter;
-use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Model;
 use App\Models\Sails\Trip;
@@ -13,7 +11,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Arr;
 
 /**
  * @property int $id

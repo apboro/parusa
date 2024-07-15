@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Showcase;
 
-use App\Actions\GetNevaComboPriceAction;
-use App\Actions\GetNevaTripPriceAction;
 use App\Helpers\PriceConverter;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
@@ -20,6 +18,8 @@ use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketRate;
 use App\Models\Tickets\TicketsRatesList;
+use App\Services\NevaTravel\GetNevaComboPriceAction;
+use App\Services\NevaTravel\GetNevaTripPriceAction;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,7 +27,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
@@ -223,12 +222,16 @@ class ShowcaseTripsController extends ApiController
 
         if ($trip->provider_id === Provider::neva_travel){
             $nevaRates = (new GetNevaTripPriceAction())->run($trip, true);
-            $nevaBackwardPrices = (new GetNevaComboPriceAction())->run($trip);
-            if (!empty($nevaBackwardPrices)) {
-                foreach ($nevaRates as &$rate) {
-                    $rate['backward_price'] = PriceConverter::storeToPrice(collect($nevaBackwardPrices)->filter(function ($price) use ($rate) {
-                        return $price['grade_id'] == $rate['grade_id'];
-                    })->first()['price']);
+            if ($trip->excursion->reverse_excursion_id) {
+                $backwardTrip = $trip->getFirstBackwardTrip();
+                $nevaBackwardPrices = (new GetNevaComboPriceAction())->run($trip, $backwardTrip);
+                if (!empty($nevaBackwardPrices)) {
+                    foreach ($nevaRates as &$rate) {
+                        $rate['backward_price'] = collect($nevaBackwardPrices)
+                            ->filter(function ($price) use ($rate) {
+                                return $price['grade_id'] == $rate['grade_id'];
+                            })->first()['base_price'] - $rate['base_price'];
+                    }
                 }
             }
         }

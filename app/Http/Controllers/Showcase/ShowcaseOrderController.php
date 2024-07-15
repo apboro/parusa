@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Showcase;
 
 use App\Actions\CreateOrderFromShowcase;
-use App\Actions\GetNevaTripPriceAction;
 use App\Events\AstraMarineNewOrderEvent;
 use App\Events\NewCityTourOrderEvent;
 use App\Events\NewNevaTravelOrderEvent;
@@ -29,6 +28,7 @@ use App\Models\Sails\Trip;
 use App\Models\Ships\Seats\TripSeat;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketRate;
+use App\Services\NevaTravel\GetNevaTripPriceAction;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;

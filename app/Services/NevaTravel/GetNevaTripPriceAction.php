@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Actions;
+namespace App\Services\NevaTravel;
 
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Sails\Trip;
-use App\Services\NevaTravel\NevaTravelRepository;
 
 class GetNevaTripPriceAction
 {

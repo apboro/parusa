@@ -71,7 +71,9 @@ class TripsSelectListController extends ApiController
         $now = Carbon::now();
 
         $query = Trip::query()
-            ->with(['startPier', 'excursion', 'excursion.programs', 'excursion.ratesLists', 'ship', 'ship.seats', 'provider'])
+            ->with(['startPier', 'excursion', 'excursion.programs',
+                'excursion.ratesLists', 'ship', 'ship.seats', 'ship.seats.category',
+                'provider'])
             ->withCount(['tickets' => function (Builder $query) {
                 $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
             }])
@@ -157,9 +159,9 @@ class TripsSelectListController extends ApiController
                 'excursion_use_seat_scheme' => $trip->excursion->use_seat_scheme,
                 'shipId' => $trip->ship->id,
                 'scheme_name' => $trip->ship->scheme_name,
-                'categories' => $trip->getSeatCategories(),
-                'seats' => $trip->getSeats(),
-                'seat_tickets_grades' => $trip->getSeatGrades(),
+                'categories' => $trip->additionalData?->with_seats ? $trip->getSeatCategories() : [],
+                'seats' => $trip->additionalData?->with_seats ? $trip->getSeats() : [] ,
+                'seat_tickets_grades' => $trip->additionalData?->with_seats ? $trip->getSeatGrades() : [],
                 'tickets_count' => $trip->getAttribute('tickets_count'),
                 'tickets_total' => $trip->tickets_total,
                 'rates' => array_values($rates),
