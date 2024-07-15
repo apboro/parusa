@@ -101,41 +101,6 @@ class CheckoutInitPayController extends ApiController
         }
 
         $order->external_id = $response->getId();
-        if (!in_array($order->status_id, [OrderStatus::promoter_wait_for_pay, OrderStatus::partner_wait_for_pay])) {
-
-            $existingCookieHash = $request->cookie('qrCodeHash');
-            try {
-                if ($existingCookieHash) {
-                    /** @var QrCode|null $qrCode */
-                    $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
-                    if ($qrCode) {
-                        $order->partner_id = $qrCode->partner_id;
-                        $order->type_id = OrderType::qr_code;
-                        $order->save();
-                        StatisticQrCodes::addPayment($existingCookieHash);
-                    }
-                }
-            } catch (Exception $e) {
-                Log::channel('youkassa')->error('Error with qr statistics: ' . $e->getMessage());
-            }
-
-            $referralCookie = $request->cookie('referralLink');
-            try {
-                if ($referralCookie) {
-                    /**@var Partner|null $partner */
-                    $partner = Partner::query()->where('id', $referralCookie)->first();
-                    if ($partner) {
-                        $order->partner_id = $partner->id;
-                        $order->type_id = OrderType::referral_link;
-                        $order->save();
-                    }
-                }
-            } catch (Exception $e) {
-                Log::channel('youkassa')->error('Error with referral statistics: ' . $e->getMessage());
-            }
-        }
-
-        $order->external_id = $response->getId();
         if ($order->status_id != OrderStatus::promoter_wait_for_pay) {
             $order->setStatus(OrderStatus::showcase_wait_for_pay, false);
         }
