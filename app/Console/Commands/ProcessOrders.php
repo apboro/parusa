@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use App\Events\AstraMarineCancelOrderEvent;
 use App\Events\CityTourCancelOrderEvent;
 use App\Events\NevaTravelCancelOrderEvent;
+use App\Jobs\SendOrderEmailToGuideJob;
+use App\Models\Dictionaries\ExcursionType;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
@@ -43,36 +45,33 @@ class ProcessOrders extends Command
     {
         // OrderStatus::partner_reserve:
         $this->destroyPartnerReserves(now());
-
-        // OrderStatus::partner_paid is OK
-        // OrderStatus::partner_returned - is OK
-        // OrderStatus::partner_partial_returned - is OK
-        // OrderStatus::partner_reserve_canceled - need more investigation
-
-        // OrderStatus::terminal_creating - seems to be OK
-        // OrderStatus::terminal_creating_from_reserve - seems to be OK
-        // OrderStatus::terminal_wait_for_pay - seems to be OK
-        // OrderStatus::terminal_wait_for_pay_from_reserve - seems to be OK
-        // OrderStatus::terminal_finishing - seems to be OK
-        // OrderStatus::terminal_paid - is OK
-        // OrderStatus::terminal_canceled - need more investigation
-        // OrderStatus::terminal_wait_for_return - seems to be OK
-        // OrderStatus::terminal_returned - is OK
-        // OrderStatus::terminal_partial_returned - is OK
-
-        // OrderStatus::showcase_paid - is OK
-        // OrderStatus::showcase_returned - is OK
-        // OrderStatus::showcase_partial_returned - is OK
-        // OrderStatus::showcase_canceled - need more investigation
-
-        // OrderStatus::showcase_creating:
-        // OrderStatus::showcase_wait_for_pay:
         $this->cancelShowcaseDelayed(now()->addHours(-1));
         $this->cancelApiDelayed(now()->subMinutes(15));
         $this->cancelYagaDelayed(now()->subMinutes(15));
         $this->cancelPromotersDelayed(now()->subMinutes(15));
+        $this->sendEmailToGuides(now()->subMinute());
 
         return 0;
+    }
+
+    private function sendEmailToGuides(Carbon $date): void
+    {
+        $orders = Order::query()
+            ->with(['tickets'])
+            ->whereIn('status_id', OrderStatus::order_printable_statuses)
+            ->where('updated_at', '>', $date)
+            ->whereHas('tickets', function (Builder $query) use ($date) {
+                $query->whereHas('trip', function (Builder $query) use ($date) {
+                    $query->whereHas('excursion', function (Builder $query) use ($date) {
+                        $query->where('type_id', ExcursionType::legs);
+                    });
+                });
+            })
+            ->get();
+
+        foreach ($orders as $order) {
+            SendOrderEmailToGuideJob::dispatch($order);
+        }
     }
 
     /**

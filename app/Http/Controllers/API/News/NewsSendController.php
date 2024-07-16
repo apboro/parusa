@@ -10,6 +10,8 @@ use App\Models\News\News;
 use App\Models\Partner\Partner;
 use App\Models\User\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 class NewsSendController extends ApiEditController
 {
@@ -23,17 +25,20 @@ class NewsSendController extends ApiEditController
         }
 
         $partners = Partner::with(['positions', 'positions.user.profile'])->get();
-
+        $list = [];
         foreach ($partners as $partner) {
             foreach ($partner->positions as $position) {
                 $email = $position->user->profile->email;
                 $profile = $position->user->profile;
                 if ($email) {
-                    SendNewsEmailJob::dispatch($email, $news, $profile)->delay(rand(5, 10));
+                    if (!in_array($email, $list)) {
+                        $list[] = $email;
+                        SendNewsEmailJob::dispatch($email, $news, $profile)->delay(rand(5, 10));
+                    }
                 }
             }
         }
-
+        Log::info('news email send', [$list]);
         return APIResponse::response([], [], 'Новость успешно отправлена');
     }
 
