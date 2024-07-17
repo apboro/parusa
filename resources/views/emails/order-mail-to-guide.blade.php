@@ -1,5 +1,5 @@
 Заказ {{ $order->id }}<br>
-Телефон клиента: {{ $order->phone }}
+Телефон клиента: {{ $order->phone }}<br>
 Билетов {{ $order->tickets->count() }}<br>
 @foreach ($order->tickets as $ticket)
     <ul>
