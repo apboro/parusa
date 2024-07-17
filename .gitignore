@@ -25,3 +25,4 @@ composer.phar
 /app/Http/Controllers/TestController.php
 /resources/js/config/env.js
 /alex_vivo.ovpn
+/storage/api-docs/api_yaga15-docs.json

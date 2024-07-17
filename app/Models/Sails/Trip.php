@@ -397,12 +397,19 @@ class Trip extends Model implements Statusable
         return $this->hasOne(Provider::class, 'id', 'provider_id');
     }
 
-    public function scopeActiveScarletSails(Builder $query): Builder
+    public function scopeActiveScarletSails(Builder $query, int $yaga = 10): Builder
     {
         return $query->with(['excursion', 'excursion.info', 'ship', 'provider', 'excursion.ratesLists', 'tickets', 'excursion.provider', 'startPier', 'startPier.info'])
             ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
-            ->whereHas('excursion', fn($excursions) => $excursions->where('status_id', ExcursionStatus::active)->where('only_site', false))
+            ->whereHas('excursion', fn($excursions) => $excursions
+                ->where('status_id', ExcursionStatus::active)
+                ->where('only_site', false)
+                ->when($yaga === 10, function (Builder $query) {
+                    $query->whereIn('id', explode(',', Settings::get('ten_excursion_ids')));
+                })->when($yaga === 15, function (Builder $query) {
+                    $query->whereIn('id', explode(',', Settings::get('fifteen_excursion_ids')));
+                }))
             ->whereIn('provider_id', [
                 Provider::scarlet_sails,
                 Provider::neva_travel

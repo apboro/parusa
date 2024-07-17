@@ -1,8 +1,9 @@
 <template>
     <LayoutPage :title="$route.meta['title']">
-        <LayoutRoutedTabs :tabs="{general: 'Основные'}" @change="tab = $event"/>
+        <LayoutRoutedTabs :tabs="{general: 'Основные', yaga: 'Афиша'}" @change="tab = $event"/>
 
         <GeneralSettings v-if="tab === 'general'"/>
+        <YagaSettings v-if="tab === 'yaga'"/>
 
     </LayoutPage>
 </template>
@@ -13,9 +14,11 @@
 import LayoutPage from "@/Components/Layout/LayoutPage";
 import LayoutRoutedTabs from "@/Components/Layout/LayoutRoutedTabs";
 import GeneralSettings from "@/Pages/Admin/Settings/Parts/GeneralSettings";
+import YagaSettings from "@/Pages/Admin/Settings/Parts/YagaSettings.vue";
 
 export default {
     components: {
+        YagaSettings,
         GeneralSettings,
         LayoutRoutedTabs,
         LayoutPage
