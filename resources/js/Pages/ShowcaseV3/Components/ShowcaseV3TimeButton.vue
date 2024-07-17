@@ -40,8 +40,11 @@ $base_white_color: #ffffff !default;
 .ap-button {
     display: inline-block;
     text-decoration: none;
-    height: $showcase_size_unit;
-    line-height: $showcase_size_unit;
+    /*height: $showcase_size_unit;*/
+    height: 54px;
+    width: 84px;
+    line-height: 54px;
+    /*line-height: $showcase_size_unit;*/
     text-align: center;
     cursor: pointer;
     box-sizing: border-box;
@@ -51,7 +54,7 @@ $base_white_color: #ffffff !default;
     font-family: $showcase_font;
     font-size: 14px;
     white-space: nowrap;
-    border: 1px solid;
+    border: 1px solid #DFDFDF;
     @include no_selection;
 
     &__disabled {

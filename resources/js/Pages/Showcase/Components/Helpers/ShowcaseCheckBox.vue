@@ -49,7 +49,6 @@ export default {
 .ap-checkbox {
     height: 100%;
     display: flex;
-    align-items: center;
     cursor: pointer;
     position: relative;
 

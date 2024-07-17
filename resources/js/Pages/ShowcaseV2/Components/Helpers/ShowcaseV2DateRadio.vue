@@ -292,12 +292,20 @@ export default {
     @media screen and (max-width: 769px) {
         &__wrapper {
             padding: 10px;
+            flex-direction: column-reverse;
+            font-size: 12px;
+            align-items: center;
+            justify-content: center;
         }
     }
 
     &__icon {
         display: flex;
         width: 35px;
+
+      @media screen and (max-width: 769px) {
+          width: 16px;
+      }
     }
 
     &__input {
@@ -327,6 +335,10 @@ export default {
 
         &::-ms-input-placeholder { /* Microsoft Edge */
             color: $showcase_placeholder_color;
+        }
+
+        @media screen and (max-width: 769px) {
+          font-size: 12px;
         }
     }
 
@@ -389,6 +401,15 @@ export default {
         &-shown {
             opacity: 1;
             visibility: visible;
+        }
+
+        @media screen and (max-width: 769px) {
+          left: -200%;
+
+          &:before {
+            left: auto;
+            right: 6px;
+          }
         }
     }
 }

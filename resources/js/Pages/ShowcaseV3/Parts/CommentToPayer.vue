@@ -17,5 +17,18 @@ export default {
 </template>
 
 <style scoped lang="scss">
+    .ap-showcase__notice {
+        width: 600px;
 
+        &-text {
+            color: #0E0E0E;
+            font-family: Gilroy;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        @media screen and (max-width: 769px) {
+            width: 100%;
+        }
+    }
 </style>

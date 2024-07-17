@@ -296,7 +296,9 @@ export default {
         height: 100%;
         line-height: calc(#{$showcase_size_unit} - 2px);
         overflow: hidden;
-        padding: 0.15em 0 0 math.div($showcase_size_unit, 4);
+        /*padding: 0.15em 0 0 math.div($showcase_size_unit, 4);*/
+        padding: 0 30px;
+        align-items: center;
         white-space: nowrap;
         font-weight: bold;
 
@@ -306,6 +308,12 @@ export default {
 
         &-placeholder {
             color: $showcase_placeholder_color;
+        }
+
+        @media screen and (max-width: 769px) {
+            ont-size: 14px;
+            font-weight: 700;
+            padding: 0 15px;
         }
     }
 
@@ -368,7 +376,7 @@ export default {
     }
 
     &__toggle {
-        align-items: flex-start;
+        align-items: center;
         box-sizing: border-box;
         cursor: inherit;
         display: flex;
@@ -495,6 +503,15 @@ export default {
             &:last-child {
                 margin-bottom: 5px;
             }
+
+            @media screen and (max-width: 769px) {
+                white-space: unset;
+                height: auto;
+            }
+        }
+
+        @media screen and (max-width: 769px) {
+            max-width: 100% !important;
         }
     }
 }
