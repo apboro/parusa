@@ -1,7 +1,7 @@
 <?php
 
-use App\Services\YagaAPI\YagaOrderApiController;
-use App\Services\YagaAPI\YagaScheduleApiController;
+use App\Services\YagaAPI15\YagaOrderApiController;
+use App\Services\YagaAPI15\YagaScheduleApiController;
 
 Route::middleware(['auth:sanctum'])->prefix('api/yaga15/')->group(function (){
     Route::get('manifest', [YagaScheduleApiController::class,'getManifest']);
@@ -23,7 +23,5 @@ Route::middleware(['auth:sanctum'])->prefix('api/yaga15/')->group(function (){
     Route::post('cancel-order', [YagaOrderApiController::class,'cancelOrder']);
     Route::post('clear-reservation', [YagaOrderApiController::class,'clearReservation']);
     Route::post('approve', [YagaOrderApiController::class,'approve']);
-
-
 });
 

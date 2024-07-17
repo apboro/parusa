@@ -27,7 +27,7 @@ use OpenApi\Attributes as OA;
 
 class YagaScheduleApiController
 {
-    #[OA\Get(path: '/api/yaga/manifest', tags: ['Расписание'])]
+    #[OA\Get(path: '/api/yaga15/manifest', tags: ['Расписание'])]
     #[OA\Response(response: '200', description: '')]
     public function getManifest(): JsonResponse
     {
@@ -35,7 +35,7 @@ class YagaScheduleApiController
         return (new Manifest())->getResource();
     }
 
-    #[OA\Get(path: '/api/yaga/cities', tags: ['Расписание'])]
+    #[OA\Get(path: '/api/yaga15/cities', tags: ['Расписание'])]
     #[OA\Response(response: '200', description: '')]
     public function getCities(): JsonResponse
     {

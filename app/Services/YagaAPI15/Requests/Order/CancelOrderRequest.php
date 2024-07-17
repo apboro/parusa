@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use OpenApi\Attributes as OA;
 
-#[OA\Post(path: '/api/yaga/cancel-order',
+#[OA\Post(path: '/api/yaga15/cancel-order',
     requestBody: new OA\RequestBody(
         content: new OA\JsonContent()
     ),

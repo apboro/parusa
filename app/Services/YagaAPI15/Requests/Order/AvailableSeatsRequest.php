@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use OpenApi\Attributes as OA;
 
 #[OA\Get(
-    path: '/api/yaga/available-seats',
+    path: '/api/yaga15/available-seats',
     tags: ['Заказ'],
     parameters: [
         new OA\Parameter(name: 'sessionId', in: 'query', required: false, schema: new OA\Schema(type: 'string')),

@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use OpenApi\Attributes as OA;
 
-#[OA\Get(path: '/api/yaga/hallplan',
+#[OA\Get(path: '/api/yaga15/hallplan',
     tags: ['Расписание'],
     parameters: [
         new OA\Parameter(name: 'sessionId', in: 'query', required: false, schema: new OA\Schema(type: 'string')),

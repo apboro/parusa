@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use OpenApi\Attributes as OA;
 
 #[OA\Get(
-    path: '/api/yaga/organizers',
+    path: '/api/yaga15/organizers',
     tags: ['Расписание'],
     parameters: [
         new OA\Parameter(name: 'offset', in: 'query', required: false, schema: new OA\Schema(type: 'string')),

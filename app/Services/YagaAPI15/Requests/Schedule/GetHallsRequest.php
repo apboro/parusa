@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use OpenApi\Attributes as OA;
 
-#[OA\Get(path: '/api/yaga/halls',
+#[OA\Get(path: '/api/yaga15/halls',
     tags: ['Расписание'],
     parameters: [
         new OA\Parameter(name: 'offset', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
