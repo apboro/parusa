@@ -26,7 +26,7 @@ class SendOrderEmailToGuideJob implements ShouldQueue, ShouldBeUnique
     public function handle(): void
     {
         $email = new OrderMailToGuideMail($this->order);
-        Mail::to(['zakaz-tours@yandex.ru', 'borodachev@gmail.com'])->send($email);
+        Mail::to('zakaz-tours@yandex.ru')->send($email);
     }
 
     public function uniqueId(): string
