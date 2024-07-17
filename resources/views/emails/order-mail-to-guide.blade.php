@@ -1,7 +1,10 @@
 Заказ {{ $order->id }}<br>
+Телефон клиента: {{ $order->phone }}
 Билетов {{ $order->tickets->count() }}<br>
 @foreach ($order->tickets as $ticket)
-    Билет: {{ $ticket->id }}<br>
-    Экскурсия: {{ $ticket->trip->excursion->name }}<br>
-    Начало в: {{ $ticket->trip->start_at }}<br>
+    <ul>
+        <li>Билет: {{ $ticket->id }}</li>
+        <li>Экскурсия: {{ $ticket->trip->excursion->name }}</li>
+        <li>Начало в: {{ $ticket->trip->start_at }}</li>
+    </ul>
 @endforeach
