@@ -24,6 +24,7 @@
                     :placeholder="'Все'"
                     :has-null="true"
                     :small="true"
+                    :multi="true"
                     :disabled="!!list.search"
                     @change="list.load()"
                 />

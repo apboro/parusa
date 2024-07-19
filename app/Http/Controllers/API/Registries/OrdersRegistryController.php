@@ -111,7 +111,7 @@ class OrdersRegistryController extends ApiController
                 $query->whereDate('created_at', '<=', Carbon::parse($filters['date_to']));
             }
             if (!empty($filters['order_type_id'])) {
-                $query->where('type_id', $filters['order_type_id']);
+                $query->whereIn('type_id', $filters['order_type_id']);
             }
             if (!empty($filters['search_phone'])) {
                 $query->where('phone', 'LIKE', '%' . $filters['search_phone'] . '%');
