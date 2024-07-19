@@ -72,6 +72,10 @@ class OrdersRegistryItemController extends ApiController
             $returnable = false;
         }
 
+        $discountSum = null;
+        if ($promocode) {
+            $discountSum = $promocode->amount ?? $order->tickets->sum('base_price') * $promocode->percent / 100;
+        }
         return APIResponse::response([
             'status' => $order->status->name,
             'is_reserve' => $order->hasStatus(OrderStatus::partner_reserve),
@@ -112,7 +116,8 @@ class OrdersRegistryItemController extends ApiController
                 ];
             }),
             'total' => $order->tickets->sum('base_price'),
-            'order_total' => $order->promocode->isNotEmpty() ? $order->tickets->sum('base_price') - $order->promocode[0]?->amount : $order->total(),
+
+            'order_total' => $discountSum ? $order->tickets->sum('base_price') - $discountSum : $order->total(),
             'tickets_count' => $order->tickets->count(),
             'name' => $order->name,
             'email' => $order->email,

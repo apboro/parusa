@@ -4,6 +4,7 @@ namespace App\Models\Excursions;
 
 use App\Exceptions\Excursions\WrongExcursionStatusException;
 use App\Interfaces\Statusable;
+use App\Models\City;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
@@ -15,6 +16,7 @@ use App\Models\Model;
 use App\Models\Partner\Partner;
 use App\Models\Sails\Trip;
 use App\Models\Tickets\TicketsRatesList;
+use App\Settings;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -219,9 +221,14 @@ class Excursion extends Model implements Statusable, AsDictionary
         return $this->hasOne(ExcursionType::class, 'id', 'type_id');
     }
 
-    public function scopeActiveScarletSails(Builder $query, Carbon $dateFrom, Carbon $dateTo)
+    public function city(): HasOne
     {
-        return $query->where('status_id', ExcursionStatus::active)
+        return $this->hasOne(City::class, 'id', 'city_id');
+    }
+
+    public function scopeActiveScarletSails(Builder $query, Carbon $dateFrom, Carbon $dateTo, int $yaga = 10): Builder
+    {
+        $builder = $query->where('status_id', ExcursionStatus::active)
             ->where('only_site', false)
             ->whereIn('provider_id', [
                 Provider::scarlet_sails,
@@ -231,5 +238,13 @@ class Excursion extends Model implements Statusable, AsDictionary
                 $ratesLists->whereDate('start_at', '<=', $dateFrom)
                     ->whereDate('end_at', '>=', $dateTo);
             });
+        if ($yaga === 10) {
+            $builder->whereIn('id', explode(',', Settings::get('ten_excursion_ids')));
+        }
+        if ($yaga === 15){
+            $builder->whereIn('id', explode(',', Settings::get('fifteen_excursion_ids')));
+        }
+
+        return $builder;
     }
 }

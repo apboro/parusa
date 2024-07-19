@@ -2,10 +2,14 @@
 
 namespace App\Services\NevaTravel;
 
+use App\Models\Combo;
 use App\Models\Dictionaries\Provider;
+use App\Models\Dictionaries\TicketGrade;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Order\Order;
+use App\Models\Sails\Trip;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class NevaTravelRepository
@@ -210,6 +214,40 @@ class NevaTravelRepository
             'none' => 0,
             default => -1,
         };
+    }
+
+    public function getComboTemplatePrice(Trip $straightTrip, Trip $backwardTrip): array
+    {
+        /** @var $combo Combo*/
+        $combo = DB::table('combos')
+            ->whereJsonContains('combo->program_ids', $straightTrip->excursion->additionalData->provider_excursion_id)
+            ->whereJsonContains('combo->is_active', true)
+            ->first();
+        if (empty($combo)){
+            return [];
+        }
+
+        $query = [
+            "content" => [
+                "combo_id" => $combo->combo_id,
+                "program_list" => [
+                    [
+                        "program_id" => $straightTrip->excursion->additionalData->provider_excursion_id,
+                        "route" => [
+                            "departure_point_id" => $straightTrip->additionalData->provider_trip_id
+                        ]
+                    ],
+                    [
+                        "program_id" => $backwardTrip->excursion->additionalData->provider_excursion_id,
+                        "route" => [
+                            "departure_point_id" => $backwardTrip->additionalData->provider_trip_id
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        return $this->apiClient->post('get_combo_template_price', $query);
     }
 
 

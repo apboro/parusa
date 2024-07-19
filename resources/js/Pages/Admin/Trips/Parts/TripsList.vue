@@ -35,7 +35,7 @@
             <LayoutFiltersItem :class="'w-25'" :title="'Экскурсия'" v-if="excursionId === null">
                 <InputDropDown v-if="list.payload.excursions_filter"
                                :options="list.payload.excursions_filter"
-                               v-model = "list.filters['excursion_id']"
+                               v-model="list.filters['excursion_id']"
                                :original="list.filters_original['excursion_id']"
                                :placeholder="'Все'"
                                :identifier="'id'"
@@ -46,21 +46,21 @@
                                @change="list.load()"
                 />
                 <DictionaryDropDown v-else
-                    :dictionary="'excursions'"
-                    :fresh="true"
-                    v-model="list.filters['excursion_id']"
-                    :original="list.filters_original['excursion_id']"
-                    :placeholder="'Все'"
-                    :has-null="true"
-                    :search="true"
-                    :small="true"
-                    @change="list.load()"
+                                    :dictionary="'excursions'"
+                                    :fresh="true"
+                                    v-model="list.filters['excursion_id']"
+                                    :original="list.filters_original['excursion_id']"
+                                    :placeholder="'Все'"
+                                    :has-null="true"
+                                    :search="true"
+                                    :small="true"
+                                    @change="list.load()"
                 />
             </LayoutFiltersItem>
             <LayoutFiltersItem :class="'w-25'" :title="'Причалы и остановки'" v-if="pierId === null">
                 <InputDropDown v-if="list.payload.piers_filter"
                                :options="list.payload.piers_filter"
-                               v-model = "list.filters['start_pier_id']"
+                               v-model="list.filters['start_pier_id']"
                                :original="list.filters_original['start_pier_id']"
                                :placeholder="'Все'"
                                :identifier="'id'"
@@ -96,12 +96,26 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+        </LayoutFilters>
+        <LayoutFilters>
             <LayoutFiltersItem :class="'w-25'" :title="'Поставщик'">
                 <DictionaryDropDown
                     :dictionary="'providers'"
                     :fresh="true"
                     v-model="list.filters['provider_id']"
                     :original="list.filters_original['provider_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :class="'w-25'" :title="'Город'">
+                <DictionaryDropDown
+                    :dictionary="'cities'"
+                    :fresh="true"
+                    v-model="list.filters['city_id']"
+                    :original="list.filters_original['city_id']"
                     :placeholder="'Все'"
                     :has-null="true"
                     :small="true"

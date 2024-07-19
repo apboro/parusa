@@ -41,6 +41,26 @@ return [
                     base_path('app') . '/Services/YagaAPI',
                 ],
             ],
+        ],
+        'yaga15' => [
+            'api' => [
+                'title' => 'API Алые Паруса для Афишы 15%',
+            ],
+            'routes' => [
+                'api' => 'api/yaga15',
+                'docs' => storage_path() . '/api-docs/yaga15',
+                'oauth2_callback' => 'api/oauth2-callback/yaga15',
+            ],
+            'paths' => [
+                'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
+                'docs_json' => 'api_yaga15-docs.json',
+                'docs_yaml' => 'api-yaga15-docs.yaml',
+                'format_to_use_for_docs' => env('L5_FORMAT_TO_USE_FOR_DOCS', 'json'),
+
+                'annotations' => [
+                    base_path('app') . '/Services/YagaAPI15',
+                ],
+            ],
         ]
     ],
     'defaults' => [

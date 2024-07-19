@@ -42,6 +42,9 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/api_v1.php'));
 
             Route::namespace($this->namespace)
+                ->group(base_path('routes/services/yaga/api_for_yaga15.php'));
+
+            Route::namespace($this->namespace)
                 ->group(base_path('routes/services/yaga/api_for_yaga.php'));
 
             Route::namespace($this->namespace)

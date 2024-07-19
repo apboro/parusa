@@ -16,6 +16,7 @@ use App\Models\Excursions\Excursion;
 use App\Models\Integration\AdditionalDataTrip;
 use App\Models\Model;
 use App\Models\Piers\Pier;
+use App\Models\Ships\Seats\TripSeat;
 use App\Models\Ships\Ship;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketsRatesList;
@@ -202,6 +203,11 @@ class Trip extends Model implements Statusable
         return $this->hasOne(Pier::class, 'id', 'end_pier_id');
     }
 
+    public function tripSeats(): HasMany
+    {
+        return $this->hasMany(TripSeat::class, 'trip_id', 'id');
+    }
+
     /**
      * Ship this trip at.
      *
@@ -360,8 +366,7 @@ class Trip extends Model implements Statusable
 
     public function getSeats()
     {
-        $seats = $this->ship->seats;
-        foreach ($seats as $seat) {
+        foreach ($this->ship->seats as $seat) {
             $seatsAr[] = [
                 'seat_id' => $seat->id,
                 'seat_number' => $seat->seat_number,
@@ -392,12 +397,19 @@ class Trip extends Model implements Statusable
         return $this->hasOne(Provider::class, 'id', 'provider_id');
     }
 
-    public function scopeActiveScarletSails(Builder $query): Builder
+    public function scopeActiveScarletSails(Builder $query, int $yaga = 10): Builder
     {
         return $query->with(['excursion', 'excursion.info', 'ship', 'provider', 'excursion.ratesLists', 'tickets', 'excursion.provider', 'startPier', 'startPier.info'])
             ->where('status_id', TripStatus::regular)
             ->where('sale_status_id', TripSaleStatus::selling)
-            ->whereHas('excursion', fn($excursions) => $excursions->where('status_id', ExcursionStatus::active)->where('only_site', false))
+            ->whereHas('excursion', fn($excursions) => $excursions
+                ->where('status_id', ExcursionStatus::active)
+                ->where('only_site', false)
+                ->when($yaga === 10, function (Builder $query) {
+                    $query->whereIn('id', explode(',', Settings::get('ten_excursion_ids')));
+                })->when($yaga === 15, function (Builder $query) {
+                    $query->whereIn('id', explode(',', Settings::get('fifteen_excursion_ids')));
+                }))
             ->whereIn('provider_id', [
                 Provider::scarlet_sails,
                 Provider::neva_travel
@@ -411,6 +423,15 @@ class Trip extends Model implements Statusable
     public function stops(): HasMany
     {
         return $this->hasMany(TripStop::class, 'trip_id', 'id');
+    }
+
+    public function getFirstBackwardTrip()
+    {
+        return Trip::whereHas('excursion', function ($excursions){
+            $excursions->where('id', $this->excursion->reverse_excursion_id);
+        })->where('start_at', '>', $this->start_at->addMinutes($this->excursion->info->duration))
+            ->orderBy('start_at')
+            ->first();
     }
 
 

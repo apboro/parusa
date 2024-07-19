@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API\Settings;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Excursions\Excursion;
 use App\Models\Hit\Hit;
 use App\Settings;
 use Illuminate\Http\JsonResponse;
@@ -36,6 +38,20 @@ class SettingsController extends ApiEditController
                 'buyer_email_welcome' => '',
             ],
         ],
+        'yaga' => [
+            'fields' => [
+                'ten_excursion_ids' => Settings::string,
+                'fifteen_excursion_ids' => Settings::string
+            ],
+            'titles' => [
+                'ten_excursion_ids' => 'Экскурсии на 10%',
+                'fifteen_excursion_ids' => 'Экскурсии на 15%'
+            ],
+            'rules' => [
+                'ten_excursion_ids' => 'string',
+                'fifteen_excursion_ids' => 'string'
+            ],
+        ]
     ];
 
     /**
@@ -51,6 +67,12 @@ class SettingsController extends ApiEditController
         return $this->get('general');
     }
 
+    public function getYaga(Request $request): JsonResponse
+    {
+        Hit::register(HitSource::admin);
+        return $this->get('yaga');
+    }
+
     /**
      * Set general settings.
      *
@@ -62,6 +84,12 @@ class SettingsController extends ApiEditController
     {
         Hit::register(HitSource::admin);
         return $this->set($request, 'general');
+    }
+
+    public function setYaga(Request $request): JsonResponse
+    {
+        Hit::register(HitSource::admin);
+        return $this->set($request, 'yaga');
     }
 
     /**
@@ -79,7 +107,15 @@ class SettingsController extends ApiEditController
             $values[$key] = Settings::get($key, null, $type);
         }
 
-        return APIResponse::form($values, $this->settings[$section]['rules'], $this->settings[$section]['titles']);
+        if ($section === 'yaga'){
+            $excursions = Excursion::query()->where('status_id', ExcursionStatus::active)->get();
+        }
+
+        return APIResponse::form(
+            $values,
+            $this->settings[$section]['rules'],
+            $this->settings[$section]['titles'],
+            ['excursions' => $excursions ?? []]);
     }
 
     /**

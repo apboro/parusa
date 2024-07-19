@@ -95,7 +95,7 @@
             <GuiHeading mb-30 bold>Промоутер</GuiHeading>
             <FormString :form="form" :name="'partner_id'" :disabled="form.values['without_partner']"/>
             <FormCheckBox :form="form" :name="'without_partner'" @change="withoutPartnerChanged"/>
-            <FormCheckBox :form="form" :name="'use_ekp'" @change="handleChangeEKP"/>
+            <FormCheckBox v-if="orderHasScarletSailsTickets" :form="form" :name="'use_ekp'" @change="handleChangeEKP"/>
         </GuiContainer>
 
 
@@ -164,6 +164,9 @@ export default {
     }),
 
     computed: {
+        orderHasScarletSailsTickets() {
+            return this.data.tickets.filter((ticket) => ticket.ticket_provider_id === 5).length > 0;
+        },
         total() {
             if (!this.data['tickets'] || this.data['tickets'].length === 0) {
                 return '—';
@@ -199,14 +202,15 @@ export default {
         handleChangeEKP() {
             if (this.form.values['use_ekp']) {
                 this.data['tickets'].map(ticket => {
-                    this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'] * 0.93, `numeric`, 'Цена', true);
+                    if (ticket.ticket_provider_id === 5) {
+                        this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'] * 0.93, `numeric`, 'Цена', true);
+                    }
                 });
             } else {
                 this.data['tickets'].map(ticket => {
                     this.form.set('tickets.' + ticket['id'] + '.price', ticket['base_price'], `numeric`, 'Цена', true);
                 });
             }
-
         },
         ifBackwardTicketOrHaveSeatScheme(ticket) {
             return (ticket['backward_price'] !== null || ticket['seat_id'] !== null);

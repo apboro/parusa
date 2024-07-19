@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
 use App\Http\Resources\StopResource;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
 use App\Models\Dictionaries\TripStatus;
 use App\Models\Hit\Hit;
@@ -184,7 +185,9 @@ class TripEditController extends ApiEditController
         }
 
         $tripsToEdit = Trip::query()
-            ->withCount('tickets')
+            ->withCount(['tickets' => function (Builder $query) {
+                $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
+            }])
             ->when($mode !== 'single', function (Builder $query) use ($chain, $trip, $to) {
                 $query->whereHas('chains', function (Builder $query) use ($chain) {
                     $query->where('id', $chain->id);

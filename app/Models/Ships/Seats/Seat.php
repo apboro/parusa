@@ -3,6 +3,7 @@
 namespace App\Models\Ships\Seats;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Seat extends Model
 {
@@ -17,5 +18,10 @@ class Seat extends Model
     public function status(int $tripId)
     {
         return TripSeat::query()->where('trip_id', $tripId)->where('seat_id', $this->id)->first()?->status;
+    }
+
+    public function tripSeat(): HasMany
+    {
+        return $this->hasMany(TripSeat::class, 'seat_id', 'id');
     }
 }

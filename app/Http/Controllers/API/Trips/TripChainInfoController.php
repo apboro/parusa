@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Trips;
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
 use App\Models\Dictionaries\HitSource;
+use App\Models\Dictionaries\TicketStatus;
 use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
@@ -53,7 +54,9 @@ class TripChainInfoController extends ApiController
 
         // Get trips range
         $tripsRange = Trip::query()
-            ->withCount('tickets')
+            ->withCount(['tickets' => function (Builder $query) {
+                $query->whereIn('status_id', TicketStatus::ticket_countable_statuses);
+            }])
             ->when($mode !== 'single', function (Builder $query) use ($chain) {
                 $query->whereHas('chains', function (Builder $query) use ($chain) {
                     $query->where('id', $chain->id);
