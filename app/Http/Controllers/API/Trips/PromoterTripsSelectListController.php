@@ -31,6 +31,7 @@ class PromoterTripsSelectListController extends ApiController
     protected array $defaultFilters = [
         'date' => null,
         'program_id' => null,
+        'city_id' => null,
         'excursion_id' => null,
         'start_pier_id' => null,
         'excursion_type_id' => null,
@@ -39,6 +40,7 @@ class PromoterTripsSelectListController extends ApiController
     protected array $rememberFilters = [
         'program_id',
         'excursion_id',
+        'city_id',
         'start_pier_id',
         'excursion_type_id',
     ];
@@ -120,6 +122,9 @@ class PromoterTripsSelectListController extends ApiController
         }
         if (!empty($filters['excursion_type_id'])) {
             $query->where('type_id', $filters['excursion_type_id']);
+        }
+        if (!empty($filters['city_id'])) {
+            $query->whereHas('excursion', fn ($excursion) => $excursion->where('city_id',$filters['city_id']));
         }
 
         // current page automatically resolved from request via `page` parameter

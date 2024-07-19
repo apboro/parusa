@@ -9,6 +9,9 @@
                 <span class="link" v-if="editable" @click="statusChange"><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
                 <span v-else><GuiActivityIndicator :active="data['active']"/>{{ data['status'] }}</span>
             </GuiValue>
+            <GuiValue :title="'Город'">
+                    {{ data['city'] }}
+            </GuiValue>
             <GuiValue :title="'Поставщик'">
                     {{ data['provider'] }}
             </GuiValue>

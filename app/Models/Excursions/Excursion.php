@@ -4,6 +4,7 @@ namespace App\Models\Excursions;
 
 use App\Exceptions\Excursions\WrongExcursionStatusException;
 use App\Interfaces\Statusable;
+use App\Models\City;
 use App\Models\Common\Image;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\ExcursionStatus;
@@ -218,6 +219,11 @@ class Excursion extends Model implements Statusable, AsDictionary
     public function type()
     {
         return $this->hasOne(ExcursionType::class, 'id', 'type_id');
+    }
+
+    public function city(): HasOne
+    {
+        return $this->hasOne(City::class, 'id', 'city_id');
     }
 
     public function scopeActiveScarletSails(Builder $query, Carbon $dateFrom, Carbon $dateTo, int $yaga = 10): Builder

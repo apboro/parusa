@@ -19,6 +19,7 @@ class ExcursionEditController extends ApiEditController
         'name_receipt' => 'required|max:40',
         'status_id' => 'required',
         'provider_id' => 'required',
+        'city_id' => 'required',
         'images' => 'required',
         'duration' => 'required|integer|min:0',
         'trip_images' => 'required|max:1',
@@ -32,6 +33,7 @@ class ExcursionEditController extends ApiEditController
         'only_site' => 'Эксклюзивная экскурсия - билеты продаются только через сайт Алые Паруса',
         'use_seat_scheme' => 'Использовать схему рассадки',
         'provider_id' => 'Поставщик',
+        'city_id' => 'Город',
         'images' => 'Фотография экскурсии',
         'programs' => 'Типы программы',
         'duration' => 'Продолжительность, минут',
@@ -70,6 +72,7 @@ class ExcursionEditController extends ApiEditController
                 'only_site' => $excursion->only_site,
                 'use_seat_scheme' => $excursion->use_seat_scheme,
                 'provider_id' => $excursion->provider_id,
+                'city_id' => $excursion->city_id,
                 'excursion_type_id' => $excursion->type_id,
                 'is_single_ticket' => $excursion->is_single_ticket,
                 'reverse_excursion_id' => $excursion->reverse_excursion_id,
@@ -120,6 +123,7 @@ class ExcursionEditController extends ApiEditController
         $excursion->setAttribute('name_receipt', $data['name_receipt']);
         $excursion->setAttribute('type_id', $data['excursion_type_id']);
         $excursion->setAttribute('provider_id', $data['provider_id']);
+        $excursion->setAttribute('city_id', $data['city_id']);
         $excursion->setAttribute('only_site', $data['only_site'] ?? false);
         $excursion->setAttribute('use_seat_scheme', $data['use_seat_scheme'] ?? false);
         $excursion->setAttribute('is_single_ticket', $data['is_single_ticket'] ?? false);

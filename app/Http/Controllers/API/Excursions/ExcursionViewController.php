@@ -32,6 +32,7 @@ class ExcursionViewController extends ApiController
             'name' => $excursion->name,
             'name_receipt' => $excursion->name_receipt,
             'status' => $excursion->status->name,
+            'city' => $excursion->city->name,
             'status_id' => $excursion->status_id,
             'active' => $excursion->hasStatus(ExcursionStatus::active),
             'images' => $excursion->images->map(function (Image $image) {

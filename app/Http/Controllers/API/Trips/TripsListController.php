@@ -26,6 +26,7 @@ class TripsListController extends ApiController
         'date' => null,
         'status_id' => null,
         'provider_id' => null,
+        'city_id' => null,
         'excursion_id' => null,
         'start_pier_id' => null,
         'excursion_type_id' => null
@@ -34,6 +35,7 @@ class TripsListController extends ApiController
     protected array $rememberFilters = [
         'status_id',
         'provider_id',
+        'city_id',
         'excursion_id',
         'start_pier_id',
         'excursion_type_id',
@@ -57,7 +59,7 @@ class TripsListController extends ApiController
         $excursionTypeId = $request->input('filters.excursion_type_id');
 
         $query = Trip::query()
-            ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus', 'provider'])
+            ->with(['startPier', 'endPier', 'ship', 'excursion', 'status', 'saleStatus', 'provider', 'excursion.city'])
             ->where('excursions.status_id', 1)
             ->whereHas('provider', function ($provider) {
                 $provider->where('enabled', true);
@@ -87,6 +89,9 @@ class TripsListController extends ApiController
             }
             if (!empty($filters['provider_id'])) {
                 $query->where('trips.provider_id', $filters['provider_id']);
+            }
+            if (!empty($filters['city_id'])) {
+                $query->whereHas('excursion', fn ($excursion) => $excursion->where('city_id',$filters['city_id']));
             }
             if ($startPierId || !empty($filters['start_pier_id'])) {
                 $query->where('start_pier_id', $startPierId ?? $filters['start_pier_id']);

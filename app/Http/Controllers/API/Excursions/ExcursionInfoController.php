@@ -44,6 +44,7 @@ class ExcursionInfoController extends ApiController
             'name' => $excursion->name,
             'status' => $excursion->status->name,
             'provider' => $excursion->provider->name,
+            'city' => $excursion->city->name,
             'active' => $excursion->hasStatus(ExcursionStatus::active),
             'images' => $excursion->images->map(function (Image $image) {
                 try {
