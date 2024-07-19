@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Dictionary;
 
+use App\Models\City;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\Inventory;
 use App\Models\Dictionaries\PartnerType;
@@ -13,25 +14,25 @@ use App\Models\Ships\Seats\SeatCategory;
 trait EditableDictionaries
 {
     protected array $dictionaries = [
-        'seat_categories' => [
-            'name' => 'Категории мест',
-            'class' => SeatCategory::class,
-            'item_name' => 'категорию места',
-            'validation' => [
-                'name' => 'required',
-                'table_seats_quantity' => 'integer|nullable'
-            ],
-            'titles' => [
-                'name' => 'Название категории',
-                'table_seat' => 'Столик',
-                'table_seats_quantity' => 'Количество мест за столом'
-            ],
-            'fields' => [
-                'name' => 'string',
-                'table_seat' => 'bool',
-                'table_seats_quantity' => 'integer'
-            ],
-        ],
+//        'seat_categories' => [
+//            'name' => 'Категории мест',
+//            'class' => SeatCategory::class,
+//            'item_name' => 'категорию места',
+//            'validation' => [
+//                'name' => 'required',
+//                'table_seats_quantity' => 'integer|nullable'
+//            ],
+//            'titles' => [
+//                'name' => 'Название категории',
+//                'table_seat' => 'Столик',
+//                'table_seats_quantity' => 'Количество мест за столом'
+//            ],
+//            'fields' => [
+//                'name' => 'string',
+//                'table_seat' => 'bool',
+//                'table_seats_quantity' => 'integer'
+//            ],
+//        ],
         'ticket_grades' => [
             'name' => 'Типы билетов',
             'class' => TicketGrade::class,
@@ -106,6 +107,14 @@ trait EditableDictionaries
             'validation' => [
                 'name' => 'required'
             ]
-        ]
+        ],
+        'cities' => [
+            'name' => 'Города',
+            'class' => City::class,
+            'item_name' => 'город',
+            'validation' => ['name' => 'required'],
+            'titles' => ['name' => 'Город'],
+            'fields' => ['name' => 'string'],
+        ],
     ];
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Dictionary;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Models\City;
 use App\Models\Dictionaries\AbstractDictionary;
 use App\Models\Dictionaries\AccountTransactionType;
 use App\Models\Dictionaries\AccountTransactionTypePrimary;
@@ -90,7 +91,8 @@ class DictionaryController extends ApiController
         'inventory' => ['class' => Inventory::class, 'allow' => 'staff_admin,staff_office_manager,staff_terminal'],
         'seat_categories' => ['class' => SeatCategory::class, 'allow' => 'staff_admin,staff_office_manager'],
         'news_statuses' => ['class' => NewsStatus::class, 'allow' => 'staff_admin,staff_office_manager'],
-        'news_recipients' => ['class' => NewsRecipients::class, 'allow' => 'staff_admin,staff_office_manager']
+        'news_recipients' => ['class' => NewsRecipients::class, 'allow' => 'staff_admin,staff_office_manager'],
+        'cities' => ['class' => City::class, 'allow' => 'staff_admin,staff_office_manager,staff_piers_manager,staff_accountant,partner,staff_terminal,promoter_manager']
     ];
 
     /**

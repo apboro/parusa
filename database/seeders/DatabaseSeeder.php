@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Database\Seeders\Dictionaries\AccountTransactionTypesSeeder;
+use Database\Seeders\Dictionaries\CitiesSeeder;
 use Database\Seeders\Dictionaries\ContactTypesSeeder;
 use Database\Seeders\Dictionaries\ExcursionTypesSeeder;
 use Database\Seeders\Dictionaries\HitSeeder;
@@ -31,7 +32,8 @@ class DatabaseSeeder extends Seeder
         OrderTypesSeeder::class,
         PartnerTypesSeeder::class,
         WorkShiftStatusesSeeder::class,
-        TariffsSeeder::class
+        TariffsSeeder::class,
+        CitiesSeeder::class,
     ];
 
     /**

@@ -25,12 +25,14 @@ class TicketsRegistryController extends ApiController
         'trip_date' => null,
         'excursion_id' => null,
         'terminal_id' => null,
+        'city_id' => null,
     ];
 
     protected array $rememberFilters = [
         'date_from',
         'date_to',
         'trip_date',
+        'city_id'
     ];
 
     protected string $rememberKey = CookieKeys::ticket_registry_list;
@@ -273,6 +275,13 @@ class TicketsRegistryController extends ApiController
             if (!empty($filters['trip_date'])) {
                 $query->whereHas('trip', function (Builder $query) use ($filters) {
                     $query->whereDate('start_at', Carbon::parse($filters['trip_date']));
+                });
+            }
+            if (!empty($filters['city_id'])) {
+                $query->whereHas('trip', function (Builder $trips) use ($filters) {
+                    $trips->whereHas('excursion', function (Builder $excursions) use ($filters) {
+                        $excursions->where('city_id', $filters['city_id']);
+                    });
                 });
             }
         }

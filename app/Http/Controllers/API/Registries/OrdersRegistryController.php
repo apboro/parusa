@@ -23,9 +23,11 @@ class OrdersRegistryController extends ApiController
         'date_from' => null,
         'date_to' => null,
         'order_type_id' => null,
+        'city_id' => null,
     ];
 
     protected array $rememberFilters = [
+        'city_id',
     ];
 
     protected string $rememberKey = CookieKeys::order_registry_list;
@@ -55,7 +57,7 @@ class OrdersRegistryController extends ApiController
 
         $query = Order::query()->orderBy('created_at', 'desc')
             ->with([
-                'type', 'status','additionalData',
+                'type', 'status', 'additionalData',
                 'tickets', 'tickets.status', 'tickets.trip', 'tickets.trip.excursion',
                 'tickets.trip.startPier', 'tickets.grade',
                 'partner', 'position', 'position.user', 'position.user.profile', 'terminal', 'cashier',
@@ -89,7 +91,7 @@ class OrdersRegistryController extends ApiController
                 foreach ($terms as $term) {
                     $query->orWhere('name', 'LIKE', '%' . $term . '%')
                         ->orWhere('email', 'LIKE', '%' . $term . '%')
-                        ->orWhereHas('additionalData', function($query) use ($term){
+                        ->orWhereHas('additionalData', function ($query) use ($term) {
                             $query->where('provider_order_id', 'LIKE', '%' . $term . '%');
                         });
                 }
@@ -114,72 +116,81 @@ class OrdersRegistryController extends ApiController
             if (!empty($filters['search_phone'])) {
                 $query->where('phone', 'LIKE', '%' . $filters['search_phone'] . '%');
             }
+            if (!empty($filters['city_id'])) {
+                $query->whereHas('tickets', function ($tickets) use ($filters) {
+                    $tickets->whereHas('trip', function ($trips) use ($filters) {
+                        $trips->whereHas('excursion', function ($excursions) use ($filters) {
+                            $excursions->where('city_id', $filters['city_id']);
+                        });
+                    });
+                });
+            }
         }
 
-        $orders = $query->paginate($request->perPage());
+            $orders = $query->paginate($request->perPage());
 
-        /** @var LengthAwarePaginator $orders */
-        $orders->transform(function (Order $order) use ($current) {
+            /** @var LengthAwarePaginator $orders */
+            $orders->transform(function (Order $order) use ($current) {
 
-            if ($order->promocode->count() > 0) {
-                $returnable = false;
-            } else if ($current->isStaffTerminal()) {
-                $returnable = $order->hasStatus(OrderStatus::terminal_paid) || $order->hasStatus(OrderStatus::terminal_partial_returned);
-            } else if ($current->isRepresentative()) {
-                $returnable = $order->hasStatus(OrderStatus::partner_paid) || $order->hasStatus(OrderStatus::partner_partial_returned);
-            } else {
-                $returnable = false;
-            }
+                if ($order->promocode->count() > 0) {
+                    $returnable = false;
+                } else if ($current->isStaffTerminal()) {
+                    $returnable = $order->hasStatus(OrderStatus::terminal_paid) || $order->hasStatus(OrderStatus::terminal_partial_returned);
+                } else if ($current->isRepresentative()) {
+                    $returnable = $order->hasStatus(OrderStatus::partner_paid) || $order->hasStatus(OrderStatus::partner_partial_returned);
+                } else {
+                    $returnable = false;
+                }
 
-            $discountSum = null;
-            if ($order->promocode->isNotEmpty()) {
-                $discountSum = $order->promocode[0]->amount ?? $order->tickets->sum('base_price') * $order->promocode[0]->percent / 100;
-            }
-            return
-                [
-                    'id' => $order->id,
-                    'neva_travel_order_number' => $order->additionalData?->provider_order_id,
-                    'date' => $order->created_at->format('d.m.Y, H:i'),
-                    'tickets_total' => $order->getAttribute('tickets_count'),
-                    'amount' => $order->tickets->sum('base_price'),
-                    'order_total' => $discountSum ? $order->tickets->sum('base_price') - $discountSum : $order->total(),
-                    'returnable' => $returnable,
-                    'payment_unconfirmed' => (bool)$order->payment_unconfirmed,
-                    'info' => [
-                        'buyer_name' => $order->name,
-                        'buyer_email' => $order->email,
-                        'buyer_phone' => $order->phone,
-                        'order_type' => $order->type->name,
-                        'partner_type' => $order->partner?->type->name,
-                        'partner_id' => $order->partner_id,
-                        'partner' => $order->partner->name ?? null,
-                        'position_id' => $order->position_id,
-                        'position_name' => $order->position ? $order->position->user->profile->compactName : null,
-                        'terminal_id' => $order->terminal_id,
-                        'terminal_name' => $order->terminal->name ?? null,
-                        'cashier' => $order->cashier ? $order->cashier->user->profile->compactName : null,
-                    ],
-                    'tickets' => $order->tickets->map(function (Ticket $ticket) {
-                        return [
-                            'id' => $ticket->id,
-                            'trip_date' => $ticket->trip->start_at->format('d.m.Y'),
-                            'trip_time' => $ticket->trip->start_at->format('H:i'),
-                            'excursion' => $ticket->trip->excursion->name,
-                            'pier' => $ticket->trip->startPier->name,
-                            'type' => $ticket->grade->name,
-                            'amount' => $ticket->base_price,
-                            'status' => $ticket->status->name,
-                        ];
-                    }),
-                ];
-        });
+                $discountSum = null;
+                if ($order->promocode->isNotEmpty()) {
+                    $discountSum = $order->promocode[0]->amount ?? $order->tickets->sum('base_price') * $order->promocode[0]->percent / 100;
+                }
+                return
+                    [
+                        'id' => $order->id,
+                        'neva_travel_order_number' => $order->additionalData?->provider_order_id,
+                        'date' => $order->created_at->format('d.m.Y, H:i'),
+                        'tickets_total' => $order->getAttribute('tickets_count'),
+                        'amount' => $order->tickets->sum('base_price'),
+                        'order_total' => $discountSum ? $order->tickets->sum('base_price') - $discountSum : $order->total(),
+                        'returnable' => $returnable,
+                        'payment_unconfirmed' => (bool)$order->payment_unconfirmed,
+                        'info' => [
+                            'buyer_name' => $order->name,
+                            'buyer_email' => $order->email,
+                            'buyer_phone' => $order->phone,
+                            'order_type' => $order->type->name,
+                            'partner_type' => $order->partner?->type->name,
+                            'partner_id' => $order->partner_id,
+                            'partner' => $order->partner->name ?? null,
+                            'position_id' => $order->position_id,
+                            'position_name' => $order->position ? $order->position->user->profile->compactName : null,
+                            'terminal_id' => $order->terminal_id,
+                            'terminal_name' => $order->terminal->name ?? null,
+                            'cashier' => $order->cashier ? $order->cashier->user->profile->compactName : null,
+                        ],
+                        'tickets' => $order->tickets->map(function (Ticket $ticket) {
+                            return [
+                                'id' => $ticket->id,
+                                'trip_date' => $ticket->trip->start_at->format('d.m.Y'),
+                                'trip_time' => $ticket->trip->start_at->format('H:i'),
+                                'excursion' => $ticket->trip->excursion->name,
+                                'pier' => $ticket->trip->startPier->name,
+                                'type' => $ticket->grade->name,
+                                'amount' => $ticket->base_price,
+                                'status' => $ticket->status->name,
+                            ];
+                        }),
+                    ];
+            });
 
-        return APIResponse::list(
-            $orders,
-            ['№ заказа', 'Дата оплаты заказа', 'Покупатель', 'Информация о заказе', 'Билетов в заказе', 'Стоимость заказа'],
-            $filters,
-            $this->defaultFilters,
-            []
-        );
+            return APIResponse::list(
+                $orders,
+                ['№ заказа', 'Дата оплаты заказа', 'Покупатель', 'Информация о заказе', 'Билетов в заказе', 'Стоимость заказа'],
+                $filters,
+                $this->defaultFilters,
+                []
+            );
+        }
     }
-}
