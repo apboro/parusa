@@ -14,6 +14,13 @@ return new class extends Migration {
             $table->unsignedTinyInteger('order')->nullable()->default(0);
             $table->timestamps();
         });
+
+        DB::table('dictionary_cities')->insert([
+            'id' => 1,
+            'name' =>'Санкт-Петербург',
+            'enabled' => true,
+            'order' => 0,
+        ]);
     }
 
     public function down(): void
