@@ -23,24 +23,17 @@ class AstraMarineRefreshCommand extends Command
             ->where('end_at', '<', now()->addDay())
             ->get();
 
-        Trip::query()->with(['additionalData'])
-            ->where('provider_id', Provider::astra_marine)
-            ->where('start_at', '>', now())
-            ->where('end_at', '<', now()->addDay())
-            ->update([
-                'status_id' => TripStatus::cancelled,
-                'sale_status_id' => TripSaleStatus::closed_automatically
-            ]);
-
         foreach ($trips as $trip) {
             $response = (new AstraMarineRepository())->getEvents(['eventId' => $trip->additionalData->provider_trip_id])['body'];
             if (!empty($response['events'])) {
                 $trip->tickets_total = $response['events'][0]['availableSeats'];
                 $trip->sale_status_id = TripSaleStatus::selling;
                 $trip->status_id = TripStatus::regular;
-                $trip->save();
+            } else {
+                $trip->sale_status_id = TripSaleStatus::closed_automatically;
+                $trip->status_id = TripStatus::cancelled;
             }
-
+            $trip->save();
         }
     }
 }
