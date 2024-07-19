@@ -264,7 +264,7 @@ class TicketsRegistryController extends ApiController
             }
             if (!empty($filters['order_type_id'])) {
                 $query->whereHas('order', function (Builder $query) use ($filters) {
-                    $query->where('type_id', $filters['order_type_id']);
+                    $query->whereIn('type_id', $filters['order_type_id']);
                 });
             }
             if (!empty($filters['terminal_id'])) {

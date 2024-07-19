@@ -1,5 +1,22 @@
 <template>
     <LayoutPage :loading="list.is_loading" :title="$route.meta['title']">
+
+        <template v-slot:filtersItemSlot>
+            <div style="margin-left: 20px; width: 30%">
+                <span style="font-size: 14px;">Выберите город</span>
+                <DictionaryDropDown
+                    :dictionary="'cities'"
+                    :fresh="true"
+                    v-model="list.filters['city_id']"
+                    :original="list.filters_original['city_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </div>
+        </template>
+
         <LayoutFilters>
             <LayoutFiltersItem :class="'w-25'" :title="'Дата'">
                 <GuiIconButton :class="'mr-5'" :border="false" @click="setDay(-1)">
@@ -102,20 +119,6 @@
                     :fresh="true"
                     v-model="list.filters['program_id']"
                     :original="list.filters_original['program_id']"
-                    :placeholder="'Все'"
-                    :has-null="true"
-                    :small="true"
-                    @change="list.load()"
-                />
-            </LayoutFiltersItem>
-        </LayoutFilters>
-        <LayoutFilters>
-            <LayoutFiltersItem :class="'w-25'" :title="'Город'">
-                <DictionaryDropDown
-                    :dictionary="'cities'"
-                    :fresh="true"
-                    v-model="list.filters['city_id']"
-                    :original="list.filters_original['city_id']"
                     :placeholder="'Все'"
                     :has-null="true"
                     :small="true"
