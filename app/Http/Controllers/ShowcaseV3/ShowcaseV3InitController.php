@@ -10,6 +10,7 @@ use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Excursions\Excursion;
 use App\Models\Hit\Hit;
+use App\Models\Piers\Pier;
 use App\Models\Sails\Trip;
 use Carbon\Carbon;
 use Exception;
@@ -133,6 +134,7 @@ class ShowcaseV3InitController extends ApiController
             'items' => $items,
             'checked' => $checked,
             'excursions' => ExcursionResource::collection($excursions),
+            'piers' => Pier::query()->active()->get(),
         ], 200, [ExternalProtect::HEADER_NAME => Crypt::encrypt(json_encode($originalKey, JSON_THROW_ON_ERROR))]);
     }
 }

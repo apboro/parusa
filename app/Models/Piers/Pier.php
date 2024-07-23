@@ -10,6 +10,7 @@ use App\Models\Dictionaries\PiersStatus;
 use App\Models\Dictionaries\Provider;
 use App\Models\Model;
 use App\Traits\HasStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -99,6 +100,11 @@ class Pier extends Model implements Statusable, AsDictionary
     public function provider()
     {
         return $this->belongsTo(Provider::class);
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('status_id', PiersStatus::active);
     }
 
 }

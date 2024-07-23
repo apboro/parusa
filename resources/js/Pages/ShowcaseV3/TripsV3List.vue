@@ -31,7 +31,6 @@
                         <span>Экскурсия: </span>
                         <ShowcaseInputDropDown v-model="selected_excursion_id"
                                                :options="excursions"
-                                               :original="search_parameters.programs"
                                                :identifier="'id'"
                                                :show="'name'"
                                                :has-null="false"
@@ -41,15 +40,15 @@
                         <span>Экскурсия: {{ excursions[0]['name'] }}</span>
                     </div>
 
-                    <div v-if="trips[0]['multi_pier_excursion']">
+                    <div v-if="!selected_excursion_id || tripPiers.length > 1">
                         <span>Выберите причал: </span>
-                        <ShowcaseInputDropDown v-model="search_parameters.programs"
-                                               :options="excursions"
-                                               :original="search_parameters.programs"
+                        <ShowcaseInputDropDown v-model="selected_pier_id"
+                                               :options="tripPiers"
                                                :identifier="'id'"
                                                :show="'name'"
-                                               :has-null="true"
-                                               :placeholder="'Все'"/>
+                                               :has-null="false"
+                                               :placeholder="'Все'"
+                                                @change="handlePierChange"/>
                     </div>
                     <div v-else>
                         <span>Причал: {{ selected_trip ? selected_trip['pier'] : trips[0]['pier'] }}</span>
@@ -60,6 +59,7 @@
                             <p>Выберите удобное время:</p>
                             <div v-for="trip in trips">
                                 <ShowcaseV3TimeButton
+                                    v-if="(!selected_pier_id && tripPiers.length <= 1) || (trip.pier_id === selected_pier_id && (tripPiers.length > 1 && selected_pier_id))"
                                     :color="showcase3Store.trip.id === trip.id ? 'purple' : 'white'"
                                     @click="selectTrip(trip)">
                                     {{ trip['start_time'] }}
@@ -254,7 +254,7 @@ export default {
         excursions: {type: Array, default: []},
 
         date: {type: String, default: null},
-        trips: {type: Array, default: null},
+        trips: {type: Object, default: null},
         next_date: {type: String, default: null},
         next_date_caption: {type: String, default: null},
         isLoading: {type: Boolean, default: false},
@@ -281,6 +281,16 @@ export default {
             set(value) {
                 this.search_parameters.date = value;
             }
+        },
+        tripPiers(){
+            return this.trips.map(trip => ({
+                name: trip.pier,
+                id: trip.pier_id
+            })).filter((value, index, self) =>
+                    index === self.findIndex((t) => (
+                        t.id === value.id
+                    ))
+            );
         },
         ...mapStores(useShowcase3Store),
 
@@ -318,6 +328,7 @@ export default {
         selectedGrade: null,
         tickets: [],
         selected_excursion_id: null,
+        selected_pier_id: null,
         selected_trip: null,
         init_trip: null,
         search_parameters: {
@@ -367,11 +378,18 @@ export default {
             }
             this.selectedSeats = data.selectedSeats;
         },
+        handlePierChange(){
+            this.showcase3Store.ticketsData = [];
+            this.showcase3Store.tickets = [];
+            this.selected_trip = null;
+        },
         handleExcursionChange() {
+            this.selected_trip = null;
             this.showcase3Store.trip = null;
             this.showcase3Store.ticketsData = [];
             this.showcase3Store.tickets = [];
             this.showcase3Store.excursion = this.selected_excursion_id;
+            this.selected_pier_id = null;
             this.$emit('select_excursion', this.selected_excursion_id)
         },
         handleTicketsChange(values) {
