@@ -36,13 +36,12 @@ class SendOrderEmailToOrganizerJob implements ShouldQueue, ShouldBeUnique
 
         $mailBox = [];
         if ($hasLegExcursion){
-            $mailBox[] = 'bf3310@ya.ru';
+            $mailBox[] = 'zakaz-tours@yandex.ru';
         }
         if ($hasStandUpExcursion){
-            $mailBox[] = 'borodachev@gmail.com';
+            $mailBox[] = 'standupwalk1@gmail.com';
         }
 
-        //'zakaz-tours@yandex.ru' : 'standupwalk1@gmail.com';
         $email = new OrderMailToOrganizerMail($this->order);
         Mail::to($mailBox)->send($email);
     }
