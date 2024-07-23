@@ -61,10 +61,14 @@
                     <div v-else>
                         <span>Причал: {{ selected_trip ? selected_trip['pier'] : trips[0]['pier'] }}</span>
                     </div>
+
 <!--                simple trip-->
                     <div v-if="showcase3Store.trip && !showcase3Store.trip.trip_with_seats" style="display: flex;" class="ap-showcase__time-wrapper">
 
-                        <div class="ap-showcase__time">
+                        <div v-if="showcase3Store.trip.is_single_ticket">
+                            ЕДИНЫЙ БИЛЕТ
+                        </div>
+                        <div v-else class="ap-showcase__time">
                             <p>Выберите удобное время:</p>
                             <div v-for="trip in trips">
                                 <ShowcaseV3TimeButton

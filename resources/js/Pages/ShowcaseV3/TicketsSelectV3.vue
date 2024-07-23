@@ -2,17 +2,12 @@
     <div class="ap-showcase__tickets">
         <p class="ap-showcase__tickets-title">Укажите количество билетов:</p>
         <table v-if="trip.rates" class="ap-showcase__tickets-table">
-<!--            <thead>-->
-<!--            <tr>-->
-<!--                <th class="ap-showcase__tickets-table-col-1">Тип билета</th>-->
-<!--                <th class="ap-showcase__tickets-table-col-2">Стоимость</th>-->
-<!--                <th class="ap-showcase__tickets-table-col-3">Количество</th>-->
-<!--            </tr>-->
-<!--            </thead>-->
             <tbody>
                 <tr v-for="rate in trip.rates">
                     <td data-label="Тип билета:" class="ap-showcase__tickets-table-col-1">
-                        <span class="ap-showcase__tickets-type">{{ rate['name'] }}</span> <br>
+                        <span class="ap-showcase__tickets-type">{{ rate['name'] }}</span>
+                        <div v-if="rate['preferential']">Скидка предоставляется пенсионерам,студентам, детям 12-17 лет</div>
+                        <br>
                         <span class="ap-showcase__tickets-price" data-label="Стоимость:">{{ rate['base_price'] }} руб.</span>
                     </td>
                     <td class="ap-showcase__tickets-table-col-3">
