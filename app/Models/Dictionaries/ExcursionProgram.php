@@ -3,6 +3,7 @@
 namespace App\Models\Dictionaries;
 
 use App\Models\Excursions\Excursion;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -26,5 +27,10 @@ class ExcursionProgram extends AbstractDictionary
     public function excursions(): BelongsToMany
     {
         return $this->belongsToMany(Excursion::class, 'excursion_has_programs', 'program_id', 'excursion_id');
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('enabled', true);
     }
 }
