@@ -15,6 +15,7 @@ class ExcursionTypesSeeder extends GenericSeeder
             ExcursionType::earth => ['name' => 'Автобусные экскурсии '],
             ExcursionType::combined => ['name' => 'Комбинированные экскурсии'],
             ExcursionType::legs => ['name' => 'Пешие прогулки'],
+            ExcursionType::standUp => ['name' => 'Stand Up'],
         ]
     ];
 }

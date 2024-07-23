@@ -15,6 +15,8 @@ class ExcursionType extends Model
 
     const legs = 60;
 
+    const standUp = 70;
+
     const combined = 50;
 
     protected $table = 'dictionary_excursion_types';
