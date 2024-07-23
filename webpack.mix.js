@@ -23,6 +23,8 @@ mix
     .js('resources/js/showcase2.js', 'js').vue()
     .js('resources/js/checkout.js', 'js').vue()
 
+    .js('resources/js/kazan.js', 'js').vue()
+
     .webpackConfig(require('./webpack.config.js'));
 
 if (mix.inProduction()) {
