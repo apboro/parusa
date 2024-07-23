@@ -13,6 +13,8 @@ use App\Http\Controllers\ShowcaseV2\ShowcaseV2OrderController;
 use App\Http\Controllers\ShowcaseV2\ShowcaseV2OrderInfoController;
 use App\Http\Controllers\ShowcaseV2\ShowcaseV2PromoCodeController;
 use App\Http\Controllers\ShowcaseV2\ShowcaseV2TripsController;
+use App\Http\Controllers\ShowcaseV3\ShowcaseV3InitController;
+use App\Http\Controllers\ShowcaseV3\ShowcaseV3TripsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/showcase')->middleware(['showcase'])->group(function () {
@@ -41,4 +43,9 @@ Route::prefix('/showcase_v2')->middleware(['showcase'])->group(function () {
     Route::post('/order/cancel', [ShowcaseV2OrderController::class, 'cancel'])->middleware(['external.protect']);
     Route::post('/order/info', [ShowcaseV2OrderInfoController::class, 'info'])->middleware(['external.protect']);
     Route::post('/promo-code/use', [ShowcaseV2PromoCodeController::class, 'init'])->middleware(['external.protect']);
+});
+
+Route::prefix('/showcase_v3')->middleware(['showcase'])->group(function () {
+    Route::post('/trips', [ShowcaseV3TripsController::class, 'trips'])->middleware(['external.protect']);
+    Route::post('/init', [ShowcaseV3InitController::class, 'init']);
 });

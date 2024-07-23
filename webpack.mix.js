@@ -21,6 +21,7 @@ mix
 
     .js('resources/js/showcase.js', 'js').vue()
     .js('resources/js/showcase2.js', 'js').vue()
+    .js('resources/js/showcase3.js', 'js').vue()
     .js('resources/js/checkout.js', 'js').vue()
 
     .js('resources/js/kazan.js', 'js').vue()
