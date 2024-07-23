@@ -8,6 +8,7 @@ use App\Models\Dictionaries\HitSource;
 use App\Models\Hit\Hit;
 use App\Models\QrCodes\QrCode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class QrCodeRedirectController extends Controller
 {
@@ -26,6 +27,7 @@ class QrCodeRedirectController extends Controller
         $link = $qrCode->link;
 
         StatisticQrCodes::addVisit($qrCode);
+        Log::channel('qr-codes')->info('made visit by qr-code: '. $hash. ' partner: '. $qrCode->partner_id);
         $cookie = cookie('qrCodeHash', $hash, env('QR_LIFETIME', 30240),
             null, '', true, true, false,'None');
 
