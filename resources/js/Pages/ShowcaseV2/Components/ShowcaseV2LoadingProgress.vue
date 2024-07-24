@@ -14,6 +14,7 @@
         </div>
         <slot></slot>
     </div>
+    <br>
 </template>
 
 <script>
@@ -37,6 +38,7 @@ $showcase_primary_color: #e83b4e !default;
     height: 100%;
     position: relative;
     min-height: 80px;
+    margin-bottom: 45px;
 }
 
 .loading-progress__wrapper {

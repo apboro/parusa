@@ -45,11 +45,11 @@
                                                @change="handleExcursionChange"/>
                     </div>
                     <div v-else>
-                        <span>Экскурсия: {{ excursions[0]['name'] }}</span>
+                        <span class="ap-showcase__select-title" style="width: 100%;">Экскурсия: {{ excursions[0]['name'] }}</span>
                     </div>
 
-                    <div v-if="!selected_excursion_id || tripPiers.length > 1">
-                        <span>Выберите причал: </span>
+                    <div v-if="!selected_excursion_id || tripPiers.length > 1" class="ap-showcase__select">
+                        <span class="ap-showcase__select-title">Выберите причал: </span>
                         <ShowcaseInputDropDown v-model="selected_pier_id"
                                                :options="tripPiers"
                                                :identifier="'id'"
@@ -58,18 +58,19 @@
                                                :placeholder="'Все'"
                                                 @change="handlePierChange"/>
                     </div>
-                    <div v-else>
-                        <span>Причал: {{ selected_trip ? selected_trip['pier'] : trips[0]['pier'] }}</span>
+                    <div v-else style="margin-bottom: 25px;">
+                        <span class="ap-showcase__select-title" style="width: 100%;">Причал: {{ selected_trip ? selected_trip['pier'] : trips[0]['pier'] }}</span>
                     </div>
 
 <!--                simple trip-->
                     <div v-if="showcase3Store.trip && !showcase3Store.trip.trip_with_seats" style="display: flex;" class="ap-showcase__time-wrapper">
 
-                        <div v-if="showcase3Store.trip.is_single_ticket">
-                            ЕДИНЫЙ БИЛЕТ
+                        <div v-if="showcase3Store.trip.is_single_ticket" class="ap-showcase__time">
+                            <p>Выберите время:</p>
+                            <span class="ap-showcase__time_edin">ЕДИНЫЙ БИЛЕТ</span>
                         </div>
                         <div v-else class="ap-showcase__time">
-                            <p>Выберите удобное время:</p>
+                            <p>Выберите время:</p>
                             <div v-for="trip in trips">
                                 <ShowcaseV3TimeButton
                                     v-if="(!selected_pier_id && tripPiers.length <= 1) || (trip.pier_id === selected_pier_id && (tripPiers.length > 1 && selected_pier_id))"
@@ -626,6 +627,8 @@ export default {
         font-weight: 700;
         color: #241B5B;
         flex-shrink: 0;
+        display: inline-block;
+        width: 230px;
     }
 }
 
@@ -659,6 +662,30 @@ export default {
 .ap-showcase__time > div {
     width: 84px;
     height: 54px;
+}
+
+.ap-showcase__time_edin {
+    width: 100%;
+    height: 54px;
+    display: inline-block;
+    background-color: #241B5B;
+    border-color: #241B5B;
+    color: #ffffff;
+    line-height: 54px;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    padding: 0 20px 0;
+    font-family: Gilroy;
+    font-size: 14px;
+    white-space: nowrap;
+    letter-spacing: 0.03rem;
+    transition: background-color cubic-bezier(0.24, 0.19, 0.28, 1.29) 150ms, border-color cubic-bezier(0.24, 0.19, 0.28, 1.29) 150ms, color cubic-bezier(0.24, 0.19, 0.28, 1.29) 150ms;
+
+    &:hover {
+        background-color: #4332aa;
+        border-color: #4332aa;
+    }
 }
 
 .ap-showcase__contacts-wrapper {

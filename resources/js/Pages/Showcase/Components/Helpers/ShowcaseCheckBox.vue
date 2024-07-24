@@ -51,6 +51,7 @@ export default {
     display: flex;
     cursor: pointer;
     position: relative;
+    align-items: center;
 
     &__disabled {
         cursor: not-allowed;
@@ -109,7 +110,6 @@ export default {
         display: inline-block;
         color: $showcase_text_color;
         position: relative;
-        top: 1px;
         @include no_selection;
 
         &-small {

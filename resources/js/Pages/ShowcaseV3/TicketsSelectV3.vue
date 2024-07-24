@@ -5,8 +5,16 @@
             <tbody>
                 <tr v-for="rate in trip.rates">
                     <td data-label="Тип билета:" class="ap-showcase__tickets-table-col-1">
-                        <span class="ap-showcase__tickets-type">{{ rate['name'] }}</span>
-                        <div v-if="rate['preferential']">Скидка предоставляется пенсионерам,студентам, детям 12-17 лет</div>
+                        <span class="ap-showcase__tickets-type">
+                            {{ rate['name'] }}
+                            <i v-if="rate['preferential']" class="ap-showcase__tickets-tooltip">
+                                i
+                                <span class="ap-showcase__tickets-tooltip__hover">
+                                    Скидка предоставляется пенсионерам, студентам, детям 12-17 лет
+                                </span>
+                            </i>
+                        </span>
+<!--                        <div v-if="rate['preferential']" class="ap-showcase__tickets-tooltip">i</div>-->
                         <br>
                         <span class="ap-showcase__tickets-price" data-label="Стоимость:">{{ rate['base_price'] }} руб.</span>
                     </td>
@@ -155,6 +163,7 @@ export default {
         width: 120px;
         height: 46px;
         border: 1px solid #DFDFDF;
+        flex-shrink: 0;
     }
 
     .ap-showcase__tickets-table-col-total {
@@ -163,6 +172,40 @@ export default {
         @media screen and (max-width: 769px) {
             margin-top: 0;
         }
+    }
+
+    .ap-showcase__tickets-tooltip {
+        position: relative;
+        display: inline-flex;
+        border: 1px solid #241B5B;
+        border-radius: 50px;
+        width: 18px;
+        height: 18px;
+        justify-content: center;
+        align-items: center;
+        margin-left: 5px;
+        font-style: normal;
+        cursor: pointer;
+
+        &__hover {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 25px;
+            background: #fff;
+            border: 1px solid;
+            z-index: 999;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: Gilroy;
+            font-size: 16px;
+            font-weight: 500;
+            color: #241B5B;
+        }
+    }
+
+    .ap-showcase__tickets-tooltip:hover .ap-showcase__tickets-tooltip__hover {
+        display: block;
     }
 
     .ap-showcase__tickets-table-col-total-title {
