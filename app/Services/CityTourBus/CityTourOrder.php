@@ -70,6 +70,7 @@ class CityTourOrder
     {
         $providerTickets = $this->cityTourRepository->getOrderTickets($this->order)['body'];
         $orderTickets = $this->order->tickets()->with('additionalData')->get();
+        Log::channel('city_tour')->info('saving tickets qrs', ['providerTickets' => $providerTickets, 'orderTickets' => $orderTickets]);
         foreach ($orderTickets as $orderTicket) {
             foreach ($providerTickets as $index => $providerTicket) {
                 if ($providerTicket['ticket_cat_id'] === $orderTicket->grade_id) {

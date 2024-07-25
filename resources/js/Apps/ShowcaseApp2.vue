@@ -14,33 +14,33 @@
                        @close="closeOrder"
             />
             <TicketsSelectV2 v-else-if="trip_id"
-                           :trip="trip.data"
-                           :trip-id="trip_id"
-                           :crm_url="crmUrl"
-                           :debug="debug"
-                           :is-loading="trip.is_loading"
-                           :session="session"
-                           @select="selectTrip"
+                             :trip="trip.data"
+                             :trip-id="trip_id"
+                             :crm_url="crmUrl"
+                             :debug="debug"
+                             :is-loading="trip.is_loading"
+                             :session="session"
+                             @select="selectTrip"
             />
             <TripsV2List v-else
-                :date_from="search_options.date_from"
-                :date_to="search_options.date_to"
-                :programs="search_options.programs"
-                :today="today"
-                :date="trips.date"
-                :dates="search_options.dates"
-                :items="search_options.items"
-                :checked="search_options.checked"
-                :trips="trips.list"
-                :next_date="trips.next_date"
-                :next_date_caption="trips.next_date_caption"
-                :is-loading="trips.is_loading"
-                :last-search="last_search"
-                :crm_url="crmUrl"
-                :debug="debug"
-                :session="session"
-                @search="loadList"
-                @select="selectTrip"
+                         :date_from="search_options.date_from"
+                         :date_to="search_options.date_to"
+                         :programs="search_options.programs"
+                         :today="today"
+                         :date="trips.date"
+                         :dates="search_options.dates"
+                         :items="search_options.items"
+                         :checked="search_options.checked"
+                         :trips="trips.list"
+                         :next_date="trips.next_date"
+                         :next_date_caption="trips.next_date_caption"
+                         :is-loading="trips.is_loading"
+                         :last-search="last_search"
+                         :crm_url="crmUrl"
+                         :debug="debug"
+                         :session="session"
+                         @search="loadList"
+                         @select="selectTrip"
             />
 
         </template>
@@ -192,7 +192,7 @@ export default {
 
     mounted() {
         const el = document.querySelector('#ap-showcase2');
-        if(el) {
+        if (el) {
             el.style.width = '100%';
         }
     },

@@ -42,6 +42,7 @@ class CreateTicketsFromPromoter
                         'status_id' => TicketStatus::promoter_wait_for_pay,
                         'provider_id' => $ordering->trip->provider_id,
                         'seat_id' => $ordering->seat_id,
+                        'start_pier_id' => $ordering->start_pier_id
                     ]);
 
                     $ticket->cart_ticket_id = $ordering->id;

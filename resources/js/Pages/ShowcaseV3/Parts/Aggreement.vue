@@ -57,5 +57,14 @@ export default {
 </template>
 
 <style scoped lang="scss">
+    .ap-showcase__agreement {
+        font-family: Gilroy;
+        font-size: 10px;
+        font-weight: 400;
+        color: #0E0E0E;
 
+        .ap-showcase__link {
+            text-decoration: underline;
+        }
+    }
 </style>

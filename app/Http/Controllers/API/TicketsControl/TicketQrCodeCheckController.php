@@ -77,7 +77,7 @@ class TicketQrCodeCheckController extends Controller
             'customer_phone' => $ticket->order->phone,
             'type' => $ticket->grade->name,
             'ticket_created_at' => $ticket->created_at->format('d.m.Y H:i'),
-            'pier' => $ticket->trip->startPier->name,
+            'pier' => $ticket->startPier?->name ?? $ticket->trip->startPier->name,
             'order_type' => $ticket->order->type->name,
             'promocode' => $ticket->order->promocode->first()?->name,
             'last_changed_at' => $ticket->updated_at->format('d.m.Y H:i'),

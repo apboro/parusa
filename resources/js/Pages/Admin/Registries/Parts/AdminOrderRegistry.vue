@@ -24,6 +24,7 @@
                     :placeholder="'Все'"
                     :has-null="true"
                     :small="true"
+                    :multi="true"
                     :disabled="!!list.search"
                     @change="list.load()"
                 />
@@ -40,6 +41,20 @@
                     <InputSearch v-model="list.search" @change="list.load()"/>
                 </LayoutFiltersItem>
             </template>
+        </LayoutFilters>
+        <LayoutFilters>
+            <LayoutFiltersItem :class="'w-25'" :title="'Город'">
+                <DictionaryDropDown
+                    :dictionary="'cities'"
+                    :fresh="true"
+                    v-model="list.filters['city_id']"
+                    :original="list.filters_original['city_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
         </LayoutFilters>
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true">

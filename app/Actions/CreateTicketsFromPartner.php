@@ -52,6 +52,7 @@ class CreateTicketsFromPartner
                         'status_id' => $ticketStatus,
                         'provider_id' => $ordering->trip->provider_id,
                         'seat_id' => $ordering->seat_id,
+                        'start_pier_id' =>$ordering->start_pier_id
                     ]);
 
                     $ticket->base_price = $ordering->getPartnerPrice() ?? $ordering->getPrice();

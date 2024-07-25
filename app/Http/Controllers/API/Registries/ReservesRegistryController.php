@@ -114,7 +114,7 @@ class ReservesRegistryController extends ApiController
                             'trip_date' => $ticket->trip->start_at->format('d.m.Y'),
                             'trip_time' => $ticket->trip->start_at->format('H:i'),
                             'excursion' => $ticket->trip->excursion->name,
-                            'pier' => $ticket->trip->startPier->name,
+                            'pier' => $ticket->startPier?->name ?? $ticket->trip->startPier->name,
                             'type' => $ticket->grade->name,
                             'amount' => $ticket->base_price,
                             'status' => $ticket->status->name,

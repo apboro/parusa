@@ -159,7 +159,7 @@ export default {
 
     @media screen and (max-width: 769px) {
         &__checked {
-            background-color: $showcase_mobile_link_color;
+            background-color: #241b5b;
         }
         &__title {
             color: $showcase_text_color;

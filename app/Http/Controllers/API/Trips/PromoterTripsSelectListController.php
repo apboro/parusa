@@ -6,6 +6,7 @@ use App\Http\APIResponse;
 use App\Http\Controllers\API\CookieKeys;
 use App\Http\Controllers\ApiController;
 use App\Http\Requests\APIListRequest;
+use App\Http\Resources\StopResource;
 use App\Models\Dictionaries\ExcursionProgram;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\PartnerType;
@@ -31,6 +32,7 @@ class PromoterTripsSelectListController extends ApiController
     protected array $defaultFilters = [
         'date' => null,
         'program_id' => null,
+        'city_id' => null,
         'excursion_id' => null,
         'start_pier_id' => null,
         'excursion_type_id' => null,
@@ -39,6 +41,7 @@ class PromoterTripsSelectListController extends ApiController
     protected array $rememberFilters = [
         'program_id',
         'excursion_id',
+        'city_id',
         'start_pier_id',
         'excursion_type_id',
     ];
@@ -121,6 +124,9 @@ class PromoterTripsSelectListController extends ApiController
         if (!empty($filters['excursion_type_id'])) {
             $query->where('type_id', $filters['excursion_type_id']);
         }
+        if (!empty($filters['city_id'])) {
+            $query->whereHas('excursion', fn ($excursion) => $excursion->where('city_id',$filters['city_id']));
+        }
 
         // current page automatically resolved from request via `page` parameter
         $trips = $query->orderBy('start_at')->paginate($request->perPage(10, $this->rememberKey));
@@ -176,7 +182,8 @@ class PromoterTripsSelectListController extends ApiController
                 'chained' => $trip->getAttribute('chains_count') > 0,
                 'is_single_ticket' => $trip->excursion->is_single_ticket,
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
-                'provider_id' => $trip->provider_id
+                'provider_id' => $trip->provider_id,
+                'stops' => StopResource::collection($trip->stops->sortBy('start_at'))
             ];
         });
 

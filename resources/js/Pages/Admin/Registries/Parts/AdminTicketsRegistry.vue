@@ -46,7 +46,7 @@
         </LayoutFilters>
 
         <LayoutFilters style="padding-top: 0;">
-            <LayoutFiltersItem :title="'Способ продажи'">
+            <LayoutFiltersItem :class="'w-25'" :title="'Способ продажи'">
                 <DictionaryDropDown
                     :dictionary="'order_types'"
                     :fresh="true"
@@ -55,6 +55,7 @@
                     :placeholder="'Все'"
                     :has-null="true"
                     :small="true"
+                    :multi="true"
                     :disabled="!!list.search"
                     @change="saleMethodChanged"
                 />
@@ -72,7 +73,7 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
-            <LayoutFiltersItem v-if="tripId === null" :title="'Экскурсия'" style="margin-left: 10px; width: 100%;">
+            <LayoutFiltersItem v-if="tripId === null" :title="'Экскурсия'" :class="'w-50'">
                 <DictionaryDropDown
                     :dictionary="'excursions'"
                     :fresh="true"
@@ -84,6 +85,18 @@
                     :small="true"
                     :disabled="!!list.search"
                     :multi="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :class="'w-25'" :title="'Город'">
+                <DictionaryDropDown
+                    :dictionary="'cities'"
+                    :fresh="true"
+                    v-model="list.filters['city_id']"
+                    :original="list.filters_original['city_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
                     @change="list.load()"
                 />
             </LayoutFiltersItem>

@@ -124,7 +124,14 @@
                         }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
-                    <div>{{ trip['pier'] }}</div>
+                    <span v-if="trip['stops'].length === 0">
+                        {{ trip['pier'] }}
+                    </span>
+                    <div v-else>
+                        <div v-for="stop in trip['stops']">
+                            {{stop.pier.name}} <span v-if="stop.start_at"> - {{stop.start_at}}</span>
+                        </div>
+                    </div>
                     <div>{{ trip['ship'] }}</div>
                 </ListTableCell>
                 <ListTableCell>

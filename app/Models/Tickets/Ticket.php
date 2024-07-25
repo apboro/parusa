@@ -16,6 +16,7 @@ use App\Models\Dictionaries\TicketStatus;
 use App\Models\Integration\AdditionalDataTicket;
 use App\Models\Model;
 use App\Models\Order\Order;
+use App\Models\Piers\Pier;
 use App\Models\Positions\Position;
 use App\Models\Sails\Trip;
 use App\Models\Ships\Seats\Seat;
@@ -433,6 +434,11 @@ class Ticket extends Model implements Statusable
         }
 
         return $this->base_price;
+    }
+
+    public function startPier(): HasOne
+    {
+        return $this->hasOne(Pier::class, 'id', 'start_pier_id');
     }
 
 }

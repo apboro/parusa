@@ -9,6 +9,18 @@
            ]"
            ref="popup"
     >
+        <FormDropdown v-if="trip.stops.length > 0"
+                      :title="'Выберите причал'"
+                      :name="'start_pier_id'"
+                      :form="form"
+                      :identifier="'id'"
+                      :show="'name'"
+                      :placeholder="'Нет'"
+                      :fresh="true"
+                      :options="stops"
+                      @change="handleChangePier"
+        />
+
         <table class="tickets-select-table">
             <thead>
             <tr>
@@ -40,9 +52,11 @@
 import form from "@/Core/Form";
 import FormNumber from "@/Components/Form/FormNumber";
 import PopUp from "@/Components/PopUp";
+import FormDropdown from "@/Components/Form/FormDropdown.vue";
 
 export default {
     components: {
+        FormDropdown,
         PopUp,
         FormNumber,
     },
@@ -50,6 +64,7 @@ export default {
     data: () => ({
         form: form(null, '/api/cart/terminal/add'),
         tripId: null,
+        trip: null,
         iterator: [],
     }),
 
@@ -67,6 +82,9 @@ export default {
                 count += this.form.values['tickets.' + key + '.quantity'];
             });
             return count;
+        },
+        stops() {
+            return this.trip.stops.map(stop => ({id: stop.pier.id, name: stop.pier.name}))
         }
     },
 
@@ -77,6 +95,22 @@ export default {
     methods: {
         multiply(a, b) {
             return Math.ceil(a * b * 100) / 100;
+        },
+
+        handleChangePier() {
+            let index = 0;
+            this.trip['rates'].map(grade => {
+                this.form.set('tickets.' + index + '.base_price', Number(grade['value']), null);
+                index++;
+            });
+
+            for (let i = 0; i < this.iterator.length; i++) {
+                let currentPrice = this.form.values['tickets.' + i + '.base_price'];
+
+                let price_delta = currentPrice * this.trip.stops.find(stop => stop.pier.id === this.form.values.start_pier_id)['partner_price'] / 100;
+
+                this.form.values['tickets.' + i + '.base_price'] = currentPrice - price_delta;
+            }
         },
 
         handle(trip) {
@@ -92,6 +126,10 @@ export default {
                 this.iterator.push(index);
                 index++;
             })
+            if (trip['stops'].length > 0) {
+                this.form.set('start_pier_id', trip['stops'][0]['pier']['id']);
+            }
+            this.trip = trip;
             this.form.load();
             this.$refs.popup.show();
         },

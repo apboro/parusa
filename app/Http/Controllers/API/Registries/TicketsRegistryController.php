@@ -25,12 +25,14 @@ class TicketsRegistryController extends ApiController
         'trip_date' => null,
         'excursion_id' => null,
         'terminal_id' => null,
+        'city_id' => null,
     ];
 
     protected array $rememberFilters = [
         'date_from',
         'date_to',
         'trip_date',
+        'city_id'
     ];
 
     protected string $rememberKey = CookieKeys::ticket_registry_list;
@@ -83,7 +85,7 @@ class TicketsRegistryController extends ApiController
                 'trip_time' => $ticket->trip->start_at->format('H:i'),
                 'trip_id' => $ticket->trip_id,
                 'excursion' => $ticket->trip->excursion->name,
-                'pier' => $ticket->trip->startPier->name,
+                'pier' => $ticket->startPier?->name ?? $ticket->trip->startPier->name,
                 'order_type' => $ticket->order->type->name,
                 'partner' => $ticket->order->partner->name ?? null,
                 'sale_by' => $ticket->order->position ? $ticket->order->position->user->profile->compactName : null,
@@ -262,7 +264,7 @@ class TicketsRegistryController extends ApiController
             }
             if (!empty($filters['order_type_id'])) {
                 $query->whereHas('order', function (Builder $query) use ($filters) {
-                    $query->where('type_id', $filters['order_type_id']);
+                    $query->whereIn('type_id', $filters['order_type_id']);
                 });
             }
             if (!empty($filters['terminal_id'])) {
@@ -273,6 +275,13 @@ class TicketsRegistryController extends ApiController
             if (!empty($filters['trip_date'])) {
                 $query->whereHas('trip', function (Builder $query) use ($filters) {
                     $query->whereDate('start_at', Carbon::parse($filters['trip_date']));
+                });
+            }
+            if (!empty($filters['city_id'])) {
+                $query->whereHas('trip', function (Builder $trips) use ($filters) {
+                    $trips->whereHas('excursion', function (Builder $excursions) use ($filters) {
+                        $excursions->where('city_id', $filters['city_id']);
+                    });
                 });
             }
         }

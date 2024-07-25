@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Trips;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiEditController;
+use App\Http\Resources\StopResource;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Dictionaries\TripSaleStatus;
@@ -11,10 +12,13 @@ use App\Models\Dictionaries\TripStatus;
 use App\Models\Hit\Hit;
 use App\Models\Sails\Trip;
 use App\Models\Sails\TripChain;
+use App\Models\TripStop;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TripEditController extends ApiEditController
 {
@@ -32,6 +36,15 @@ class TripEditController extends ApiEditController
 
     protected array $titles = [
         'start_at' => 'Дата и время отправления',
+        'middle_start_at_0' => 'Дата и время отправления',
+        'middle_start_at_1' => 'Дата и время отправления',
+        'middle_start_at_2' => 'Дата и время отправления',
+        'middle_start_at_3' => 'Дата и время отправления',
+        'middle_start_at_4' => 'Дата и время отправления',
+        'middle_start_at_5' => 'Дата и время отправления',
+        'middle_start_at_6' => 'Дата и время отправления',
+        'middle_start_at_7' => 'Дата и время отправления',
+        'middle_start_at_8' => 'Дата и время отправления',
         'end_at' => 'Дата и время прибытия',
         'start_pier_id' => 'Причал отправления',
         'end_pier_id' => 'Причал прибытия',
@@ -95,6 +108,7 @@ class TripEditController extends ApiEditController
                 'chain_trips_start_at' => $chainStart ? Carbon::parse($chainStart)->format('d.m.Y') : null,
                 'chain_trips_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('d.m.Y') : null,
                 'chain_end_at' => $chainEnd ? Carbon::parse($chainEnd)->format('Y-m-d\TH:i') : null,
+                'middlePiers' => StopResource::collection($trip->stops->filter(fn ($stop) => $stop->stop_pier_id !== $trip->start_pier_id)->sortBy('start_at')),
             ]
         );
     }
@@ -144,6 +158,10 @@ class TripEditController extends ApiEditController
         if (!$trip->exists) {
             $trip = $this->fillTrip($trip, $data, Carbon::parse($data['start_at']), Carbon::parse($data['end_at']));
             $trip->save();
+            if (!empty($request->middle_piers)) {
+                $this->addStopsFromRequest($request->middle_piers, $trip->id, $data);
+                $this->addTripStartPierAsStop($trip);
+            }
 
             $message = 'Рейс добавлен';
             if (in_array($mode, ['range', 'weekly'])) {
@@ -204,6 +222,11 @@ class TripEditController extends ApiEditController
             $toSetStartAt = $editTrip->start_at->hours($newStartAt->hour)->minutes($newStartAt->minute)->seconds(0)->milliseconds(0);
             $toSetEndAt = $editTrip->end_at->hours($newEndAt->hour)->minutes($newEndAt->minute)->seconds(0)->milliseconds(0);
             $editTrip = $this->fillTrip($editTrip, $data, $toSetStartAt, $toSetEndAt);
+            $editTrip->stops()->delete();
+            if (!empty($request->middle_piers)) {
+                $this->addStopsFromRequest($request->middle_piers, $editTrip->id, $data);
+                $this->addTripStartPierAsStop($trip);
+            }
             $editTrip->save();
         }
         // reattach edited to new chain
@@ -293,11 +316,15 @@ class TripEditController extends ApiEditController
 
         while ($currentDate->addDay() <= $to) {
             if ($mode === 'range' || ($mode === 'weekly' && in_array($currentDate->dayOfWeek, $days, true))) {
+                $stops = $trip->stops->sortBy('start_at');
                 $newTrip = $trip->replicate();
                 $newTrip->start_at = $newTrip->start_at->year($currentDate->year)->month($currentDate->month)->day($currentDate->day);
                 $newTrip->end_at = $newTrip->start_at->clone()->addMinutes($duration);
                 $newTrip->save();
                 $tripIds[] = $newTrip->id;
+                if ($stops->isNotEmpty()) {
+                    $this->addStopsInChain($stops, $newTrip);
+                }
             }
         }
 
@@ -333,4 +360,50 @@ class TripEditController extends ApiEditController
 
         return $trip;
     }
+
+    private function addStopsFromRequest(array $stops, int $tripId, $data)
+    {
+        try {
+            foreach ($stops as $stopIndex => $stub) {
+                TripStop::create([
+                    'trip_id' => $tripId,
+                    'stop_pier_id' => $data['middle_pier_id_' . $stopIndex] ?? null,
+                    'start_at' => $data['middle_start_at_' . $stopIndex] ?? null,
+                    'terminal_price_delta' => $data['middle_terminal_price_delta_' . $stopIndex] ?? null,
+                    'partner_price_delta' => $data['middle_partner_price_delta_' . $stopIndex] ?? null,
+                    'site_price_delta' => $data['middle_site_price_delta_' . $stopIndex] ?? null,
+                ]);
+            }
+        } catch (\Exception $e){
+            Log::error($e->getMessage(). ' '. $e->getFile(). ' '. $e->getLine());
+            throw new \Exception('Не все поля корректно заполнены');
+        }
+    }
+
+    private function addTripStartPierAsStop(Trip $trip)
+    {
+        TripStop::create([
+            'trip_id' => $trip->id,
+            'stop_pier_id' => $trip->start_pier_id,
+            'start_at' => $trip->start_at,
+            'terminal_price_delta' => 0,
+            'partner_price_delta' => 0,
+            'site_price_delta' => 0,
+        ]);
+    }
+
+    private function addStopsInChain(Collection $stops, Trip $trip): void
+    {
+        foreach ($stops as $stop) {
+            TripStop::create([
+                'trip_id' => $trip->id,
+                'stop_pier_id' => $stop->stop_pier_id,
+                'start_at' => $stop->start_at ? $trip->start_at->clone()->toDateString() . ' ' . $stop->start_at->toTimeString() : null,
+                'terminal_price_delta' => $stop->terminal_price_delta,
+                'partner_price_delta' => $stop->partner_price_delta,
+                'site_price_delta' => $stop->site_price_delta,
+            ]);
+        }
+    }
+
 }

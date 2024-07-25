@@ -45,7 +45,7 @@ class TicketsRegistryItemController extends ApiController
             'partner' => $ticket->order->position->user->profile->fullName ?? null,
             'status' => $ticket->status->name,
             'excursion' => $ticket->trip->excursion->name,
-            'pier' => $ticket->trip->startPier->name,
+            'pier' => $ticket->startPier?->name ?? $ticket->trip->startPier->name,
             'trip_id' => $ticket->trip_id,
             'trip_start_date' => $ticket->trip->start_at->format('d.m.Y'),
             'trip_start_time' => $ticket->trip->start_at->format('H:i'),

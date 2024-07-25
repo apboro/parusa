@@ -1,5 +1,22 @@
 <template>
     <LoadingProgress :loading="list.is_loading">
+
+        <template v-slot:filtersItemSlot>
+            <div style="margin-left: 20px; width: 30%">
+                <span style="font-size: 14px;">Выберите город</span>
+                <DictionaryDropDown
+                    :dictionary="'cities'"
+                    :fresh="true"
+                    v-model="list.filters['city_id']"
+                    :original="list.filters_original['city_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </div>
+        </template>
+
         <LayoutFilters>
             <LayoutFiltersItem :class="'w-25'" :title="'Дата'">
                 <GuiIconButton :class="'mr-5'" :border="false" @click="setDay(-1)">
@@ -35,7 +52,7 @@
             <LayoutFiltersItem :class="'w-25'" :title="'Экскурсия'" v-if="excursionId === null">
                 <InputDropDown v-if="list.payload.excursions_filter"
                                :options="list.payload.excursions_filter"
-                               v-model = "list.filters['excursion_id']"
+                               v-model="list.filters['excursion_id']"
                                :original="list.filters_original['excursion_id']"
                                :placeholder="'Все'"
                                :identifier="'id'"
@@ -46,21 +63,21 @@
                                @change="list.load()"
                 />
                 <DictionaryDropDown v-else
-                    :dictionary="'excursions'"
-                    :fresh="true"
-                    v-model="list.filters['excursion_id']"
-                    :original="list.filters_original['excursion_id']"
-                    :placeholder="'Все'"
-                    :has-null="true"
-                    :search="true"
-                    :small="true"
-                    @change="list.load()"
+                                    :dictionary="'excursions'"
+                                    :fresh="true"
+                                    v-model="list.filters['excursion_id']"
+                                    :original="list.filters_original['excursion_id']"
+                                    :placeholder="'Все'"
+                                    :has-null="true"
+                                    :search="true"
+                                    :small="true"
+                                    @change="list.load()"
                 />
             </LayoutFiltersItem>
             <LayoutFiltersItem :class="'w-25'" :title="'Причалы и остановки'" v-if="pierId === null">
                 <InputDropDown v-if="list.payload.piers_filter"
                                :options="list.payload.piers_filter"
-                               v-model = "list.filters['start_pier_id']"
+                               v-model="list.filters['start_pier_id']"
                                :original="list.filters_original['start_pier_id']"
                                :placeholder="'Все'"
                                :identifier="'id'"
@@ -96,12 +113,26 @@
                     @change="list.load()"
                 />
             </LayoutFiltersItem>
+        </LayoutFilters>
+        <LayoutFilters>
             <LayoutFiltersItem :class="'w-25'" :title="'Поставщик'">
                 <DictionaryDropDown
                     :dictionary="'providers'"
                     :fresh="true"
                     v-model="list.filters['provider_id']"
                     :original="list.filters_original['provider_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
+            <LayoutFiltersItem :class="'w-25'" :title="'Город'">
+                <DictionaryDropDown
+                    :dictionary="'cities'"
+                    :fresh="true"
+                    v-model="list.filters['city_id']"
+                    :original="list.filters_original['city_id']"
                     :placeholder="'Все'"
                     :has-null="true"
                     :small="true"
@@ -133,7 +164,14 @@
                     {{ trip['excursion'] }}
                 </ListTableResponsiveCell>
                 <ListTableResponsiveCell :mobile-title="list.titles[3]">
-                    <div>{{ trip['pier'] }}</div>
+                    <span v-if="trip['stops'].length === 0">
+                        {{ trip['pier'] }}
+                    </span>
+                    <div v-else>
+                        <div v-for="stop in trip['stops']">
+                            {{stop.pier.name}} <span v-if="stop.start_at"> - {{stop.start_at}}</span>
+                        </div>
+                    </div>
                     <div>{{ trip['ship'] }}</div>
                 </ListTableResponsiveCell>
                 <ListTableResponsiveCell :mobile-title="list.titles[4]">

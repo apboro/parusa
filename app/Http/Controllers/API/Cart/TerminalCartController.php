@@ -56,7 +56,7 @@ class TerminalCartController extends ApiEditController
                 'trip_start_date' => $ticket->trip->start_at->format('d.m.Y'),
                 'trip_start_time' => $ticket->trip->start_at->format('H:i'),
                 'excursion' => $ticket->trip->excursion->name,
-                'pier' => $ticket->trip->startPier->name,
+                'pier' => $ticket->startPier?->name ?? $ticket->trip->startPier->name,
                 'grade' => $ticket->grade->name,
                 'base_price' => $ticket->base_price,
             ];
@@ -94,7 +94,7 @@ class TerminalCartController extends ApiEditController
                 'excursion' => $trip->excursion->name,
                 'reverse_excursion_id' => $trip->excursion->reverse_excursion_id,
                 'backward_price' => $ticket->parent_ticket_id !== null ? $ticket->getBackwardPrice() : null,
-                'pier' => $trip->startPier->name,
+                'pier' => $ticket->startPier?->name ?? $trip->startPier->name,
                 'grade' => $ticket->grade->name,
                 'base_price' => $price = $ticket->getPrice(),
                 'min_price' => $ticket->getMinPrice(),
@@ -207,7 +207,8 @@ class TerminalCartController extends ApiEditController
                         'position_id' => $current->positionId(),
                         'trip_id' => $trip->id,
                         'grade_id' => $grade_id,
-                        'terminal_id' => $current->terminalId()
+                        'terminal_id' => $current->terminalId(),
+                        'start_pier_id' => $data['start_pier_id'] ?? null,
                     ],
                         ['base_price' => $ticket['base_price']]);
 

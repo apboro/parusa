@@ -94,6 +94,24 @@ export default {
 <style lang="scss" scoped>
 @import "../variables";
 
+
+
+.ap-input-number__input-quantity {
+    padding: 0;
+    text-align: center;
+    color: #0E0E0E;
+    font-weight: 400 !important;
+}
+
+.ap-input-wrapper__dirty {
+    .ap-input-number__input-quantity {
+        padding: 0;
+        text-align: center;
+        color: #E83B4E;
+        font-weight: 700 !important;
+    }
+}
+
 .ap-input-number {
     height: $showcase_size_unit;
 
@@ -117,11 +135,6 @@ export default {
 
         &-small {
             font-size: 14px;
-        }
-
-        &-quantity {
-            padding: 0;
-            text-align: center;
         }
 
         &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */

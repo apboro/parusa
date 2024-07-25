@@ -143,34 +143,18 @@ class AstraMarineOrder
      */
     public function confirmOrder()
     {
-        try {
-            $response = $this->astraMarineRepository->confirmPayment([
-                'orderID' => $this->order->additionalData->provider_order_id,
-                'orderConfirm' => true,
-            ]);
-
-            Log::channel('astra-marine')->notice('confirm order success: ' . json_encode($response));
-        } catch (Exception $exception) {
-
-            Log::channel('astra-marine')->error('confirm order error: ' . $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
-            throw new Exception($exception->getMessage());
-        }
+        $this->astraMarineRepository->confirmPayment([
+            'orderID' => $this->order->id,
+            'orderConfirm' => true,
+        ]);
     }
 
     public function cancel()
     {
-        try {
-            $response = $this->astraMarineRepository->returnOrder(["orderID" => $this->order->additionalData->provider_order_id]);
-
-            if (!$response['body']['isOrderReturned']) {
-                throw new Exception('Не удалось оформить возврат');
-            }
-            Log::channel('astra-marine')->notice('cancel order success: ' . json_encode($response));
-        } catch (Exception $exception) {
-
-            Log::channel('astra-marine')->error('cancel order error: ' . $exception->getMessage() . ' ' . $exception->getFile() . ' ' . $exception->getLine());
-            throw new Exception($exception->getMessage());
-        }
+        $order_id_formatted = number_format($this->order->id, 0, '', ' ');
+        $order = explode(' ', $order_id_formatted);
+        $dataOrder = $order[0] . "\xC2\xA0" . $order[1];
+        $this->astraMarineRepository->returnOrder(["orderID" => $dataOrder]);
     }
 
     public function getOrder()

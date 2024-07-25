@@ -22,25 +22,35 @@
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Дата отправления:</span>
-                            <span class="ap-showcase__trip-info-line-text">{{ trip['start_date'] }}</span>
+                            <span class="ap-showcase__trip-info-line-text">{{ start_date }}</span>
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span
-                                class="ap-showcase__trip-info-line-title">{{ trip.is_single_ticket ? 'Начало движения с:' : 'Время отправления:' }}</span>
+                                class="ap-showcase__trip-info-line-title">{{
+                                    trip.is_single_ticket ? 'Начало движения с:' : 'Время отправления:'
+                                }}</span>
                             <span v-if="!trip.is_single_ticket"
-                                  class="ap-showcase__trip-info-line-text">{{ trip['start_time'] }}</span>
+                                  class="ap-showcase__trip-info-line-text">{{ start_time }}</span>
                             <span v-if="trip.is_single_ticket"
                                   class="ap-showcase__trip-info-line-text">{{ trip['concatenated_start_at'] }}</span>
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Причал:</span>
-                            <span class="ap-showcase__trip-info-line-link" @click="showPierInfo">{{
+                            <span v-if="trip.stops?.length === 0" class="ap-showcase__trip-info-line-link"
+                                  @click="showPierInfo">{{
                                     trip['pier']
                                 }}</span>
+                            <ShowcaseInputDropDown v-else
+                                                   v-model="form.values.start_pier_id"
+                                                   :options="stops"
+                                                   :original="stops"
+                                                   :identifier="'id'"
+                                                   :show="'name'"
+                            />
                         </div>
                         <div class="ap-showcase__trip-info-line">
                             <span class="ap-showcase__trip-info-line-title">Продолжительность:</span>
-                            <span class="ap-showcase__trip-info-line-text">{{ trip['duration'] }} минут</span>
+                            <span class="ap-showcase__trip-info-line-text">{{ duration }} минут</span>
                         </div>
                     </div>
                 </div>
@@ -79,7 +89,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="rate in trip['rates']">
+                    <tr v-for="rate in rates">
                         <td data-label="Тип билета:" class="ap-showcase__tickets-table-col-1">{{ rate['name'] }}
                             <span class="ap-showcase__sup-sign" v-if="rate['preferential']"><ShowcaseIconSign/></span>
                         </td>
@@ -273,9 +283,11 @@ import seatMethods from "@/Mixins/seatMethods.vue";
 import CategoriesBox from "@/Pages/Parts/Seats/CategoriesBox.vue";
 import SelectedTickets from "@/Pages/Parts/Seats/SelectedTickets.vue";
 import ShowcaseV2PopUp from "@/Pages/ShowcaseV2/Components/ShowcaseV2PopUp.vue";
+import ShowcaseInputDropDown from "@/Pages/Showcase/Components/ShowcaseInputDropDown.vue";
 
 export default {
     components: {
+        ShowcaseInputDropDown,
         ShowcaseV2PopUp,
         SelectedTickets,
         CategoriesBox,
@@ -314,7 +326,7 @@ export default {
                 return '—';
             }
             let total = 0;
-            this.trip['rates'].map(rate => {
+            this.rates.map(rate => {
                 total += this.multiply(rate['base_price'], this.form.values['rate.' + rate['grade_id'] + '.quantity']);
                 if (this.activeBackward) {
                     total += this.multiply(rate['backward_price'], this.form.values['rate.' + rate['grade_id'] + '.quantity']);
@@ -329,7 +341,7 @@ export default {
                 return 0;
             }
             let count = 0;
-            this.trip['rates'].map(rate => {
+            this.rates.map(rate => {
                 count += this.form.values['rate.' + rate['grade_id'] + '.quantity'];
             });
             return count;
@@ -355,6 +367,36 @@ export default {
                 this.agreement_promocode_valid = true;
             }
         },
+        stops() {
+            return this.trip.stops?.map(stop => ({id: stop.pier.id, name: stop.pier.name}))
+        },
+        start_date(){
+            return this.getStop() ? this.getStop().full_start_at : this.trip['start_date']
+        },
+        start_time(){
+            return this.getStop() ? this.getStop().start_at : this.trip['start_time']
+        },
+        duration(){
+            return this.getStop() ? this.getStop().duration : this.trip['duration']
+        },
+        rates() {
+            if (!this.stops || this.stops?.length === 0) {
+                return this.trip['rates'];
+            } else {
+                let computedRates = [];
+                for (let rate of this.trip['rates']) {
+                    let newRate = {...rate};
+                    let currentRatePrice = rate['base_price'];
+                    let stop = this.getStop();
+                    if (stop) {
+                        let price_delta = currentRatePrice * stop['partner_price'] / 100;
+                        newRate['base_price'] = currentRatePrice - price_delta;
+                    }
+                    computedRates.push(newRate);
+                }
+                return computedRates;
+            }
+        }
     },
 
     watch: {
@@ -403,12 +445,16 @@ export default {
     },
 
     methods: {
+        getStop(){
+          return this.trip.stops?.find(stop => stop.pier.id === this.form.values.start_pier_id) ?? null;
+        },
         getGradePrice(gradeId) {
             return this.trip['rates'].find(e => e.grade_id === gradeId)?.base_price;
         },
         getFilteredGrades(categoryId) {
             return this.trip['seat_tickets_grades'].filter(el => el.seat_category_id === categoryId)
         },
+
         handleSelectBackwardTrip($event) {
             if (!this.checkedBackward) {
                 this.activeBackward = false;
@@ -449,6 +495,9 @@ export default {
             this.form.set('phone', null, 'required', 'Телефон', true);
             this.form.set('promocode', null, null, 'Промокод', true);
             this.form.load();
+            if (this.stops?.length > 0) {
+                this.form.values.start_pier_id = this.stops[0]['id'];
+            }
         },
 
         multiply(a, b) {

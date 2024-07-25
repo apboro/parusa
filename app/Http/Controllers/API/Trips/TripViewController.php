@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Trips;
 
 use App\Http\APIResponse;
 use App\Http\Controllers\ApiController;
+use App\Http\Resources\StopResource;
 use App\Models\Dictionaries\HitSource;
 use App\Models\Dictionaries\TicketStatus;
 use App\Models\Hit\Hit;
@@ -47,6 +48,7 @@ class TripViewController extends ApiController
             'discount_status' => $trip->discountStatus->name,
             'discount_status_id' => $trip->discount_status_id,
             'cancellation_time' => $trip->cancellation_time,
+            'middle_piers' => StopResource::collection($trip->stops->filter(fn ($stop) => $stop->stop_pier_id !== $trip->start_pier_id)->sortBy('start_at')),
         ];
 
         return APIResponse::response($values);

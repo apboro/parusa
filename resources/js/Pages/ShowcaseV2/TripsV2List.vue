@@ -25,7 +25,7 @@
             <template v-if="trips !== null">
                 <h2 class="ap-showcase__title ap-showcase__title-centered">Расписание отправлений на <span class="ap-not-brake">{{ date }}</span></h2>
 
-                <div class="ap-showcase__results" v-if="trips !== null && trips.length > 0">
+                <div class="ap-showcase__results" v-if="trips.length > 0">
                     <table class="ap-showcase__trips">
                         <thead>
                         <tr>
@@ -66,8 +66,13 @@
                                 </span>
                             </td>
                             <td data-label="Причал:">
-                                <span class="ap-link" @click="showPierInfo(trip)">Причал "{{ trip['pier'] }}"</span>
-                                <span>{{ trip['ship'] }}</span>
+                                <span v-if="trip['stops'] && trip['stops'].length === 0" class="ap-link" @click="showPierInfo(trip['pier_id'])">Причал "{{ trip['pier'] }}"</span>
+                                <div v-else>
+                                    <div v-for="stop in trip['stops']">
+                                        <span class="ap-link" @click="showPierInfo(stop.pier.id)">{{stop.pier.name}}</span>
+                                        <span v-if="stop.start_at"> - {{stop.start_at}}</span>
+                                    </div>
+                                </div>
                             </td>
                             <td data-label="Время в пути:"><span class="ap-not-brake">{{ trip['duration'] }} мин.</span></td>
                             <td data-label="Стоимость за взрослого:"><span class="ap-not-brake">от {{ trip['price'] }} руб.</span></td>
@@ -180,8 +185,8 @@ export default {
             this.$emit('select', trip['id']);
         },
 
-        showPierInfo(trip) {
-            this.$refs.pier.show(trip['pier_id']);
+        showPierInfo(tripId) {
+            this.$refs.pier.show(tripId);
         },
 
         showExcursionInfo(trip) {

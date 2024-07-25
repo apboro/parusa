@@ -20,6 +20,7 @@ use App\Models\Ships\Seats\TripSeat;
 use App\Models\Ships\Ship;
 use App\Models\Tickets\Ticket;
 use App\Models\Tickets\TicketsRatesList;
+use App\Models\TripStop;
 use App\Settings;
 use App\Traits\HasStatus;
 use Carbon\Carbon;
@@ -34,7 +35,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $id
  * @property string $name
  * @property Carbon $start_at
- * @property Carbon $end_at
  * @property int $start_pier_id
  * @property int $end_pier_id
  * @property int $ship_id
@@ -418,6 +418,11 @@ class Trip extends Model implements Statusable
                 $query->whereRaw('DATE(tickets_rates_list.start_at) <= DATE(trips.start_at)')
                     ->whereRaw('DATE(tickets_rates_list.end_at) >= DATE(trips.end_at)');
             });
+    }
+
+    public function stops(): HasMany
+    {
+        return $this->hasMany(TripStop::class, 'trip_id', 'id');
     }
 
     public function getFirstBackwardTrip()

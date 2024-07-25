@@ -1,5 +1,22 @@
 <template>
     <LayoutPage :loading="list.is_loading" :title="$route.meta['title']">
+
+        <template v-slot:filtersItemSlot>
+            <div style="margin-left: 20px; width: 30%">
+                <span style="font-size: 14px;">Выберите город</span>
+                <DictionaryDropDown
+                    :dictionary="'cities'"
+                    :fresh="true"
+                    v-model="list.filters['city_id']"
+                    :original="list.filters_original['city_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </div>
+        </template>
+
         <LayoutFilters>
             <LayoutFiltersItem :class="'w-25'" :title="'Дата'">
                 <GuiIconButton :class="'mr-5'" :border="false" @click="setDay(-1)">
@@ -109,6 +126,20 @@
                 />
             </LayoutFiltersItem>
         </LayoutFilters>
+        <LayoutFilters>
+            <LayoutFiltersItem :class="'w-25'" :title="'Город'">
+                <DictionaryDropDown
+                    :dictionary="'cities'"
+                    :fresh="true"
+                    v-model="list.filters['city_id']"
+                    :original="list.filters_original['city_id']"
+                    :placeholder="'Все'"
+                    :has-null="true"
+                    :small="true"
+                    @change="list.load()"
+                />
+            </LayoutFiltersItem>
+        </LayoutFilters>
 
         <ListTable v-if="list.list && list.list.length > 0" :titles="list.titles" :has-action="true" :stickySecondCol="true">
             <ListTableRow v-for="(trip, key) in list.list" :key="key" :bus_tours="trip.excursion_type_id === 20">
@@ -122,7 +153,15 @@
                     <div><span :style="{fontSize: '13px'}">{{ trip['programs'] && trip['programs'].length ? trip['programs'].join(', ') : '' }}</span></div>
                 </ListTableCell>
                 <ListTableCell>
-                    <span :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" @click="pierInfo(trip['pier_id'])">{{ trip['pier'] }}</span>
+                    <span v-if="trip['stops'] && trip['stops'].length === 0" :class="trip.excursion_type_id === 20 ? 'link__bus_tours' : 'link'" @click="pierInfo(trip['pier_id'])">
+                        {{ trip['pier'] }}
+                    </span>
+                    <div v-else>
+                        <div v-for="stop in trip['stops']">
+                            {{stop.pier.name}} <span v-if="stop.start_at"> - {{stop.start_at}}</span>
+                        </div>
+                    </div>
+                    <div>{{ trip['ship'] }}</div>
                 </ListTableCell>
                 <ListTableCell>
                     {{ trip['tickets_total'] - trip['tickets_count'] }} ({{ trip['tickets_total'] }})
