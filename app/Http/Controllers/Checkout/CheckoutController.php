@@ -214,7 +214,7 @@ class CheckoutController extends ApiController
                 default => OrderStatus::showcase_confirmed,
             };
 
-            if (!in_array($order->status_id, [OrderStatus::partner_wait_for_pay])) {
+            if (!in_array($order->status_id, [OrderStatus::partner_wait_for_pay, OrderStatus::showcase_wait_for_pay, OrderStatus::showcase_creating])) {
 
                 $existingCookieHash = $request->cookie('qrCodeHash');
                 try {
