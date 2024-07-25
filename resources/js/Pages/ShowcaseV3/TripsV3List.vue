@@ -1,6 +1,7 @@
 <template>
     <div>
-        <h2 class="ap-showcase__title">Расписание отправлений <!-- на <span class="ap-not-brake">{{ date }}</span> --><br>
+        <h2 class="ap-showcase__title">Расписание отправлений <!-- на <span class="ap-not-brake">{{ date }}</span> -->
+            <br>
             Обзорная дневная экскурсия на двухэтажных автобусах
         </h2>
 
@@ -45,10 +46,12 @@
                                                @change="handleExcursionChange"/>
                     </div>
                     <div v-else>
-                        <span class="ap-showcase__select-title" style="width: 100%;">Экскурсия: {{ excursions[0]['name'] }}</span>
+                        <span class="ap-showcase__select-title" style="width: 100%;">Экскурсия: {{
+                                excursions[0]['name']
+                            }}</span>
                     </div>
 
-                    <div v-if="!selected_excursion_id || tripPiers.length > 1" class="ap-showcase__select">
+                    <div v-if="selected_excursion_id" class="ap-showcase__select">
                         <span class="ap-showcase__select-title">Выберите причал: </span>
                         <ShowcaseInputDropDown v-model="selected_pier_id"
                                                :options="tripPiers"
@@ -56,29 +59,27 @@
                                                :show="'name'"
                                                :has-null="false"
                                                :placeholder="'Все'"
-                                                @change="handlePierChange"/>
-                    </div>
-                    <div v-else style="margin-bottom: 25px;">
-                        <span class="ap-showcase__select-title" style="width: 100%;">Причал: {{ selected_trip ? selected_trip['pier'] : trips[0]['pier'] }}</span>
+                                               :disabled="tripPiers.length === 1"
+                                               @change="handlePierChange"/>
                     </div>
 
-<!--                simple trip-->
-                    <div v-if="showcase3Store.trip && !showcase3Store.trip.trip_with_seats" style="display: flex;" class="ap-showcase__time-wrapper">
+                    <!--                simple trip-->
+                    <div v-if="showcase3Store.trip && !showcase3Store.trip.trip_with_seats" style="display: flex;"
+                         class="ap-showcase__time-wrapper">
 
                         <div v-if="showcase3Store.trip.is_single_ticket" class="ap-showcase__time">
-                            <p>Выберите время:</p>
-                            <span class="ap-showcase__time_edin">ЕДИНЫЙ БИЛЕТ</span>
+                            <span class="ap-showcase__time_edin">БИЛЕТ НА ВЕСЬ ДЕНЬ</span>
                         </div>
                         <div v-else class="ap-showcase__time">
                             <p>Выберите время:</p>
-                            <div v-for="trip in trips">
+                            <template v-for="trip in trips">
                                 <ShowcaseV3TimeButton
-                                    v-if="(!selected_pier_id && tripPiers.length <= 1) || (trip.pier_id === selected_pier_id && (tripPiers.length > 1 && selected_pier_id))"
+                                    v-if="trip.pier_id === selected_pier_id"
                                     :color="showcase3Store.trip.id === trip.id ? 'purple' : 'white'"
                                     @click="selectTrip(trip)">
                                     {{ trip['start_time'] }}
                                 </ShowcaseV3TimeButton>
-                            </div>
+                            </template>
                         </div>
                         <TicketsSelectV3 v-if="showcase3Store.trip"
                                          :crm_url="crm_url"
@@ -88,14 +89,19 @@
                         <TripInfo :trip="showcase3Store.trip"/>
                     </div>
 
-<!--                scheme trip-->
+                    <!--                scheme trip-->
                     <div v-else-if="showcase3Store.trip">
-                        <div v-for="trip in trips">
-                            <ShowcaseV3TimeButton
-                                :color="showcase3Store.trip.id === trip.id ? 'purple' : 'white'"
-                                @click="selectTripWithScheme(trip)">
-                                {{ trip['start_time'] }}
-                            </ShowcaseV3TimeButton>
+                        <div style="display: flex;">
+                            <div class="ap-showcase__select">
+                                <span class="ap-showcase__select-title">Выберите время рейса: </span>
+                                <div v-for="trip in trips">
+                                    <ShowcaseV3TimeButton
+                                        :color="showcase3Store.trip.id === trip.id ? 'purple' : 'white'"
+                                        @click="selectTripWithScheme(trip)">
+                                        {{ trip['start_time'] }}
+                                    </ShowcaseV3TimeButton>
+                                </div>
+                            </div>
                         </div>
                         <DynamicSchemeContainer
                             :data="this.showcase3Store.trip"
@@ -104,7 +110,8 @@
                             :selecting="true"
                             @selectSeat="handleSelectSeat"/>
 
-                        <SelectedTickets v-if="this.showcase3Store.tickets.length > 0" :tickets="this.showcase3Store.tickets"/>
+                        <SelectedTickets v-if="this.showcase3Store.tickets.length > 0"
+                                         :tickets="this.showcase3Store.tickets"/>
                     </div>
                 </div>
 
@@ -142,7 +149,8 @@
                         <!--                    <img :src="excursions[0]['excursion_first_image_url']" alt="excursion_image">-->
 
                         <div class="ap-showcase__total-promocode">
-                            <Promocode v-if="showcase3Store.trip && !showcase3Store.trip.trip_with_seats" @use="promoCode(true)" :message="this.message"/>
+                            <Promocode v-if="showcase3Store.trip && !showcase3Store.trip.trip_with_seats"
+                                       @use="promoCode(true)" :message="this.message"/>
                             <PromocodeAgreement/>
                         </div>
 
@@ -163,7 +171,6 @@
                         <CommentToPayer/>
                     </div>
                 </div>
-
 
 
             </template>
@@ -313,7 +320,7 @@ export default {
                 this.search_parameters.date = value;
             }
         },
-        tripPiers(){
+        tripPiers() {
             return this.trips.map(trip => ({
                 name: trip.pier,
                 id: trip.pier_id
@@ -332,6 +339,9 @@ export default {
                 this.activeBackward = false;
                 this.showcase3Store.backwardTrip = null;
             }
+        },
+        trips(newVal) {
+            this.selected_pier_id = this.trips[0].pier_id;
         },
     },
 
@@ -409,7 +419,7 @@ export default {
             }
             this.selectedSeats = data.selectedSeats;
         },
-        handlePierChange(){
+        handlePierChange() {
             this.showcase3Store.ticketsData = [];
             this.showcase3Store.tickets = [];
             this.selected_trip = null;
@@ -441,8 +451,9 @@ export default {
             this.showcase3Store.trip = trip
             this.selected_trip = trip;
         },
-        selectTripWithScheme(trip){
-
+        selectTripWithScheme(trip) {
+            this.showcase3Store.trip = trip
+            this.selected_trip = trip;
         },
 
         showPierInfo(trip) {
@@ -492,7 +503,7 @@ export default {
                 })
         },
         order() {
-            if (this.showcase3Store.trip.trip_with_seats){
+            if (this.showcase3Store.trip.trip_with_seats) {
                 this.orderWithScheme()
             }
             this.agreement_valid = this.agreement;
@@ -673,7 +684,6 @@ export default {
     color: #ffffff;
     line-height: 54px;
     text-align: center;
-    cursor: pointer;
     box-sizing: border-box;
     padding: 0 20px 0;
     font-family: Gilroy;
@@ -682,10 +692,6 @@ export default {
     letter-spacing: 0.03rem;
     transition: background-color cubic-bezier(0.24, 0.19, 0.28, 1.29) 150ms, border-color cubic-bezier(0.24, 0.19, 0.28, 1.29) 150ms, color cubic-bezier(0.24, 0.19, 0.28, 1.29) 150ms;
 
-    &:hover {
-        background-color: #4332aa;
-        border-color: #4332aa;
-    }
 }
 
 .ap-showcase__contacts-wrapper {
