@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
 </head>
 <body>
-<div id="ap-kazan"></div>
+<div id="ap-kazan" style="display: flex; justify-content: center; align-items: center"></div>
 </body>
 <script src="{{ mix('/js/kazan.js') }}"></script>
 </html>

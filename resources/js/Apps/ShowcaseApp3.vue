@@ -54,6 +54,7 @@ export default {
     props: {
         crm_url: {type: String, default: 'https://lk.excurr.ru'},
         debug: {type: Boolean, default: false},
+        excursion: Object,
     },
 
     components: {
@@ -192,6 +193,9 @@ export default {
     },
 
     mounted() {
+        if (this.excursion){
+            this.options.excursions.push(this.ecxursion.id)
+        }
         const el = document.querySelector('#ap-showcase3');
         if (el) {
             el.style.width = '100%';

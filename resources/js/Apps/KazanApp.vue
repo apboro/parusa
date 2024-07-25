@@ -1,35 +1,53 @@
 <template>
-    <div v-if="excursions.length > 0">
-        <div v-for="excursion in excursions">
-            {{ excursion.name }}
+    <div v-if="excursions && excursions.length > 0">
+        <div style="display: flex; flex-direction: row">
+            <div v-for="excursion in excursions" style="background: #aee6b7; margin-right: 10px">
+                <div>
+                    <div style="cursor: pointer; text-decoration: underline" @click="handleExcursionClick(excursion)">{{ excursion.name }}</div>
+                    <img width="200" :src="excursion.excursion_first_image_url"/>
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: row">
+            <div v-for="pier in piers" style="background: #b9bec0">
+                {{ pier.name }}
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: row">
+            <div v-for="program in excursion_programs" style="background: #0D74D7">
+                {{ program.name }}
+            </div>
+        </div>
+        <div>
+            <ShowcaseApp3 v-if="selectedExcursion" :crm_url="crm_url" :excursion="selectedExcursion"/>
         </div>
     </div>
 
-    <div style="width: 70%; display: flex; justify-content: center; align-items: center">
-        <ShowcaseApp3 v-if="selectedExcursion" :crm_url="crm_url"/>
-    </div>
+
 </template>
 
 <script setup>
 import {defineProps, onBeforeMount, ref, computed} from 'vue';
 import ShowcaseApp3 from '@/Apps/ShowcaseApp3.vue';
-import {useStore} from 'vuex';
 
 const props = defineProps({
     crm_url: {type: String, default: 'https://lk.excurr.ru'},
     debug: {type: Boolean, default: false},
 });
 
-const store = useStore();
 onBeforeMount(() => {
-    axios.get('/city_showcase_data').then((response) =>{
-
+    axios.get('/city_showcase_data').then((response) => {
+        info.value = response.data.data;
     })
 });
 
-const selectedExcursion = ref(1);
-const excursions = computed(() => store.state.dictionary?.dictionaries?.excursions || []);
-const excursion_programs = computed(() => store.state.dictionary?.dictionaries?.excursion_programs || []);
-const piers = computed(() => store.state.dictionary?.dictionaries?.piers || []);
+const info = ref(null);
+const selectedExcursion = ref(null);
+const excursions = computed(() => info.value?.excursions);
+const excursion_programs = computed(() => info.value?.excursion_programs);
+const piers = computed(() => info.value?.piers);
 
+function handleExcursionClick(excursion) {
+    selectedExcursion.value = excursion;
+}
 </script>
