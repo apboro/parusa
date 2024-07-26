@@ -1,5 +1,5 @@
 <template>
-    <div v-if="excursions && excursions.length > 0">
+    <div v-if="excursions && excursions.length > 0" style="width: 70%">
         <div style="display: flex; flex-direction: row">
             <div v-for="excursion in excursions" style="background: #aee6b7; margin-right: 10px">
                 <div>
@@ -8,18 +8,18 @@
                 </div>
             </div>
         </div>
-        <div style="display: flex; flex-direction: row">
-            <div v-for="pier in piers" style="background: #b9bec0">
-                {{ pier.name }}
-            </div>
-        </div>
-        <div style="display: flex; flex-direction: row">
-            <div v-for="program in excursion_programs" style="background: #0D74D7">
-                {{ program.name }}
-            </div>
-        </div>
-        <div>
-            <ShowcaseApp3 v-if="selectedExcursion" :crm_url="crm_url" :excursion="selectedExcursion"/>
+<!--        <div style="display: flex; flex-direction: row">-->
+<!--            <div v-for="pier in piers" style="background: #b9bec0">-->
+<!--                {{ pier.name }}-->
+<!--            </div>-->
+<!--        </div>-->
+    <!--        <div style="display: flex; flex-direction: row">-->
+    <!--            <div v-for="program in excursion_programs" style="background: #0D74D7">-->
+    <!--                {{ program.name }}-->
+    <!--            </div>-->
+    <!--        </div>-->
+        <div v-if="selectedExcursion">
+            <ShowcaseApp3 :crm_url="crm_url" :excursion="selectedExcursion"/>
         </div>
     </div>
 
