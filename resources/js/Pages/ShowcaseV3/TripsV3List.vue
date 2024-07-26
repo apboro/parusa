@@ -1,10 +1,5 @@
 <template>
     <div>
-        <h2 class="ap-showcase__title">Расписание отправлений <!-- на <span class="ap-not-brake">{{ date }}</span> -->
-            <br>
-            Обзорная дневная экскурсия на двухэтажных автобусах
-        </h2>
-
         <div class="ap-showcase__search" v-if="items !== null && items.length > 0">
             <div class="ap-showcase__search-item" :class="`ap-showcase__search-item-`+key" v-for="(date, key) in items">
                 <ShowcaseV2InputCheckbox
@@ -26,33 +21,25 @@
             </ShowcaseV2RadioDate>
         </div>
 
-        <p class="ap-showcase__search_bottom">
-            Осталось билетов:
-            <span class="ap-not-brake">12 шт.</span>
-        </p>
-
         <ShowcaseV2LoadingProgress :loading="isLoading">
             <template v-if="trips !== null">
 
 
                 <div class="ap-showcase__results" v-if="trips.length > 0">
-                    <div v-if="excursions.length > 1" class="ap-showcase__select">
-                        <span class="ap-showcase__select-title">Выберите экскурсию: </span>
+                    <div class="ap-showcase__select">
+                        <span class="ap-showcase__select-title">{{ excursions.length > 1 ? 'Выберите экскурсию' : 'Экскурсия' }}</span>
                         <ShowcaseInputDropDown v-model="selected_excursion_id"
                                                :options="excursions"
                                                :identifier="'id'"
                                                :show="'name'"
+                                               :disabled="excursions.length === 1"
                                                :has-null="false"
                                                @change="handleExcursionChange"/>
                     </div>
-                    <div v-else>
-                        <span class="ap-showcase__select-title" style="width: 100%;">Экскурсия: {{
-                                excursions[0]['name']
-                            }}</span>
-                    </div>
+
 
                     <div v-if="selected_excursion_id" class="ap-showcase__select">
-                        <span class="ap-showcase__select-title">Выберите причал: </span>
+                        <span class="ap-showcase__select-title">{{tripPiers.length > 1 ? 'Выберите причал' : 'Причал' }}</span>
                         <ShowcaseInputDropDown v-model="selected_pier_id"
                                                :options="tripPiers"
                                                :identifier="'id'"
