@@ -104,7 +104,7 @@ class NevaOrder
     {
         if ($this->checkOrderHasNevaTickets()) {
             $result = $this->nevaApiData->cancelOrder(['id' => $this->order->additionalData->provider_order_uuid, 'comment' => 'Клиент потребовал возврат']);
-            if (!$result || $result['status'] != 200) {
+            if (!$result || ($result['status'] != 200 && $result['body']['code'] !== "order_already_canceled")) {
                 Log::channel('neva')->error('Neva API Cancel Error', [$result]);
                 throw new RuntimeException('Не получилось сделать возврат.');
             }
