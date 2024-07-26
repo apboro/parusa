@@ -3,23 +3,15 @@
         <div style="display: flex; flex-direction: row">
             <div v-for="excursion in excursions" style="background: #aee6b7; margin-right: 10px">
                 <div>
-                    <div style="cursor: pointer; text-decoration: underline" @click="handleExcursionClick(excursion)">{{ excursion.name }}</div>
+                    <div style="cursor: pointer; text-decoration: underline" @click="handleExcursionClick(excursion)">
+                        {{ excursion.name }}
+                    </div>
                     <img width="200" :src="excursion.excursion_first_image_url"/>
                 </div>
             </div>
         </div>
-<!--        <div style="display: flex; flex-direction: row">-->
-<!--            <div v-for="pier in piers" style="background: #b9bec0">-->
-<!--                {{ pier.name }}-->
-<!--            </div>-->
-<!--        </div>-->
-    <!--        <div style="display: flex; flex-direction: row">-->
-    <!--            <div v-for="program in excursion_programs" style="background: #0D74D7">-->
-    <!--                {{ program.name }}-->
-    <!--            </div>-->
-    <!--        </div>-->
         <div v-if="selectedExcursion">
-            <ShowcaseApp3 :crm_url="crm_url" :excursion="selectedExcursion"/>
+            <ShowcaseForCities :crm_url="crm_url" :excursion="selectedExcursion"/>
         </div>
     </div>
 
@@ -29,6 +21,7 @@
 <script setup>
 import {defineProps, onBeforeMount, ref, computed} from 'vue';
 import ShowcaseApp3 from '@/Apps/ShowcaseApp3.vue';
+import ShowcaseForCities from "@/Apps/ShowcaseForCities.vue";
 
 const props = defineProps({
     crm_url: {type: String, default: 'https://lk.excurr.ru'},
