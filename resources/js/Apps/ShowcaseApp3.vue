@@ -47,14 +47,17 @@ import OrderInfo from "@/Pages/Showcase/OrderInfo";
 import TicketsSelectV2 from "@/Pages/ShowcaseV2/TicketsSelectV2.vue";
 import TripsV3List from "@/Pages/ShowcaseV3/TripsV3List.vue";
 import {useShowcase3Store} from "@/Stores/showcase3-store";
-import { mapStores} from "pinia";
+import {mapStores} from "pinia";
 
 export default {
 
     props: {
         crm_url: {type: String, default: 'https://lk.excurr.ru'},
         debug: {type: Boolean, default: false},
-        excursion: Object,
+        excursion: {
+            type: Object,
+            default: null
+        }
     },
 
     components: {
@@ -192,10 +195,18 @@ export default {
         window.addEventListener('popstate', this.handleNavigation);
     },
 
-    mounted() {
-        if (this.excursion){
-            this.options.excursions.push(this.ecxursion.id)
+    watch: {
+        excursion: {
+            handler(newVal) {
+                if (newVal !== null) {
+                    this.options.excursions.push(newVal.id);
+                }
+            },
+            deep: true,
+            immediate: true
         }
+    },
+    mounted() {
         const el = document.querySelector('#ap-showcase3');
         if (el) {
             el.style.width = '100%';
@@ -203,7 +214,7 @@ export default {
     },
 
     methods: {
-        handleSelectExcursion(selected_excursion_id){
+        handleSelectExcursion(selected_excursion_id) {
             this.showcase3Store.excursion = selected_excursion_id;
             this.selected_excursion_id = selected_excursion_id;
             this.loadList()
