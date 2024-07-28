@@ -27,7 +27,11 @@ class QrCodeRedirectController extends Controller
         $link = $qrCode->link;
 
         StatisticQrCodes::addVisit($qrCode);
-        Log::channel('qr-codes')->info('made visit by qr-code: '. $hash. ' partner: '. $qrCode->partner_id . ' device: '.$request->headers);
+        try {
+            Log::channel('qr-codes')->info('made visit by qr-code: ' . $hash . ' partner: ' . $qrCode->partner_id . ' device: ' . $request->headers);
+        } catch (\Exception $e){
+
+        }
         $cookie = cookie('qrCodeHash', $hash, env('QR_LIFETIME', 30240),
             null, '', true, true, false,'None');
 
