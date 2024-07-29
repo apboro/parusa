@@ -331,6 +331,7 @@ export default {
         trips(newVal) {
             if (newVal?.length > 0) {
                 this.selected_pier_id = newVal[0].pier_id;
+                this.selected_excursion_id = this.showcase3Store.excursion;
             }
         },
     },

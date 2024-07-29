@@ -144,7 +144,6 @@ export default {
         excursion: {
             handler(newVal, oldVal) {
                 if (newVal !== null) {
-                    console.log(this.excursion.id)
                     this.options.excursions = [];
                     this.options.excursions.push(newVal.id);
                     this.showcase3Store.excursion = newVal.id;

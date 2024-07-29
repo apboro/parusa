@@ -53,15 +53,6 @@ class ShowcaseForCitiesInitController extends ApiController
         $partner_id = $originalKey['partner'] ?? $request->input('partner_id');
         $forRootSite = $partner_id === null;
 
-        $originalKey = [
-            'ip' => $request->ip(),
-            'user-agent' => $request->userAgent(),
-            'is_partner' => $originalKey['is_partner'] ?? $request->input('is_partner'),
-            'partner_id' => $originalKey['partner'] ?? $request->input('partner_id'),
-            'excursions' => $originalKey['excursions'] ?? $request->input('excursions'),
-            'media' => $originalKey['media'] ?? $request->input('media'),
-        ];
-
         $excursions = Excursion::whereIn('id', $excursionsIDs)->get();
 
         $programs = ExcursionProgram::query()
