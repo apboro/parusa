@@ -111,6 +111,7 @@ class StatusesSeeder extends GenericSeeder
             TicketStatus::partner_paid_single => ['name' => 'ЕдБ оплачен партнер'],
             TicketStatus::terminal_paid_single => ['name' => 'ЕдБ оплачен терминал'],
             TicketStatus::promoter_paid_single => ['name' => 'Промоутер ЕдБ оплачен'],
+            TicketStatus::promoter_self_paid_single => ['name' => 'Промоутер ЕдБ оплачен'],
             TicketStatus::api_confirmed_single => ['name' => 'API ЕдБ подтвержден'],
             TicketStatus::yaga_confirmed_single => ['name' => 'Афиша ЕдБ подтвержден'],
 

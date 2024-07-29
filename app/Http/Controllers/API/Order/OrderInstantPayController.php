@@ -70,7 +70,8 @@ class OrderInstantPayController extends ApiController
                 // update order statuses
                 foreach ($order->tickets as $ticket) {
                     /** @var Ticket $ticket */
-                    $ticket->setStatus(TicketStatus::promoter_self_paid);
+                    $status = $ticket->trip->excursion->is_single_ticket ? TicketStatus::promoter_self_paid_single : TicketStatus::promoter_self_paid;
+                    $ticket->setStatus($status);
                 }
                 $order->setStatus(OrderStatus::promoter_self_paid);
                 $order->setType(OrderType::terminal_partner);
