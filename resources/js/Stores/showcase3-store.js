@@ -15,9 +15,9 @@ export const useShowcase3Store = defineStore('showcase3', () => {
         full_price: null,
     });
     const contactInfo = ref({
-        name: 'Ivan',
-        phone: '+7 (950)016-85-70',
-        email: 'borodachev@gmail.com'
+        name: null,
+        phone: null,
+        email: null
     });
 
 

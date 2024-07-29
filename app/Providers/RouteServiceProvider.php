@@ -69,6 +69,9 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/externals.php'));
 
             Route::namespace($this->namespace)
+                ->group(base_path('routes/cities.php'));
+
+            Route::namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
 
         });

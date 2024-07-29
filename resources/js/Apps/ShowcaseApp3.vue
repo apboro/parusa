@@ -192,6 +192,9 @@ export default {
     },
 
     mounted() {
+        if (this.excursion){
+            this.options.excursions.push(this.ecxursion.id)
+        }
         const el = document.querySelector('#ap-showcase3');
         if (el) {
             el.style.width = '100%';

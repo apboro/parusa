@@ -328,7 +328,9 @@ export default {
             }
         },
         trips(newVal) {
-            this.selected_pier_id = this.trips[0].pier_id;
+            if (newVal?.length > 0) {
+                this.selected_pier_id = newVal[0].pier_id;
+            }
         },
     },
 
