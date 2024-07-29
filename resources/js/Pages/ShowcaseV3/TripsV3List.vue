@@ -96,6 +96,7 @@
                             :scheme_name="this.showcase3Store.trip['scheme_name']"
                             :selecting="true"
                             @selectSeat="handleSelectSeat"/>
+                        <br><br>
 
                         <SelectedTickets v-if="this.showcase3Store.tickets.length > 0"
                                          :tickets="this.showcase3Store.tickets"/>

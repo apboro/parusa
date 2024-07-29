@@ -93,7 +93,7 @@ export default {
     computed: {
         ...mapStores(useShowcase3Store),
         visibleRates() {
-            return this.showAllRates ? this.trip.rates : this.trip.rates.slice(0, 4);
+            return this.showAllRates ? this.trip.rates : this.trip.rates.slice(0, 3);
         },
         trip() {
             return this.showcase3Store.trip;
