@@ -96,6 +96,7 @@
                             :scheme_name="this.showcase3Store.trip['scheme_name']"
                             :selecting="true"
                             @selectSeat="handleSelectSeat"/>
+                        <br><br>
 
                         <SelectedTickets v-if="this.showcase3Store.tickets.length > 0"
                                          :tickets="this.showcase3Store.tickets"/>
@@ -328,7 +329,9 @@ export default {
             }
         },
         trips(newVal) {
-            this.selected_pier_id = this.trips[0].pier_id;
+            if (newVal?.length > 0) {
+                this.selected_pier_id = newVal[0].pier_id;
+            }
         },
     },
 

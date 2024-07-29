@@ -67,7 +67,7 @@ export default {
         session: String,
     },
     data: () => ({
-        form: null,
+        form: form(null, null),
         message: null,
         activeBackward: false,
         checkedBackward: true,
@@ -80,17 +80,22 @@ export default {
                 this.backwardTripId = null;
             }
         },
+        trip: {
+            handler(newVal, oldVal) {
+                if (newVal !== oldVal) {
+                    this.initForm();
+                }
+            },
+            immediate: true,
+        }
 
     },
     computed: {
         ...mapStores(useShowcase3Store),
         visibleRates() {
-            return this.showAllRates ? this.trip.rates : this.trip.rates.slice(0, 4);
+            return this.showAllRates ? this.trip.rates : this.trip.rates.slice(0, 3);
         },
         trip() {
-            if (this.showcase3Store.trip.excursion_id !== this.showcase3Store.excursion) {
-                this.initForm();
-            }
             return this.showcase3Store.trip;
         },
         count() {
@@ -103,12 +108,6 @@ export default {
             });
             return count;
         },
-    },
-    created() {
-        this.form = form(null, null);
-        if (this.trip) {
-            this.initForm();
-        }
     },
     methods: {
         toggleShowAllRates() {
