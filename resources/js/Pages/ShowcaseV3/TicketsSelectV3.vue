@@ -29,12 +29,12 @@
             <tr v-if="!showAllRates && trip.rates.length > 3" @click="toggleShowAllRates"
                 class="ap-showcase__show-more">
                 <td colspan="2">
-                    <span class="ap-showcase__toggle-text">Показать больше ...</span>
+                    <span class="ap-showcase__toggle-text">Показать больше</span>
                 </td>
             </tr>
             <tr v-if="showAllRates && trip.rates.length > 3" @click="toggleShowAllRates" class="ap-showcase__show-less">
                 <td colspan="2">
-                    <span class="ap-showcase__toggle-text">Скрыть ...</span>
+                    <span class="ap-showcase__toggle-text">Скрыть</span>
                 </td>
             </tr>
             <tr v-if="trip.rates" class="ap-showcase__tickets-table-col-total">
@@ -138,10 +138,28 @@ export default {
     text-align: center;
 }
 
+.ap-showcase__toggle-text {
+    width: 100%;
+    height: 54px;
+    background-color: #241B5B;
+    border-color: #241B5B;
+    color: #ffffff;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 54px;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    padding: 0 20px 0;
+    letter-spacing: 0.03rem;
+    transition: background-color cubic-bezier(0.24, 0.19, 0.28, 1.29) 150ms, border-color cubic-bezier(0.24, 0.19, 0.28, 1.29) 150ms, color cubic-bezier(0.24, 0.19, 0.28, 1.29) 150ms;
+    font-family: Gilroy;
+    font-size: 14px;
+}
+
 .ap-showcase__toggle-text:hover {
-    background-color: #e3e3e3;
-    padding: 2px 4px;
-    border-radius: 4px;
+    background-color: #4332aa;
+    border-color: #4332aa;
 }
 </style>
 
