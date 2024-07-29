@@ -1,14 +1,15 @@
 {
-    "/js/login.js": "/js/login.js?id=97e46b4188a41205b000c5199a81d66e",
-    "/js/admin.js": "/js/admin.js?id=0214a8bdf8363ef22d5ab831009eaf18",
-    "/js/partner.js": "/js/partner.js?id=5651e9c744902dfbec6006cc1fb074d1",
-    "/js/terminal.js": "/js/terminal.js?id=e0c13c5faafdbf48bd076c41acc753bb",
+    "/js/login.js": "/js/login.js?id=5dde38fae547f4c21a126dc9554f2d0a",
+    "/js/admin.js": "/js/admin.js?id=6bd596da93b1242af1e5c20a1225d2f5",
+    "/js/partner.js": "/js/partner.js?id=ed5322109e73c5cad1d76f7449566164",
+    "/js/terminal.js": "/js/terminal.js?id=4f80d0fa619d63b000f0e5c4896e2a67",
     "/js/controller.js": "/js/controller.js?id=09b45330b48fe5bbd8329b0bcd664e34",
-    "/js/promoter.js": "/js/promoter.js?id=02635670458a0c4d91dafdfeb9bdc6a6",
-    "/js/showcase.js": "/js/showcase.js?id=6d4a58d8496a74d2f4fe7436ed89f9b7",
-    "/js/showcase2.js": "/js/showcase2.js?id=e0df0d7db2bab65c87c83192809e9de5",
-    "/js/showcase3.js": "/js/showcase3.js?id=5d957852cf96742d7f9c4d980dcd2a88",
+    "/js/promoter.js": "/js/promoter.js?id=6b0ccde38535dc158fc5d2208753d510",
+    "/js/showcase.js": "/js/showcase.js?id=b2ff2fd4bfd262640325ab196147b28e",
+    "/js/showcase2.js": "/js/showcase2.js?id=ac41aafc2b6746af3c401584121b7b8e",
+    "/js/showcase3.js": "/js/showcase3.js?id=cd8a029c37c4e68779d976d9fdda11d9",
     "/js/checkout.js": "/js/checkout.js?id=8bd31a3763cb14462f0d1287320ae0eb",
+    "/js/kazan.js": "/js/kazan.js?id=e0155b3f230b624c778d367fdc29996a",
     "/css/app.css": "/css/app.css?id=aa7275ea35497e6d7aad57a5cf7178fc",
     "/css/select.css": "/css/select.css?id=d5046275a46eec817517768616450513"
 }
