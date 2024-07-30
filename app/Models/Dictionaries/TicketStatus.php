@@ -37,6 +37,7 @@ class TicketStatus extends AbstractDictionary
     public const promoter_self_paid = 24;
     public const promoter_canceled = 29;
     public const promoter_paid_single = 30;
+    public const promoter_self_paid_single = 35;
 
     public const terminal_creating = 31;
     public const terminal_creating_from_reserve = 32;
@@ -192,5 +193,6 @@ class TicketStatus extends AbstractDictionary
         self::api_confirmed_single,
         self::yaga_confirmed_single,
         self::promoter_paid_single,
+        self::promoter_self_paid_single,
     ];
 }

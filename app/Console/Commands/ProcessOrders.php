@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Events\AstraMarineCancelOrderEvent;
 use App\Events\CityTourCancelOrderEvent;
 use App\Events\NevaTravelCancelOrderEvent;
-use App\Jobs\SendOrderEmailToGuideJob;
+use App\Jobs\SendOrderEmailToOrganizerJob;
 use App\Models\Dictionaries\ExcursionType;
 use App\Models\Dictionaries\OrderStatus;
 use App\Models\Dictionaries\TicketStatus;
@@ -49,28 +49,32 @@ class ProcessOrders extends Command
         $this->cancelApiDelayed(now()->subMinutes(15));
         $this->cancelYagaDelayed(now()->subMinutes(15));
         $this->cancelPromotersDelayed(now()->subMinutes(15));
-        $this->sendEmailToGuides(now()->subMinute());
+        $this->sendEmailToOrganizer(now()->subMinute());
+
 
         return 0;
     }
 
-    private function sendEmailToGuides(Carbon $date): void
+    private function sendEmailToOrganizer(Carbon $date): void
     {
-        $orders = Order::query()
-            ->with(['tickets'])
-            ->whereIn('status_id', OrderStatus::order_printable_statuses)
-            ->where('updated_at', '>', $date)
-            ->whereHas('tickets', function (Builder $query) use ($date) {
-                $query->whereHas('trip', function (Builder $query) use ($date) {
-                    $query->whereHas('excursion', function (Builder $query) use ($date) {
-                        $query->where('type_id', ExcursionType::legs);
+        try {
+            $orders = Order::query()
+                ->with(['tickets', 'tickets.trip', 'tickets.trip.excursion'])
+                ->whereIn('status_id', OrderStatus::order_printable_statuses)
+                ->where('updated_at', '>', $date)
+                ->whereHas('tickets', function (Builder $query) use ($date) {
+                    $query->whereHas('trip', function (Builder $query) use ($date) {
+                        $query->whereHas('excursion', function (Builder $query) use ($date) {
+                            $query->whereIn('type_id', [ExcursionType::legs, ExcursionType::standUp]);
+                        });
                     });
-                });
-            })
-            ->get();
+                })->get();
 
-        foreach ($orders as $order) {
-            SendOrderEmailToGuideJob::dispatch($order);
+            foreach ($orders as $order) {
+                SendOrderEmailToOrganizerJob::dispatch($order);
+            }
+        } catch (Exception $e) {
+            Log::error($e->getMessage(). ' ' . $e->getLine(). ' ' . $e->getFile());
         }
     }
 

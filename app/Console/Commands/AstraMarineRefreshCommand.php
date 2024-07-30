@@ -38,9 +38,11 @@ class AstraMarineRefreshCommand extends Command
                 $trip->tickets_total = $response['events'][0]['availableSeats'];
                 $trip->sale_status_id = TripSaleStatus::selling;
                 $trip->status_id = TripStatus::regular;
-                $trip->save();
+            } else {
+                $trip->sale_status_id = TripSaleStatus::closed_automatically;
+                $trip->status_id = TripStatus::cancelled;
             }
-
+            $trip->save();
         }
     }
 }
