@@ -1064,3 +1064,8 @@ export default {
 }
 
 </style>
+<style>
+.ap-input-field__input{
+    background-color: white;
+}
+</style>

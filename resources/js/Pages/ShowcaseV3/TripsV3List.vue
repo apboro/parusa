@@ -34,6 +34,7 @@
                                                :show="'name'"
                                                :disabled="excursions.length === 1"
                                                :has-null="false"
+                                               :border="excursions.length > 1"
                                                @change="handleExcursionChange"/>
                     </div>
 
@@ -46,6 +47,7 @@
                                                :show="'name'"
                                                :has-null="false"
                                                :placeholder="'Все'"
+                                               :border="excursions.length > 1"
                                                :disabled="tripPiers.length === 1"
                                                @change="handlePierChange"/>
                     </div>

@@ -1,5 +1,5 @@
 <template>
-    <ShowcaseInputWrapper class="ap-input-dropdown" :dirty="isDirty" :disabled="disabled" :valid="valid" :has-focus="dropped" :label="false"
+    <ShowcaseInputWrapper class="ap-input-dropdown" :dirty="isDirty" :disabled="disabled" :valid="valid"  :border="border" :has-focus="dropped" :label="false"
                           :class="{'ap-input-dropdown__disabled': disabled, 'ap-input-dropdown__multiple': multi}"
     >
         <template #icon v-if="$slots.default">
@@ -66,6 +66,7 @@ export default {
         right: {type: Boolean, default: false},
         center: {type: Boolean, default: false},
         small: {type: Boolean, default: false},
+        border: {type: Boolean, default: false},
     },
 
     emits: ['update:modelValue', 'change', 'drop'],

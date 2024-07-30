@@ -82,7 +82,7 @@ export default {
     }
 
     &__dirty {
-        background-color: $showcase_white_color;
+        background-color: transparent;
     }
 
     &__error {

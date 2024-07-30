@@ -85,7 +85,7 @@ class ShowcaseV3TripsController extends ShowcaseTripsController
 
         $trips = $listQuery
             ->where('trips.start_at', '>=', $date)
-            ->where('trips.start_at', '<=', $date->clone()->addDay()->setTime(4, 30))
+            ->where('trips.start_at', '<=', $date->clone()->addDay()->setTime(0, 00))
             ->get(
                 ['trips.*',
                     DB::raw("GROUP_CONCAT(DISTINCT trips.start_at ORDER BY trips.start_at ASC SEPARATOR ', ') AS concatenated_start_at")
