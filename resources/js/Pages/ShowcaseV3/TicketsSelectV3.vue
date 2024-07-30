@@ -21,7 +21,7 @@
                         }} руб.</span>
                 </td>
                 <td class="ap-showcase__tickets-table-col-3">
-                    <ShowcaseFormNumber style="background-color: transparent" class="ap-showcase__tickets-quantity" :form="form"
+                    <ShowcaseFormNumber class="ap-showcase__tickets-quantity" :form="form"
                                         :name="'rate.' + rate['grade_id'] + '.quantity'" :hide-title="true"
                                         :quantity="true" :min="0" :border="false" @change="handleChange"/>
                 </td>
@@ -269,5 +269,4 @@ export default {
     font-size: 20px;
     font-weight: 600;
 }
-
 </style>
