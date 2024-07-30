@@ -23,7 +23,7 @@ export default {
     },
 
     data: () => ({
-        tab: null,
+        tab: 'codes',
         data: data('/api/partners/partner/settings'),
     }),
 

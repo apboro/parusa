@@ -583,6 +583,9 @@ export default {
 
 <style lang="scss" scoped>
 @import "variables";
+.ap-showcase__results{
+    border: 0;
+}
 
 .ap-showcase__search {
     box-sizing: border-box;

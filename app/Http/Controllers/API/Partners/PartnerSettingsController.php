@@ -102,9 +102,25 @@ class PartnerSettingsController extends ApiController
         $code2 .= "\n<!-- Вставить в то место, где нужно разместить приложение -->\n";
         $code2 .= "<div id=\"ap-showcase2\"></div>";
 
+        $code3 = "<!-- Загрузка скрипта -->\n";
+        $code3 .= "<script src=\"" . env('APP_URL') . "/js/showcase3.js\"></script>\n";
+        $code3 .= "<!-- Настройки -->\n";
+        $code3 .= "<script id=\"ap-showcase-config\" type=\"application/json\">{" .
+            implode(
+                ', ',
+                array_filter([
+                    '"partner":' . $current->partnerId(),
+                    $codeExcursions ?? null,
+                ])
+            )
+            . "}</script>";
+        $code3 .= "\n<!-- Вставить в то место, где нужно разместить приложение -->\n";
+        $code3 .= "<div id=\"ap-showcase3\"></div>";
+
         return APIResponse::response([
             'code' => $code,
             'code2' => $code2,
+            'code3' => $code3,
             'excursions' => $excursions->map(function (Excursion $excursion) {
                 return ['id' => $excursion->id, 'name' => $excursion->name];
             }),

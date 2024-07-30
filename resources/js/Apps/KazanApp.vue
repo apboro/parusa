@@ -11,7 +11,7 @@
             </div>
         </div>
         <div v-if="selectedExcursion">
-            <ShowcaseForCities :crm_url="crm_url" :excursion="selectedExcursion"/>
+            <ShowcaseForCities :crm_url="crm_url" :excursion="selectedExcursion" :debug="debug"/>
         </div>
     </div>
 
