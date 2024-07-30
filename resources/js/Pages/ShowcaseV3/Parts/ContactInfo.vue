@@ -32,7 +32,7 @@ export default {
                                  @change="this.showcase3Store.contactInfo.email = email"/>
         </div>
         <div class="ap-showcase__contacts-item">
-            <span class="ap-showcase__contacts-item-description">Введите ваш телефон <sup>*</sup></span>
+            <span class="ap-showcase__contacts-item-description">Введите ваш телефон <sup class="ap-showcase__sup">*</sup></span>
             <ShowcaseInputPhone :name="'phone'" v-model="phone" :autocomplete="'tel'" :placeholder="'+7 (999) 999-99-99'"
                                 @change="this.showcase3Store.contactInfo.phone = phone"/>
         </div>
@@ -65,7 +65,7 @@ export default {
                 padding-bottom: 5px;
 
                 sup {
-                    position: absolute;
+                    vertical-align: text-bottom;
                     color: #E83B4E;
                 }
             }

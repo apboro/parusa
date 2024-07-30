@@ -42,7 +42,7 @@ export default {
 @import "../../variables";
 
 .ap-input-wrapper {
-    background-color: $showcase_white_color;
+    background-color: transparent;
     border-radius: 2px;
     box-sizing: border-box;
     color: $showcase_text_color;
