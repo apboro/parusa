@@ -28,7 +28,6 @@
                          :next_date_caption="trips.next_date_caption"
                          :is-loading="trips.is_loading"
                          :last-search="last_search"
-                         :crm_url="crmUrl"
                          :debug="debug"
                          :session="session"
                          @search="loadList"
@@ -51,7 +50,6 @@ import TripsListForCities from "@/Pages/ShowcaseForCities/TripsListForCities.vue
 export default {
 
     props: {
-        crm_url: {type: String, default: 'https://lk.excurr.ru'},
         debug: {type: Boolean, default: false},
         excursion: {
             type: Object,
@@ -68,14 +66,10 @@ export default {
     },
 
     computed: {
-        crmUrl() {
-            return this.crm_url_override ? this.crm_url_override : this.crm_url;
-        },
         ...mapStores(useShowcase3Store),
     },
 
     data: () => ({
-        crm_url_override: null,
         session: null,
         options: {
             excursions: [],
@@ -131,9 +125,6 @@ export default {
         // get config defined outside
         const configElement = document.getElementById('ap-showcase-config');
         const config = configElement !== null ? JSON.parse(configElement.innerHTML) : null;
-        if (config !== null) {
-            this.crm_url_override = config['crm_url_override'];
-        }
         // get initial parameters
         const urlParams = new URLSearchParams(window.location.search);
         // get order secret if set
@@ -165,19 +156,10 @@ export default {
             this.selected_excursion_id = selected_excursion_id;
             this.init()
         },
-        /**
-         * Helper function for url making.
-         *
-         * @param path
-         * @returns {string}
-         */
-        url(path) {
-            return this.crmUrl + path + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : '');
-        },
 
         async init() {
             try {
-                const response = await axios.post(this.url('/cities/init'), {
+                const response = await axios.post('/cities/init', {
                     is_partner: this.options.is_partner_page,
                     partner_id: this.options.partner,
                     excursions: this.options.excursions,
@@ -225,7 +207,7 @@ export default {
             }
             this.trips.is_loading = true;
             try {
-                const response = await axios.post(this.url('/cities/trips'), {
+                const response = await axios.post('/cities/trips', {
                     search: this.last_search,
                     excursion_id: this.showcase3Store.excursion,
                 });
@@ -253,7 +235,7 @@ export default {
          */
         getOrderInfo(order_secret) {
             this.order.is_loading = true;
-            axios.post(this.url('/showcase_v2/order/info'), {secret: order_secret}, {headers: {'X-Ap-External-Session': this.session}})
+            axios.post('/showcase_v2/order/info', {secret: order_secret}, {headers: {'X-Ap-External-Session': this.session}})
                 .then(response => {
                     this.order.data = response.data['order'];
                 })

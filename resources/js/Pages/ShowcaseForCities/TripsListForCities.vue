@@ -67,7 +67,6 @@
                             </template>
                         </div>
                         <TicketsSelectV3 v-if="showcase3Store.trip"
-                                         :crm_url="crm_url"
                                          :session="session"
                                          @changeTickets="handleTicketsChange"/>
 
@@ -117,8 +116,7 @@
                     <div style="text-align: center">
                         <BackwardTicketSelectShowcase3 v-if="checkedBackward"
                                                        :trip="this.showcase3Store.trip"
-                                                       :session="session"
-                                                       :crm_url="crm_url"/>
+                                                       :session="session"/>
                     </div>
                 </div>
 
@@ -148,7 +146,6 @@
                             <TotalToPay v-if="showcase3Store.trip" @pay="order"/>
 
                             <Agreement
-                                :crm_url="crm_url"
                                 :debug="debug"
                                 :session="session"
                             />
@@ -163,12 +160,10 @@
         </ShowcaseV2LoadingProgress>
 
         <ExcursionInfoV2 ref="excursion"
-                         :crm_url="crm_url"
                          :debug="debug"
                          :session="session"
         />
         <PierInfoV2 ref="pier"
-                    :crm_url="crm_url"
                     :debug="debug"
                     :session="session"
         />
@@ -221,7 +216,7 @@ import ShowcaseInputString from "@/Pages/Showcase/Components/ShowcaseInputString
 import ShowcaseInputPhone from "@/Pages/Showcase/Components/ShowcaseInputPhone.vue";
 import ContactInfo from "@/Pages/ShowcaseV3/Parts/ContactInfo.vue";
 import Promocode from "@/Pages/ShowcaseV3/Parts/Promocode.vue";
-import Agreement from "@/Pages/ShowcaseV3/Parts/Aggreement.vue";
+import Agreement from "@/Pages/ShowcaseForCities/Parts/Aggreement.vue";
 import PromocodeAgreement from "@/Pages/ShowcaseV3/Parts/PromoceodeAggreement.vue";
 import TotalToPay from "@/Pages/ShowcaseV3/Parts/TotalToPay.vue";
 import CommentToPayer from "@/Pages/ShowcaseV3/Parts/CommentToPayer.vue";
@@ -289,7 +284,6 @@ export default {
 
         lastSearch: {type: Object, default: null},
 
-        crm_url: {type: String, required: true},
         debug: {type: Boolean, default: false},
         session: {type: String, default: null},
     },
@@ -370,7 +364,7 @@ export default {
     created() {
         let url = new URL(window.location.href);
         url.searchParams.delete('ap-tid');
-        this.form = form(null, this.crm_url + '/cities/order' + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : ''),
+        this.form = form(null,  '/cities/order' + (this.debug ? '?XDEBUG_SESSION_START=PHPSTORM' : ''),
             {ref: url.toString()});
         this.form.set('promocode', null);
     },
@@ -472,7 +466,7 @@ export default {
                 tickets.push(ticket);
             });
 
-            axios.post(this.crm_url + '/showcase_v2/promo-code/use', {
+            axios.post('/showcase_v2/promo-code/use', {
                     promocode: this.showcase3Store.promocode,
                     tickets: tickets
                 },
@@ -542,7 +536,7 @@ export default {
             }
             this.is_ordering = true;
             // override form saving to send headers
-            axios.post(this.crm_url + '/showcase/order', {
+            axios.post('/showcase/order', {
                 data: {
                     ...this.showcase3Store.ticketsData,
                     ...this.showcase3Store.contactInfo,
