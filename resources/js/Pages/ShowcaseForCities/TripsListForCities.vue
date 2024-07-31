@@ -580,7 +580,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "/resources/css/variables";
+@import "variables";
 .ap-showcase__results{
     border: 0;
 }

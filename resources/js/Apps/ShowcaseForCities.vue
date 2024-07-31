@@ -13,7 +13,7 @@
                        :session="session"
                        @close="closeOrder"
             />
-            <TripsV3List v-if="!order_secret && state.is_initializing === false"
+            <TripsListForCities v-if="!order_secret && state.is_initializing === false"
                          :date_from="search_options.date_from"
                          :date_to="search_options.date_to"
                          :programs="search_options.programs"
@@ -44,9 +44,9 @@ import ShowcaseMessage from "@/Pages/Showcase/Components/ShowcaseMessage";
 import ShowcaseLoadingProgress from "@/Pages/Showcase/Components/ShowcaseLoadingProgress";
 import OrderInfo from "@/Pages/Showcase/OrderInfo";
 import TicketsSelectV2 from "@/Pages/ShowcaseV2/TicketsSelectV2.vue";
-import TripsV3List from "@/Pages/ShowcaseV3/TripsV3List.vue";
 import {useShowcase3Store} from "@/Stores/showcase3-store";
 import {mapStores} from "pinia";
+import TripsListForCities from "@/Pages/ShowcaseForCities/TripsListForCities.vue";
 
 export default {
 
@@ -60,7 +60,7 @@ export default {
     },
 
     components: {
-        TripsV3List,
+        TripsListForCities,
         TicketsSelectV2,
         OrderInfo,
         ShowcaseLoadingProgress,

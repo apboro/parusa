@@ -3,10 +3,17 @@
         <div style="display: flex; flex-direction: row">
             <div v-for="excursion in excursions" style="background: #aee6b7; margin-right: 10px">
                 <div>
+                    Название:<br>
                     <div style="cursor: pointer; text-decoration: underline" @click="handleExcursionClick(excursion)">
                         {{ excursion.name }}
                     </div>
-                    <img width="200" :src="excursion.excursion_first_image_url"/>
+                    <div>Описание<br>
+                        {{ excursion.info.announce }} мин.
+                    </div>
+                    Продолжительность: {{ excursion.info.duration }}
+                    <div v-for="image in excursion.images">
+                        <img width="200" :src="image"/>
+                    </div>
                 </div>
             </div>
         </div>
