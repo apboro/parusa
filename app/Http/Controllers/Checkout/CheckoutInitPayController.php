@@ -115,6 +115,39 @@ class CheckoutInitPayController extends ApiController
             }
         });
 
+        if (!in_array($order->status_id, [OrderStatus::partner_wait_for_pay, OrderStatus::promoter_wait_for_pay])) {
+
+            $existingCookieHash = $request->cookie('qrCodeHash');
+            try {
+                if ($existingCookieHash) {
+                    /** @var QrCode|null $qrCode */
+                    $qrCode = QrCode::query()->where('hash', $existingCookieHash)->first();
+                    if ($qrCode) {
+                        $order->partner_id = $qrCode->partner_id;
+                        $order->type_id = OrderType::qr_code;
+                        StatisticQrCodes::addPayment($existingCookieHash);
+                    }
+                }
+            } catch (Exception $e) {
+                Log::channel('youkassa')->error('Error with qr statistics: ' . $e->getMessage());
+            }
+
+            $referralCookie = $request->cookie('referralLink');
+            try {
+                if ($referralCookie) {
+                    /**@var Partner|null $partner */
+                    $partner = Partner::query()->where('id', $referralCookie)->first();
+                    if ($partner) {
+                        $order->partner_id = $partner->id;
+                        $order->type_id = OrderType::referral_link;
+                    }
+                }
+            } catch (Exception $e) {
+                Log::channel('youkassa')->error('Error with referral statistics: ' . $e->getMessage());
+            }
+            $order->save();
+        }
+
         return APIResponse::success('Перенаправление на оплату...', [
             'form_url' => $response->getConfirmation()['_confirmation_url'],
         ]);
