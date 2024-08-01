@@ -101,7 +101,6 @@ class OrderReturnController extends ApiController
                             if (!in_array($ticket->status_id, [
                                 TicketStatus::partner_paid,
                                 TicketStatus::partner_paid_single,
-                                TicketStatus::promoter_self_paid,
                             ])) {
                                 throw new InvalidArgumentException('Билет имеет неверный статус для возврата.');
                             }
