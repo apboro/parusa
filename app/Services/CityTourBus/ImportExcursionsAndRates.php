@@ -3,6 +3,7 @@
 namespace App\Services\CityTourBus;
 
 
+use App\Models\Dictionaries\ExcursionStatus;
 use App\Models\Dictionaries\Provider;
 use App\Models\Dictionaries\TicketGrade;
 use App\Models\Excursions\Excursion;
@@ -20,7 +21,6 @@ class ImportExcursionsAndRates
 {
     public function run()
     {
-
         try {
             $cityTourRepo = new CityTourRepository();
             $cityTourExcursions = $cityTourRepo->getExcursions()['body'];
@@ -32,7 +32,7 @@ class ImportExcursionsAndRates
                 if (!$foundExcursion) {
                     $newExcursion = new Excursion();
                     $newExcursion->name = $externalExcursion['short_title'];
-                    $newExcursion->status_id = 2;
+                    $newExcursion->status_id = ExcursionStatus::blocked;
                     $newExcursion->provider_id = Provider::city_tour;
                     $newExcursion->save();
                     $info = $newExcursion->info;
@@ -51,6 +51,8 @@ class ImportExcursionsAndRates
                 $grades = $externalExcursion['tickets_categories'];
 
                 $ratesList = $this->createOrUpdateRateList($foundExcursion ?? $newExcursion, $grades);
+
+                $this->deleteExistingRates($foundExcursion);
 
                 if (!$ratesList) {
                     continue;
@@ -98,11 +100,10 @@ class ImportExcursionsAndRates
         } catch (Exception $e) {
             Log::channel('city_tour')->error('import error: ' .$e->getMessage() . ' ' . $e->getFile(). ' ' . $e->getLine());
         }
-
     }
 
 
-    public function addOrUpdateGradesInDictionary($grades)
+    public function addOrUpdateGradesInDictionary($grades): void
     {
         foreach ($grades as $grade) {
             if ($grade['date_to'] === null || ($grade['date_to'] && Carbon::parse($grade['date_to']) > Carbon::now())) {
@@ -143,4 +144,15 @@ class ImportExcursionsAndRates
         return $ticketsRatesList ?? null;
     }
 
+    public function deleteExistingRates(?Excursion $innerExcursion): void
+    {
+        if (!$innerExcursion){
+            return;
+        }
+        TicketsRatesList::where('excursion_id', $innerExcursion->id)
+            ->orderBy('created_at', 'desc')
+            ->first()
+            ?->rates()
+            ->delete();
+    }
 }
